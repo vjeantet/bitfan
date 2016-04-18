@@ -22,3 +22,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+tester
+examples.d/twitter.conf
+logstack
