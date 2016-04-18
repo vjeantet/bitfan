@@ -13,6 +13,7 @@ Logstash in GO.
 - [x] generic filter support
 - [x] generic output support
 - [x] IF config support
+- [x] dynamic %{field.key} support in config file
 - [ ] codec support
 - [ ] log to file
 - [ ] name all contributors and imported packages
