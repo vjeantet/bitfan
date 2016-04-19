@@ -14,12 +14,38 @@ Logstash in GO.
 - [x] generic output support
 - [x] IF config support
 - [x] dynamic %{field.key} support in config file
+- [x] gracefully stop plugins
+- [x] gracefully start plugins
 - [ ] codec support
 - [ ] log to file
 - [ ] name all contributors and imported packages
 
 
-supported inputs, filters and outputs can be found here : https://github.com/veino
+# supported inputs, filters and outputs 
+can be found here : https://github.com/veino
+
+## input
+* exec
+* file
+* stdin
+* twitter
+
+## filter
+* date
+* drop
+* grok
+* json
+* mutate
+* split
+* uuid
+
+## output
+* elasticsearch
+* mongodb
+* null
+* stdout
 
 ## Used package
 ...TODO
+
+
