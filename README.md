@@ -12,10 +12,10 @@ Logstash in GO.
 - [x] generic input support
 - [x] generic filter support
 - [x] generic output support
-- [x] IF config support
+- [x] configuration condition (if else) support
 - [x] dynamic %{field.key} support in config file
-- [x] gracefully stop plugins
-- [x] gracefully start plugins
+- [x] gracefully stop
+- [x] gracefully start
 - [ ] codec support
 - [ ] log to file
 - [ ] name all contributors and imported packages
