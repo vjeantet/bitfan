@@ -25,6 +25,7 @@ Logstash in GO.
 can be found here : https://github.com/veino
 
 ## input
+* beats
 * exec
 * file
 * stdin
