@@ -45,8 +45,10 @@ Quickly extend to custom log formats`,
 			testConfig(configPath, configString, args)
 		} else if configString != "" {
 			startLogstack("", configString, args)
-		} else {
+		} else if configPath != "" {
 			startLogstack(configPath, "", args)
+		} else {
+			cmd.Help()
 		}
 	},
 }
