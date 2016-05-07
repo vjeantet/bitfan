@@ -45,7 +45,7 @@ func lexIdent(l *lexer.L) lexer.StateFunc {
 		return lexString
 	}
 
-	l.Take("abcdefghijklmnopqrstuvwxyz_-1234567890\"'%")
+	l.Take("abcdefghijklmnopqrstuvwxyz._-1234567890\"'%")
 
 	// Si il ne commence par par un "
 	// 	Si il y a un { dans le current
