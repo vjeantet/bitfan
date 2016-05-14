@@ -2,15 +2,25 @@
 
 Logstash in GO.
 
-## QuickStart with a configfile
+## Install
+### Get ready to use binary
+Download the binary matching your system (linux/windows/osx) here : https://github.com/vjeantet/logstack/releases
+
+### Get source and compile
 ```
 $ go get -u github.com/vjeantet/logstack
+```
+
+## Usage
+```
 $ logstack -f $GOPATH/src/github.com/vjeantet/logstack/examples.d/simple.conf
 ```
 
-now paste this in your console
+copy/paste this in your console
 
-```127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"```
+```
+127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"
+```
 
 ### TODO
 
@@ -28,7 +38,7 @@ now paste this in your console
 
 
 
-# supported inputs, filters and outputs 
+# Supported inputs, filters and outputs in config file
 can be found here : https://github.com/veino/processors
 
 ## input
