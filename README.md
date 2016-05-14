@@ -1,19 +1,19 @@
-# logstack
+# Logfan
 
 Logstash in GO.
 
 ## Install
 ### Get ready to use binary
-Download the binary matching your system (linux/windows/osx) here : https://github.com/vjeantet/logstack/releases
+Download the binary matching your system (linux/windows/osx) here : https://github.com/vjeantet/logfan/releases
 
 ### Get source and compile
 ```
-$ go get -u github.com/vjeantet/logstack
+$ go get -u github.com/vjeantet/logfan
 ```
 
 ## Usage
 ```
-$ logstack -f $GOPATH/src/github.com/vjeantet/logstack/examples.d/simple.conf
+$ logfan -f $GOPATH/src/github.com/vjeantet/logfan/examples.d/simple.conf
 ```
 
 copy/paste this in your console
@@ -67,7 +67,7 @@ can be found here : https://github.com/veino/processors
 * spf13/cobra - A Commander for modern Go CLI interactions
 * kardianos/govendor Go vendor tool that works with the standard vendor file
 * bbuck/go-lexer (a forked version) - Lexer based on Rob Pike's talk on YouTube
-* veino/processors - all plugins used in logstack 
+* veino/processors - all plugins used in logfan 
 
 ## Similar projets in go
 

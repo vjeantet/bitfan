@@ -28,7 +28,7 @@ var verbose, debug, version, configtest bool
 
 // This represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "logstack",
+	Use:   "logfan",
 	Short: "a logstash fork in go",
 	Long: `Logstack is a logstash fork.
 
@@ -88,7 +88,7 @@ func init() {
 // 		viper.SetConfigFile(cfgFile)
 // 	}
 
-// 	viper.SetConfigName(".logstack") // name of config file (without extension)
+// 	viper.SetConfigName(".logfan") // name of config file (without extension)
 // 	viper.AddConfigPath("$HOME")     // adding home directory as first search path
 // 	viper.AutomaticEnv()             // read in environment variables that match
 

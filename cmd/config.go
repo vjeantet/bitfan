@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/veino/config"
-	"github.com/vjeantet/logstack/parser"
+	"github.com/vjeantet/logfan/parser"
 )
 
-func parseConfig(logstackname string, content []byte) ([]config.Agent, error) {
+func parseConfig(logfanname string, content []byte) ([]config.Agent, error) {
 	agentConfList := []config.Agent{}
 
 	var i int
@@ -26,7 +26,7 @@ func parseConfig(logstackname string, content []byte) ([]config.Agent, error) {
 	for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["input"].Plugins); pluginIndex++ {
 		i++
 		plugin := LSConfiguration.Sections["input"].Plugins[pluginIndex]
-		agent, outPort := buildInputAgent(logstackname, plugin, i)
+		agent, outPort := buildInputAgent(logfanname, plugin, i)
 		agentConfList = append([]config.Agent{agent}, agentConfList...)
 		outPorts = append(outPorts, outPort)
 	}
@@ -36,7 +36,7 @@ func parseConfig(logstackname string, content []byte) ([]config.Agent, error) {
 			var agents []config.Agent
 			i++
 			plugin := LSConfiguration.Sections["filter"].Plugins[pluginIndex]
-			agents, outPorts, i = buildFilterAgents(logstackname, plugin, outPorts, i)
+			agents, outPorts, i = buildFilterAgents(logfanname, plugin, outPorts, i)
 			agentConfList = append(agents, agentConfList...)
 		}
 	}
@@ -45,19 +45,19 @@ func parseConfig(logstackname string, content []byte) ([]config.Agent, error) {
 		var agents []config.Agent
 		i++
 		plugin := LSConfiguration.Sections["output"].Plugins[pluginIndex]
-		agents, outPorts, i = buildOutputAgents(logstackname, plugin, outPorts, i)
+		agents, outPorts, i = buildOutputAgents(logfanname, plugin, outPorts, i)
 		agentConfList = append(agents, agentConfList...)
 	}
 
 	return agentConfList, nil
 }
 
-func buildInputAgent(logstackname string, plugin *parser.Plugin, i int) (config.Agent, config.Port) {
+func buildInputAgent(logfanname string, plugin *parser.Plugin, i int) (config.Agent, config.Port) {
 
 	var agent config.Agent
-	agent.Pipeline = logstackname
+	agent.Pipeline = logfanname
 	agent.Type = "input_" + plugin.Name
-	agent.Name = fmt.Sprintf("%s_%s-%03d", logstackname, plugin.Name, i)
+	agent.Name = fmt.Sprintf("%s_%s-%03d", logfanname, plugin.Name, i)
 	agent.Buffer = 200
 	agent.PoolSize = 1
 
@@ -96,13 +96,13 @@ func buildInputAgent(logstackname string, plugin *parser.Plugin, i int) (config.
 	return agent, config.Port{AgentName: agent.Name, PortNumber: 0}
 }
 
-func buildOutputAgents(logstackname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int) ([]config.Agent, []config.Port, int) {
+func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int) ([]config.Agent, []config.Port, int) {
 	agent_list := []config.Agent{}
 
 	var agent config.Agent
-	agent.Pipeline = logstackname
+	agent.Pipeline = logfanname
 	agent.Type = "output_" + plugin.Name
-	agent.Name = fmt.Sprintf("%s_%s-%03d", logstackname, plugin.Name, i)
+	agent.Name = fmt.Sprintf("%s_%s-%03d", logfanname, plugin.Name, i)
 	agent.Buffer = 200
 	agent.PoolSize = 1
 
@@ -145,7 +145,7 @@ func buildOutputAgents(logstackname string, plugin *parser.Plugin, lastOutPorts 
 				var agents []config.Agent
 				i++
 				// récupérer le dernier outport du plugin créé il devient expressionOutPorts
-				agents, _, i = buildOutputAgents(logstackname, p, expressionOutPorts, i)
+				agents, _, i = buildOutputAgents(logfanname, p, expressionOutPorts, i)
 				// ajoute l'agent à la liste des agents construits
 				agent_list = append(agents, agent_list...)
 			}
@@ -157,14 +157,14 @@ func buildOutputAgents(logstackname string, plugin *parser.Plugin, lastOutPorts 
 	return agent_list, lastOutPorts, i
 }
 
-func buildFilterAgents(logstackname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int) ([]config.Agent, []config.Port, int) {
+func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int) ([]config.Agent, []config.Port, int) {
 
 	agent_list := []config.Agent{}
 
 	var agent config.Agent
-	agent.Pipeline = logstackname
+	agent.Pipeline = logfanname
 	agent.Type = plugin.Name
-	agent.Name = fmt.Sprintf("%s_%s-%03d", logstackname, plugin.Name, i)
+	agent.Name = fmt.Sprintf("%s_%s-%03d", logfanname, plugin.Name, i)
 	agent.Buffer = 200
 	agent.PoolSize = 2
 
@@ -225,7 +225,7 @@ func buildFilterAgents(logstackname string, plugin *parser.Plugin, lastOutPorts 
 				var agents []config.Agent
 				i++
 				// récupérer le dernier outport du plugin créé il devient outportA
-				agents, expressionOutPorts, i = buildFilterAgents(logstackname, p, expressionOutPorts, i)
+				agents, expressionOutPorts, i = buildFilterAgents(logfanname, p, expressionOutPorts, i)
 				// ajoute l'agent à la liste des agents construits
 				agent_list = append(agents, agent_list...)
 			}

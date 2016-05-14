@@ -25,5 +25,6 @@ _testmain.go
 
 tester
 examples.d/twitter.conf
-logstack
+logfan
 releases
+.DS_Store

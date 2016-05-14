@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/vjeantet/logstack/cmd"
+import "github.com/vjeantet/logfan/cmd"
 
 func main() {
 	cmd.Execute()
