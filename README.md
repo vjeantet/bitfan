@@ -2,9 +2,15 @@
 
 Logstash in GO.
 
-## Usage
+## QuickStart with a configfile
+```
+go get -u github.com/vjeantet/logstack
+logstack -f $GOPATH/src/github.com/vjeantet/logstack/examples.d/simple.conf
+```
 
-```./logstack -f debug.conf```
+now paste this in your console
+
+```127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"```
 
 ### TODO
 
