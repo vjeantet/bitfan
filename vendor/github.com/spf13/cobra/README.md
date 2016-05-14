@@ -7,6 +7,7 @@ Many of the most widely used Go projects are built using Cobra including:
 * [Kubernetes](http://kubernetes.io/)
 * [Hugo](http://gohugo.io)
 * [rkt](https://github.com/coreos/rkt)
+* [etcd](https://github.com/coreos/etcd)
 * [Docker (distribution)](https://github.com/docker/distribution)
 * [OpenShift](https://www.openshift.com/)
 * [Delve](https://github.com/derekparker/delve)
@@ -15,11 +16,13 @@ Many of the most widely used Go projects are built using Cobra including:
 * [Bleve](http://www.blevesearch.com/)
 * [ProjectAtomic (enterprise)](http://www.projectatomic.io/)
 * [Parse (CLI)](https://parse.com/)
+* [GiantSwarm's swarm](https://github.com/giantswarm/cli)
 * [Nanobox](https://github.com/nanobox-io/nanobox)/[Nanopack](https://github.com/nanopack)
 
 
 [![Build Status](https://travis-ci.org/spf13/cobra.svg "Travis CI status")](https://travis-ci.org/spf13/cobra)
 [![CircleCI status](https://circleci.com/gh/spf13/cobra.png?circle-token=:circle-token "CircleCI status")](https://circleci.com/gh/spf13/cobra)
+[![GoDoc](https://godoc.org/github.com/spf13/cobra?status.svg)](https://godoc.org/github.com/spf13/cobra) 
 
 ![cobra](https://cloud.githubusercontent.com/assets/173412/10911369/84832a8e-8212-11e5-9f82-cc96660a4794.gif)
 
@@ -224,11 +227,25 @@ The cobra generator will be easier to use if you provide a simple configuration
 file which will help you eliminate providing a bunch of repeated information in
 flags over and over.
 
-an example ~/.cobra.yaml file:
+An example ~/.cobra.yaml file:
 
 ```yaml
 author: Steve Francia <spf@spf13.com>
 license: MIT
+```
+
+You can specify no license by setting `license` to `none` or you can specify
+a custom license:
+
+```yaml
+license:
+  header: This file is part of {{ .appName }}.
+  text: |
+    {{ .copyright }}
+
+    This is my license. There are many like it, but this one is mine.
+    My license is my best friend. It is my life. I must master it as I must
+    master my life.  
 ```
 
 ## Manually implementing Cobra
@@ -534,7 +551,7 @@ around it. In fact, you can provide your own if you want.
 
 ### Defining your own help
 
-You can provide your own Help command or you own template for the default command to use.
+You can provide your own Help command or your own template for the default command to use.
 
 The default help command is
 
@@ -711,13 +728,18 @@ func main() {
 
 ## Alternative Error Handling
 
-Cobra also has functions where the return signature is an error. This allows for errors to bubble up to the top, providing a way to handle the errors in one location. The current list of functions that return an error is:
+Cobra also has functions where the return signature is an error. This allows for errors to bubble up to the top,
+providing a way to handle the errors in one location. The current list of functions that return an error is:
 
 * PersistentPreRunE
 * PreRunE
 * RunE
 * PostRunE
 * PersistentPostRunE
+
+If you would like to silence the default `error` and `usage` output in favor of your own, you can set `SilenceUsage`
+and `SilenceErrors` to `false` on the command. A child command respects these flags if they are set on the parent
+command.
 
 **Example Usage using RunE:**
 
@@ -792,11 +814,11 @@ Run 'kubectl help' for usage.
 
 ## Generating Markdown-formatted documentation for your command
 
-Cobra can generate a Markdown-formatted document based on the subcommands, flags, etc. A simple example of how to do this for your command can be found in [Markdown Docs](md_docs.md).
+Cobra can generate a Markdown-formatted document based on the subcommands, flags, etc. A simple example of how to do this for your command can be found in [Markdown Docs](doc/md_docs.md).
 
 ## Generating man pages for your command
 
-Cobra can generate a man page based on the subcommands, flags, etc. A simple example of how to do this for your command can be found in [Man Docs](man_docs.md).
+Cobra can generate a man page based on the subcommands, flags, etc. A simple example of how to do this for your command can be found in [Man Docs](doc/man_docs.md).
 
 ## Generating bash completions for your command
 
