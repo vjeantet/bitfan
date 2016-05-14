@@ -16,6 +16,9 @@ package cmd
 
 import "fmt"
 
+var Version = "No Version Provided"
+var Buildstamp = ""
+
 func printVersion() {
-	fmt.Println("version 0.1")
+	fmt.Println("LogFan Version : " + Version + "\nUTC Build Time : " + Buildstamp)
 }

@@ -1,10 +1,14 @@
 # Logfan
 
-Logstash in GO.
+Logstash implementation in GO.
+
+![Logfan logo](docs/static/noun_307496_cc.png "Logfan")
 
 ## Install
-### Get ready to use binary
-Download the binary matching your system (linux/windows/osx) here : https://github.com/vjeantet/logfan/releases
+2 ways to get logfan : download a released version or compile it from source.
+
+### Download binary
+linux, windows, osx available here : https://github.com/vjeantet/logfan/releases
 
 ### Get source and compile
 ```
@@ -37,7 +41,6 @@ copy/paste this in your console
 - [ ] log to file
 
 
-
 # Supported inputs, filters and outputs in config file
 can be found here : https://github.com/veino/processors
 
@@ -63,15 +66,17 @@ can be found here : https://github.com/veino/processors
 * null
 * stdout
 
-## Used package
-* spf13/cobra - A Commander for modern Go CLI interactions
+# Used package
 * kardianos/govendor Go vendor tool that works with the standard vendor file
+* spf13/cobra - A Commander for modern Go CLI interactions
 * bbuck/go-lexer (a forked version) - Lexer based on Rob Pike's talk on YouTube
 * veino/processors - all plugins used in logfan 
 
-## Similar projets in go
+# Similar projets in go
 
 * tsaikd/gogstash - Logstash like, written in golang
 * packetzoom/logzoom - A lightweight replacement for logstash indexer in Go
 * hailocab/logslam - A lightweight lumberjack protocol compliant logstash indexer
 
+# Credits
+logo "hand fan" by lastspark from the Noun Project

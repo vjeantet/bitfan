@@ -16,6 +16,11 @@ package main
 
 import "github.com/vjeantet/logfan/cmd"
 
+var version = "No Version Provided"
+var buildstamp = ""
+
 func main() {
+	cmd.Version = version
+	cmd.Buildstamp = buildstamp
 	cmd.Execute()
 }
