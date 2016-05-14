@@ -4,8 +4,8 @@ Logstash in GO.
 
 ## QuickStart with a configfile
 ```
-go get -u github.com/vjeantet/logstack
-logstack -f $GOPATH/src/github.com/vjeantet/logstack/examples.d/simple.conf
+$ go get -u github.com/vjeantet/logstack
+$ logstack -f $GOPATH/src/github.com/vjeantet/logstack/examples.d/simple.conf
 ```
 
 now paste this in your console
@@ -22,13 +22,14 @@ now paste this in your console
 - [x] dynamic %{field.key} support in config file
 - [x] gracefully stop
 - [x] gracefully start
+- [x] name all contributors, imported packages, similar projects
 - [ ] codec support
 - [ ] log to file
-- [ ] name all contributors and imported packages
+
 
 
 # supported inputs, filters and outputs 
-can be found here : https://github.com/veino
+can be found here : https://github.com/veino/processors
 
 ## input
 * beats
@@ -53,6 +54,14 @@ can be found here : https://github.com/veino
 * stdout
 
 ## Used package
-...TODO
+* spf13/cobra - A Commander for modern Go CLI interactions
+* kardianos/govendor Go vendor tool that works with the standard vendor file
+* bbuck/go-lexer (a forked version) - Lexer based on Rob Pike's talk on YouTube
+* veino/processors - all plugins used in logstack 
 
+## Similar projets in go
+
+* tsaikd/gogstash - Logstash like, written in golang
+* packetzoom/logzoom - A lightweight replacement for logstash indexer in Go
+* hailocab/logslam - A lightweight lumberjack protocol compliant logstash indexer
 
