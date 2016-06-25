@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/veino/processors/filter-date"
 	"github.com/veino/processors/filter-drop"
+	"github.com/veino/processors/filter-geoip"
 	"github.com/veino/processors/filter-grok"
 	"github.com/veino/processors/filter-json"
 	"github.com/veino/processors/filter-mutate"
@@ -36,6 +37,7 @@ func init() {
 	runtime.RegisterProcessor("json", json.New)
 	runtime.RegisterProcessor("uuid", uuid.New)
 	runtime.RegisterProcessor("drop", drop.New)
+	runtime.RegisterProcessor("geoip", geoip.New)
 
 	runtime.RegisterProcessor("output_stdout", stdout.New)
 	runtime.RegisterProcessor("output_mongodb", mongodb.New)
