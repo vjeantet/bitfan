@@ -33,6 +33,9 @@ var flagConfigPath string
 
 func startLogstack(flagConfigPath string, flagConfigContent string, args []string) {
 	runtime.Start()
+	if debug {
+		runtime.Logger().SetDebugMode(true)
+	}
 
 	var configAgents = []config.Agent{}
 
