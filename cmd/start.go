@@ -25,14 +25,17 @@ import (
 	"syscall"
 
 	"github.com/veino/config"
+	"github.com/veino/runtime/metrics"
 
 	"github.com/veino/runtime"
 )
 
 var flagConfigPath string
 
-func startLogstack(flagConfigPath string, flagConfigContent string, args []string) {
+func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.IStats, args []string) {
+	runtime.SetIStat(stats)
 	runtime.Start()
+
 	if debug {
 		runtime.Logger().SetDebugMode(true)
 	}
@@ -114,6 +117,6 @@ func startLogstack(flagConfigPath string, flagConfigContent string, args []strin
 	fmt.Println("")
 	log.Printf("stopping...")
 	runtime.Stop()
-	log.Printf("Everything stopped gracefully. Good bye\n")
+	log.Printf("Everything stopped gracefully. Goodbye!\n")
 
 }
