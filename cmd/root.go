@@ -20,13 +20,14 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
+	"github.com/veino/runtime/metrics"
 )
 
-var configPath, configString, logPath string
+var configPath, configString, logPath, prometheusListen, prometheusPath string
 var filterworkers int
-var verbose, debug, version, configtest bool
+var verbose, debug, version, configtest, prometheus bool
 
-// This represents the base command when called without any subcommands
+// RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "logfan",
 	Short: "a logstash fork in go",
@@ -39,14 +40,21 @@ Quickly extend to custom log formats`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
+		var stats metrics.IStats
+		if prometheus {
+			stats = metrics.NewPrometheus(prometheusListen, prometheusPath)
+		} else {
+			stats = &metrics.StatsVoid{}
+		}
+
 		if version {
 			printVersion()
 		} else if configtest {
 			testConfig(configPath, configString, args)
 		} else if configString != "" {
-			startLogstack("", configString, args)
+			startLogfan("", configString, stats, args)
 		} else if configPath != "" {
-			startLogstack(configPath, "", args)
+			startLogfan(configPath, "", stats, args)
 		} else {
 			cmd.Help()
 		}
@@ -76,6 +84,10 @@ func init() {
 	RootCmd.Flags().StringVarP(&logPath, "log", "l", "", "Log to a given path. Default is to log to stdout.")
 	RootCmd.Flags().BoolVarP(&verbose, "verbose", "", false, "Increase verbosity to the first level (info), less verbose.")
 	RootCmd.Flags().BoolVarP(&debug, "debug", "", false, "Increase verbosity to the last level (trace), more verbose.")
+
+	RootCmd.Flags().BoolVarP(&prometheus, "prometheus", "", false, "Export stats using prometheus output")
+	RootCmd.Flags().StringVarP(&prometheusListen, "prometheus.listen", "", "0.0.0.0:24232", "Address and port to bind Prometheus metrics")
+	RootCmd.Flags().StringVarP(&prometheusPath, "prometheus.path", "", "/metrics", "Expose Prometheus metrics at specified path.")
 
 	RootCmd.Flags().BoolVarP(&version, "version", "V", false, "Display the version of Logstash.")
 	RootCmd.Flags().BoolVarP(&configtest, "configtest", "t", false, "Test config file or directory")
