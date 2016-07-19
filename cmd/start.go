@@ -36,9 +36,8 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 	runtime.SetIStat(stats)
 	runtime.Start()
 
-	if debug {
-		runtime.Logger().SetDebugMode(true)
-	}
+	runtime.Logger().SetVerboseMode(verbose)
+	runtime.Logger().SetDebugMode(debug)
 
 	var configAgents = []config.Agent{}
 
