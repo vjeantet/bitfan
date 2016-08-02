@@ -15,8 +15,12 @@ import (
 	"github.com/veino/processors/input-stdin"
 	"github.com/veino/processors/input-twitter"
 	"github.com/veino/processors/output-elasticsearch"
+	"github.com/veino/processors/output-elasticsearch2"
+	"github.com/veino/processors/output-file"
+	"github.com/veino/processors/output-glusterfs"
 	"github.com/veino/processors/output-mongodb"
 	"github.com/veino/processors/output-null"
+	"github.com/veino/processors/output-rabbitmq"
 	"github.com/veino/processors/output-stdout"
 	"github.com/veino/processors/when"
 	"github.com/veino/runtime"
@@ -43,12 +47,11 @@ func init() {
 	runtime.RegisterProcessor("output_mongodb", mongodb.New)
 	runtime.RegisterProcessor("output_null", null.New)
 	runtime.RegisterProcessor("output_elasticsearch", elasticsearch.New)
+	runtime.RegisterProcessor("output_elasticsearch2", elasticsearch2.New)
+	runtime.RegisterProcessor("output_file", fileoutput.New)
+	runtime.RegisterProcessor("output_glusterfs", glusterfsoutput.New)
+	runtime.RegisterProcessor("output_rabbitmq", rabbitmqoutput.New)
 
 	runtime.RegisterProcessor("when", when.New)
 	runtime.RegisterProcessor("output_when", when.New)
-
-	// veino.RegisterProcessor("httppoller", httppoller.New)
-	// veino.RegisterProcessor("fileinput", fileinput.New)
-	// veino.RegisterProcessor("imap_input", imap_input.New)
-	// veino.RegisterProcessor("file-output", fileoutput.New)
 }
