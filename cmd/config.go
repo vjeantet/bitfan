@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/veino/config"
-	"github.com/vjeantet/logfan/parser"
+	"github.com/veino/logfan/parser"
 )
 
 func parseConfig(logfanname string, content []byte) ([]config.Agent, error) {

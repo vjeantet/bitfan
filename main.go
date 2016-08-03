@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/vjeantet/logfan/cmd"
+import "github.com/veino/logfan/cmd"
 
 var version = "No Version Provided"
 var buildstamp = ""
