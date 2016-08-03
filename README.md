@@ -8,16 +8,16 @@ Logstash implementation in GO.
 2 ways to get logfan : download a released version or compile it from source.
 
 ### Download binary
-linux, windows, osx available here : https://github.com/vjeantet/logfan/releases
+linux, windows, osx available here : https://github.com/veino/logfan/releases
 
 ### Get source and compile
 ```
-$ go get -u github.com/vjeantet/logfan
+$ go get -u github.com/veino/logfan
 ```
 
 ## Usage
 ```
-$ logfan -f $GOPATH/src/github.com/vjeantet/logfan/examples.d/simple.conf
+$ logfan -f $GOPATH/src/github.com/veino/logfan/examples.d/simple.conf
 ```
 
 copy/paste this in your console
@@ -80,3 +80,7 @@ can be found here : https://github.com/veino/processors
 
 # Credits
 logo "hand fan" by lastspark from the Noun Project
+
+# Contributors
+* Valere JEANTET
+* Merlin Gaillard
