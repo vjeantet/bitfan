@@ -261,28 +261,30 @@ func (p *Parser) parsePlugin(tok *lexer.Token) (*Plugin, error) {
 		case TokenComment:
 			continue
 		case TokenIdentifier:
-			if tok.Value == "codec" {
-				codec, err := p.parseCodec(tok)
-				if err != nil {
-					return plugin, err
-				}
+			/*
+				if tok.Value == "codec" {
+					codec, err := p.parseCodec(tok)
+					if err != nil {
+						return plugin, err
+					}
 
-				tok2, err2 := p.getToken(TokenLCurlyBrace)
-				if err2 != nil {
-					// c'est pas un  { donc faut le remettre dans la boucle
-					// log.Printf(" -pcs- %s %s", TokenType(tok2.Type).String(), tok2.Value)
-					advancedTok = &tok2
+					tok2, err2 := p.getToken(TokenLCurlyBrace)
+					if err2 != nil {
+						// c'est pas un  { donc faut le remettre dans la boucle
+						// log.Printf(" -pcs- %s %s", TokenType(tok2.Type).String(), tok2.Value)
+						advancedTok = &tok2
+						plugin.Codecs[i] = codec
+						i = i + 1
+						continue
+					}
+
+					settings, err := p.parseCodecSettings(&tok2)
+					codec.Settings = settings
 					plugin.Codecs[i] = codec
 					i = i + 1
 					continue
 				}
-
-				settings, err := p.parseCodecSettings(&tok2)
-				codec.Settings = settings
-				plugin.Codecs[i] = codec
-				i = i + 1
-				continue
-			}
+			*/
 
 			// Token is not a codec
 			setting, err := p.parseSetting(tok)
