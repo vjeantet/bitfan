@@ -9,6 +9,7 @@ import (
 	"github.com/veino/processors/filter-mutate"
 	"github.com/veino/processors/filter-split"
 	"github.com/veino/processors/filter-uuid"
+	"github.com/veino/processors/input-amqp"
 	"github.com/veino/processors/input-beats"
 	"github.com/veino/processors/input-exec"
 	"github.com/veino/processors/input-file"
@@ -33,6 +34,7 @@ func init() {
 	runtime.RegisterProcessor("input_file", fileinput.New)
 	runtime.RegisterProcessor("input_exec", execinput.New)
 	runtime.RegisterProcessor("input_beats", beatsinput.New)
+	runtime.RegisterProcessor("input_rabbitmq", rabbitmqinput.New)
 
 	runtime.RegisterProcessor("grok", grok.New)
 	runtime.RegisterProcessor("mutate", mutate.New)
