@@ -15,6 +15,7 @@ import (
 	"github.com/veino/processors/input-rabbitmq"
 	"github.com/veino/processors/input-stdin"
 	"github.com/veino/processors/input-twitter"
+	"github.com/veino/processors/input-udp"
 	"github.com/veino/processors/output-elasticsearch"
 	"github.com/veino/processors/output-elasticsearch2"
 	"github.com/veino/processors/output-file"
@@ -35,6 +36,7 @@ func init() {
 	runtime.RegisterProcessor("input_exec", execinput.New)
 	runtime.RegisterProcessor("input_beats", beatsinput.New)
 	runtime.RegisterProcessor("input_rabbitmq", rabbitmqinput.New)
+	runtime.RegisterProcessor("input_udp", udpinput.New)
 
 	runtime.RegisterProcessor("grok", grok.New)
 	runtime.RegisterProcessor("mutate", mutate.New)
