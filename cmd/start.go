@@ -34,7 +34,7 @@ var flagConfigPath string
 
 func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.IStats, args []string) {
 	runtime.SetIStat(stats)
-	runtime.Start()
+	runtime.Start(webhookListen)
 
 	runtime.Logger().SetVerboseMode(verbose)
 	runtime.Logger().SetDebugMode(debug)

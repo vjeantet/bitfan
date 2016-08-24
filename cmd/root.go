@@ -23,7 +23,7 @@ import (
 	"github.com/veino/runtime/metrics"
 )
 
-var configPath, configString, logPath, prometheusListen, prometheusPath string
+var configPath, configString, logPath, prometheusListen, prometheusPath, webhookListen string
 var filterworkers int
 var verbose, debug, version, configtest, prometheus bool
 
@@ -88,6 +88,8 @@ func init() {
 	RootCmd.Flags().BoolVarP(&prometheus, "prometheus", "", false, "Export stats using prometheus output")
 	RootCmd.Flags().StringVarP(&prometheusListen, "prometheus.listen", "", "0.0.0.0:24232", "Address and port to bind Prometheus metrics")
 	RootCmd.Flags().StringVarP(&prometheusPath, "prometheus.path", "", "/metrics", "Expose Prometheus metrics at specified path.")
+
+	RootCmd.Flags().StringVarP(&webhookListen, "webhook.listen", "", "0.0.0.0:19090", "Address and port to bind webhooks")
 
 	RootCmd.Flags().BoolVarP(&version, "version", "V", false, "Display the version of Logstash.")
 	RootCmd.Flags().BoolVarP(&configtest, "configtest", "t", false, "Test config file or directory")
