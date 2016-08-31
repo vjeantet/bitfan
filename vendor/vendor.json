@@ -1,6 +1,6 @@
 {
 	"comment": "",
-	"ignore": "test github.com/veino",
+	"ignore": "test github.com/veino golang.org/x",
 	"package": [
 		{
 			"checksumSHA1": "40vJyUB4ezQSn/NSadsKEOrudMc=",

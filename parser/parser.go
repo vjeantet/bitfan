@@ -435,7 +435,7 @@ func (p *Parser) parseHash() (map[string]interface{}, error) {
 
 	hash := map[string]interface{}{}
 	for {
-		tok, err := p.getToken(TokenComment, TokenIdentifier, TokenRCurlyBrace, TokenString)
+		tok, err := p.getToken(TokenComment, TokenIdentifier, TokenRCurlyBrace, TokenString, TokenComma)
 		if err != nil {
 			log.Fatalf("ParseHash parse error %s", err)
 			return nil, err
