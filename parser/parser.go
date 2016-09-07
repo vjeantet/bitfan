@@ -165,9 +165,7 @@ func (p *Parser) parseWHEN(tok *lexer.Token) (*Plugin, error) {
 
 	var err error
 	var expression string
-	log.Println("tok.Value=", tok.Value)
 	expression, err = conditionalexpression.ToWhenExpression(tok.Value)
-	log.Println("Expression=", tok.Value)
 	if err != nil {
 		return pluginWhen, fmt.Errorf("Conditional expression parse error %s", err)
 	}
