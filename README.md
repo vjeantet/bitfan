@@ -46,14 +46,22 @@ can be found here : https://github.com/veino/processors
 
 ## input
 * beats
+* elasticsearch
 * exec
 * file
+* httppoller
+* imap
+* rabbitmq
 * stdin
+* syslog
 * twitter
+* udp
+* unix
 
 ## filter
 * date
 * drop
+* geoip
 * grok
 * json
 * mutate
@@ -61,11 +69,14 @@ can be found here : https://github.com/veino/processors
 * uuid
 
 ## output
-* elasticsearch
+* elasticsearch v1, v2
+* file
+* glusterfs
 * mongodb
 * null
-* stdout
+* rabbitmq
 * statsd
+* stdout
 
 # Used package
 * kardianos/govendor Go vendor tool that works with the standard vendor file
@@ -85,3 +96,4 @@ logo "hand fan" by lastspark from the Noun Project
 # Contributors
 * Valere JEANTET
 * Merlin Gaillard
+* Alexander AKULOV
