@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/veino/logfan/parser/conditionalexpression"
 	"github.com/vjeantet/go-lexer"
 )
 
@@ -162,13 +163,22 @@ func (p *Parser) parseWHEN(tok *lexer.Token) (*Plugin, error) {
 	pluginWhen.Name = "when"
 	pluginWhen.When = make(map[int]*When, 0)
 
+	var err error
+	var expression string
+	log.Println("tok.Value=", tok.Value)
+	expression, err = conditionalexpression.ToWhenExpression(tok.Value)
+	log.Println("Expression=", tok.Value)
+	if err != nil {
+		return pluginWhen, fmt.Errorf("Conditional expression parse error %s", err)
+	}
+
 	when := &When{
-		Expression: tok.Value,
+		Expression: expression,
 		Plugins:    map[int]*Plugin{},
 	}
 
 	// si pas de { alors erreur
-	var err error
+
 	*tok, err = p.getToken(TokenLCurlyBrace)
 	if err != nil {
 		return pluginWhen, fmt.Errorf("IF parse error %s", err)
