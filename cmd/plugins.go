@@ -25,6 +25,7 @@ import (
 	"github.com/veino/processors/output-mongodb"
 	"github.com/veino/processors/output-null"
 	"github.com/veino/processors/output-rabbitmq"
+	"github.com/veino/processors/output-statsd"
 	"github.com/veino/processors/output-stdout"
 	"github.com/veino/processors/when"
 	"github.com/veino/runtime"
@@ -52,6 +53,7 @@ func init() {
 	runtime.RegisterProcessor("geoip", geoip.New)
 
 	runtime.RegisterProcessor("output_stdout", stdout.New)
+	runtime.RegisterProcessor("output_statsd", statsd.New)
 	runtime.RegisterProcessor("output_mongodb", mongodb.New)
 	runtime.RegisterProcessor("output_null", null.New)
 	runtime.RegisterProcessor("output_elasticsearch", elasticsearch.New)

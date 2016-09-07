@@ -65,6 +65,7 @@ can be found here : https://github.com/veino/processors
 * mongodb
 * null
 * stdout
+* statsd
 
 # Used package
 * kardianos/govendor Go vendor tool that works with the standard vendor file
