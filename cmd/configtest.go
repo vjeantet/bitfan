@@ -27,25 +27,21 @@ import (
 
 var flagTestConfigPath, flagTestConfigContent string
 
-func testConfig(flagConfigPath string, flagConfigContent string, args []string) {
+func testConfig(flagConfigPath string, flagConfigContent string) {
 	// runtime.Start()
 	logError := log.New(os.Stderr, "ERROR: ", 0)
 	logInfo := log.New(os.Stdout, "", 0)
 	logWarning := log.New(os.Stdout, "WARNING: ", 0)
-
 	countConfig := 0
-
 	// Load agents from flagConfigContent string
 	if flagConfigContent != "" {
 		configAgents, err := parseConfig("inline", []byte(flagConfigContent))
 		if err != nil {
 			logError.Fatalf("%s", err.Error())
 		}
-
 		configAgentsOrdered := config.Sort(configAgents, config.SortOutputsFirst)
 		for _, configAgent := range configAgentsOrdered {
-			_, err := runtime.NewAgent(configAgent, 0)
-			if err != nil {
+			if _, err := runtime.NewAgent(configAgent, 0); err != nil {
 				logError.Fatalf("plugin '%s' may not start : %s", configAgent.Type, err.Error())
 			}
 		}
@@ -77,14 +73,12 @@ func testConfig(flagConfigPath string, flagConfigContent string, args []string) 
 				logWarning.Printf(`Error while reading "%s" [%s]`, file, err)
 				continue
 			}
-
 			// instance all AgenConfiguration structs from file content
 			switch strings.ToLower(filepath.Ext(file)) {
 			case ".conf":
 				var filename = filepath.Base(file)
 				var extension = filepath.Ext(filename)
 				var pipelineName = filename[0 : len(filename)-len(extension)]
-
 				configAgents, err := parseConfig(pipelineName, content)
 				if err != nil {
 					logError.Fatalf("%s", err.Error())
@@ -92,21 +86,17 @@ func testConfig(flagConfigPath string, flagConfigContent string, args []string) 
 				logInfo.Printf("checking %s", file)
 				configAgentsOrdered := config.Sort(configAgents, config.SortOutputsFirst)
 				for _, configAgent := range configAgentsOrdered {
-					_, err := runtime.NewAgent(configAgent, 0)
-					if err != nil {
+					if _, err := runtime.NewAgent(configAgent, 0); err != nil {
 						logError.Fatalf("plugin '%s' may not start : %s", configAgent.Type, err.Error())
 					}
 					countConfig++
 				}
-
 			default:
 				logInfo.Printf("ignored file %s", file)
 			}
-
 			if err != nil {
 				logError.Fatalf("%s", err.Error())
 			}
-
 		}
 	}
 	if countConfig > 0 {
