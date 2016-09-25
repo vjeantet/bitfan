@@ -6,6 +6,7 @@ import (
 	"github.com/veino/processors/filter-geoip"
 	"github.com/veino/processors/filter-grok"
 	"github.com/veino/processors/filter-json"
+	"github.com/veino/processors/filter-kv"
 	"github.com/veino/processors/filter-mutate"
 	"github.com/veino/processors/filter-split"
 	"github.com/veino/processors/filter-uuid"
@@ -51,6 +52,7 @@ func init() {
 	runtime.RegisterProcessor("uuid", uuid.New)
 	runtime.RegisterProcessor("drop", drop.New)
 	runtime.RegisterProcessor("geoip", geoip.New)
+	runtime.RegisterProcessor("kv", kv.New)
 
 	runtime.RegisterProcessor("output_stdout", stdout.New)
 	runtime.RegisterProcessor("output_statsd", statsd.New)
