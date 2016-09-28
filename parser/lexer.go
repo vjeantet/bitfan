@@ -1,342 +1,271 @@
 package parser
 
-import "github.com/vjeantet/go-lexer"
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+	"unicode"
+)
 
-func lexBegin(l *lexer.L) lexer.StateFunc {
-	l.SkipWhitespace()
-	consumeComments(l)
+func readToken(stream *lexerStream) (Token, error) {
+	var ret Token
+	var tokenValue interface{}
+	var tokenString string
+	var kind TokenKind
+	var character rune
+	var completed bool
+	var err error
+	kind = TokenEOF
 
-	return lexIdent
-}
+	for stream.canRead() {
+		ret.Pos = stream.position
+		character = stream.readCharacter()
+		if unicode.IsSpace(character) {
+			continue
+		}
 
-// lexComment scans a comment. The left comment marker is known to be present.
-func consumeComments(l *lexer.L) {
-	var r rune
-	r = l.Next()
-	if r == '#' {
-		l.Ignore()
-		for {
-			r = l.Next()
-			if r == lexer.EOFRune {
-				l.Emit(TokenComment)
-				return
+		kind = TokenIllegal
+
+		if character == '#' {
+			tokenString, _ = readUntilFalse(stream, true, false, true, isNotNewLine)
+			tokenValue = tokenString
+			kind = TokenComment
+			break
+		}
+
+		if character == '{' {
+			tokenValue = "{"
+			kind = TokenLCurlyBrace
+			break
+		}
+
+		if character == '}' {
+			tokenValue = "}"
+			kind = TokenRCurlyBrace
+			break
+		}
+
+		// Assignment, accept = and =>
+		if character == '=' || character == ':' {
+			tokenValue = string(character)
+			character = stream.readCharacter()
+			if character == '>' {
+				tokenValue = tokenValue.(string) + ">"
+			} else {
+				stream.rewind(1)
 			}
-			if r == '\n' || r == '\t' {
-				l.Rewind()
-				l.Emit(TokenComment)
-				l.SkipWhitespace()
-				if l.Next() == '#' {
-					l.Rewind()
-					consumeComments(l)
-				}
-				l.Rewind()
+
+			kind = TokenAssignment
+			break
+		}
+
+		if character == ']' {
+			tokenValue = "]"
+			kind = TokenRBracket
+			break
+		}
+
+		if character == '[' {
+			tokenValue = "["
+			kind = TokenLBracket
+			break
+		}
+
+		if character == ',' {
+
+			tokenValue = ","
+			kind = TokenComma
+			break
+		}
+
+		// number
+		if isNumeric(character) {
+
+			tokenString = readTokenUntilFalse(stream, isNumeric)
+
+			if strings.Contains(tokenString, ".") {
+				tokenValue, err = strconv.ParseFloat(tokenString, 64)
+			} else {
+				tokenValue, err = strconv.ParseInt(tokenString, 10, 64)
+			}
+
+			if err != nil {
+				errorMsg := fmt.Sprintf("Unable to parse numeric value '%v'\n", tokenString)
+				return Token{}, errors.New(errorMsg)
+			}
+			kind = TokenNumber
+			break
+		}
+
+		// text
+		if unicode.IsLetter(character) {
+			stream.rewind(1)
+
+			tokenString, _ = readUntilFalse(stream, true, false, true, isString)
+			tokenValue = tokenString
+			kind = TokenString
+
+			if tokenString == "if" {
+				tokenString, _ = readUntilFalse(stream, true, false, true, isNotLeftBr)
+				tokenValue = tokenString
+				kind = TokenIf
 				break
 			}
-		}
-	} else {
-		l.Rewind()
-	}
-}
 
-func lexIdent(l *lexer.L) lexer.StateFunc {
-
-	if l.Next() == '"' {
-		// l.Rewind()
-		return lexString
-	}
-
-	l.Take("abcdefghijklmnopqrstuvwxyz._-1234567890\"'%")
-
-	// Si il ne commence par par un "
-	// 	Si il y a un { dans le current
-	// 		prendre uniquement ce qu'il y a avant le premier {
-
-	if l.Current() == "if" {
-		return lexIf
-	}
-
-	if l.Current() == "else" {
-		return lexElse
-	}
-
-	l.Emit(TokenIdentifier)
-
-	var r rune
-	// Des qu’il y a un IDENT, il y a un { ou ASSIGNEMENT
-	l.SkipWhitespace()
-
-	r = l.Next()
-	if r == '{' {
-		l.Rewind()
-		return lexLeftDelim
-	}
-	if r == '=' {
-		l.Rewind()
-		return lexAssignement
-	}
-	l.Emit(TokenIllegal)
-	return nil
-}
-
-func lexElse(l *lexer.L) lexer.StateFunc {
-	l.Next()
-	l.Next()
-	l.Next()
-
-	if l.Current() == "else if" {
-		return lexElseIf
-	}
-
-	l.Rewind()
-	l.Rewind()
-
-	l.Emit(TokenElse)
-	l.SkipWhitespace()
-
-	r := l.Next()
-	if r == 'i' && l.Next() == 'f' {
-		return lexIf
-	}
-
-	if r == '{' {
-		l.Rewind()
-		return lexLeftDelim
-	}
-	l.Emit(TokenIllegal)
-	return nil
-}
-func lexElseIf(l *lexer.L) lexer.StateFunc {
-	l.Ignore()
-	l.SkipWhitespace()
-
-	var r rune
-	for {
-		r = l.Next()
-		if r == ' ' && l.Peek() == '{' {
-			l.Rewind()
-			l.Emit(TokenElseIf)
-			l.Next()
-			l.Ignore()
-			break
-		}
-		if r == '{' {
-			l.Rewind()
-			l.Emit(TokenElseIf)
-			break
-		}
-	}
-
-	return lexLeftDelim
-}
-func lexIf(l *lexer.L) lexer.StateFunc {
-	l.Ignore()
-	l.SkipWhitespace()
-
-	var r rune
-	for {
-		r = l.Next()
-		if r == ' ' && l.Peek() == '{' {
-			l.Rewind()
-			l.Emit(TokenIf)
-			l.Next()
-			l.Ignore()
-			break
-		}
-
-		if r == '{' {
-			l.Rewind()
-			l.Emit(TokenIf)
-			break
-		}
-
-	}
-
-	return lexLeftDelim
-}
-
-func lexAssignement(l *lexer.L) lexer.StateFunc {
-	l.Take("=>")
-	if l.Current() == "=>" {
-		l.Emit(TokenAssignment)
-	} else {
-		l.Emit(TokenIllegal)
-		return nil
-	}
-
-	// Des qu’il y a un ASSIGNEMENT il y a un STRING ou NUMBER ou ARRAY
-	return lexVariable
-}
-
-func lexVariable(l *lexer.L) lexer.StateFunc {
-	var r rune
-	l.SkipWhitespace()
-
-	r = l.Next()
-	if r == lexer.EOFRune {
-		l.Emit(TokenEOF)
-		return nil
-	}
-
-	if r == '"' || r == '\'' {
-		return lexString
-	}
-
-	if lexer.IsDigit(r) {
-		return lexNumber
-	}
-
-	if r == '[' {
-		l.Emit(TokenLBracket)
-		return lexVariable
-	}
-
-	if r == '{' {
-		l.Emit(TokenLCurlyBrace)
-		l.SkipWhitespace()
-		consumeComments(l)
-		return lexIdent
-	}
-
-	if lexer.IsLetter(r) {
-		l.Rewind()
-		return lexString
-	}
-
-	l.Emit(TokenIllegal)
-	return nil
-}
-
-func lexNumber(l *lexer.L) lexer.StateFunc {
-	l.Take("1234567890.")
-
-	l.Emit(TokenNumber)
-
-	l.SkipWhitespace()
-	r := l.Next()
-	if r == ']' {
-		l.Emit(TokenRBracket)
-		l.SkipWhitespace()
-		consumeComments(l)
-		r = l.Next()
-	}
-
-	if r == ',' {
-		l.Emit(TokenComma)
-		return lexVariable
-	}
-
-	if r == '}' {
-		return lexRightDelim
-	}
-	if r == lexer.EOFRune {
-		l.Emit(TokenEOF)
-		return nil
-	}
-
-	return lexIdent
-}
-
-func lexString(l *lexer.L) lexer.StateFunc {
-	var quoted bool = false
-	if l.Current() == "\"" {
-		quoted = true
-	}
-	if l.Current() == "'" {
-		quoted = true
-	}
-	var last rune
-	for {
-		r := l.Next()
-
-		if quoted && (r == '"' || r == '\'') && last != '\\' {
-			l.Emit(TokenString)
-			break
-		}
-		if !quoted {
-			if lexer.IsSpace(r) || lexer.IsNewLine(r) || r == '}' || r == '{' {
-				l.Rewind()
-				if l.Current() == "true" || l.Current() == "false" {
-					l.Emit(TokenBool)
-				} else {
-					l.Emit(TokenString)
+			if tokenString == "else" {
+				kind = TokenElse
+				tokenValue = "true"
+				if stream.readCharacter() == ' ' {
+					if stream.readCharacter() == 'i' {
+						if stream.readCharacter() == 'f' {
+							tokenString, _ = readUntilFalse(stream, true, false, true, isNotLeftBr)
+							tokenValue = tokenString
+							kind = TokenElseIf
+							break
+						}
+						stream.rewind(1)
+					}
+					stream.rewind(1)
 				}
-
+				stream.rewind(1)
 				break
 			}
+
+			// boolean?
+			if tokenValue == "true" {
+				kind = TokenBool
+				tokenValue = true
+			} else {
+				if tokenValue == "false" {
+					kind = TokenBool
+					tokenValue = false
+				}
+			}
+
+			break
 		}
-		last = r
+
+		if !isNotQuote(character) {
+			tokenValue, completed = readUntilFalse(stream, true, false, true, isNotQuoteS(character))
+
+			if !completed {
+				return Token{}, errors.New("Unclosed string literal")
+			}
+
+			// advance the stream one position, since reading until false assumes the terminator is a real token
+			stream.rewind(-1)
+
+			kind = TokenString
+			break
+		}
+
+		errorMessage := fmt.Sprintf("Invalid token: '%s'", tokenString)
+		return ret, errors.New(errorMessage)
 	}
 
-	l.SkipWhitespace()
-	consumeComments(l)
-	r := l.Next()
-	if r == ']' {
-		l.Emit(TokenRBracket)
-		l.SkipWhitespace()
-		consumeComments(l)
-		r = l.Next()
-	}
+	ret.Kind = kind
+	ret.Value = tokenValue
 
-	if r == '=' && l.Peek() == '>' {
-		l.Rewind()
-		return lexAssignement
-	}
-
-	if r == ',' {
-		l.Emit(TokenComma)
-		return lexVariable
-	}
-
-	if r == '}' {
-		return lexRightDelim
-	}
-
-	if r == '{' {
-		return lexLeftDelim
-	}
-
-	if r == lexer.EOFRune {
-		l.Emit(TokenEOF)
-		return nil
-	}
-	return lexIdent
+	return ret, nil
 }
 
-// lexRightDelim scans the right delimiter, which is known to be present.
-func lexRightDelim(l *lexer.L) lexer.StateFunc {
-	l.Take("}")
-	l.Emit(TokenRCurlyBrace)
+func readTokenUntilFalse(stream *lexerStream, condition func(rune) bool) string {
 
-	// Des qu’il y a un } il y a un IDENT ou } ou IF ou ELSEIF ou ELSE
-	l.SkipWhitespace()
-	consumeComments(l)
-	r := l.Next()
-	if r == '}' {
-		return lexRightDelim
-	}
-	if r == lexer.EOFRune {
-		l.Emit(TokenEOF)
-		return nil
-	}
-	return lexIdent
+	var ret string
+
+	stream.rewind(1)
+	ret, _ = readUntilFalse(stream, false, true, true, condition)
+	return ret
 }
 
-// lexLeftDelim scans the left delimiter, which is known to be present.
-func lexLeftDelim(l *lexer.L) lexer.StateFunc {
-	l.Take("{")
-	l.Emit(TokenLCurlyBrace)
+/*
+	Returns the string that was read until the given [condition] was false, or whitespace was broken.
+	Returns false if the stream ended before whitespace was broken or condition was met.
+*/
+func readUntilFalse(stream *lexerStream, includeWhitespace bool, breakWhitespace bool, allowEscaping bool, condition func(rune) bool) (string, bool) {
 
-	// Dés qu’il y a un { il y a un IDENT ou } ou IF
-	l.SkipWhitespace()
-	consumeComments(l)
-	r := l.Next()
-	if r == '}' {
-		return lexRightDelim
-	}
-	if r == lexer.EOFRune {
-		l.Emit(TokenEOF)
-		return nil
+	var tokenBuffer bytes.Buffer
+	var character rune
+	var conditioned bool
+
+	conditioned = false
+
+	for stream.canRead() {
+
+		character = stream.readCharacter()
+
+		// Use backslashes to escape anything
+		if allowEscaping && character == '\\' {
+
+			character = stream.readCharacter()
+			tokenBuffer.WriteString(string(character))
+			continue
+		}
+
+		if unicode.IsSpace(character) {
+
+			if breakWhitespace && tokenBuffer.Len() > 0 {
+				conditioned = true
+				break
+			}
+			if !includeWhitespace {
+				continue
+			}
+		}
+
+		if condition(character) {
+			tokenBuffer.WriteString(string(character))
+		} else {
+			conditioned = true
+			stream.rewind(1)
+			break
+		}
 	}
 
-	return lexIdent
+	return tokenBuffer.String(), conditioned
+}
+
+func isNumeric(character rune) bool {
+
+	return unicode.IsDigit(character) || character == '.' || character == '-'
+}
+
+func isNotNewLine(character rune) bool {
+
+	return character != '\n'
+}
+
+func isNotLeftBr(character rune) bool {
+
+	return character != '{'
+}
+
+func isNotQuoteS(character rune) func(rune) bool {
+	return func(c rune) bool {
+		if !isNotQuote(c) && c == character {
+			return false
+		}
+		return true
+	}
+}
+
+func isNotQuote(character rune) bool {
+	return character != '\'' && character != '"'
+}
+
+func isNotAlphanumeric(character rune) bool {
+
+	return !(unicode.IsDigit(character) ||
+		unicode.IsLetter(character) ||
+		character == '(' ||
+		character == ')' ||
+		!isNotQuote(character))
+}
+
+func isString(character rune) bool {
+	return unicode.IsLetter(character) ||
+		unicode.IsDigit(character) ||
+		character == '_'
 }

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -8,11 +9,10 @@ import (
 	"strings"
 
 	"github.com/veino/logfan/parser/conditionalexpression"
-	"github.com/vjeantet/go-lexer"
 )
 
 type Parser struct {
-	l    *lexer.L
+	l    *lexerStream
 	line int
 	col  int
 }
@@ -49,34 +49,35 @@ type Setting struct {
 }
 
 func NewParser(r io.Reader) *Parser {
-	return &Parser{l: lexer.New(r, lexBegin)}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r)
+	return &Parser{l: newLexerStream(buf.String())}
 }
 
 func (p *Parser) Parse() (*Configuration, error) {
 	var err error
-	var tok lexer.Token
+	var tok Token
 
 	config := &Configuration{
 		Sections: map[string]*Section{},
 	}
 
-	p.l.Start()
 	for {
 
-		tok, err = p.getToken(TokenComment, TokenIdentifier, TokenEOF, TokenRCurlyBrace)
+		tok, err = p.getToken(TokenComment, TokenString, TokenEOF, TokenRCurlyBrace)
 		if err != nil {
 			return config, fmt.Errorf("parse error Parse %s", err)
 		}
 
 		// If Comment Donoe
-		if tok.Type == TokenEOF {
+		if tok.Kind == TokenEOF {
 			break
 		}
 
-		switch tok.Type {
+		switch tok.Kind {
 		case TokenComment:
 			continue
-		case TokenIdentifier:
+		case TokenString:
 			var section *Section
 			section, err = p.parseSection(&tok)
 			if err != nil {
@@ -90,37 +91,37 @@ func (p *Parser) Parse() (*Configuration, error) {
 	return config, nil
 }
 
-func (p *Parser) parseSection(tok *lexer.Token) (*Section, error) {
+func (p *Parser) parseSection(tok *Token) (*Section, error) {
 	section := &Section{}
 	if tok.Value != "input" && tok.Value != "filter" && tok.Value != "output" {
 		return section, fmt.Errorf("parse error, unexpected '%s', line %d col %d", tok.Value, tok.Line, tok.Col)
 	}
 
-	section.Name = tok.Value
+	section.Name = tok.Value.(string)
 	section.Plugins = make(map[int]*Plugin, 0)
 
-	// si pas de { alors erreur
 	var err error
 	*tok, err = p.getToken(TokenLCurlyBrace)
+
 	if err != nil {
 		return section, fmt.Errorf("section parse error %s", err)
 	}
 	i := 0
 	for {
-		*tok, err = p.getToken(TokenComment, TokenIdentifier, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
+		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
 		if err != nil {
-			log.Printf(" -sp- %s %s", TokenType(tok.Type).String(), err)
+			log.Printf(" -sp- %s %s", GetTokenKindString(tok.Kind), err)
 			return section, fmt.Errorf("parse section error %s", err)
 		}
 
-		if tok.Type == TokenRCurlyBrace {
+		if tok.Kind == TokenRCurlyBrace {
 			break
 		}
 
-		switch tok.Type {
+		switch tok.Kind {
 		case TokenComment:
 			continue
-		case TokenIdentifier:
+		case TokenString:
 			plugin, err := p.parsePlugin(tok)
 			if err != nil {
 				return section, err
@@ -155,17 +156,18 @@ func (p *Parser) parseSection(tok *lexer.Token) (*Section, error) {
 			continue
 		}
 	}
+
 	return section, nil
 }
 
-func (p *Parser) parseWHEN(tok *lexer.Token) (*Plugin, error) {
+func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 	pluginWhen := &Plugin{}
 	pluginWhen.Name = "when"
 	pluginWhen.When = make(map[int]*When, 0)
 
 	var err error
 	var expression string
-	expression, err = conditionalexpression.ToWhenExpression(tok.Value)
+	expression, err = conditionalexpression.ToWhenExpression(tok.Value.(string))
 	if err != nil {
 		return pluginWhen, fmt.Errorf("Conditional expression parse error %s", err)
 	}
@@ -183,19 +185,19 @@ func (p *Parser) parseWHEN(tok *lexer.Token) (*Plugin, error) {
 	}
 	i := 0
 	for {
-		*tok, err = p.getToken(TokenComment, TokenIdentifier, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
+		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
 		if err != nil {
 			return pluginWhen, fmt.Errorf("parse IF error %s", err)
 		}
 
-		if tok.Type == TokenRCurlyBrace {
+		if tok.Kind == TokenRCurlyBrace {
 			break
 		}
 
-		switch tok.Type {
+		switch tok.Kind {
 		case TokenComment:
 			continue
-		case TokenIdentifier:
+		case TokenString:
 			plugin, err := p.parsePlugin(tok)
 			if err != nil {
 				return pluginWhen, err
@@ -236,24 +238,24 @@ func (p *Parser) parseWHEN(tok *lexer.Token) (*Plugin, error) {
 	return pluginWhen, nil
 }
 
-func (p *Parser) parsePlugin(tok *lexer.Token) (*Plugin, error) {
+func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 	var err error
 
 	plugin := &Plugin{}
-	plugin.Name = tok.Value
+	plugin.Name = tok.Value.(string)
 	plugin.Settings = map[int]*Setting{}
 	plugin.Codecs = map[int]*Codec{}
-	// log.Printf(" -pp- %s %s", TokenType(tok.Type).String(), tok.Value)
+	// log.Printf(" -pp- %s %s", TokenType(tok.Kind).String(), tok.Value)
 	*tok, err = p.getToken(TokenLCurlyBrace)
-	if err != nil {
 
+	if err != nil {
 		return plugin, fmt.Errorf("Plugin parse error %s", err)
 	}
 	i := 0
-	var advancedTok *lexer.Token
+	var advancedTok *Token
 	for {
 		if advancedTok == nil {
-			*tok, err = p.getToken(TokenComment, TokenIdentifier, TokenRCurlyBrace)
+			*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenComma)
 			if err != nil {
 				return plugin, fmt.Errorf("plugin parse error %s", err)
 			}
@@ -261,40 +263,42 @@ func (p *Parser) parsePlugin(tok *lexer.Token) (*Plugin, error) {
 			tok = advancedTok
 		}
 
-		if tok.Type == TokenRCurlyBrace {
+		if tok.Kind == TokenRCurlyBrace {
 			break
 		}
 
-		switch tok.Type {
+		switch tok.Kind {
+		case TokenComma:
+			continue
 		case TokenComment:
 			continue
-		case TokenIdentifier:
-			/*
-				if tok.Value == "codec" {
-					codec, err := p.parseCodec(tok)
-					if err != nil {
-						return plugin, err
-					}
+		case TokenString:
 
-					tok2, err2 := p.getToken(TokenLCurlyBrace)
-					if err2 != nil {
-						// c'est pas un  { donc faut le remettre dans la boucle
-						// log.Printf(" -pcs- %s %s", TokenType(tok2.Type).String(), tok2.Value)
-						advancedTok = &tok2
-						plugin.Codecs[i] = codec
-						i = i + 1
-						continue
-					}
+			// if tok.Value == "codec" {
+			// 	codec, err := p.parseCodec(tok)
+			// 	if err != nil {
+			// 		return plugin, err
+			// 	}
 
-					settings, err := p.parseCodecSettings(&tok2)
-					codec.Settings = settings
-					plugin.Codecs[i] = codec
-					i = i + 1
-					continue
-				}
-			*/
+			// 	tok2, err2 := p.getToken(TokenLCurlyBrace)
+			// 	if err2 != nil {
+			// 		// c'est pas un  { donc faut le remettre dans la boucle
+			// 		// log.Printf(" -pcs- %s %s", TokenType(tok2.Type).String(), tok2.Value)
+			// 		advancedTok = &tok2
+			// 		plugin.Codecs[i] = codec
+			// 		i = i + 1
+			// 		continue
+			// 	}
+
+			// 	settings, err := p.parseCodecSettings(&tok2)
+			// 	codec.Settings = settings
+			// 	plugin.Codecs[i] = codec
+			// 	i = i + 1
+			// 	continue
+			// }
 
 			// Token is not a codec
+
 			setting, err := p.parseSetting(tok)
 			if err != nil {
 				return plugin, err
@@ -309,25 +313,25 @@ func (p *Parser) parsePlugin(tok *lexer.Token) (*Plugin, error) {
 	return plugin, nil
 }
 
-func (p *Parser) parseCodecSettings(tok *lexer.Token) (map[int]*Setting, error) {
+func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
 	var err error
 	settings := make(map[int]*Setting, 0)
 
 	i := 0
 	for {
-		*tok, err = p.getToken(TokenComment, TokenIdentifier, TokenRCurlyBrace)
+		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace)
 		if err != nil {
 			return settings, fmt.Errorf("codec settings parse error %s", err)
 		}
 
-		if tok.Type == TokenRCurlyBrace {
+		if tok.Kind == TokenRCurlyBrace {
 			break
 		}
 
-		switch tok.Type {
+		switch tok.Kind {
 		case TokenComment:
 			continue
-		case TokenIdentifier:
+		case TokenString:
 			setting, err := p.parseSetting(tok)
 			if err != nil {
 				return settings, err
@@ -341,44 +345,40 @@ func (p *Parser) parseCodecSettings(tok *lexer.Token) (map[int]*Setting, error) 
 	return settings, nil
 }
 
-func (p *Parser) parseCodec(tok *lexer.Token) (*Codec, error) {
+func (p *Parser) parseCodec(tok *Token) (*Codec, error) {
 	var err error
 
 	codec := &Codec{}
 	codec.Settings = map[int]*Setting{}
 
-	// log.Printf(" -pc- %s %s", TokenType(tok.Type).String(), tok.Value)
+	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
 	*tok, err = p.getToken(TokenAssignment)
 	if err != nil {
 		return codec, fmt.Errorf("codec 1 parse error %s", err)
 	}
 
-	// log.Printf(" -pc- %s %s", TokenType(tok.Type).String(), tok.Value)
+	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
 	*tok, err = p.getToken(TokenString)
 	if err != nil {
 		return codec, fmt.Errorf("codec 2 parse error %s", err)
 	}
-	codec.Name = tok.Value
-	// log.Printf(" -pc- %s %s", TokenType(tok.Type).String(), tok.Value)
+	codec.Name = tok.Value.(string)
+	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
 	return codec, nil
 }
 
-func (p *Parser) parseSetting(tok *lexer.Token) (*Setting, error) {
+func (p *Parser) parseSetting(tok *Token) (*Setting, error) {
 	setting := &Setting{}
 
-	if strings.HasPrefix(tok.Value, "\"") {
-		tok.Value = strings.Replace(tok.Value, "\\", "", -1)
-		tok.Value = strings.TrimPrefix(tok.Value, "\"")
-		tok.Value = strings.TrimSuffix(tok.Value, "\"")
-	}
-	setting.K = tok.Value
-	// log.Printf(" -- %s %s", TokenType(tok.Type).String(), tok.Value)
+	setting.K = tok.Value.(string)
+	// log.Printf(" -- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
 	var err error
 	*tok, err = p.getToken(TokenAssignment)
+
 	if err != nil {
 		return setting, fmt.Errorf("Setting 1 parse error %s", err)
 	}
@@ -388,13 +388,13 @@ func (p *Parser) parseSetting(tok *lexer.Token) (*Setting, error) {
 		return setting, fmt.Errorf("Setting 2 parse error %s", err)
 	}
 
-	switch tok.Type {
+	switch tok.Kind {
 	case TokenBool:
-		setting.V = p.parseBool(tok.Value)
+		setting.V = tok.Value.(bool)
 	case TokenString:
-		setting.V = p.parseString(tok.Value)
+		setting.V = tok.Value.(string)
 	case TokenNumber:
-		setting.V, err = p.parseNumber(tok.Value)
+		setting.V = tok.Value
 	case TokenLBracket:
 		setting.V, err = p.parseArray()
 	case TokenLCurlyBrace:
@@ -440,28 +440,21 @@ func (p *Parser) parseString(txt string) string {
 }
 
 func (p *Parser) parseHash() (map[string]interface{}, error) {
-
 	hash := map[string]interface{}{}
 	for {
-		tok, err := p.getToken(TokenComment, TokenIdentifier, TokenRCurlyBrace, TokenString, TokenComma)
+		tok, err := p.getToken(TokenComment, TokenRCurlyBrace, TokenString, TokenComma)
 		if err != nil {
 			log.Fatalf("ParseHash parse error %s", err)
 			return nil, err
 		}
 
-		if tok.Type == TokenRCurlyBrace {
+		if tok.Kind == TokenRCurlyBrace {
 			break
 		}
 
-		switch tok.Type {
+		switch tok.Kind {
 		case TokenComment:
 			continue
-		case TokenIdentifier:
-			set, err := p.parseSetting(&tok)
-			if err != nil {
-				return hash, err
-			}
-			hash[set.K] = set.V
 		case TokenString:
 			set, err := p.parseSetting(&tok)
 			if err != nil {
@@ -479,32 +472,25 @@ func (p *Parser) parseArray() ([]interface{}, error) {
 
 	vals := make([]interface{}, 0, 20)
 	for {
-		tok, err := p.getToken(TokenString, TokenNumber, TokenComma, TokenRBracket)
+		tok, err := p.getToken(TokenComment, TokenString, TokenNumber, TokenComma, TokenRBracket)
 		if err != nil {
 			return nil, err
 		}
 
-		if tok.Type == TokenRBracket {
+		if tok.Kind == TokenRBracket {
 			break
 		}
 
-		switch tok.Type {
+		switch tok.Kind {
+		case TokenComment:
+			continue
 		case TokenComma:
 			continue
 		case TokenNumber:
-			str, err = p.parseNumber(tok.Value)
-			if err != nil {
-				return nil, err
-			}
+			str = tok.Value
+
 		case TokenString:
-			if strings.HasPrefix(tok.Value, "\"") {
-				v := strings.Replace(tok.Value, "\\", "", -1)
-				v = strings.TrimPrefix(v, "\"")
-				v = strings.TrimSuffix(v, "\"")
-				str = v
-			} else {
-				str = tok.Value
-			}
+			str = tok.Value.(string)
 		}
 
 		vals = append(vals, str)
@@ -513,51 +499,74 @@ func (p *Parser) parseArray() ([]interface{}, error) {
 	return vals, nil
 }
 
-func (p *Parser) getToken(types ...lexer.TokenType) (lexer.Token, error) {
+func (p *Parser) getToken(types ...TokenKind) (Token, error) {
 
-	tok, done := p.l.NextToken()
-
-	if done {
-		return lexer.Token{}, fmt.Errorf("unexpected end of file ")
+	tok, err := readToken(p.l)
+	if err != nil {
+		return Token{}, fmt.Errorf("Illegal token '%s' found line %d col %d ", tok.Value, tok.Line, tok.Col)
 	}
 
-	if tok.Type == TokenIllegal {
-		// log.Printf(" -- %s %s", TokenType(tok.Type).String(), tok.Value)
-		return lexer.Token{}, fmt.Errorf("Illegal token '%s' found line %d col %d ", tok.Value, tok.Line, tok.Col)
+	if tok.Kind == TokenIllegal {
+		// log.Printf(" -- %s %s", TokenType(tok.Kind).String(), tok.Value)
+		return Token{}, fmt.Errorf("Illegal token '%s' found line %d col %d ", tok.Value, tok.Line, tok.Col)
 	}
 
 	for _, t := range types {
-		if tok.Type == t {
-			return *tok, nil
+		if tok.Kind == t {
+			return tok, nil
 		}
 	}
 
 	if len(types) == 1 {
-		return *tok, fmt.Errorf("unexpected token '%s' expected '%s' on line %d col %d", tok.Value, TokenType(types[0]).String(), tok.Line, tok.Col)
+		return tok, fmt.Errorf("unexpected token '%s' expected '%s' on line %d col %d", tok.Value, GetTokenKindString(types[0]), tok.Line, tok.Col)
 	}
 
 	list := make([]string, len(types))
 	for i, t := range types {
-		list[i] = TokenType(t).String()
+		list[i] = GetTokenKindString(t)
 	}
 
-	return *tok, fmt.Errorf("unexpected token '%s' expected one of %s on line %d col %d", tok.Value, strings.Join(list, "|"), tok.Line, tok.Col)
+	return tok, fmt.Errorf("unexpected token '%s' expected one of %s on line %d col %d", tok.Value, strings.Join(list, "|"), tok.Line, tok.Col)
 }
 
-func (p *Parser) DumpTokens() {
-	p.l.Start()
-	for {
-		tok, done := p.l.NextToken()
-		if done {
+func DumpTokens(content []byte) {
+	var ret []Token
+	var token Token
+	var stream *lexerStream
+	var err error
+
+	stream = newLexerStream(string(content))
+	for stream.canRead() {
+
+		token, err = readToken(stream)
+
+		if err != nil {
+			fmt.Printf("ERROR %s\n", err)
+			return
+		}
+
+		if token.Kind == TokenIllegal {
+			fmt.Printf("ERROR %s\n", err)
+			color := "\033[93m"
+			log.Printf("ERROR %4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindString(token.Kind), token.Value)
 			break
 		}
+
+		// state, err = getLexerStateForToken(token.Kind)
+		// if err != nil {
+		// 	return
+		// }
 		color := "\033[93m"
-		if tok.Type == TokenIf || tok.Type == TokenElseIf || tok.Type == TokenElse {
+		if token.Kind == TokenIf || token.Kind == TokenElseIf || token.Kind == TokenElse {
 			color = "\033[1m\033[91m"
 		}
-		if tok.Type == TokenLBracket || tok.Type == TokenRBracket || tok.Type == TokenRCurlyBrace || tok.Type == TokenLCurlyBrace {
+		if token.Kind == TokenLBracket || token.Kind == TokenRBracket || token.Kind == TokenRCurlyBrace || token.Kind == TokenLCurlyBrace {
 			color = "\033[90m"
 		}
-		log.Printf("%4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", tok.Pos, tok.Line, tok.Col, color, TokenType(tok.Type).String(), tok.Value)
+
+		log.Printf("%4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindString(token.Kind), token.Value)
+
+		// append this valid token
+		ret = append(ret, token)
 	}
 }
