@@ -21,50 +21,43 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
 
 	"github.com/veino/config"
-	"github.com/veino/runtime/metrics"
-
 	"github.com/veino/runtime"
+	"github.com/veino/runtime/metrics"
 )
 
-var flagConfigPath string
-
-func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.IStats, args []string) {
+func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.IStats) error {
 	runtime.SetIStat(stats)
 	runtime.Start(webhookListen)
-
 	runtime.Logger().SetVerboseMode(verbose)
 	runtime.Logger().SetDebugMode(debug)
-
 	var configAgents = []config.Agent{}
 
 	// Load agents from flagConfigContent string
 	if flagConfigContent != "" {
 		fileConfigAgents, err := parseConfig("inline", []byte(flagConfigContent))
 		if err != nil {
-			log.Fatalln("ERROR while using config ", err.Error())
+			return fmt.Errorf("ERROR while using config. %s", err.Error())
 		}
 		configAgents = append(configAgents, fileConfigAgents...)
 	}
 
 	// Load all agents configuration from conf files
 	if flagConfigPath != "" {
-
 		if fi, err := os.Stat(flagConfigPath); err == nil {
 			if fi.IsDir() {
-				flagConfigPath = flagConfigPath + "/*.*"
+				flagConfigPath = flagConfigPath + string(os.PathSeparator) + "*.conf"
 			}
 		} else {
-			log.Fatalf("error %s", err.Error())
+			return fmt.Errorf("ERROR %s", err.Error())
 		}
 
 		//List all conf files if flagConfigPath folder
 		files, err := filepath.Glob(flagConfigPath)
 		if err != nil {
-			log.Fatalf("error %s", err.Error())
+			return fmt.Errorf("error %s", err.Error())
 		}
 
 		//use each file
@@ -75,47 +68,38 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 				log.Printf(`Error while reading "%s" [%s]`, file, err)
 				continue
 			}
-
 			// instance all AgenConfiguration structs from file content
-			switch strings.ToLower(filepath.Ext(file)) {
-			case ".conf":
-				var filename = filepath.Base(file)
-				var extension = filepath.Ext(filename)
-				var pipelineName = filename[0 : len(filename)-len(extension)]
-
-				fileConfigAgents, err = parseConfig(pipelineName, content)
-				if err != nil {
-					break
-				}
-				log.Printf("using config file : %s\n", file)
-
-			default:
-				log.Printf("ignored file %s", file)
-			}
-
+			var filename = filepath.Base(file)
+			var extension = filepath.Ext(filename)
+			var pipelineName = filename[0 : len(filename)-len(extension)]
+			fileConfigAgents, err = parseConfig(pipelineName, content)
 			if err != nil {
-				log.Fatalf("error %s", err.Error())
+				break
 			}
-
+			log.Printf("using config file : %s\n", file)
+			if err != nil {
+				return fmt.Errorf("error %s", err.Error())
+			}
 			configAgents = append(configAgents, fileConfigAgents...)
 		}
 	}
-
 	runtime.StartAgents(configAgents)
+	return nil
+}
 
-	log.Printf("ready")
-
+func startLogfanAndWait(flagConfigPath string, flagConfigContent string, stats metrics.IStats) {
+	ch := make(chan os.Signal)
+	err := startLogfan(flagConfigPath, flagConfigContent, stats)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print("Logfan started")
 	// Wait for signal CTRL+C for send a stop event to all AgentProcessor
 	// When CTRL+C, SIGINT and SIGTERM signal occurs
 	// Then stop server gracefully
-	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	<-ch
-	close(ch)
-
-	fmt.Println("")
+	log.Println(<-ch)
 	log.Printf("stopping...")
 	runtime.Stop()
 	log.Printf("Everything stopped gracefully. Goodbye!\n")
-
 }
