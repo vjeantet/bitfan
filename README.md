@@ -67,6 +67,7 @@ can be found here : https://github.com/veino/processors
 * mutate
 * split
 * uuid
+* html
 
 ## output
 * elasticsearch v1, v2
