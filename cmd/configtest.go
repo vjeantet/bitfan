@@ -21,8 +21,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/veino/config"
-	"github.com/veino/runtime"
+	"github.com/veino/veino/config"
+	"github.com/veino/veino/runtime"
 )
 
 var flagTestConfigPath, flagTestConfigContent string

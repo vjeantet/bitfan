@@ -9,6 +9,12 @@
 			"revisionTime": "2014-10-17T20:07:13Z"
 		},
 		{
+			"checksumSHA1": "QVALLtQ7n6pt+YJiFrnng1O86PI=",
+			"path": "github.com/k0kubun/pp",
+			"revision": "36d5366f4ec038f9a76dd85c7b29074089bb9b9e",
+			"revisionTime": "2015-07-23T12:16:29Z"
+		},
+		{
 			"checksumSHA1": "/vtqxT0FvoKBL+79o3ydfsbEtGs=",
 			"path": "github.com/spf13/cobra",
 			"revision": "0f866a6211e33cde2091d9290c08f6afd6c9ebbc",

@@ -24,10 +24,10 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/veino/config"
-	"github.com/veino/runtime/metrics"
+	"github.com/veino/veino/config"
+	"github.com/veino/veino/runtime/metrics"
 
-	"github.com/veino/runtime"
+	"github.com/veino/veino/runtime"
 )
 
 var flagConfigPath string

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/veino/config"
 	"github.com/veino/logfan/parser"
+	"github.com/veino/veino/config"
 )
 
 func parseConfig(logfanname string, content []byte) ([]config.Agent, error) {
@@ -135,7 +135,7 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 
 			// recupérer le outport associé (expressionIndex)
 			expressionOutPorts := []config.Port{
-				config.Port{AgentName: agent.Name, PortNumber: expressionIndex},
+				{AgentName: agent.Name, PortNumber: expressionIndex},
 			}
 
 			// construire les plugins associés à l'expression
@@ -196,7 +196,7 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 
 	// By Default Agents output to port 0
 	newOutPorts := []config.Port{
-		config.Port{AgentName: agent.Name, PortNumber: 0},
+		{AgentName: agent.Name, PortNumber: 0},
 	}
 
 	// Is this Plugin has conditional expressions ?
@@ -215,7 +215,7 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 			}
 			// recupérer le outport associé (expressionIndex)
 			expressionOutPorts := []config.Port{
-				config.Port{AgentName: agent.Name, PortNumber: expressionIndex},
+				{AgentName: agent.Name, PortNumber: expressionIndex},
 			}
 
 			// construire les plugins associés à l'expression
@@ -238,7 +238,7 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 		if elseOK == false {
 			agent.Options["expressions"].(map[int]string)[len(agent.Options["expressions"].(map[int]string))] = "true"
 			elseOutPorts := []config.Port{
-				config.Port{AgentName: agent.Name, PortNumber: len(agent.Options["expressions"].(map[int]string)) - 1},
+				{AgentName: agent.Name, PortNumber: len(agent.Options["expressions"].(map[int]string)) - 1},
 			}
 			newOutPorts = append(elseOutPorts, newOutPorts...)
 		}

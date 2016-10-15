@@ -20,7 +20,7 @@ import (
 	"runtime"
 
 	"github.com/spf13/cobra"
-	"github.com/veino/runtime/metrics"
+	"github.com/veino/veino/runtime/metrics"
 )
 
 var configPath, configString, logPath, prometheusListen, prometheusPath, webhookListen string
