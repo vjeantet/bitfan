@@ -5,6 +5,7 @@ import (
 	drop "github.com/veino/veino/processors/filter-drop"
 	geoip "github.com/veino/veino/processors/filter-geoip"
 	grok "github.com/veino/veino/processors/filter-grok"
+	html "github.com/veino/veino/processors/filter-html"
 	json "github.com/veino/veino/processors/filter-json"
 	kv "github.com/veino/veino/processors/filter-kv"
 	mutate "github.com/veino/veino/processors/filter-mutate"
@@ -28,7 +29,7 @@ import (
 	rabbitmqoutput "github.com/veino/veino/processors/output-rabbitmq"
 	statsd "github.com/veino/veino/processors/output-statsd"
 	stdout "github.com/veino/veino/processors/output-stdout"
-	"github.com/veino/veino/processors/when"
+	when "github.com/veino/veino/processors/when"
 	"github.com/veino/veino/runtime"
 )
 
@@ -53,6 +54,7 @@ func init() {
 	runtime.RegisterProcessor("drop", drop.New)
 	runtime.RegisterProcessor("geoip", geoip.New)
 	runtime.RegisterProcessor("kv", kv.New)
+	runtime.RegisterProcessor("html", html.New)
 
 	runtime.RegisterProcessor("output_stdout", stdout.New)
 	runtime.RegisterProcessor("output_statsd", statsd.New)
