@@ -15,6 +15,7 @@ import (
 	execinput "github.com/veino/veino/processors/input-exec"
 	fileinput "github.com/veino/veino/processors/input-file"
 	rabbitmqinput "github.com/veino/veino/processors/input-rabbitmq"
+	readfile "github.com/veino/veino/processors/input-readfile"
 	stdin "github.com/veino/veino/processors/input-stdin"
 	sysloginput "github.com/veino/veino/processors/input-syslog"
 	twitter "github.com/veino/veino/processors/input-twitter"
@@ -44,6 +45,7 @@ func init() {
 	runtime.RegisterProcessor("input_udp", udpinput.New)
 	runtime.RegisterProcessor("input_syslog", sysloginput.New)
 	runtime.RegisterProcessor("input_unix", unixinput.New)
+	runtime.RegisterProcessor("input_readfile", readfile.New)
 
 	runtime.RegisterProcessor("grok", grok.New)
 	runtime.RegisterProcessor("mutate", mutate.New)
