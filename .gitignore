@@ -28,3 +28,5 @@ examples.d/twitter.conf
 logfan
 releases
 .DS_Store
+
+/.sincedb-readfile.json
