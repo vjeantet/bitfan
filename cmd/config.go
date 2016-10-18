@@ -3,16 +3,22 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/veino/logfan/parser"
 	"github.com/veino/veino/config"
 )
 
-func parseConfig(logfanname string, content []byte) ([]config.Agent, error) {
-	agentConfList := []config.Agent{}
-
+func parseConfig(logfanname string, content []byte, pwd string, pickSections ...string) ([]config.Agent, error) {
 	var i int
+	agentConfList := []config.Agent{}
+	if len(pickSections) == 0 {
+		pickSections = []string{"input", "filter", "output"}
+	}
 
 	p := parser.NewParser(bytes.NewReader(content))
 
@@ -23,36 +29,42 @@ func parseConfig(logfanname string, content []byte) ([]config.Agent, error) {
 
 	outPorts := []config.Port{}
 
-	for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["input"].Plugins); pluginIndex++ {
-		i++
-		plugin := LSConfiguration.Sections["input"].Plugins[pluginIndex]
-		agent, outPort := buildInputAgent(logfanname, plugin, i)
-		agentConfList = append([]config.Agent{agent}, agentConfList...)
-		outPorts = append(outPorts, outPort)
-	}
-
-	if _, ok := LSConfiguration.Sections["filter"]; ok {
-		for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["filter"].Plugins); pluginIndex++ {
-			var agents []config.Agent
+	if _, ok := LSConfiguration.Sections["input"]; ok && isInSlice("input", pickSections) {
+		for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["input"].Plugins); pluginIndex++ {
 			i++
-			plugin := LSConfiguration.Sections["filter"].Plugins[pluginIndex]
-			agents, outPorts, i = buildFilterAgents(logfanname, plugin, outPorts, i)
-			agentConfList = append(agents, agentConfList...)
+			plugin := LSConfiguration.Sections["input"].Plugins[pluginIndex]
+			agent, outPort := buildInputAgent(logfanname, plugin, i, pwd)
+			agentConfList = append([]config.Agent{agent}, agentConfList...)
+			outPorts = append(outPorts, outPort)
 		}
 	}
 
-	for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["output"].Plugins); pluginIndex++ {
-		var agents []config.Agent
-		i++
-		plugin := LSConfiguration.Sections["output"].Plugins[pluginIndex]
-		agents, outPorts, i = buildOutputAgents(logfanname, plugin, outPorts, i)
-		agentConfList = append(agents, agentConfList...)
+	if _, ok := LSConfiguration.Sections["filter"]; ok && isInSlice("filter", pickSections) {
+		if _, ok := LSConfiguration.Sections["filter"]; ok {
+			for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["filter"].Plugins); pluginIndex++ {
+				var agents []config.Agent
+				i++
+				plugin := LSConfiguration.Sections["filter"].Plugins[pluginIndex]
+				agents, outPorts, i = buildFilterAgents(logfanname, plugin, outPorts, i, pwd)
+				agentConfList = append(agents, agentConfList...)
+			}
+		}
+	}
+
+	if _, ok := LSConfiguration.Sections["output"]; ok && isInSlice("output", pickSections) {
+		for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["output"].Plugins); pluginIndex++ {
+			var agents []config.Agent
+			i++
+			plugin := LSConfiguration.Sections["output"].Plugins[pluginIndex]
+			agents, outPorts, i = buildOutputAgents(logfanname, plugin, outPorts, i, pwd)
+			agentConfList = append(agents, agentConfList...)
+		}
 	}
 
 	return agentConfList, nil
 }
 
-func buildInputAgent(logfanname string, plugin *parser.Plugin, i int) (config.Agent, config.Port) {
+func buildInputAgent(logfanname string, plugin *parser.Plugin, i int, pwd string) (config.Agent, config.Port) {
 
 	var agent config.Agent
 	agent.Pipeline = logfanname
@@ -93,10 +105,14 @@ func buildInputAgent(logfanname string, plugin *parser.Plugin, i int) (config.Ag
 		}
 	}
 
+	// If agent is a "use"
+	// build imported pipeline from path
+	// connect import plugin Xsource to imported pipeline output
+
 	return agent, config.Port{AgentName: agent.Name, PortNumber: 0}
 }
 
-func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int) ([]config.Agent, []config.Port, int) {
+func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int, pwd string) ([]config.Agent, []config.Port, int) {
 	agent_list := []config.Agent{}
 
 	var agent config.Agent
@@ -122,6 +138,11 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 		agent.XSources = append(agent.XSources, inPort)
 	}
 
+	// if its a use plugin
+	// load filter and output pars of pipeline
+	// connect pipeline Xsource to lastOutPorts
+	// return pipelineagents with lastOutPorts intact
+
 	// Is this Plugin has conditional expressions ?
 	if len(plugin.When) > 0 {
 		// outPorts_when := []port{}
@@ -145,7 +166,7 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 				var agents []config.Agent
 				i++
 				// récupérer le dernier outport du plugin créé il devient expressionOutPorts
-				agents, _, i = buildOutputAgents(logfanname, p, expressionOutPorts, i)
+				agents, _, i = buildOutputAgents(logfanname, p, expressionOutPorts, i, pwd)
 				// ajoute l'agent à la liste des agents construits
 				agent_list = append(agents, agent_list...)
 			}
@@ -157,7 +178,7 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 	return agent_list, lastOutPorts, i
 }
 
-func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int) ([]config.Agent, []config.Port, int) {
+func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []config.Port, i int, pwd string) ([]config.Agent, []config.Port, int) {
 
 	agent_list := []config.Agent{}
 
@@ -172,6 +193,40 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 	agent.Options = map[string]interface{}{}
 	for _, setting := range plugin.Settings {
 		agent.Options[setting.K] = setting.V
+	}
+
+	// handle use plugin
+	// If its a use agent
+	// build the filter part of the pipeline
+	// connect pipeline first agent Xsource to lastOutPorts output
+	// return imported pipeline with its output
+	if plugin.Name == "use" {
+		file := agent.Options["path"].(string)
+
+		if _, err := os.Stat(filepath.Join(pwd, file)); err == nil {
+			file = filepath.Join(pwd, file)
+		}
+		content, err := ioutil.ReadFile(file)
+		if err != nil {
+			log.Printf(`Error while reading "%s" [%s]`, file, err)
+			log.Fatalln(err)
+		}
+
+		fileConfigAgents, err := parseConfig(agent.Name, content, filepath.Dir(file), "filter")
+		if err != nil {
+			log.Fatalln("ERROR while using config ", err.Error())
+		}
+
+		firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
+		for _, sourceport := range lastOutPorts {
+			inPort := config.Port{AgentName: sourceport.AgentName, PortNumber: sourceport.PortNumber}
+			firstUsedAgent.XSources = append(firstUsedAgent.XSources, inPort)
+		}
+
+		newOutPorts := []config.Port{
+			{AgentName: fileConfigAgents[0].Name, PortNumber: 0},
+		}
+		return fileConfigAgents, newOutPorts, i
 	}
 
 	if workers, ok := agent.Options["workers"]; ok {
@@ -225,7 +280,7 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 				var agents []config.Agent
 				i++
 				// récupérer le dernier outport du plugin créé il devient outportA
-				agents, expressionOutPorts, i = buildFilterAgents(logfanname, p, expressionOutPorts, i)
+				agents, expressionOutPorts, i = buildFilterAgents(logfanname, p, expressionOutPorts, i, pwd)
 				// ajoute l'agent à la liste des agents construits
 				agent_list = append(agents, agent_list...)
 			}
@@ -247,4 +302,13 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 	// ajoute l'agent à la liste des agents construits
 	agent_list = append([]config.Agent{agent}, agent_list...)
 	return agent_list, newOutPorts, i
+}
+
+func isInSlice(needle string, candidates []string) bool {
+	for _, symbolType := range candidates {
+		if needle == symbolType {
+			return true
+		}
+	}
+	return false
 }

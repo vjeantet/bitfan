@@ -43,7 +43,8 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 
 	// Load agents from flagConfigContent string
 	if flagConfigContent != "" {
-		fileConfigAgents, err := parseConfig("inline", []byte(flagConfigContent))
+		pwd, _ := os.Getwd()
+		fileConfigAgents, err := parseConfig("inline", []byte(flagConfigContent), pwd)
 		if err != nil {
 			log.Fatalln("ERROR while using config ", err.Error())
 		}
@@ -83,7 +84,7 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 				var extension = filepath.Ext(filename)
 				var pipelineName = filename[0 : len(filename)-len(extension)]
 
-				fileConfigAgents, err = parseConfig(pipelineName, content)
+				fileConfigAgents, err = parseConfig(pipelineName, content, filepath.Dir(file))
 				if err != nil {
 					break
 				}

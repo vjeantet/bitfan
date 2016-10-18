@@ -37,7 +37,8 @@ func testConfig(flagConfigPath string, flagConfigContent string, args []string) 
 
 	// Load agents from flagConfigContent string
 	if flagConfigContent != "" {
-		configAgents, err := parseConfig("inline", []byte(flagConfigContent))
+		pwd, _ := os.Getwd()
+		configAgents, err := parseConfig("inline", []byte(flagConfigContent), pwd)
 		if err != nil {
 			logError.Fatalf("%s", err.Error())
 		}
@@ -85,7 +86,7 @@ func testConfig(flagConfigPath string, flagConfigContent string, args []string) 
 				var extension = filepath.Ext(filename)
 				var pipelineName = filename[0 : len(filename)-len(extension)]
 
-				configAgents, err := parseConfig(pipelineName, content)
+				configAgents, err := parseConfig(pipelineName, content, filepath.Dir(file))
 				if err != nil {
 					logError.Fatalf("%s", err.Error())
 				}
