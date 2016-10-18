@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -201,18 +202,39 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 	// connect pipeline first agent Xsource to lastOutPorts output
 	// return imported pipeline with its output
 	if plugin.Name == "use" {
-		file := agent.Options["path"].(string)
+		var ucwd = ""
+		var content []byte
 
-		if _, err := os.Stat(filepath.Join(pwd, file)); err == nil {
-			file = filepath.Join(pwd, file)
-		}
-		content, err := ioutil.ReadFile(file)
-		if err != nil {
-			log.Printf(`Error while reading "%s" [%s]`, file, err)
-			log.Fatalln(err)
+		if _, ok := agent.Options["path"]; ok {
+			file := agent.Options["path"].(string)
+
+			if _, err := os.Stat(filepath.Join(pwd, file)); err == nil {
+				file = filepath.Join(pwd, file)
+			}
+			var err error
+			content, err = ioutil.ReadFile(file)
+			if err != nil {
+				log.Printf(`Error while reading "%s" [%s]`, file, err)
+				log.Fatalln(err)
+			}
+			ucwd = filepath.Dir(file)
+		} else if v, ok := agent.Options["url"]; ok {
+			response, err := http.Get(v.(string))
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				content, err = ioutil.ReadAll(response.Body)
+				response.Body.Close()
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+			ucwd, _ = os.Getwd()
+		} else {
+			log.Fatalln("give me a url or a path to read from use plugin")
 		}
 
-		fileConfigAgents, err := parseConfig(agent.Name, content, filepath.Dir(file), "filter")
+		fileConfigAgents, err := parseConfig(agent.Name, content, ucwd, "filter")
 		if err != nil {
 			log.Fatalln("ERROR while using config ", err.Error())
 		}
