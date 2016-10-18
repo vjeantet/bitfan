@@ -70,6 +70,7 @@ can be found here : https://github.com/veino/processors
 * twitter
 * udp
 * unix
+* readfile
 
 ## filter
 * date
@@ -81,6 +82,7 @@ can be found here : https://github.com/veino/processors
 * split
 * uuid
 * html
+* use - copy paste a configuration file here (URL or localpath)
 
 ## output
 * elasticsearch v1, v2
