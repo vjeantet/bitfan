@@ -26,6 +26,19 @@ copy/paste this in your console
 127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"
 ```
 
+## Use configuration from another location 
+### include configuration from an URL
+```
+$ logfan -e "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/logfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
+```
+
+## use configuration file on local filesystem
+```
+$ logfan -e "input{stdin{}} filter{use{path=>'apachelogs.conf'}} output{stdout{codec=>rubydebug}}"
+```
+
+See examples in examples.d/use/ folder
+
 ### TODO
 
 - [x] parse logstash config file
