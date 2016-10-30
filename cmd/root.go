@@ -103,7 +103,7 @@ func init() {
 	RootCmd.Flags().StringVarP(&configString, "eval", "e", "", "Use the given string as the configuration data.")
 	RootCmd.Flags().IntVarP(&filterworkers, "filterworkers", "w", runtime.NumCPU(), "number of workers")
 
-	RootCmd.Flags().StringVarP(&logPath, "log", "l", "", "Log to a given path. Default is to log to stdout.")
+	RootCmd.PersistentFlags().StringVarP(&logPath, "log", "l", "", "Log to a given path. Default is to log to stdout.")
 	RootCmd.Flags().BoolVarP(&verbose, "verbose", "", false, "Increase verbosity to the first level (info), less verbose.")
 	RootCmd.Flags().BoolVarP(&debug, "debug", "", false, "Increase verbosity to the last level (trace), more verbose.")
 

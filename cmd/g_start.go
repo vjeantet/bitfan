@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"os/signal"
@@ -38,8 +37,13 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 	runtime.SetIStat(stats)
 	runtime.Start(webhookListen)
 
+	if logPath != "" {
+		runtime.Logger().SetOutputFile(logPath)
+	}
+
 	runtime.Logger().SetVerboseMode(verbose)
 	runtime.Logger().SetDebugMode(debug)
+	log := runtime.Logger()
 
 	var configAgents = []config.Agent{}
 
@@ -98,7 +102,7 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 					if err != nil {
 						break
 					}
-					log.Printf("using config file : %s\n", file)
+					log.Printf("using config file : %s", file)
 
 				default:
 					log.Printf("ignored file %s", file)
@@ -115,7 +119,7 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 
 	err := runtime.StartAgents(configAgents)
 
-	runtime.Logger().Infoln("logfan ready !")
+	log.Println("logfan ready")
 	if service.Interactive() {
 		// Wait for signal CTRL+C for send a stop event to all AgentProcessor
 		// When CTRL+C, SIGINT and SIGTERM signal occurs
@@ -126,7 +130,7 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 		close(ch)
 
 		fmt.Println("")
-		log.Printf("stopping...")
+		log.Printf("LogFan is stopping...")
 		runtime.Stop()
 		log.Printf("Everything stopped gracefully. Goodbye!\n")
 
