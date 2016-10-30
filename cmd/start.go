@@ -16,8 +16,8 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -54,51 +54,60 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 	// Load all agents configuration from conf files
 	if flagConfigPath != "" {
 
-		if fi, err := os.Stat(flagConfigPath); err == nil {
-			if fi.IsDir() {
-				flagConfigPath = flagConfigPath + "/*.*"
+		if v, _ := url.Parse(flagConfigPath); v.Scheme == "http" || v.Scheme == "https" {
+			uriSegments := strings.Split(flagConfigPath, "/")
+			var baseUrl = strings.Join(uriSegments[:len(uriSegments)-1], "/") + "/"
+			var pipelineName = strings.Join(uriSegments[2:], ".")
+			fileLocation := map[string]interface{}{"url": flagConfigPath}
+			var err error
+			configAgents, err = parseConfigLocation(pipelineName, fileLocation, baseUrl)
+			if err != nil {
+				log.Fatalf("error %s", err.Error())
 			}
 		} else {
-			log.Fatalf("error %s", err.Error())
-		}
 
-		//List all conf files if flagConfigPath folder
-		files, err := filepath.Glob(flagConfigPath)
-		if err != nil {
-			log.Fatalf("error %s", err.Error())
-		}
-
-		//use each file
-		for _, file := range files {
-			var fileConfigAgents []config.Agent
-			content, err := ioutil.ReadFile(file)
-			if err != nil {
-				log.Printf(`Error while reading "%s" [%s]`, file, err)
-				continue
-			}
-
-			// instance all AgenConfiguration structs from file content
-			switch strings.ToLower(filepath.Ext(file)) {
-			case ".conf":
-				var filename = filepath.Base(file)
-				var extension = filepath.Ext(filename)
-				var pipelineName = filename[0 : len(filename)-len(extension)]
-
-				fileConfigAgents, err = parseConfig(pipelineName, content, filepath.Dir(file))
-				if err != nil {
-					break
+			if fi, err := os.Stat(flagConfigPath); err == nil {
+				if fi.IsDir() {
+					flagConfigPath = flagConfigPath + "/*.*"
 				}
-				log.Printf("using config file : %s\n", file)
-
-			default:
-				log.Printf("ignored file %s", file)
+			} else {
+				log.Fatalf("error %s", err.Error())
 			}
 
+			//List all conf files if flagConfigPath folder
+			files, err := filepath.Glob(flagConfigPath)
 			if err != nil {
 				log.Fatalf("error %s", err.Error())
 			}
 
-			configAgents = append(configAgents, fileConfigAgents...)
+			//use each file
+			for _, file := range files {
+				var fileConfigAgents []config.Agent
+
+				// instance all AgenConfiguration structs from file content
+				switch strings.ToLower(filepath.Ext(file)) {
+				case ".conf":
+					var filename = filepath.Base(file)
+					var extension = filepath.Ext(filename)
+					var pipelineName = filename[0 : len(filename)-len(extension)]
+
+					fileLocation := map[string]interface{}{"path": file}
+					fileConfigAgents, err = parseConfigLocation(pipelineName, fileLocation, filepath.Dir(file))
+					if err != nil {
+						break
+					}
+					log.Printf("using config file : %s\n", file)
+
+				default:
+					log.Printf("ignored file %s", file)
+				}
+
+				if err != nil {
+					log.Fatalf("error %s", err.Error())
+				}
+
+				configAgents = append(configAgents, fileConfigAgents...)
+			}
 		}
 	}
 

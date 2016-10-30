@@ -77,7 +77,7 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.Flags().StringVarP(&configPath, "config", "f", "", "Load the Logstash config from a file or directory")
+	RootCmd.Flags().StringVarP(&configPath, "config", "f", "", "Load the Logstash config from a file a directory or a url")
 	RootCmd.Flags().StringVarP(&configString, "eval", "e", "", "Use the given string as the configuration data.")
 	RootCmd.Flags().IntVarP(&filterworkers, "filterworkers", "w", runtime.NumCPU(), "number of workers")
 
