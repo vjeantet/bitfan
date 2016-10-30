@@ -15,6 +15,18 @@
 			"revisionTime": "2015-07-23T12:16:29Z"
 		},
 		{
+			"checksumSHA1": "D81dwDBPX0vhWSGI9RQ/KuR9ri8=",
+			"path": "github.com/kardianos/service",
+			"revision": "7a88211485df5d3da6ec68f4f8a5ff9bec297327",
+			"revisionTime": "2016-08-24T00:03:17Z"
+		},
+		{
+			"checksumSHA1": "gcLub3oB+u4QrOJZcYmk/y2AP4k=",
+			"path": "github.com/nu7hatch/gouuid",
+			"revision": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3",
+			"revisionTime": "2013-12-21T20:05:32Z"
+		},
+		{
 			"checksumSHA1": "/vtqxT0FvoKBL+79o3ydfsbEtGs=",
 			"path": "github.com/spf13/cobra",
 			"revision": "0f866a6211e33cde2091d9290c08f6afd6c9ebbc",
