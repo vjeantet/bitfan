@@ -17,7 +17,7 @@ $ go get -u github.com/veino/logfan
 
 ## Usage
 ```
-$ logfan -f $GOPATH/src/github.com/veino/logfan/examples.d/simple.conf
+$ logfan -f https://raw.githubusercontent.com/veino/logfan/master/examples.d/simple.conf
 ```
 
 copy/paste this in your console
@@ -29,7 +29,7 @@ copy/paste this in your console
 ## Use configuration from another location 
 ### include configuration from an URL
 ```
-$ logfan -e "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/logfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
+$ logfan -f "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/logfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
 ```
 
 ## use configuration file on local filesystem
@@ -50,6 +50,8 @@ See examples in examples.d/use/ folder
 - [x] gracefully stop
 - [x] gracefully start
 - [x] name all contributors, imported packages, similar projects
+- [x] use remote configuration file
+- [x] include local and remote files from configuration files
 - [ ] codec support
 - [ ] log to file
 
