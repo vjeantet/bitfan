@@ -16,16 +16,25 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 
+	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
 	"github.com/veino/veino/runtime/metrics"
 )
 
-var configPath, configString, logPath, prometheusListen, prometheusPath, webhookListen string
-var filterworkers int
-var verbose, debug, version, configtest, prometheus bool
+var (
+	configPath, configString         string
+	logPath                          string
+	prometheusListen, prometheusPath string
+	webhookListen                    string
+	filterworkers                    int
+	verbose, debug                   bool
+	version, configtest, prometheus  bool
+	stats                            metrics.IStats
+)
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -40,23 +49,36 @@ Quickly extend to custom log formats`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		var stats metrics.IStats
 		if prometheus {
 			stats = metrics.NewPrometheus(prometheusListen, prometheusPath)
 		} else {
 			stats = &metrics.StatsVoid{}
 		}
 
-		if version {
-			printVersion()
-		} else if configtest {
-			testConfig(configPath, configString, args)
-		} else if configString != "" {
-			startLogfan("", configString, stats, args)
-		} else if configPath != "" {
-			startLogfan(configPath, "", stats, args)
+		if !service.Interactive() {
+			s := getService(nil)
+			var err error
+			slogger, err = s.Logger(nil)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = s.Run()
+			if err != nil {
+				slogger.Error(err)
+				os.Exit(1)
+			}
 		} else {
-			cmd.Help()
+			if version {
+				printVersion()
+			} else if configtest {
+				testConfig(configPath, configString, args)
+			} else if configString != "" {
+				startLogfan("", configString, stats, args)
+			} else if configPath != "" {
+				startLogfan(configPath, "", stats, args)
+			} else {
+				cmd.Help()
+			}
 		}
 	},
 }

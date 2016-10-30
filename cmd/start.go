@@ -24,6 +24,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/kardianos/service"
 	"github.com/veino/veino/config"
 	"github.com/veino/veino/runtime/metrics"
 
@@ -32,7 +33,8 @@ import (
 
 var flagConfigPath string
 
-func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.IStats, args []string) {
+func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.IStats, args []string) error {
+
 	runtime.SetIStat(stats)
 	runtime.Start(webhookListen)
 
@@ -111,21 +113,23 @@ func startLogfan(flagConfigPath string, flagConfigContent string, stats metrics.
 		}
 	}
 
-	runtime.StartAgents(configAgents)
+	err := runtime.StartAgents(configAgents)
 
-	log.Printf("ready")
+	runtime.Logger().Infoln("logfan ready !")
+	if service.Interactive() {
+		// Wait for signal CTRL+C for send a stop event to all AgentProcessor
+		// When CTRL+C, SIGINT and SIGTERM signal occurs
+		// Then stop server gracefully
+		ch := make(chan os.Signal)
+		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+		<-ch
+		close(ch)
 
-	// Wait for signal CTRL+C for send a stop event to all AgentProcessor
-	// When CTRL+C, SIGINT and SIGTERM signal occurs
-	// Then stop server gracefully
-	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	<-ch
-	close(ch)
+		fmt.Println("")
+		log.Printf("stopping...")
+		runtime.Stop()
+		log.Printf("Everything stopped gracefully. Goodbye!\n")
 
-	fmt.Println("")
-	log.Printf("stopping...")
-	runtime.Stop()
-	log.Printf("Everything stopped gracefully. Goodbye!\n")
-
+	}
+	return err
 }
