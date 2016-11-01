@@ -39,6 +39,12 @@
 			"revisionTime": "2016-03-17T00:02:28Z"
 		},
 		{
+			"checksumSHA1": "KzqpI/OKsxdedJKQCC/dYCKK05k=",
+			"path": "github.com/spf13/viper",
+			"revision": "110492b3001269a0777997fcbe68a60828fac4cb",
+			"revisionTime": "2015-10-26T22:52:14Z"
+		},
+		{
 			"checksumSHA1": "AKutLJKryaeNXRdUCi3GyFVW+es=",
 			"path": "github.com/vjeantet/go-lexer",
 			"revision": "7344c549c57e8da70a9579b1ad8b0b95232efa3d",
