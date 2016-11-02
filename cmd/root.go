@@ -16,31 +16,22 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 
-	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
-	"github.com/veino/veino/runtime/metrics"
+	"github.com/spf13/viper"
 )
 
 var (
-	configPath, configString         string
-	logPath                          string
-	prometheusListen, prometheusPath string
-	webhookListen                    string
-	filterworkers                    int
-	verbose, debug                   bool
-	version, configtest, prometheus  bool
-	stats                            metrics.IStats
+	configPath string
 )
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "logfan",
 	Short: "a logstash fork in go",
-	Long: `Logstack is a logstash fork.
+	Long: `LogFan is a logstash fork.
 
 Process Any Data, From Any Source
 Centralize data processing of all types
@@ -49,37 +40,31 @@ Quickly extend to custom log formats`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		if prometheus {
-			stats = metrics.NewPrometheus(prometheusListen, prometheusPath)
+		var configtest = cmd.Flags().Lookup("configtest")
+		var eval = cmd.Flags().Lookup("eval")
+		var configLocation = cmd.Flags().Lookup("config")
+		var version = cmd.Flags().Lookup("version")
+
+		if version.Changed {
+			versionCmd.Run(cmd, args)
+		} else if configtest.Changed {
+			var targs []string
+			if configLocation.Changed {
+				targs = []string{configLocation.Value.String()}
+			} else if eval.Changed {
+				targs = []string{eval.Value.String()}
+			}
+			testCmd.Run(cmd, targs)
+		} else if eval.Changed {
+			targs := []string{eval.Value.String()}
+			runCmd.Run(cmd, targs)
+		} else if configLocation.Changed {
+			targs := []string{configLocation.Value.String()}
+			runCmd.Run(cmd, targs)
 		} else {
-			stats = &metrics.StatsVoid{}
+			cmd.Help()
 		}
 
-		if !service.Interactive() {
-			s := getService(nil)
-			var err error
-			slogger, err = s.Logger(nil)
-			if err != nil {
-				log.Fatal(err)
-			}
-			err = s.Run()
-			if err != nil {
-				slogger.Error(err)
-				os.Exit(1)
-			}
-		} else {
-			if version {
-				printVersion()
-			} else if configtest {
-				testConfig(configPath, configString, args)
-			} else if configString != "" {
-				startLogfan("", configString, stats, args)
-			} else if configPath != "" {
-				startLogfan(configPath, "", stats, args)
-			} else {
-				cmd.Help()
-			}
-		}
 	},
 }
 
@@ -93,28 +78,25 @@ func Execute() {
 }
 
 func init() {
-	// cobra.OnInitialize(initConfig)
+	// simulate Logstash flags
+	RootCmd.Flags().StringP("config", "f", "", "Load the Logstash config from a file a directory or a url")
+	RootCmd.Flags().BoolP("configtest", "t", false, "Test config file or directory")
+	RootCmd.Flags().StringP("eval", "e", "", "Use the given string as the configuration data.")
+	RootCmd.Flags().BoolP("version", "V", false, "Display version info.")
+	// RootCmd.Flags().MarkHidden("configtest")
+	// RootCmd.Flags().MarkHidden("eval")
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
+	RootCmd.PersistentFlags().IntP("filterworkers", "w", runtime.NumCPU(), "number of workers")
+	viper.BindPFlag("workers", RootCmd.PersistentFlags().Lookup("filterworkers"))
 
-	RootCmd.Flags().StringVarP(&configPath, "config", "f", "", "Load the Logstash config from a file a directory or a url")
-	RootCmd.Flags().StringVarP(&configString, "eval", "e", "", "Use the given string as the configuration data.")
-	RootCmd.Flags().IntVarP(&filterworkers, "filterworkers", "w", runtime.NumCPU(), "number of workers")
+	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
+	viper.BindPFlag("log", RootCmd.PersistentFlags().Lookup("log"))
 
-	RootCmd.PersistentFlags().StringVarP(&logPath, "log", "l", "", "Log to a given path. Default is to log to stdout.")
-	RootCmd.Flags().BoolVarP(&verbose, "verbose", "", false, "Increase verbosity to the first level (info), less verbose.")
-	RootCmd.Flags().BoolVarP(&debug, "debug", "", false, "Increase verbosity to the last level (trace), more verbose.")
+	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity to the first level (info), less verbose.")
+	viper.BindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose"))
 
-	RootCmd.Flags().BoolVarP(&prometheus, "prometheus", "", false, "Export stats using prometheus output")
-	RootCmd.Flags().StringVarP(&prometheusListen, "prometheus.listen", "", "0.0.0.0:24232", "Address and port to bind Prometheus metrics")
-	RootCmd.Flags().StringVarP(&prometheusPath, "prometheus.path", "", "/metrics", "Expose Prometheus metrics at specified path.")
-
-	RootCmd.Flags().StringVarP(&webhookListen, "webhook.listen", "", "0.0.0.0:19090", "Address and port to bind webhooks")
-
-	RootCmd.Flags().BoolVarP(&version, "version", "V", false, "Display the version of Logstash.")
-	RootCmd.Flags().BoolVarP(&configtest, "configtest", "t", false, "Test config file or directory")
+	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace), more verbose.")
+	viper.BindPFlag("debug", RootCmd.PersistentFlags().Lookup("debug"))
 
 }
 

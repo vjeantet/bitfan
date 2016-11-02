@@ -6,6 +6,7 @@ import (
 
 	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	runtime "github.com/veino/veino/runtime"
 )
 
@@ -30,8 +31,11 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	serviceCmd.PersistentFlags().StringP("name", "n", "com.github.veino.logfan", "Logfan service's name")
+	serviceCmd.PersistentFlags().StringP("name", "n", "logfan", "service name")
+	viper.BindPFlag("service.name", serviceCmd.PersistentFlags().Lookup("name"))
 
+	serviceCmd.PersistentFlags().String("description", "Logfan is Logstash implementation on Golang", "service description")
+	viper.BindPFlag("service.description", serviceCmd.PersistentFlags().Lookup("name"))
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serviceCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -39,12 +43,14 @@ func init() {
 
 func getServiceConfig() *service.Config {
 	return &service.Config{
-		Name:        "com.github.veino.logfan",
-		DisplayName: "Logfan",
-		Description: "Logfan is Logstash implementation on Golang",
+		Name:        viper.GetString("service.name"),
+		DisplayName: viper.GetString("service.name"),
+		Description: viper.GetString("service.description"),
 	}
 }
-
+func GetService() service.Service {
+	return getService(nil)
+}
 func getService(svcConfig *service.Config) service.Service {
 	if svcConfig == nil {
 		svcConfig = getServiceConfig()
@@ -69,20 +75,9 @@ func getService(svcConfig *service.Config) service.Service {
 }
 
 func (p *sprogram) Start(s service.Service) error {
-
-	var err error
-
-	if configPath != "" {
-		err = startLogfan(configPath, "", stats, []string{})
-	} else {
-		log.Fatalln("missing configuration location")
-	}
-
-	if err == nil {
-		slogger.Info("logfan service started")
-	}
-
-	return err
+	go Execute()
+	slogger.Info("logfan service started")
+	return nil
 }
 
 func (p *sprogram) Stop(s service.Service) error {

@@ -1,0 +1,22 @@
+# This is a TOML document.
+
+config = [ "./examples.d/simple.conf", "/tmp/toto.conf" ]
+
+
+debug = false
+verbose = false
+log = "/tmp/logfan.log"
+
+[plugin]
+workers = 2
+
+[webhook]
+listen = "127.0.0.1:3333"
+
+# [prometheus]
+# listen = "127.0.0.1:24232"
+# path ="/metrics"
+
+# [[log]]
+# type = "file"
+# path = "/tmp/logfan.log"

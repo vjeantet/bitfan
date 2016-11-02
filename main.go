@@ -14,12 +14,45 @@
 
 package main
 
-import "github.com/veino/logfan/cmd"
+import (
+	"log"
+	"os"
 
-var version = "No Version Provided"
+	"github.com/kardianos/service"
+	"github.com/spf13/viper"
+	"github.com/veino/logfan/cmd"
+)
+
+var version = "dev"
 var buildstamp = ""
 
 func main() {
+	viper.SetConfigName("config")        // name of config file (without extension)
+	viper.AddConfigPath("/etc/logfan/")  // path to look for the config file in
+	viper.AddConfigPath("$HOME/.logfan") // call multiple times to add many search paths
+	viper.AddConfigPath(".")             // optionally look for config in the working directory
+	viper.ReadInConfig()                 // Find and read the config file
+	// if err != nil {                      // Handle errors reading the config file
+	// 	panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	// }
+
+	// Service
+	if !service.Interactive() {
+		s := cmd.GetService()
+
+		slogger, err := s.Logger(nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = s.Run()
+		if err != nil {
+			slogger.Error(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
+	//interactive
 	cmd.Version = version
 	cmd.Buildstamp = buildstamp
 	cmd.Execute()

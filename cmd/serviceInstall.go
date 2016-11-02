@@ -9,7 +9,7 @@ import (
 
 // serviceInstallCmd represents the serviceInstall command
 var serviceInstallCmd = &cobra.Command{
-	Use:   "install [conf location]",
+	Use:   "install [config1] [config2]",
 	Short: "install logfan as a service",
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
@@ -28,9 +28,10 @@ var serviceInstallCmd = &cobra.Command{
 		svcConfig := getServiceConfig()
 		svcConfig.Name = servicename
 		svcConfig.DisplayName = servicename
-		svcConfig.Arguments = []string{"-f", configLocation}
 		svcConfig.WorkingDirectory = cwd
+		svcConfig.Executable = os.Args[0]
 
+		svcConfig.Arguments = append([]string{"run"}, args...)
 		s := getService(svcConfig)
 
 		// if _, err := os.Stat(configPath); err != nil {
