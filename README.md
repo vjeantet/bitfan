@@ -15,15 +15,12 @@ linux, windows, osx available here : https://github.com/veino/logfan/releases
 $ go get -u github.com/veino/logfan
 ```
 
-## Usage
-type `logfan help` to display usage information
-
-	logstash flags works `-f`, `-e`, `--configtest`, ...
-
 ## Run 
 ```
 $ logfan run https://raw.githubusercontent.com/veino/logfan/master/examples.d/simple.conf
 ```
+
+	logstash flags works as well `-f`, `-e`, `--configtest`, ...
 
 copy/paste this in your console
 
@@ -31,7 +28,36 @@ copy/paste this in your console
 127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"
 ```
 
-## Use configuration from another location 
+## Other command
+type `logfan help` to display usage information
+
+	
+```
+Usage:
+  logfan [flags]
+  logfan [command]
+
+Available Commands:
+  doc         Display documentation about plugins
+  run         Run logfan
+  service     Install and manage logfan service
+  test        Test configurations (files, url, directories)
+  version     Display version informations
+
+Flags:
+  -f, --config string       Load the Logstash config from a file a directory or a url
+  -t, --configtest          Test config file or directory
+      --debug               Increase verbosity to the last level (trace), more verbose.
+  -e, --eval string         Use the given string as the configuration data.
+  -w, --filterworkers int   number of workers (default 4)
+  -l, --log string          Log to a given path. Default is to log to stdout.
+      --verbose             Increase verbosity to the first level (info), less verbose.
+  -V, --version             Display version info.
+
+Use "logfan [command] --help" for more information about a command.
+```
+
+## include configuration from other configuration
 ### include configuration from an URL
 ```
 $ logfan run "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/logfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
@@ -44,7 +70,7 @@ $ logfan run "input{stdin{}} filter{use{path=>'apachelogs.conf'}} output{stdout{
 
 See examples in examples.d/use/ folder
 
-### TODO
+## TODO
 
 - [x] parse logstash config file
 - [x] support command line flags "à la logstash"
