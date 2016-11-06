@@ -37,8 +37,9 @@ Process Any Data, From Any Source
 Centralize data processing of all types
 Normalize varying schema and formats
 Quickly extend to custom log formats`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		initSettings(cmd)
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var configtest = cmd.Flags().Lookup("configtest")
 		var eval = cmd.Flags().Lookup("eval")
@@ -77,7 +78,38 @@ func Execute() {
 	}
 }
 
+func initSettings(cmd *cobra.Command) {
+
+	if cmd.PersistentFlags().Changed("settings") {
+		settings, _ := cmd.PersistentFlags().GetString("settings")
+		if fi, err := os.Stat(settings); err != nil {
+			fmt.Printf("settings: %s%s\n", settings, err)
+			os.Exit(2)
+		} else if fi.Mode().IsRegular() == false {
+			fmt.Printf("settings: this is not a file \"%s\"\n", settings)
+			os.Exit(2)
+		}
+
+		f, err := os.Open(settings)
+		if err != nil {
+			fmt.Println("settings: Error opening config file: ", err.Error())
+			os.Exit(2)
+		}
+		defer f.Close()
+
+		viper.SetConfigType("toml")
+		viper.ReadConfig(f)
+	} else {
+		viper.SetConfigName("settings")      // name of config file (without extension)
+		viper.AddConfigPath("/etc/logfan/")  // path to look for the config file in
+		viper.AddConfigPath("$HOME/.logfan") // call multiple times to add many search paths
+		viper.AddConfigPath(".")             // optionally look for config in the working directory
+		viper.ReadInConfig()                 // Find and read the config file
+	}
+}
+
 func init() {
+
 	// simulate Logstash flags
 	RootCmd.Flags().StringP("config", "f", "", "Load the Logstash config from a file a directory or a url")
 	RootCmd.Flags().BoolP("configtest", "t", false, "Test config file or directory")
@@ -85,6 +117,7 @@ func init() {
 	RootCmd.Flags().BoolP("version", "V", false, "Display version info.")
 	// RootCmd.Flags().MarkHidden("configtest")
 	// RootCmd.Flags().MarkHidden("eval")
+	RootCmd.PersistentFlags().String("settings", "settings.toml in current dir or ~/.logfan/ or /etc/logfan/", "settings path")
 
 	RootCmd.PersistentFlags().IntP("filterworkers", "w", runtime.NumCPU(), "number of workers")
 	viper.BindPFlag("workers", RootCmd.PersistentFlags().Lookup("filterworkers"))
