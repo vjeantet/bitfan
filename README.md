@@ -1,6 +1,6 @@
 # Logfan
 
-Logstash implementation in GO.
+Logstash like implementation with GO.
 
 ![Logfan logo](docs/static/noun_307496_cc.png "Logfan")
 
@@ -16,8 +16,13 @@ $ go get -u github.com/veino/logfan
 ```
 
 ## Usage
+type `logfan help` to display usage information
+
+	logstash flags works `-f`, `-e`, `--configtest`, ...
+
+## Run 
 ```
-$ logfan -f https://raw.githubusercontent.com/veino/logfan/master/examples.d/simple.conf
+$ logfan run https://raw.githubusercontent.com/veino/logfan/master/examples.d/simple.conf
 ```
 
 copy/paste this in your console
@@ -29,12 +34,12 @@ copy/paste this in your console
 ## Use configuration from another location 
 ### include configuration from an URL
 ```
-$ logfan -e "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/logfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
+$ logfan run "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/logfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
 ```
 
 ## use configuration file on local filesystem
 ```
-$ logfan -e "input{stdin{}} filter{use{path=>'apachelogs.conf'}} output{stdout{codec=>rubydebug}}"
+$ logfan run "input{stdin{}} filter{use{path=>'apachelogs.conf'}} output{stdout{codec=>rubydebug}}"
 ```
 
 See examples in examples.d/use/ folder
@@ -42,6 +47,7 @@ See examples in examples.d/use/ folder
 ### TODO
 
 - [x] parse logstash config file
+- [x] support command line flags "à la logstash"
 - [x] generic input support
 - [x] generic filter support
 - [x] generic output support
@@ -54,7 +60,8 @@ See examples in examples.d/use/ folder
 - [x] include local and remote files from configuration files
 - [ ] codec support
 - [ ] log to file
-
+- [x] plugins autodocumentation
+- [x] install logfan as a system daemon / service
 
 # Supported inputs, filters and outputs in config file
 can be found here : https://github.com/veino/veino/processors
