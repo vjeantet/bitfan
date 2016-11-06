@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/veino/veino"
 	date "github.com/veino/veino/processors/filter-date"
 	drop "github.com/veino/veino/processors/filter-drop"
 	geoip "github.com/veino/veino/processors/filter-geoip"
@@ -35,39 +36,62 @@ import (
 )
 
 func init() {
+	initPlugin("input", "stdin", stdin.New)
+	initPlugin("input", "twitter", twitter.New)
+	initPlugin("input", "file", fileinput.New)
+	initPlugin("input", "exec", execinput.New)
+	initPlugin("input", "beats", beatsinput.New)
+	initPlugin("input", "rabbitmq", rabbitmqinput.New)
+	initPlugin("input", "udp", udpinput.New)
+	initPlugin("input", "syslog", sysloginput.New)
+	initPlugin("input", "unix", unixinput.New)
+	initPlugin("input", "readfile", readfile.New)
 
-	runtime.RegisterProcessor("input_stdin", stdin.New)
-	runtime.RegisterProcessor("input_twitter", twitter.New)
-	runtime.RegisterProcessor("input_file", fileinput.New)
-	runtime.RegisterProcessor("input_exec", execinput.New)
-	runtime.RegisterProcessor("input_beats", beatsinput.New)
-	runtime.RegisterProcessor("input_rabbitmq", rabbitmqinput.New)
-	runtime.RegisterProcessor("input_udp", udpinput.New)
-	runtime.RegisterProcessor("input_syslog", sysloginput.New)
-	runtime.RegisterProcessor("input_unix", unixinput.New)
-	runtime.RegisterProcessor("input_readfile", readfile.New)
+	initPlugin("filter", "grok", grok.New)
+	initPlugin("filter", "mutate", mutate.New)
+	initPlugin("filter", "split", split.New)
+	initPlugin("filter", "date", date.New)
+	initPlugin("filter", "json", json.New)
+	initPlugin("filter", "uuid", uuid.New)
+	initPlugin("filter", "drop", drop.New)
+	initPlugin("filter", "geoip", geoip.New)
+	initPlugin("filter", "kv", kv.New)
+	initPlugin("filter", "html", html.New)
+	initPlugin("filter", "when", when.New)
 
-	runtime.RegisterProcessor("grok", grok.New)
-	runtime.RegisterProcessor("mutate", mutate.New)
-	runtime.RegisterProcessor("split", split.New)
-	runtime.RegisterProcessor("date", date.New)
-	runtime.RegisterProcessor("json", json.New)
-	runtime.RegisterProcessor("uuid", uuid.New)
-	runtime.RegisterProcessor("drop", drop.New)
-	runtime.RegisterProcessor("geoip", geoip.New)
-	runtime.RegisterProcessor("kv", kv.New)
-	runtime.RegisterProcessor("html", html.New)
+	initPlugin("output", "stdout", stdout.New)
+	initPlugin("output", "statsd", statsd.New)
+	initPlugin("output", "mongodb", mongodb.New)
+	initPlugin("output", "null", null.New)
+	initPlugin("output", "elasticsearch", elasticsearch.New)
+	initPlugin("output", "elasticsearch2", elasticsearch2.New)
+	initPlugin("output", "file", fileoutput.New)
+	initPlugin("output", "glusterfs", glusterfsoutput.New)
+	initPlugin("output", "rabbitmq", rabbitmqoutput.New)
 
-	runtime.RegisterProcessor("output_stdout", stdout.New)
-	runtime.RegisterProcessor("output_statsd", statsd.New)
-	runtime.RegisterProcessor("output_mongodb", mongodb.New)
-	runtime.RegisterProcessor("output_null", null.New)
-	runtime.RegisterProcessor("output_elasticsearch", elasticsearch.New)
-	runtime.RegisterProcessor("output_elasticsearch2", elasticsearch2.New)
-	runtime.RegisterProcessor("output_file", fileoutput.New)
-	runtime.RegisterProcessor("output_glusterfs", glusterfsoutput.New)
-	runtime.RegisterProcessor("output_rabbitmq", rabbitmqoutput.New)
+	initPlugin("output", "when", when.New)
+	// plugins = map[string]map[string]*veino.ProcessorFactory{}
 
-	runtime.RegisterProcessor("when", when.New)
-	runtime.RegisterProcessor("output_when", when.New)
+}
+
+func initPluginsMap() map[string]map[string]veino.ProcessorFactory {
+	return map[string]map[string]veino.ProcessorFactory{
+		"input":  map[string]veino.ProcessorFactory{},
+		"filter": map[string]veino.ProcessorFactory{},
+		"output": map[string]veino.ProcessorFactory{},
+	}
+}
+
+var plugins = initPluginsMap()
+
+func initPlugin(kind string, name string, proc veino.ProcessorFactory) {
+	pl := plugins[kind]
+	pl[name] = proc
+	plugins[kind] = pl
+
+	prefix := kind + "_"
+	if kind == "filter" {
+		prefix = ""
+	}
+	runtime.RegisterProcessor(prefix+name, proc)
 }

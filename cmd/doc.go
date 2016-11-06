@@ -16,7 +16,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -24,16 +27,77 @@ import (
 var docCmd = &cobra.Command{
 	Use:   "doc",
 	Short: "Display documentation about processors",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("doc called")
+		if len(args) == 0 {
+			// Lister les plugins
+			listAllPlugins()
+		} else if len(args) == 1 {
+			kind := args[0]
+			listPlugins(kind)
+		} else {
+			// Affiche la doc d'un plugin
+			kind := args[0]
+			name := args[1]
+			tplOnly, _ := cmd.Flags().GetBool("template")
+			err := displaydoc(kind, name, tplOnly)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			fmt.Printf("\n\n")
+		}
+
 	},
+}
+
+func listAllPlugins() {
+	listPlugins("input")
+	fmt.Print("\n\n")
+	listPlugins("filter")
+	fmt.Print("\n\n")
+	listPlugins("output")
+	fmt.Print("\n\n")
+}
+func listPlugins(kind string) {
+	fmt.Printf("# %s\n\n", strings.ToUpper(kind))
+	table := tablewriter.NewWriter(os.Stdout)
+
+	table.SetHeader([]string{"Plugin", "Description"})
+	for name, proc := range plugins[kind] {
+		if name == "when" {
+			continue
+		}
+
+		table.Append([]string{
+			name, proc().Doc().DocShort,
+		})
+	}
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+	table.Render()
+}
+
+func displaydoc(kind string, name string, tplOnly bool) error {
+
+	if _, ok := plugins[kind][name]; !ok {
+		return fmt.Errorf("Unknow plugin %s in %s \n", name, kind)
+	}
+
+	p := plugins[kind][name]().Doc()
+
+	if p.Name == "" {
+		return fmt.Errorf("no doc available for %s %s\n go to github and open an issue :-(\n", name, kind)
+	}
+
+	if tplOnly {
+		fmt.Print(string(p.GenExample("logstash")))
+		return nil
+	}
+
+	w := p.GenMarkdown("logstash")
+	fmt.Print(string(w))
+	return nil
 }
 
 func init() {
@@ -47,6 +111,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// docCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	docCmd.Flags().BoolP("template", "t", false, "show only a template")
 
 }
