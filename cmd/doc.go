@@ -25,29 +25,58 @@ import (
 
 // docCmd represents the doc command
 var docCmd = &cobra.Command{
-	Use:   "doc",
-	Short: "Display documentation about processors",
+	Use:   "doc [plugin]",
+	Short: "Display documentation about plugins",
+	Long: `Display list of available outputs, filters and outputs
+	doc
 
+Display documentation about the "date" plugin
+	doc date
+
+Display only a configuration blueprint for the "date" plugin
+	doc date -t
+
+Display list of only available filters
+	doc --type=filter
+
+Display documentation about the "file" plugin (the output one)
+	doc file --type=output
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
+		kind, _ := cmd.Flags().GetString("type")
 		if len(args) == 0 {
-			// Lister les plugins
-			listAllPlugins()
-		} else if len(args) == 1 {
-			kind := args[0]
-			listPlugins(kind)
-		} else {
-			// Affiche la doc d'un plugin
-			kind := args[0]
-			name := args[1]
-			tplOnly, _ := cmd.Flags().GetBool("template")
-			err := displaydoc(kind, name, tplOnly)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
+			switch kind {
+			case "input":
+				fallthrough
+			case "output":
+				fallthrough
+			case "filter":
+				listPlugins(kind)
+			default:
+				listAllPlugins()
 			}
-			fmt.Printf("\n\n")
+			return
 		}
 
+		name := args[0]
+		tplOnly, _ := cmd.Flags().GetBool("template")
+		if kind == "" {
+			if _, ok := plugins["input"][name]; ok {
+				kind = "input"
+			} else if _, ok := plugins["filter"][name]; ok {
+				kind = "filter"
+			} else if _, ok := plugins["output"][name]; ok {
+				kind = "output"
+			}
+		}
+
+		// Affiche la doc d'un plugin
+		err := displaydoc(kind, name, tplOnly)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Printf("\n\n")
 	},
 }
 
@@ -79,7 +108,6 @@ func listPlugins(kind string) {
 }
 
 func displaydoc(kind string, name string, tplOnly bool) error {
-
 	if _, ok := plugins[kind][name]; !ok {
 		return fmt.Errorf("Unknow plugin %s in %s \n", name, kind)
 	}
@@ -112,5 +140,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	docCmd.Flags().BoolP("template", "t", false, "show only a template")
+	docCmd.Flags().String("type", "", "input ? output ? filter ? (plugin may have the same name in multiple sections)")
 
 }
