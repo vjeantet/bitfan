@@ -68,8 +68,7 @@ type `logfan doc` to list all available plugins
 | twitter  |                                |
 | exec     |                                |
 | unix     |                                |
-| stdin    | Reads events from standard     |
-|          | input                          |
+| stdin    | Reads events from standard  input  |
 | file     |                                |
 | beats    |                                |
 | rabbitmq |                                |
@@ -83,17 +82,13 @@ type `logfan doc pluginname` to get more information about plugin configuration 
 
 | PLUGIN |          DESCRIPTION           |
 |--------|--------------------------------|
-| date   | Parses dates from fields to    |
-|        | use as the Logfan timestamp    |
-|        | for an event                   |
+| date   | Parses dates from fields to use as the Logfan timestamp  for an event |
 | grok   |                                |
-| split  | Splits multi-line messages     |
-|        | into distinct events           |
+| split  | Splits multi-line messages into distinct events |
 | json   | Parses JSON events             |
 | uuid   | Adds a UUID to events          |
 | drop   | Drops all events               |
-| geoip  | Adds geographical information  |
-|        | about an IP address            |
+| geoip  | Adds geographical information about an IP address |
 | kv     | Parses key-value pairs         |
 | html   |                                |
 | mutate |                                |
@@ -104,8 +99,7 @@ type `logfan doc pluginname` to get more information about plugin configuration 
 
 |     PLUGIN     |          DESCRIPTION           |
 |----------------|--------------------------------|
-| stdout         | Prints events to the standard  |
-|                | output                         |
+| stdout         | Prints events to the standard output |
 | null           | Drops everything received      |
 | file           |                                |
 | glusterfs      |                                |
