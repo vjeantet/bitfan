@@ -1,3 +1,4 @@
+//go:generate go generate github.com/veino/veino/processors/...
 // Copyright © 2016 Valere JEANTET <valere.jeantet@gmail.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
