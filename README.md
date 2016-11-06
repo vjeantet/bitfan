@@ -57,56 +57,85 @@ See examples in examples.d/use/ folder
 
 
 # Supported inputs, filters and outputs in config file
-can be found here : https://github.com/veino/processors
+can be found here : https://github.com/veino/veino/processors
 
-## input
-* beats
-* elasticsearch
-* exec
-* file
-* httppoller
-* imap
-* rabbitmq
-* stdin
-* syslog
-* twitter
-* udp
-* unix
-* readfile
+type `logfan doc` to list all available plugins
 
-## filter
-* date
-* drop
-* geoip
-* grok
-* json
-* mutate
-* split
-* uuid
-* html
-* use - copy paste a configuration file here (URL or localpath)
+## INPUT
 
-## output
-* elasticsearch v1, v2
-* file
-* glusterfs
-* mongodb
-* null
-* rabbitmq
-* statsd
-* stdout
+|  PLUGIN  |          DESCRIPTION           |
+|----------|--------------------------------|
+| twitter  |                                |
+| exec     |                                |
+| unix     |                                |
+| stdin    | Reads events from standard     |
+|          | input                          |
+| file     |                                |
+| beats    |                                |
+| rabbitmq |                                |
+| udp      |                                |
+| syslog   |                                |
+| readfile |                                |
+
+type `logfan doc pluginname` to get more information about plugin configuration and usage
+
+## FILTER
+
+| PLUGIN |          DESCRIPTION           |
+|--------|--------------------------------|
+| date   | Parses dates from fields to    |
+|        | use as the Logfan timestamp    |
+|        | for an event                   |
+| grok   |                                |
+| split  | Splits multi-line messages     |
+|        | into distinct events           |
+| json   | Parses JSON events             |
+| uuid   | Adds a UUID to events          |
+| drop   | Drops all events               |
+| geoip  | Adds geographical information  |
+|        | about an IP address            |
+| kv     | Parses key-value pairs         |
+| html   |                                |
+| mutate |                                |
+
+type `logfan doc pluginname` to get more information about plugin configuration and usage
+
+## OUTPUT
+
+|     PLUGIN     |          DESCRIPTION           |
+|----------------|--------------------------------|
+| stdout         | Prints events to the standard  |
+|                | output                         |
+| null           | Drops everything received      |
+| file           |                                |
+| glusterfs      |                                |
+| statsd         |                                |
+| mongodb        |                                |
+| elasticsearch  |                                |
+| elasticsearch2 |                                |
+| rabbitmq       |                                |
+
+type `logfan doc pluginname` to get more information about plugin configuration and usage
+
+## SPECIAL for all sections
+|     PLUGIN     |          DESCRIPTION           |
+|----------------|--------------------------------|
+| use         | reference another configuration file (URL or local path) to include (copy/paste) in your current configuration  |
+
 
 # Used package
 * kardianos/govendor Go vendor tool that works with the standard vendor file
 * spf13/cobra - A Commander for modern Go CLI interactions
 * bbuck/go-lexer (a forked version) - Lexer based on Rob Pike's talk on YouTube
-* veino/processors - all plugins used in logfan 
+* veino/veino - all plugins and runtime used by logfan 
+
 
 # Similar projets in go
 
 * tsaikd/gogstash - Logstash like, written in golang
 * packetzoom/logzoom - A lightweight replacement for logstash indexer in Go
 * hailocab/logslam - A lightweight lumberjack protocol compliant logstash indexer
+
 
 # Credits
 logo "hand fan" by lastspark from the Noun Project
