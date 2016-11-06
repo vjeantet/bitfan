@@ -80,27 +80,21 @@ func Execute() {
 
 func initSettings(cmd *cobra.Command) {
 
-	if cmd.PersistentFlags().Changed("settings") {
-		settings, _ := cmd.PersistentFlags().GetString("settings")
-		if fi, err := os.Stat(settings); err != nil {
-			fmt.Printf("settings: %s%s\n", settings, err)
-			os.Exit(2)
-		} else if fi.Mode().IsRegular() == false {
-			fmt.Printf("settings: this is not a file \"%s\"\n", settings)
+	viper.SetConfigName("logfan") // name of config file (without extension)
+
+	if cmd.Flags().Changed("settings") {
+		settings, _ := cmd.Flags().GetString("settings")
+		if _, err := os.Stat(settings); err != nil {
+			fmt.Printf("settings: %s, error:%s\n", settings, err)
 			os.Exit(2)
 		}
-
-		f, err := os.Open(settings)
+		viper.AddConfigPath(settings) // optionally look for config in the working directory
+		err := viper.ReadInConfig()   // Find and read the config file
 		if err != nil {
-			fmt.Println("settings: Error opening config file: ", err.Error())
+			fmt.Printf("settings: can not find logfan.(json|toml|yml) in %s\nerror: %s\n", settings, err)
 			os.Exit(2)
 		}
-		defer f.Close()
-
-		viper.SetConfigType("toml")
-		viper.ReadConfig(f)
 	} else {
-		viper.SetConfigName("settings")      // name of config file (without extension)
 		viper.AddConfigPath("/etc/logfan/")  // path to look for the config file in
 		viper.AddConfigPath("$HOME/.logfan") // call multiple times to add many search paths
 		viper.AddConfigPath(".")             // optionally look for config in the working directory
@@ -117,7 +111,7 @@ func init() {
 	RootCmd.Flags().BoolP("version", "V", false, "Display version info.")
 	// RootCmd.Flags().MarkHidden("configtest")
 	// RootCmd.Flags().MarkHidden("eval")
-	RootCmd.PersistentFlags().String("settings", "settings.toml in current dir or ~/.logfan/ or /etc/logfan/", "settings path")
+	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.logfan/ then /etc/logfan/", "Set the directory containing the logfan.toml settings")
 
 	RootCmd.PersistentFlags().IntP("filterworkers", "w", runtime.NumCPU(), "number of workers")
 	viper.BindPFlag("workers", RootCmd.PersistentFlags().Lookup("filterworkers"))
