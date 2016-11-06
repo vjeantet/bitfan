@@ -129,7 +129,10 @@ func (l *locations) add(ref string, cwl string) error {
 		loc.kind = "url"
 		loc.path = cwl + ref
 	} else {
-		return fmt.Errorf("unknow location %s -- current working location is %s", ref, cwl)
+		loc.kind = "inline"
+		loc.path = ref
+
+		// return fmt.Errorf("unknow location %s -- current working location is %s", ref, cwl)
 	}
 
 	loc.workingpath = cwl

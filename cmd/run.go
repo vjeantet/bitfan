@@ -75,6 +75,15 @@ to quickly create a Cobra application.`,
 		var locConfigAgents = []config.Agent{}
 
 		for _, loc := range locs.items {
+			if loc.kind == "inline" {
+				content := []byte(loc.path)
+				locConfigAgents, err := lib.ParseConfig("inline", content, cwd)
+				if err != nil {
+					fmt.Printf("error %s\n", err)
+					os.Exit(1)
+				}
+				configAgents = append(configAgents, locConfigAgents...)
+			}
 			if loc.kind == "url" {
 				content, ncwl, err := lib.GetContentFromLocation(loc.path, loc.workingpath)
 				if err != nil {
