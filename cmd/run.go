@@ -36,14 +36,13 @@ import (
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
-	Use:   "run [config1] [config2]",
+	Use:   "run [config1] [config2] [config...]",
 	Short: "Run logfan",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Long: `Load and run pipelines configured in configuration files (logstash format)
+you can set multiples files, urls, diretories, or a configuration content as a string (mimic the logstash -e flag)
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+When no configuration is passed to the command, logfan use the config set in global settings file logfan.(toml|yml|json)
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 

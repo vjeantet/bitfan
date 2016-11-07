@@ -23,20 +23,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	configPath string
-)
-
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "logfan",
-	Short: "a logstash fork in go",
-	Long: `LogFan is a logstash fork.
-
-Process Any Data, From Any Source
-Centralize data processing of all types
-Normalize varying schema and formats
-Quickly extend to custom log formats`,
+	Short: "logstash like in go",
+	Long:  `Process Any Data, From Any Source`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		initSettings(cmd)
 	},

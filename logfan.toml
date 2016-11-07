@@ -1,10 +1,13 @@
 # This is a TOML document.
 
 config = [ "./examples.d/simple.conf", "/tmp/toto.conf" ]
+
 data = "/tmp/logfan"
 
 debug = false
+
 verbose = false
+
 log = "/tmp/logfan.log"
 
 [plugin]
