@@ -18,6 +18,7 @@ package main
 import (
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/kardianos/service"
 	"github.com/veino/logfan/cmd"
@@ -27,6 +28,9 @@ var version = "dev"
 var buildstamp = ""
 
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	// Service
 	if !service.Interactive() {
 		s := cmd.GetService()
