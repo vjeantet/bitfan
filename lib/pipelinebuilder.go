@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	uuid "github.com/nu7hatch/gouuid"
 	"github.com/veino/logfan/parser"
 	"github.com/veino/veino/config"
 )
@@ -147,7 +146,7 @@ func buildAgents(logfanname string, content []byte, pwd string, pickSections ...
 			agents := buildInputAgents(logfanname, plugin, pwd)
 
 			agentConfList = append(agents, agentConfList...)
-			outPort := config.Port{AgentName: agents[0].Name, PortNumber: 0}
+			outPort := config.Port{AgentID: agents[0].ID, PortNumber: 0}
 			outPorts = append(outPorts, outPort)
 		}
 	}
@@ -180,6 +179,7 @@ func buildAgents(logfanname string, content []byte, pwd string, pickSections ...
 func buildInputAgents(logfanname string, plugin *parser.Plugin, pwd string) []config.Agent {
 
 	var agent config.Agent
+	agent = config.NewAgent()
 
 	// Plugin configuration
 	agent.Options = map[string]interface{}{}
@@ -199,8 +199,7 @@ func buildInputAgents(logfanname string, plugin *parser.Plugin, pwd string) []co
 
 	agent.Pipeline = logfanname
 	agent.Type = "input_" + plugin.Name
-	id, _ := uuid.NewV4()
-	agent.Name = fmt.Sprintf("%s-%s", plugin.Name, id)
+	agent.Label = fmt.Sprintf("%s", plugin.Name)
 	agent.Buffer = 200
 	agent.PoolSize = 1
 
@@ -237,6 +236,7 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 	agent_list := []config.Agent{}
 
 	var agent config.Agent
+	agent = config.NewAgent()
 	// Plugin configuration
 	agent.Options = map[string]interface{}{}
 	for _, setting := range plugin.Settings {
@@ -257,7 +257,7 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 
 		firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 		for _, sourceport := range lastOutPorts {
-			inPort := config.Port{AgentName: sourceport.AgentName, PortNumber: sourceport.PortNumber}
+			inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 			firstUsedAgent.XSources = append(firstUsedAgent.XSources, inPort)
 		}
 
@@ -267,15 +267,14 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 
 	agent.Pipeline = logfanname
 	agent.Type = "output_" + plugin.Name
-	id, _ := uuid.NewV4()
-	agent.Name = fmt.Sprintf("%s-%s", plugin.Name, id)
+	agent.Label = fmt.Sprintf("%s", plugin.Name)
 	agent.Buffer = 200
 	agent.PoolSize = 1
 
 	// Plugin Sources
 	agent.XSources = config.PortList{}
 	for _, sourceport := range lastOutPorts {
-		inPort := config.Port{AgentName: sourceport.AgentName, PortNumber: sourceport.PortNumber}
+		inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 		agent.XSources = append(agent.XSources, inPort)
 	}
 
@@ -296,7 +295,7 @@ func buildOutputAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 
 			// recupérer le outport associé (expressionIndex)
 			expressionOutPorts := []config.Port{
-				{AgentName: agent.Name, PortNumber: expressionIndex},
+				{AgentID: agent.ID, PortNumber: expressionIndex},
 			}
 
 			// construire les plugins associés à l'expression
@@ -323,10 +322,10 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 	agent_list := []config.Agent{}
 
 	var agent config.Agent
+	agent = config.NewAgent()
 	agent.Pipeline = logfanname
 	agent.Type = plugin.Name
-	id, _ := uuid.NewV4()
-	agent.Name = fmt.Sprintf("%s-%s", plugin.Name, id)
+	agent.Label = fmt.Sprintf("%s", plugin.Name)
 	agent.Buffer = 200
 	agent.PoolSize = 2
 
@@ -346,12 +345,12 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 
 		firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 		for _, sourceport := range lastOutPorts {
-			inPort := config.Port{AgentName: sourceport.AgentName, PortNumber: sourceport.PortNumber}
+			inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 			firstUsedAgent.XSources = append(firstUsedAgent.XSources, inPort)
 		}
 
 		newOutPorts := []config.Port{
-			{AgentName: fileConfigAgents[0].Name, PortNumber: 0},
+			{AgentID: fileConfigAgents[0].ID, PortNumber: 0},
 		}
 		return fileConfigAgents, newOutPorts
 	}
@@ -372,13 +371,13 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 	// Plugin Sources
 	agent.XSources = config.PortList{}
 	for _, sourceport := range lastOutPorts {
-		inPort := config.Port{AgentName: sourceport.AgentName, PortNumber: sourceport.PortNumber}
+		inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 		agent.XSources = append(agent.XSources, inPort)
 	}
 
 	// By Default Agents output to port 0
 	newOutPorts := []config.Port{
-		{AgentName: agent.Name, PortNumber: 0},
+		{AgentID: agent.ID, PortNumber: 0},
 	}
 
 	// Is this Plugin has conditional expressions ?
@@ -397,7 +396,7 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 			}
 			// recupérer le outport associé (expressionIndex)
 			expressionOutPorts := []config.Port{
-				{AgentName: agent.Name, PortNumber: expressionIndex},
+				{AgentID: agent.ID, PortNumber: expressionIndex},
 			}
 
 			// construire les plugins associés à l'expression
@@ -419,7 +418,7 @@ func buildFilterAgents(logfanname string, plugin *parser.Plugin, lastOutPorts []
 		if elseOK == false {
 			agent.Options["expressions"].(map[int]string)[len(agent.Options["expressions"].(map[int]string))] = "true"
 			elseOutPorts := []config.Port{
-				{AgentName: agent.Name, PortNumber: len(agent.Options["expressions"].(map[int]string)) - 1},
+				{AgentID: agent.ID, PortNumber: len(agent.Options["expressions"].(map[int]string)) - 1},
 			}
 			newOutPorts = append(elseOutPorts, newOutPorts...)
 		}
