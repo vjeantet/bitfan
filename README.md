@@ -90,7 +90,7 @@ See examples in examples.d/use/ folder
 - [x] install logfan as a system daemon / service
 
 # Supported inputs, filters and outputs in config file
-can be found here : https://github.com/veino/veino/processors
+can be found here : https://github.com/veino/veino/tree/master/processors
 
 type `logfan doc` to list all available plugins
 
