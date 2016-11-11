@@ -39,10 +39,10 @@ Usage:
 
 Available Commands:
   doc         Display documentation about plugins
-  list        List pipelines
+  list        List running pipelines
   run         Run logfan
   service     Install and manage logfan service
-  start       Start a new pipeline in a running logfan service
+  start       Start a new pipeline in a running logfan
   stop        Stop a running pipeline
   test        Test configurations (files, url, directories)
   version     Display version informations
@@ -90,9 +90,14 @@ See examples in examples.d/use/ folder
 - [x] use remote configuration file
 - [x] include local and remote files from configuration files
 - [ ] codec support
-- [ ] log to file
+- [x] log to file
 - [x] plugins autodocumentation
 - [x] install logfan as a system daemon / service
+- [x] list currently runnnung pipelines
+- [x] start new pipelines in a running instance
+- [x] stop a pipeline without stopping other
+
+
 
 # Supported inputs, filters and outputs in config file
 can be found here : https://github.com/veino/veino/tree/master/processors

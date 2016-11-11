@@ -29,7 +29,7 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:     "list",
-	Short:   "List pipelines",
+	Short:   "List running pipelines",
 	Aliases: []string{"ls"},
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -12,7 +12,7 @@ import (
 // startCmd represents the start command
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "Start a new pipeline in a running logfan service",
+	Short: "Start a new pipeline in a running logfan",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var locations lib.Locations
