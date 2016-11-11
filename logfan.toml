@@ -1,12 +1,12 @@
 # This is a TOML document.
 
-config = [ "./examples.d/simple.conf", "/tmp/toto.conf" ]
+#config = [ "./examples.d/simple.conf", "/tmp/toto.conf" ]
 
 data = "/tmp/logfan"
 
-debug = false
+debug = true
 
-verbose = false
+verbose = true
 
 log = "/tmp/logfan.log"
 
