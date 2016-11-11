@@ -39,8 +39,11 @@ Usage:
 
 Available Commands:
   doc         Display documentation about plugins
+  list        List pipelines
   run         Run logfan
   service     Install and manage logfan service
+  start       Start a new pipeline in a running logfan service
+  stop        Stop a running pipeline
   test        Test configurations (files, url, directories)
   version     Display version informations
 
@@ -50,7 +53,9 @@ Flags:
       --debug               Increase verbosity to the last level (trace), more verbose.
   -e, --eval string         Use the given string as the configuration data.
   -w, --filterworkers int   number of workers (default 4)
+  -h, --help                help for logfan
   -l, --log string          Log to a given path. Default is to log to stdout.
+      --settings string     Set the directory containing the logfan.toml settings (default "current dir, then ~/.logfan/ then /etc/logfan/")
       --verbose             Increase verbosity to the first level (info), less verbose.
   -V, --version             Display version info.
 

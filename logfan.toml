@@ -2,6 +2,8 @@
 
 #config = [ "./examples.d/simple.conf", "/tmp/toto.conf" ]
 
+#host = "127.0.0.1:3456"
+
 data = "/tmp/logfan"
 
 debug = true

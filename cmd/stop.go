@@ -5,16 +5,17 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veino/logfan/lib"
 )
 
 // stopCmd represents the stop command
 var stopCmd = &cobra.Command{
 	Use:   "stop [pipelineID]",
-	Short: "stop a running pipeline",
+	Short: "Stop a running pipeline",
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		s := lib.ApiClient("127.0.0.1:1234")
+		s := lib.ApiClient(viper.GetString("host"))
 		for _, ID := range args {
 			// Send a request & read result
 			retour := false
@@ -30,4 +31,6 @@ var stopCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(stopCmd)
+	stopCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
+	viper.BindPFlag("host", stopCmd.Flags().Lookup("host"))
 }

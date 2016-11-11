@@ -77,7 +77,7 @@ When no configuration is passed to the command, logfan use the config set in glo
 			}
 		}
 
-		lib.ApiServe("127.0.0.1:1234")
+		lib.ApiServe(viper.GetString("host"))
 		log.Println("logfan ready")
 
 		if service.Interactive() {
@@ -110,6 +110,9 @@ func init() {
 
 	runCmd.Flags().String("webhook.listen", "127.0.0.1:19090", "Address and port to bind webhooks")
 	viper.BindPFlag("webhook.listen", runCmd.Flags().Lookup("webhook.listen"))
+
+	runCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
+	viper.BindPFlag("host", runCmd.Flags().Lookup("host"))
 
 	RootCmd.AddCommand(runCmd)
 }

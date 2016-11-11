@@ -21,6 +21,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veino/logfan/lib"
 	config "github.com/veino/veino/config"
 )
@@ -33,7 +34,7 @@ var listCmd = &cobra.Command{
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		s := lib.ApiClient("127.0.0.1:1234")
+		s := lib.ApiClient(viper.GetString("host"))
 
 		// Send a request & read result
 		var pipelines = config.PipelineList{}
@@ -70,15 +71,6 @@ var listCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(listCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
+	listCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
+	viper.BindPFlag("host", listCmd.Flags().Lookup("host"))
 }

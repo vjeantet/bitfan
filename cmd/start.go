@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veino/logfan/lib"
 )
 
@@ -41,7 +42,7 @@ var startCmd = &cobra.Command{
 				Agents:   agt,
 			}
 
-			s := lib.ApiClient("127.0.0.1:1234")
+			s := lib.ApiClient(viper.GetString("host"))
 			ID := ""
 			if err := s.Request("startPipeline", starter, &ID); err != nil {
 				fmt.Printf("error : %s\n", err.Error())
@@ -58,4 +59,6 @@ func init() {
 	startCmd.Flags().String("name", "", "set pipeline's name")
 	startCmd.Flags().String("id", "", "set pipeline's id")
 	startCmd.Flags().String("force", "", "force start even if duplicate")
+	startCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
+	viper.BindPFlag("host", startCmd.Flags().Lookup("host"))
 }
