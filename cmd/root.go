@@ -30,8 +30,13 @@ var RootCmd = &cobra.Command{
 	Long:  `Process Any Data, From Any Source`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		initSettings(cmd)
+		viper.BindPFlag("workers", cmd.Flags().Lookup("filterworkers"))
+		viper.BindPFlag("log", cmd.Flags().Lookup("log"))
+		viper.BindPFlag("verbose", cmd.Flags().Lookup("verbose"))
+		viper.BindPFlag("debug", cmd.Flags().Lookup("debug"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+
 		var configtest = cmd.Flags().Lookup("configtest")
 		var eval = cmd.Flags().Lookup("eval")
 		var configLocation = cmd.Flags().Lookup("config")
@@ -64,7 +69,7 @@ var RootCmd = &cobra.Command{
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Println("cmd execute error: ", err)
 		os.Exit(-1)
 	}
 }
@@ -94,28 +99,17 @@ func initSettings(cmd *cobra.Command) {
 }
 
 func init() {
-
 	// simulate Logstash flags
 	RootCmd.Flags().StringP("config", "f", "", "Load the Logstash config from a file a directory or a url")
 	RootCmd.Flags().BoolP("configtest", "t", false, "Test config file or directory")
 	RootCmd.Flags().StringP("eval", "e", "", "Use the given string as the configuration data.")
 	RootCmd.Flags().BoolP("version", "V", false, "Display version info.")
-	// RootCmd.Flags().MarkHidden("configtest")
-	// RootCmd.Flags().MarkHidden("eval")
+
 	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.logfan/ then /etc/logfan/", "Set the directory containing the logfan.toml settings")
-
 	RootCmd.PersistentFlags().IntP("filterworkers", "w", runtime.NumCPU(), "number of workers")
-	viper.BindPFlag("workers", RootCmd.PersistentFlags().Lookup("filterworkers"))
-
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
-	viper.BindPFlag("log", RootCmd.PersistentFlags().Lookup("log"))
-
 	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity to the first level (info), less verbose.")
-	viper.BindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose"))
-
 	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace), more verbose.")
-	viper.BindPFlag("debug", RootCmd.PersistentFlags().Lookup("debug"))
-
 }
 
 // initConfig reads in config file and ENV variables if set.

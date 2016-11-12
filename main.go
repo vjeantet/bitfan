@@ -33,15 +33,17 @@ func main() {
 
 	// Service
 	if !service.Interactive() {
+
+		// PASS Service
 		s := cmd.GetService()
 
 		slogger, err := s.Logger(nil)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("EOOR", err)
 		}
 		err = s.Run()
 		if err != nil {
-			slogger.Error(err)
+			slogger.Error("service startup error : ", err)
 			os.Exit(1)
 		}
 		os.Exit(0)
@@ -51,4 +53,5 @@ func main() {
 	cmd.Version = version
 	cmd.Buildstamp = buildstamp
 	cmd.Execute()
+
 }

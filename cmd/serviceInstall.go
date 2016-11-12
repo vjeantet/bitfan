@@ -1,63 +1,47 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
+
+func init() {
+	serviceCmd.AddCommand(serviceInstallCmd)
+	initRunFlags(serviceInstallCmd)
+}
 
 // serviceInstallCmd represents the serviceInstall command
 var serviceInstallCmd = &cobra.Command{
 	Use:   "install [config1] [config2]",
 	Short: "install logfan as a service",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		initRunConfig(cmd)
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 		cwd, _ := os.Getwd()
-		configLocation := ""
-
-		if len(args) == 1 {
-			configLocation = args[0]
-		} else {
-			configLocation, _ = os.Getwd()
+		svcConfig := getServiceConfig()
+		svcConfig.WorkingDirectory = cwd
+		svcConfig.Arguments = append([]string{"run"}, args...)
+		svcConfig.Option = service.KeyValue{
+			"RunAtLoad": true,
+			"KeepAlive": false,
 		}
 
-		log.Println("Configuration location : ", configLocation)
+		cmd.Flags().Visit(func(f *pflag.Flag) {
+			svcConfig.Arguments = append(svcConfig.Arguments, fmt.Sprintf("--%s=%s", f.Name, f.Value))
+		})
 
-		servicename, _ := cmd.Flags().GetString("name")
-		svcConfig := getServiceConfig()
-		svcConfig.Name = servicename
-		svcConfig.DisplayName = servicename
-		svcConfig.WorkingDirectory = cwd
-		svcConfig.Executable = os.Args[0]
-
-		svcConfig.Arguments = append([]string{"run"}, args...)
 		s := getService(svcConfig)
-
-		// if _, err := os.Stat(configPath); err != nil {
-		// 	log.Fatalf("ERROR file or directory does not exist [%s]", absConfigPath)
-		// }
 
 		if err := s.Install(); err != nil {
 			log.Fatal(err)
 		}
-		log.Println("service logfan successfully installed")
-		os.Exit(0)
 
+		log.Printf("service '%s' successfully installed", svcConfig.Name)
 	},
-}
-
-func init() {
-	serviceCmd.AddCommand(serviceInstallCmd)
-	// serviceInstallCmd.Flags().StringVarP(&Source, "source", "s", "", "Source directory to read from")
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// serviceInstallCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serviceInstallCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }

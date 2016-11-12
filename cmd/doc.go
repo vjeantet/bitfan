@@ -130,16 +130,6 @@ func displaydoc(kind string, name string, tplOnly bool) error {
 
 func init() {
 	RootCmd.AddCommand(docCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// docCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	docCmd.Flags().BoolP("template", "t", false, "show only a template")
 	docCmd.Flags().String("type", "", "input ? output ? filter ? (plugin may have the same name in multiple sections)")
-
 }

@@ -29,6 +29,11 @@ import (
 	"github.com/veino/veino/runtime/metrics"
 )
 
+func init() {
+	RootCmd.AddCommand(runCmd)
+	initRunFlags(runCmd)
+}
+
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run [config1] [config2] [config...]",
@@ -38,7 +43,11 @@ you can set multiples files, urls, diretories, or a configuration content as a s
 
 When no configuration is passed to the command, logfan use the config set in global settings file logfan.(toml|yml|json)
 	`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		initRunConfig(cmd)
+	},
 	Run: func(cmd *cobra.Command, args []string) {
+
 		var locations lib.Locations
 		cwd, _ := os.Getwd()
 		for _, v := range args {
@@ -98,21 +107,18 @@ When no configuration is passed to the command, logfan use the config set in glo
 	},
 }
 
-func init() {
-	runCmd.Flags().Bool("prometheus", false, "Export stats using prometheus output")
-	viper.BindPFlag("prometheus", runCmd.Flags().Lookup("prometheus"))
+func initRunConfig(cmd *cobra.Command) {
+	viper.BindPFlag("prometheus", cmd.Flags().Lookup("prometheus"))
+	viper.BindPFlag("prometheus.listen", cmd.Flags().Lookup("prometheus.listen"))
+	viper.BindPFlag("prometheus.path", cmd.Flags().Lookup("prometheus.path"))
+	viper.BindPFlag("webhook.listen", cmd.Flags().Lookup("webhook.listen"))
+	viper.BindPFlag("host", cmd.Flags().Lookup("host"))
+}
 
-	runCmd.Flags().String("prometheus.listen", "0.0.0.0:24232", "Address and port to bind Prometheus metrics")
-	viper.BindPFlag("prometheus.listen", runCmd.Flags().Lookup("prometheus.listen"))
-
-	runCmd.Flags().String("prometheus.path", "/metrics", "Expose Prometheus metrics at specified path.")
-	viper.BindPFlag("prometheus.path", runCmd.Flags().Lookup("prometheus.path"))
-
-	runCmd.Flags().String("webhook.listen", "127.0.0.1:19090", "Address and port to bind webhooks")
-	viper.BindPFlag("webhook.listen", runCmd.Flags().Lookup("webhook.listen"))
-
-	runCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
-	viper.BindPFlag("host", runCmd.Flags().Lookup("host"))
-
-	RootCmd.AddCommand(runCmd)
+func initRunFlags(cmd *cobra.Command) {
+	cmd.Flags().Bool("prometheus", false, "Export stats using prometheus output")
+	cmd.Flags().String("prometheus.listen", "0.0.0.0:24232", "Address and port to bind Prometheus metrics")
+	cmd.Flags().String("prometheus.path", "/metrics", "Expose Prometheus metrics at specified path.")
+	cmd.Flags().String("webhook.listen", "127.0.0.1:19090", "Address and port to bind webhooks")
+	cmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
 }

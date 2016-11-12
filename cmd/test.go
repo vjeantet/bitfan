@@ -10,6 +10,10 @@ import (
 	runtime "github.com/veino/veino/runtime"
 )
 
+func init() {
+	RootCmd.AddCommand(testCmd)
+}
+
 // testCmd represents the test command
 var testCmd = &cobra.Command{
 	Use:   "test",
@@ -46,10 +50,6 @@ var testCmd = &cobra.Command{
 		}
 
 	},
-}
-
-func init() {
-	RootCmd.AddCommand(testCmd)
 }
 
 func testConfigContent(content []byte, cwl string) error {

@@ -11,8 +11,12 @@ import (
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start a new pipeline in a running logfan",
+	Use:     "start [config]",
+	Aliases: []string{"add", "create"},
+	Short:   "Start a new pipeline to the running logfan",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 
 		var locations lib.Locations
@@ -60,5 +64,4 @@ func init() {
 	startCmd.Flags().String("id", "", "set pipeline's id")
 	startCmd.Flags().String("force", "", "force start even if duplicate")
 	startCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
-	viper.BindPFlag("host", startCmd.Flags().Lookup("host"))
 }

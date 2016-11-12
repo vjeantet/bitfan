@@ -26,12 +26,20 @@ import (
 	config "github.com/veino/veino/config"
 )
 
+func init() {
+	RootCmd.AddCommand(listCmd)
+	listCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
+}
+
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:     "list",
 	Short:   "List running pipelines",
 	Aliases: []string{"ls"},
 	Long:    ``,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		s := lib.ApiClient(viper.GetString("host"))
@@ -67,10 +75,4 @@ var listCmd = &cobra.Command{
 
 		}
 	},
-}
-
-func init() {
-	RootCmd.AddCommand(listCmd)
-	listCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
-	viper.BindPFlag("host", listCmd.Flags().Lookup("host"))
 }

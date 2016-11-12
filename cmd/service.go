@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/k0kubun/pp"
 	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -14,38 +15,32 @@ var slogger service.Logger
 
 type sprogram struct{}
 
+func init() {
+	RootCmd.AddCommand(serviceCmd)
+}
+
 // serviceCmd represents the service command
 var serviceCmd = &cobra.Command{
 	Use:     "service",
 	Aliases: []string{"s", "svc"},
 	Short:   "Install and manage logfan service",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		initSettings(cmd)
+		viper.BindPFlag("workers", cmd.Flags().Lookup("filterworkers"))
+		viper.BindPFlag("log", cmd.Flags().Lookup("log"))
+		viper.BindPFlag("verbose", cmd.Flags().Lookup("verbose"))
+		viper.BindPFlag("debug", cmd.Flags().Lookup("debug"))
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
 }
 
-func init() {
-	RootCmd.AddCommand(serviceCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	serviceCmd.PersistentFlags().StringP("name", "n", "logfan", "service name")
-	viper.BindPFlag("service.name", serviceCmd.PersistentFlags().Lookup("name"))
-
-	serviceCmd.PersistentFlags().String("description", "Logfan is Logstash implementation on Golang", "service description")
-	viper.BindPFlag("service.description", serviceCmd.PersistentFlags().Lookup("name"))
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serviceCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
 func getServiceConfig() *service.Config {
 	return &service.Config{
-		Name:        viper.GetString("service.name"),
-		DisplayName: viper.GetString("service.name"),
-		Description: viper.GetString("service.description"),
+		Name:        "logfan",
+		DisplayName: "logfan",
+		Description: "logfan",
 	}
 }
 func GetService() service.Service {
@@ -58,11 +53,11 @@ func getService(svcConfig *service.Config) service.Service {
 
 	cwd, _ := os.Getwd()
 	svcConfig.WorkingDirectory = cwd
-
 	prg := &sprogram{}
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
-		log.Fatal(err)
+		pp.Println("svcConfig-->", svcConfig)
+		log.Fatal("getService New err : ", err)
 	}
 
 	slogger, err = s.Logger(nil)
@@ -76,7 +71,7 @@ func getService(svcConfig *service.Config) service.Service {
 
 func (p *sprogram) Start(s service.Service) error {
 	go Execute()
-	slogger.Info("logfan service started")
+	slogger.Infof("Logfan service started")
 	return nil
 }
 

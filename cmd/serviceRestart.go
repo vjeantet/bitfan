@@ -6,6 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	serviceCmd.AddCommand(serviceRestartCmd)
+}
+
 // serviceRestartCmd represents the serviceRestart command
 var serviceRestartCmd = &cobra.Command{
 	Use:   "restart",
@@ -13,16 +17,12 @@ var serviceRestartCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		servicename, _ := cmd.Flags().GetString("name")
-		svcConfig := getServiceConfig()
-		svcConfig.Name = servicename
-		svcConfig.DisplayName = servicename
-		s := getService(svcConfig)
+		s := getService(nil)
 
 		log.Println("stopping logfan service...")
 		err := s.Stop()
 		if err != nil {
-			log.Printf("sop service error : %s", err)
+			log.Printf("stop service error : %s", err)
 		} else {
 			// log.Println("service logfan stopped")
 		}
@@ -36,19 +36,4 @@ var serviceRestartCmd = &cobra.Command{
 		}
 
 	},
-}
-
-func init() {
-	serviceCmd.AddCommand(serviceRestartCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// serviceRestartCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serviceRestartCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }
