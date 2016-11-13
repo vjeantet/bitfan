@@ -33,12 +33,15 @@ var startCmd = &cobra.Command{
 				os.Exit(2)
 			}
 			ppl := loc.ConfigPipeline()
-			if cmd.Flags().Changed("name") {
-				ppl.Name, _ = cmd.Flags().GetString("name")
-			}
 
-			if cmd.Flags().Changed("id") {
-				ppl.ID, _ = cmd.Flags().GetString("id")
+			// Allow pipeline customisation only when only one location was provided by user
+			if len(locations.Items) == 1 {
+				if cmd.Flags().Changed("name") {
+					ppl.Name, _ = cmd.Flags().GetString("name")
+				}
+				if cmd.Flags().Changed("id") {
+					ppl.ID, _ = cmd.Flags().GetString("id")
+				}
 			}
 
 			starter := &lib.ApiStarter{

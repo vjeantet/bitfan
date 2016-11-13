@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -47,11 +46,24 @@ When no configuration is passed to the command, logfan use the config set in glo
 		initRunConfig(cmd)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		runtime.Logger().SetVerboseMode(viper.GetBool("verbose"))
+		runtime.Logger().SetDebugMode(viper.GetBool("debug"))
+		if viper.IsSet("log") {
+			runtime.Logger().SetOutputFile(viper.GetString("log"))
+		}
+		log := runtime.Logger()
 
 		var locations lib.Locations
 		cwd, _ := os.Getwd()
-		for _, v := range args {
-			locations.Add(v, cwd)
+
+		if len(args) == 0 {
+			for _, v := range viper.GetStringSlice("config") {
+				locations.Add(v, cwd)
+			}
+		} else {
+			for _, v := range args {
+				locations.Add(v, cwd)
+			}
 		}
 
 		var stats metrics.IStats
@@ -61,32 +73,46 @@ When no configuration is passed to the command, logfan use the config set in glo
 			stats = &metrics.StatsVoid{}
 		}
 		runtime.SetIStat(stats)
-		runtime.Logger().SetVerboseMode(viper.GetBool("verbose"))
-		runtime.Logger().SetDebugMode(viper.GetBool("debug"))
-		if viper.IsSet("log") {
-			runtime.Logger().SetOutputFile(viper.GetString("log"))
-		}
-		log := runtime.Logger()
 
-		runtime.Start(viper.GetString("webhook.listen"))
+		if !viper.GetBool("no-network") {
+			runtime.Start("")
+		} else {
+			runtime.Start(viper.GetString("webhook.listen"))
+		}
 
 		for _, loc := range locations.Items {
 			agt, err := loc.ConfigAgents()
 
 			if err != nil {
-				fmt.Printf("Error : %s %s", loc.Path, err)
+				log.Printf("Error : %s %s", loc.Path, err)
 				os.Exit(2)
 			}
 			ppl := loc.ConfigPipeline()
 
+			// Allow pipeline customisation only when only one location was provided by user
+			if len(locations.Items) == 1 {
+				if cmd.Flags().Changed("name") {
+					ppl.Name, _ = cmd.Flags().GetString("name")
+				}
+				if cmd.Flags().Changed("id") {
+					ppl.ID, _ = cmd.Flags().GetString("id")
+				}
+			}
+
 			_, err = runtime.StartPipeline(&ppl, agt)
 			if err != nil {
-				fmt.Printf("error : %s\n", err.Error())
+				log.Printf("error : %s\n", err.Error())
 				os.Exit(1)
 			}
 		}
 
-		lib.ApiServe(viper.GetString("host"))
+		if viper.GetBool("no-network") {
+			log.Println("Veino API disabled")
+		} else {
+			lib.ApiServe(viper.GetString("host"))
+			log.Println("Veino API listening on", viper.GetString("host"))
+		}
+
 		log.Println("logfan ready")
 
 		if service.Interactive() {
@@ -98,7 +124,7 @@ When no configuration is passed to the command, logfan use the config set in glo
 			<-ch
 			close(ch)
 
-			fmt.Println("")
+			log.Println("")
 			log.Printf("LogFan is stopping...")
 			runtime.Stop()
 			log.Printf("Everything stopped gracefully. Goodbye!\n")
@@ -113,6 +139,7 @@ func initRunConfig(cmd *cobra.Command) {
 	viper.BindPFlag("prometheus.path", cmd.Flags().Lookup("prometheus.path"))
 	viper.BindPFlag("webhook.listen", cmd.Flags().Lookup("webhook.listen"))
 	viper.BindPFlag("host", cmd.Flags().Lookup("host"))
+	viper.BindPFlag("no-network", cmd.Flags().Lookup("no-network"))
 }
 
 func initRunFlags(cmd *cobra.Command) {
@@ -121,4 +148,7 @@ func initRunFlags(cmd *cobra.Command) {
 	cmd.Flags().String("prometheus.path", "/metrics", "Expose Prometheus metrics at specified path.")
 	cmd.Flags().String("webhook.listen", "127.0.0.1:19090", "Address and port to bind webhooks")
 	cmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
+	cmd.Flags().Bool("no-network", false, "Disable network (api and webhook)")
+	cmd.Flags().String("name", "", "set pipeline's name")
+	cmd.Flags().String("id", "", "set pipeline's id")
 }

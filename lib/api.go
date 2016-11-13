@@ -33,7 +33,6 @@ func ApiServe(veinoHost string) {
 		log.Fatalln(err)
 	}
 	go s.Accept()
-	println("Veino remote listening on", s.Addr())
 }
 
 func ApiClient(veinoHost string) *gotalk.Sock {
