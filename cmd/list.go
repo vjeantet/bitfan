@@ -54,7 +54,7 @@ var listCmd = &cobra.Command{
 			table.SetHeader([]string{
 				"ID",
 				"name",
-				"status",
+				"Started at",
 				"processors",
 				"description",
 				"configuration",
@@ -63,10 +63,12 @@ var listCmd = &cobra.Command{
 				table.Append([]string{
 					pipeline.ID,
 					pipeline.Name,
-					pipeline.Status.String(),
+					pipeline.StartedAt.Format("2006-01-02 15:04:05"),
 					strconv.Itoa(len(pipeline.AgentsID)),
 					pipeline.Description,
-					pipeline.ConfigLocation,
+					fmt.Sprintf("%s@%s",
+						pipeline.ConfigHostLocation,
+						pipeline.ConfigLocation),
 				})
 			}
 			// table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
