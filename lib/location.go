@@ -64,8 +64,8 @@ func (l *Locations) Add(ref string, cwl string) error {
 		for _, subpath := range subpaths {
 			subloc := &Location{
 				Path:        subpath,
-				Workingpath: cwl,
-				Kind:        CONTENT_FS,
+				Workingpath: loc.Workingpath,
+				Kind:        loc.Kind,
 			}
 			l.Items = append(l.Items, subloc)
 		}
