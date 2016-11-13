@@ -151,6 +151,7 @@ type `logfan doc pluginname` to get more information about plugin configuration 
 | elasticsearch  |                                |
 | elasticsearch2 |                                |
 | rabbitmq       |                                |
+| email          | Sends email when output is received |
 
 type `logfan doc pluginname` to get more information about plugin configuration and usage
 

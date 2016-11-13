@@ -24,6 +24,7 @@ import (
 	unixinput "github.com/veino/veino/processors/input-unix"
 	elasticsearch "github.com/veino/veino/processors/output-elasticsearch"
 	elasticsearch2 "github.com/veino/veino/processors/output-elasticsearch2"
+	email "github.com/veino/veino/processors/output-email"
 	fileoutput "github.com/veino/veino/processors/output-file"
 	glusterfsoutput "github.com/veino/veino/processors/output-glusterfs"
 	mongodb "github.com/veino/veino/processors/output-mongodb"
@@ -68,6 +69,7 @@ func init() {
 	initPlugin("output", "file", fileoutput.New)
 	initPlugin("output", "glusterfs", glusterfsoutput.New)
 	initPlugin("output", "rabbitmq", rabbitmqoutput.New)
+	initPlugin("output", "email", email.New)
 
 	initPlugin("output", "when", when.New)
 	// plugins = map[string]map[string]*veino.ProcessorFactory{}

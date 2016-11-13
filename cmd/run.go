@@ -74,7 +74,7 @@ When no configuration is passed to the command, logfan use the config set in glo
 		}
 		runtime.SetIStat(stats)
 
-		if !viper.GetBool("no-network") {
+		if viper.GetBool("no-network") {
 			runtime.Start("")
 		} else {
 			runtime.Start(viper.GetString("webhook.listen"))

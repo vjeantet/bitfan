@@ -3,6 +3,12 @@
 	"ignore": "test github.com/veino golang.org/x",
 	"package": [
 		{
+			"checksumSHA1": "hqDDDpue/5363luidNMBS8z8eJU=",
+			"path": "github.com/BurntSushi/toml",
+			"revision": "99064174e013895bbd9b025c31100bd1d9b590ca",
+			"revisionTime": "2016-07-17T15:07:09Z"
+		},
+		{
 			"checksumSHA1": "40vJyUB4ezQSn/NSadsKEOrudMc=",
 			"path": "github.com/inconshreveable/mousetrap",
 			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
@@ -13,6 +19,12 @@
 			"path": "github.com/k0kubun/pp",
 			"revision": "36d5366f4ec038f9a76dd85c7b29074089bb9b9e",
 			"revisionTime": "2015-07-23T12:16:29Z"
+		},
+		{
+			"checksumSHA1": "g+afVQQVopBLiLB5pFZp/8s6aBs=",
+			"path": "github.com/kardianos/osext",
+			"revision": "c2c54e542fb797ad986b31721e1baedf214ca413",
+			"revisionTime": "2016-08-11T00:15:26Z"
 		},
 		{
 			"checksumSHA1": "D81dwDBPX0vhWSGI9RQ/KuR9ri8=",
@@ -27,10 +39,34 @@
 			"revisionTime": "2013-12-21T20:05:32Z"
 		},
 		{
+			"checksumSHA1": "0KQQY1f4p/HmCQE7HjdgesEoe3Y=",
+			"path": "github.com/olekukonko/tablewriter",
+			"revision": "bdcc175572fd7abece6c831e643891b9331bc9e7",
+			"revisionTime": "2016-09-23T12:54:01Z"
+		},
+		{
+			"checksumSHA1": "EiQXU8Izw1vh3MN37veWzhZKguQ=",
+			"path": "github.com/rsms/gotalk",
+			"revision": "7fcc13b9d816a4f210371c58ed8c8d468787eb6c",
+			"revisionTime": "2015-01-23T04:15:48Z"
+		},
+		{
+			"checksumSHA1": "M4qI7Ul0vf2uj3fF69DvRnwqfd0=",
+			"path": "github.com/spf13/cast",
+			"revision": "2580bc98dc0e62908119e4737030cc2fdfc45e4c",
+			"revisionTime": "2016-09-26T08:42:49Z"
+		},
+		{
 			"checksumSHA1": "/vtqxT0FvoKBL+79o3ydfsbEtGs=",
 			"path": "github.com/spf13/cobra",
 			"revision": "0f866a6211e33cde2091d9290c08f6afd6c9ebbc",
 			"revisionTime": "2016-05-09T09:37:22Z"
+		},
+		{
+			"checksumSHA1": "dkruahfhuLXXuyeCuRpsWlcRK+8=",
+			"path": "github.com/spf13/jwalterweatherman",
+			"revision": "33c24e77fb80341fe7130ee7c594256ff08ccc46",
+			"revisionTime": "2016-03-01T12:00:06Z"
 		},
 		{
 			"checksumSHA1": "s0GYwa3YNJJXON/b+6ci2Sz9mEw=",
@@ -49,6 +85,18 @@
 			"path": "github.com/vjeantet/go-lexer",
 			"revision": "7344c549c57e8da70a9579b1ad8b0b95232efa3d",
 			"revisionTime": "2016-05-14T07:49:06Z"
+		},
+		{
+			"checksumSHA1": "z6I9VSNp+5om+J0ZpB6wGaOq4e4=",
+			"path": "gopkg.in/fsnotify.v1",
+			"revision": "508915b7500b6e42a87132e4afeb4729cebc7cbb",
+			"revisionTime": "2015-12-17T18:48:24Z"
+		},
+		{
+			"checksumSHA1": "12GqsW8PiRPnezDDy0v4brZrndM=",
+			"path": "gopkg.in/yaml.v2",
+			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
+			"revisionTime": "2016-09-28T15:37:09Z"
 		}
 	],
 	"rootPath": "github.com/veino/logfan"
