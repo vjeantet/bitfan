@@ -30,3 +30,5 @@ releases
 .DS_Store
 
 /.sincedb-readfile.json
+
+/.sincedb.json
