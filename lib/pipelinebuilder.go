@@ -90,6 +90,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 	if _, ok := LSConfiguration.Sections["input"]; ok && isInSlice("input", pickSections) {
 		for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["input"].Plugins); pluginIndex++ {
 			plugin := LSConfiguration.Sections["input"].Plugins[pluginIndex]
+
 			agents := buildInputAgents(plugin, pwd)
 
 			agentConfList = append(agents, agentConfList...)
@@ -134,6 +135,12 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 		agent.Options[setting.K] = setting.V
 	}
 
+	//todo : handle codec
+
+	if plugin.Codec.Name != "" {
+		agent.Options["codec"] = plugin.Codec.Name
+	}
+
 	// If agent is a "use"
 	// build imported pipeline from path
 	// connect import plugin Xsource to imported pipeline output
@@ -174,7 +181,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 			}
 		}
 	}
-
+	// pp.Println("plugin-->", agent)
 	return []config.Agent{agent}
 }
 
@@ -188,7 +195,10 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	for _, setting := range plugin.Settings {
 		agent.Options[setting.K] = setting.V
 	}
-
+	//todo : handle codec
+	if plugin.Codec.Name != "" {
+		agent.Options["codec"] = plugin.Codec.Name
+	}
 	// if its a use plugin
 	// load filter and output parts of pipeline
 	// connect pipeline Xsource to lastOutPorts
@@ -223,8 +233,8 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		agent.XSources = append(agent.XSources, inPort)
 	}
 
-	for _, codec := range plugin.Codecs {
-		agent.Options["codec"] = codec.Name
+	if plugin.Codec != nil {
+		agent.Options["codec"] = plugin.Codec.Name
 	}
 
 	// Is this Plugin has conditional expressions ?

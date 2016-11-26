@@ -28,7 +28,7 @@ type Section struct {
 
 type Plugin struct {
 	Name     string
-	Codecs   map[int]*Codec
+	Codec    *Codec
 	Settings map[int]*Setting
 	When     map[int]*When // IF and ElseIF with order
 }
@@ -244,7 +244,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 	plugin := &Plugin{}
 	plugin.Name = tok.Value.(string)
 	plugin.Settings = map[int]*Setting{}
-	plugin.Codecs = map[int]*Codec{}
+	plugin.Codec = &Codec{}
 	// log.Printf(" -pp- %s %s", TokenType(tok.Kind).String(), tok.Value)
 	*tok, err = p.getToken(TokenLCurlyBrace)
 
@@ -274,30 +274,18 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 			continue
 		case TokenString:
 
-			// if tok.Value == "codec" {
-			// 	codec, err := p.parseCodec(tok)
-			// 	if err != nil {
-			// 		return plugin, err
-			// 	}
+			if tok.Value == "codec" {
+				codec, rewind, err := p.parseCodec(tok)
+				if err != nil {
+					return plugin, err
+				}
+				plugin.Codec = codec
+				if rewind != nil {
+					advancedTok = rewind
+				}
 
-			// 	tok2, err2 := p.getToken(TokenLCurlyBrace)
-			// 	if err2 != nil {
-			// 		// c'est pas un  { donc faut le remettre dans la boucle
-			// 		// log.Printf(" -pcs- %s %s", TokenType(tok2.Type).String(), tok2.Value)
-			// 		advancedTok = &tok2
-			// 		plugin.Codecs[i] = codec
-			// 		i = i + 1
-			// 		continue
-			// 	}
-
-			// 	settings, err := p.parseCodecSettings(&tok2)
-			// 	codec.Settings = settings
-			// 	plugin.Codecs[i] = codec
-			// 	i = i + 1
-			// 	continue
-			// }
-
-			// Token is not a codec
+				continue
+			}
 
 			setting, err := p.parseSetting(tok)
 			if err != nil {
@@ -345,7 +333,7 @@ func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
 	return settings, nil
 }
 
-func (p *Parser) parseCodec(tok *Token) (*Codec, error) {
+func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	var err error
 
 	codec := &Codec{}
@@ -355,26 +343,59 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, error) {
 
 	*tok, err = p.getToken(TokenAssignment)
 	if err != nil {
-		return codec, fmt.Errorf("codec 1 parse error %s", err)
+		return codec, nil, fmt.Errorf("codec 1 parse error %s", err)
 	}
 
 	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
 	*tok, err = p.getToken(TokenString)
 	if err != nil {
-		return codec, fmt.Errorf("codec 2 parse error %s", err)
+		return codec, nil, fmt.Errorf("codec 2 parse error %s", err)
 	}
 	codec.Name = tok.Value.(string)
-	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
-	return codec, nil
+	// rechercher un {
+	*tok, err = p.getToken(TokenLCurlyBrace)
+	if err != nil {
+		return codec, tok, nil
+	}
+
+	// il y a un { -> on charge les settings jusqu'au }
+	i := 0
+	for {
+		*tok, err = p.getToken(TokenRCurlyBrace, TokenComment, TokenString, TokenComma)
+		if err != nil {
+			return codec, nil, fmt.Errorf("plugin parse error %s", err)
+		}
+
+		if tok.Kind == TokenRCurlyBrace {
+			break
+		}
+
+		switch tok.Kind {
+		case TokenComma:
+			continue
+		case TokenComment:
+			continue
+		case TokenString:
+			setting, err := p.parseSetting(tok)
+			if err != nil {
+				return codec, nil, err
+			}
+			codec.Settings[i] = setting
+			i = i + 1
+			continue
+		}
+	}
+
+	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
+	return codec, nil, nil
 }
 
 func (p *Parser) parseSetting(tok *Token) (*Setting, error) {
 	setting := &Setting{}
 
 	setting.K = tok.Value.(string)
-	// log.Printf(" -- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
 	var err error
 	*tok, err = p.getToken(TokenAssignment)
@@ -497,6 +518,10 @@ func (p *Parser) parseArray() ([]interface{}, error) {
 	}
 
 	return vals, nil
+}
+
+func (p *Parser) rewindToken() error {
+	return nil
 }
 
 func (p *Parser) getToken(types ...TokenKind) (Token, error) {

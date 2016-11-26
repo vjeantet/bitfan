@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 // Represents a single parsed token.
 type Token struct {
 	Kind  TokenKind
@@ -29,6 +31,10 @@ const (
 	TokenComma
 	TokenBool
 )
+
+func (t *Token) String() string {
+	return fmt.Sprintf("%s '%s'", GetTokenKindString(t.Kind), t.Value)
+}
 
 // GetTokenKindString returns a string that describes the given TokenKind.
 func GetTokenKindString(kind TokenKind) string {
