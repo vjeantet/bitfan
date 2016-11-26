@@ -27,7 +27,12 @@ import (
 var RootCmd = &cobra.Command{
 	Use:   "logfan",
 	Short: "logstash like in go",
-	Long:  `Process Any Data, From Any Source`,
+	Long: `Process Any Data, From Any Source
+
+	logstash flags can be used but are hidden from usage
+	logfan -f -e -t -w
+
+	`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		initSettings(cmd)
 		viper.BindPFlag("workers", cmd.Flags().Lookup("filterworkers"))
@@ -104,9 +109,15 @@ func init() {
 	RootCmd.Flags().BoolP("configtest", "t", false, "Test config file or directory")
 	RootCmd.Flags().StringP("eval", "e", "", "Use the given string as the configuration data.")
 	RootCmd.Flags().BoolP("version", "V", false, "Display version info.")
+	RootCmd.Flags().IntP("filterworkers", "w", runtime.NumCPU(), "number of workers")
+
+	RootCmd.Flags().MarkDeprecated("config", "use the run command")
+	RootCmd.Flags().MarkDeprecated("configtest", "use the test command")
+	RootCmd.Flags().MarkDeprecated("eval", "use the run or test command")
+	RootCmd.Flags().MarkDeprecated("version", "use the version command")
+	RootCmd.Flags().MarkHidden("filterworkers")
 
 	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.logfan/ then /etc/logfan/", "Set the directory containing the logfan.toml settings")
-	RootCmd.PersistentFlags().IntP("filterworkers", "w", runtime.NumCPU(), "number of workers")
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
 	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity to the first level (info), less verbose.")
 	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace), more verbose.")
