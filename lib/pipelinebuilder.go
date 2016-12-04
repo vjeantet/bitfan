@@ -130,6 +130,11 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 	var agent config.Agent
 	agent = config.NewAgent()
 
+	agent.Type = "input_" + plugin.Name
+	agent.Label = fmt.Sprintf("%s", plugin.Name)
+	agent.Buffer = 200
+	agent.PoolSize = 1
+
 	// Plugin configuration
 	agent.Options = map[string]interface{}{}
 	for _, setting := range plugin.Settings {
@@ -146,16 +151,14 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 	// build imported pipeline from path
 	// connect import plugin Xsource to imported pipeline output
 	if plugin.Name == "use" {
-
 		fileConfigAgents, _ := ParseConfigLocation("", agent.Options, pwd, "input", "filter")
+		// add agent "use" - set use agent Source as last From FileConfigAgents
+		inPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
+		agent.XSources = append(agent.XSources, inPort)
+		fileConfigAgents = append([]config.Agent{agent}, fileConfigAgents...)
 
 		return fileConfigAgents
 	}
-
-	agent.Type = "input_" + plugin.Name
-	agent.Label = fmt.Sprintf("%s", plugin.Name)
-	agent.Buffer = 200
-	agent.PoolSize = 1
 
 	// interval can be a number, a string number or a cron string pattern
 	interval := agent.Options["interval"]

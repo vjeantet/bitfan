@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/veino/veino"
 	date "github.com/veino/veino/processors/filter-date"
+	digest "github.com/veino/veino/processors/filter-digest"
 	drop "github.com/veino/veino/processors/filter-drop"
 	geoip "github.com/veino/veino/processors/filter-geoip"
 	grok "github.com/veino/veino/processors/filter-grok"
@@ -14,11 +15,13 @@ import (
 	uuid "github.com/veino/veino/processors/filter-uuid"
 	beatsinput "github.com/veino/veino/processors/input-beats"
 	execinput "github.com/veino/veino/processors/input-exec"
-	fileinput "github.com/veino/veino/processors/input-file"
+	file "github.com/veino/veino/processors/input-file"
+	httppoller "github.com/veino/veino/processors/input-httppoller"
 	rabbitmqinput "github.com/veino/veino/processors/input-rabbitmq"
-	readfile "github.com/veino/veino/processors/input-readfile"
+	inputsql "github.com/veino/veino/processors/input-sql"
 	stdin "github.com/veino/veino/processors/input-stdin"
 	sysloginput "github.com/veino/veino/processors/input-syslog"
+	tail "github.com/veino/veino/processors/input-tail"
 	twitter "github.com/veino/veino/processors/input-twitter"
 	udpinput "github.com/veino/veino/processors/input-udp"
 	unixinput "github.com/veino/veino/processors/input-unix"
@@ -32,6 +35,7 @@ import (
 	rabbitmqoutput "github.com/veino/veino/processors/output-rabbitmq"
 	statsd "github.com/veino/veino/processors/output-statsd"
 	stdout "github.com/veino/veino/processors/output-stdout"
+	use "github.com/veino/veino/processors/use"
 	when "github.com/veino/veino/processors/when"
 	"github.com/veino/veino/runtime"
 )
@@ -39,14 +43,18 @@ import (
 func init() {
 	initPlugin("input", "stdin", stdin.New)
 	initPlugin("input", "twitter", twitter.New)
-	initPlugin("input", "file", fileinput.New)
+	initPlugin("input", "tail", tail.New) //
+	initPlugin("input", "file", tail.New) // logstash's file plugin is a tail plugin
 	initPlugin("input", "exec", execinput.New)
 	initPlugin("input", "beats", beatsinput.New)
 	initPlugin("input", "rabbitmq", rabbitmqinput.New)
 	initPlugin("input", "udp", udpinput.New)
 	initPlugin("input", "syslog", sysloginput.New)
 	initPlugin("input", "unix", unixinput.New)
-	initPlugin("input", "readfile", readfile.New)
+	initPlugin("input", "readfile", file.New)
+	initPlugin("input", "sql", inputsql.New)
+	initPlugin("input", "http", httppoller.New)
+	initPlugin("input", "use", use.New)
 
 	initPlugin("filter", "grok", grok.New)
 	initPlugin("filter", "mutate", mutate.New)
@@ -59,6 +67,8 @@ func init() {
 	initPlugin("filter", "kv", kv.New)
 	initPlugin("filter", "html", html.New)
 	initPlugin("filter", "when", when.New)
+	initPlugin("filter", "digest", digest.New)
+	initPlugin("filter", "use", use.New)
 
 	initPlugin("output", "stdout", stdout.New)
 	initPlugin("output", "statsd", statsd.New)
@@ -72,6 +82,7 @@ func init() {
 	initPlugin("output", "email", email.New)
 
 	initPlugin("output", "when", when.New)
+	initPlugin("output", "use", use.New)
 	// plugins = map[string]map[string]*veino.ProcessorFactory{}
 
 }
