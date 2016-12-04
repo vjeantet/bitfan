@@ -81,6 +81,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 	p := parser.NewParser(bytes.NewReader(content))
 
 	LSConfiguration, err := p.Parse()
+
 	if err != nil {
 		return agentConfList, err
 	}
@@ -308,6 +309,19 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			{AgentID: fileConfigAgents[0].ID, PortNumber: 0},
 		}
 		return fileConfigAgents, newOutPorts
+	}
+
+	// interval can be a number, a string number or a cron string pattern
+	interval := agent.Options["interval"]
+	switch t := interval.(type) {
+	case int, int8, int16, int32, int64:
+		agent.Schedule = fmt.Sprintf("@every %ds", t)
+	case string:
+		if i, err := strconv.Atoi(t); err == nil {
+			agent.Schedule = fmt.Sprintf("@every %ds", i)
+		} else {
+			agent.Schedule = t
+		}
 	}
 
 	if workers, ok := agent.Options["workers"]; ok {
