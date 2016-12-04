@@ -245,7 +245,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 	plugin.Name = tok.Value.(string)
 	plugin.Settings = map[int]*Setting{}
 	plugin.Codec = &Codec{}
-	// log.Printf(" -pp- %s %s", TokenType(tok.Kind).String(), tok.Value)
+
 	*tok, err = p.getToken(TokenLCurlyBrace)
 
 	if err != nil {
@@ -261,6 +261,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 			}
 		} else {
 			tok = advancedTok
+			advancedTok = nil
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -339,14 +340,10 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	codec := &Codec{}
 	codec.Settings = map[int]*Setting{}
 
-	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
-
 	*tok, err = p.getToken(TokenAssignment)
 	if err != nil {
 		return codec, nil, fmt.Errorf("codec 1 parse error %s", err)
 	}
-
-	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
 
 	*tok, err = p.getToken(TokenString)
 	if err != nil {
