@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -20,19 +21,19 @@ func ParseConfig(content []byte, pwd string, pickSections ...string) ([]config.A
 	return buildAgents(content, pwd, pickSections...)
 }
 
-func ParseConfigLocation(name string, location map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
+func ParseConfigLocation(name string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
 	var ucwd = ""
 	var content []byte
 
 	// fix relative reference from remote location
-	if _, ok := location["path"]; ok {
+	if _, ok := options["path"]; ok {
 		if v, _ := url.Parse(pwd); v.Scheme == "http" || v.Scheme == "https" {
-			location["url"] = pwd + location["path"].(string)
-			location["path"] = ""
+			options["url"] = pwd + options["path"].(string)
+			options["path"] = ""
 		}
 	}
 
-	if v, ok := location["url"]; ok {
+	if v, ok := options["url"]; ok {
 		response, err := http.Get(v.(string))
 		if err != nil {
 			log.Fatal(err)
@@ -45,7 +46,7 @@ func ParseConfigLocation(name string, location map[string]interface{}, pwd strin
 		}
 		uriSegments := strings.Split(v.(string), "/")
 		ucwd = strings.Join(uriSegments[:len(uriSegments)-1], "/") + "/"
-	} else if v, ok := location["path"]; ok {
+	} else if v, ok := options["path"]; ok {
 
 		file := v.(string)
 
@@ -63,6 +64,35 @@ func ParseConfigLocation(name string, location map[string]interface{}, pwd strin
 	} else {
 		log.Fatalln("I need a location to load configuration from")
 	}
+
+	// find ${FOO:default value} and replace with
+	// var["FOO"] if found
+	// environnement variaable FOO if env variable exists
+	// default value, empty when not provided
+	contentString := string(content)
+	r, _ := regexp.Compile(`\${([a-zA-Z_\-0-9]+):?([^"'}]*)}`)
+	envVars := r.FindAllStringSubmatch(contentString, -1)
+	for _, envVar := range envVars {
+		varText := envVar[0]
+		varName := envVar[1]
+		varDefaultValue := envVar[2]
+
+		if values, ok := options["var"]; ok {
+			if value, ok := values.(map[string]interface{})[varName]; ok {
+				contentString = strings.Replace(contentString, varText, value.(string), -1)
+				continue
+			}
+		}
+		// Lookup for env
+		if value, found := os.LookupEnv(varName); found {
+			contentString = strings.Replace(contentString, varText, value, -1)
+			continue
+		}
+		// Set default value
+		contentString = strings.Replace(contentString, varText, varDefaultValue, -1)
+		continue
+	}
+	content = []byte(contentString)
 
 	fileConfigAgents, err := buildAgents(content, ucwd, pickSections...)
 	if err != nil {
@@ -134,6 +164,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 	agent.Label = fmt.Sprintf("%s", plugin.Name)
 	agent.Buffer = 200
 	agent.PoolSize = 1
+	agent.Wd = pwd
 
 	// Plugin configuration
 	agent.Options = map[string]interface{}{}
@@ -194,6 +225,12 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 
 	var agent config.Agent
 	agent = config.NewAgent()
+	agent.Type = "output_" + plugin.Name
+	agent.Label = fmt.Sprintf("%s", plugin.Name)
+	agent.Buffer = 200
+	agent.PoolSize = 1
+	agent.Wd = pwd
+
 	// Plugin configuration
 	agent.Options = map[string]interface{}{}
 	for _, setting := range plugin.Settings {
@@ -224,11 +261,6 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		//specific to output
 		return fileConfigAgents
 	}
-
-	agent.Type = "output_" + plugin.Name
-	agent.Label = fmt.Sprintf("%s", plugin.Name)
-	agent.Buffer = 200
-	agent.PoolSize = 1
 
 	// Plugin Sources
 	agent.XSources = config.PortList{}
@@ -287,6 +319,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	agent.Label = fmt.Sprintf("%s", plugin.Name)
 	agent.Buffer = 200
 	agent.PoolSize = 2
+	agent.Wd = pwd
 
 	// Plugin configuration
 	agent.Options = map[string]interface{}{}

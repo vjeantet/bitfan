@@ -98,16 +98,12 @@ func (l *Location) ConfigPipeline() config.Pipeline {
 
 func (l *Location) ConfigAgents() ([]config.Agent, error) {
 	var agents []config.Agent
-	var content []byte
 	var err error
-	var cwd string
 
-	content, cwd, err = l.Content()
-	if err != nil {
-		return agents, err
+	options := map[string]interface{}{
+		"path": l.Path,
 	}
-
-	agents, err = ParseConfig(content, cwd)
+	agents, err = ParseConfigLocation("XXXXXX", options, l.Workingpath, "input", "filter", "output")
 	return agents, err
 }
 
