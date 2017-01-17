@@ -46,10 +46,10 @@ When no configuration is passed to the command, logfan use the config set in glo
 		initRunConfig(cmd)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		runtime.Logger().SetVerboseMode(viper.GetBool("verbose"))
-		runtime.Logger().SetDebugMode(viper.GetBool("debug"))
+		runtime.SetLogVerboseMode(viper.GetBool("verbose"))
+		runtime.SetLogDebugMode(viper.GetBool("debug"))
 		if viper.IsSet("log") {
-			runtime.Logger().SetOutputFile(viper.GetString("log"))
+			runtime.SetLogOutputFile(viper.GetString("log"))
 		}
 		log := runtime.Logger()
 
