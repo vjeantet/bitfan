@@ -30,13 +30,7 @@ var testCmd = &cobra.Command{
 		var ctot int
 		for _, loc := range locations.Items {
 			ctot++
-			content, ncwl, err := loc.Content()
-			if err != nil {
-				fmt.Printf("error %s\n", err)
-				continue
-			}
-
-			err = testConfigContent(content, ncwl)
+			err := testConfigContent(loc)
 			if err != nil {
 				fmt.Printf("%s\n -> %s\n\n", loc.Path, err)
 				cko++
@@ -52,12 +46,8 @@ var testCmd = &cobra.Command{
 	},
 }
 
-func testConfigContent(content []byte, cwl string) error {
-	// logError := log.New(os.Stderr, "ERROR: ", 0)
-	// logInfo := log.New(os.Stdout, "", 0)
-	// logWarning := log.New(os.Stdout, "WARNING: ", 0)
-
-	configAgents, err := lib.ParseConfig(content, cwl)
+func testConfigContent(loc *lib.Location) error {
+	configAgents, err := loc.ConfigAgents()
 	if err != nil {
 		return fmt.Errorf("%s", err.Error())
 	}

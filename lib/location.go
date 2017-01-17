@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/veino/veino/config"
@@ -97,17 +98,24 @@ func (l *Location) ConfigPipeline() config.Pipeline {
 }
 
 func (l *Location) ConfigAgents() ([]config.Agent, error) {
-	var agents []config.Agent
-	var err error
+	return l.configAgentsWithOptions(map[string]interface{}{}, "input", "filter", "output")
+}
 
-	options := map[string]interface{}{
-		"path": l.Path,
+func (l *Location) configAgentsWithOptions(options map[string]interface{}, pickSections ...string) ([]config.Agent, error) {
+	var agents []config.Agent
+	var content []byte
+	var err error
+	var cwd string
+	content, cwd, err = l.content(options)
+	if err != nil {
+		return agents, err
 	}
-	agents, err = ParseConfigLocation("XXXXXX", options, l.Workingpath, "input", "filter", "output")
+
+	agents, err = buildAgents(content, cwd, pickSections...)
 	return agents, err
 }
 
-func (l *Location) Content() ([]byte, string, error) {
+func (l *Location) content(options map[string]interface{}) ([]byte, string, error) {
 	var content []byte
 	var cwl string
 	var err error
@@ -145,6 +153,35 @@ func (l *Location) Content() ([]byte, string, error) {
 		}
 		cwl = filepath.Dir(l.Path)
 	}
+
+	// find ${FOO:default value} and replace with
+	// var["FOO"] if found
+	// environnement variaable FOO if env variable exists
+	// default value, empty when not provided
+	contentString := string(content)
+	r, _ := regexp.Compile(`\${([a-zA-Z_\-0-9]+):?([^"'}]*)}`)
+	envVars := r.FindAllStringSubmatch(contentString, -1)
+	for _, envVar := range envVars {
+		varText := envVar[0]
+		varName := envVar[1]
+		varDefaultValue := envVar[2]
+
+		if values, ok := options["var"]; ok {
+			if value, ok := values.(map[string]interface{})[varName]; ok {
+				contentString = strings.Replace(contentString, varText, value.(string), -1)
+				continue
+			}
+		}
+		// Lookup for env
+		if value, found := os.LookupEnv(varName); found {
+			contentString = strings.Replace(contentString, varText, value, -1)
+			continue
+		}
+		// Set default value
+		contentString = strings.Replace(contentString, varText, varDefaultValue, -1)
+		continue
+	}
+	content = []byte(contentString)
 
 	return content, cwl, err
 

@@ -3,102 +3,24 @@ package lib
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"net/url"
-	"os"
-	"path/filepath"
-	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/veino/logfan/parser"
 	"github.com/veino/veino/config"
 )
 
-func ParseConfig(content []byte, pwd string, pickSections ...string) ([]config.Agent, error) {
-	return buildAgents(content, pwd, pickSections...)
-}
+func parseConfigLocation(name string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
+	var locs Locations
 
-func ParseConfigLocation(name string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
-	var ucwd = ""
-	var content []byte
-
-	// fix relative reference from remote location
 	if _, ok := options["path"]; ok {
-		if v, _ := url.Parse(pwd); v.Scheme == "http" || v.Scheme == "https" {
-			options["url"] = pwd + options["path"].(string)
-			options["path"] = ""
-		}
-	}
-
-	if v, ok := options["url"]; ok {
-		response, err := http.Get(v.(string))
-		if err != nil {
-			log.Fatal(err)
-		} else {
-			content, err = ioutil.ReadAll(response.Body)
-			response.Body.Close()
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-		uriSegments := strings.Split(v.(string), "/")
-		ucwd = strings.Join(uriSegments[:len(uriSegments)-1], "/") + "/"
-	} else if v, ok := options["path"]; ok {
-
-		file := v.(string)
-
-		if _, err := os.Stat(filepath.Join(pwd, file)); err == nil {
-			file = filepath.Join(pwd, file)
-		}
-		var err error
-		content, err = ioutil.ReadFile(file)
-
-		if err != nil {
-			log.Printf(`Error while reading "%s" [%s]`, file, err)
-			log.Fatalln(err)
-		}
-		ucwd = filepath.Dir(file)
+		locs.Add(options["path"].(string), pwd)
+	} else if _, ok := options["url"]; ok {
+		locs.Add(options["url"].(string), pwd)
 	} else {
-		log.Fatalln("I need a location to load configuration from")
+		return []config.Agent{}, fmt.Errorf("no location provided to get content from ; options=%v ", options)
 	}
 
-	// find ${FOO:default value} and replace with
-	// var["FOO"] if found
-	// environnement variaable FOO if env variable exists
-	// default value, empty when not provided
-	contentString := string(content)
-	r, _ := regexp.Compile(`\${([a-zA-Z_\-0-9]+):?([^"'}]*)}`)
-	envVars := r.FindAllStringSubmatch(contentString, -1)
-	for _, envVar := range envVars {
-		varText := envVar[0]
-		varName := envVar[1]
-		varDefaultValue := envVar[2]
-
-		if values, ok := options["var"]; ok {
-			if value, ok := values.(map[string]interface{})[varName]; ok {
-				contentString = strings.Replace(contentString, varText, value.(string), -1)
-				continue
-			}
-		}
-		// Lookup for env
-		if value, found := os.LookupEnv(varName); found {
-			contentString = strings.Replace(contentString, varText, value, -1)
-			continue
-		}
-		// Set default value
-		contentString = strings.Replace(contentString, varText, varDefaultValue, -1)
-		continue
-	}
-	content = []byte(contentString)
-
-	fileConfigAgents, err := buildAgents(content, ucwd, pickSections...)
-	if err != nil {
-		log.Fatalln("ERROR while using config ", err.Error())
-	}
-	return fileConfigAgents, nil
+	return locs.Items[0].configAgentsWithOptions(options, pickSections...)
 }
 
 func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.Agent, error) {
@@ -182,7 +104,8 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 	// build imported pipeline from path
 	// connect import plugin Xsource to imported pipeline output
 	if plugin.Name == "use" {
-		fileConfigAgents, _ := ParseConfigLocation("", agent.Options, pwd, "input", "filter")
+		fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "input", "filter")
+
 		// add agent "use" - set use agent Source as last From FileConfigAgents
 		inPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
 		agent.XSources = append(agent.XSources, inPort)
@@ -250,7 +173,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	// connect pipeline first agent Xsource to lastOutPorts output
 	// return imported pipeline with its output
 	if plugin.Name == "use" {
-		fileConfigAgents, _ := ParseConfigLocation("", agent.Options, pwd, "filter", "output")
+		fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "filter", "output")
 
 		firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 		for _, sourceport := range lastOutPorts {
@@ -333,7 +256,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	// connect pipeline first agent Xsource to lastOutPorts output
 	// return imported pipeline with its output
 	if plugin.Name == "use" {
-		fileConfigAgents, _ := ParseConfigLocation("", agent.Options, pwd, "filter")
+		fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "filter")
 
 		firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 		for _, sourceport := range lastOutPorts {
