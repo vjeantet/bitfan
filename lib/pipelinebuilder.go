@@ -139,7 +139,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 			}
 		}
 	}
-	// pp.Println("plugin-->", agent)
+
 	return []config.Agent{agent}
 }
 
