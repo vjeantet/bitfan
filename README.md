@@ -1,23 +1,23 @@
-# Logfan
+# Bitfan
 
 Logstash like implementation with GO.
 
-![Logfan logo](docs/static/noun_307496_cc.png "Logfan")
+![Bitfan logo](docs/static/noun_307496_cc.png "Bitfan")
 
 ## Install
-2 ways to get logfan : download a released version or compile it from source.
+2 ways to get bitfan : download a released version or compile it from source.
 
 ### Download binary
-linux, windows, osx available here : https://github.com/veino/logfan/releases
+linux, windows, osx available here : https://github.com/veino/bitfan/releases
 
 ### Get source and compile
 ```
-$ go get -u github.com/veino/logfan
+$ go get -u github.com/veino/bitfan
 ```
 
 ## Run 
 ```
-$ logfan run https://raw.githubusercontent.com/veino/logfan/master/examples.d/simple.conf
+$ bitfan run https://raw.githubusercontent.com/veino/bitfan/master/examples.d/simple.conf
 ```
 
 	logstash flags works as well `-f`, `-e`, `--configtest`, ...
@@ -29,20 +29,20 @@ copy/paste this in your console
 ```
 
 ## Other command
-type `logfan help` to display usage information
+type `bitfan help` to display usage information
 
 	
 ```
 Usage:
-  logfan [flags]
-  logfan [command]
+  bitfan [flags]
+  bitfan [command]
 
 Available Commands:
   doc         Display documentation about plugins
   list        List running pipelines
-  run         Run logfan
-  service     Install and manage logfan service
-  start       Start a new pipeline in a running logfan
+  run         Run bitfan
+  service     Install and manage bitfan service
+  start       Start a new pipeline in a running bitfan
   stop        Stop a running pipeline
   test        Test configurations (files, url, directories)
   version     Display version informations
@@ -53,24 +53,24 @@ Flags:
       --debug               Increase verbosity to the last level (trace), more verbose.
   -e, --eval string         Use the given string as the configuration data.
   -w, --filterworkers int   number of workers (default 4)
-  -h, --help                help for logfan
+  -h, --help                help for bitfan
   -l, --log string          Log to a given path. Default is to log to stdout.
-      --settings string     Set the directory containing the logfan.toml settings (default "current dir, then ~/.logfan/ then /etc/logfan/")
+      --settings string     Set the directory containing the bitfan.toml settings (default "current dir, then ~/.bitfan/ then /etc/bitfan/")
       --verbose             Increase verbosity to the first level (info), less verbose.
   -V, --version             Display version info.
 
-Use "logfan [command] --help" for more information about a command.
+Use "bitfan [command] --help" for more information about a command.
 ```
 
 ## include configuration from other configuration
 ### include configuration from an URL
 ```
-$ logfan run "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/logfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
+$ bitfan run "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/bitfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
 ```
 
 ## use configuration file on local filesystem
 ```
-$ logfan run "input{stdin{}} filter{use{path=>'apachelogs.conf'}} output{stdout{codec=>rubydebug}}"
+$ bitfan run "input{stdin{}} filter{use{path=>'apachelogs.conf'}} output{stdout{codec=>rubydebug}}"
 ```
 
 See examples in examples.d/use/ folder
@@ -92,7 +92,7 @@ See examples in examples.d/use/ folder
 - [ ] codec support
 - [x] log to file
 - [x] plugins autodocumentation
-- [x] install logfan as a system daemon / service
+- [x] install bitfan as a system daemon / service
 - [x] list currently runnnung pipelines
 - [x] start new pipelines in a running instance
 - [x] stop a pipeline without stopping other
@@ -102,7 +102,7 @@ See examples in examples.d/use/ folder
 # Supported inputs, filters and outputs in config file
 can be found here : https://github.com/veino/veino/tree/master/processors
 
-type `logfan doc` to list all available plugins
+type `bitfan doc` to list all available plugins
 
 ## INPUT
 
@@ -119,13 +119,13 @@ type `logfan doc` to list all available plugins
 | syslog   |                                |
 | readfile |                                |
 
-type `logfan doc pluginname` to get more information about plugin configuration and usage
+type `bitfan doc pluginname` to get more information about plugin configuration and usage
 
 ## FILTER
 
 | PLUGIN |          DESCRIPTION           |
 |--------|--------------------------------|
-| date   | Parses dates from fields to use as the Logfan timestamp  for an event |
+| date   | Parses dates from fields to use as the Bitfan timestamp  for an event |
 | grok   |                                |
 | split  | Splits multi-line messages into distinct events |
 | json   | Parses JSON events             |
@@ -136,7 +136,7 @@ type `logfan doc pluginname` to get more information about plugin configuration 
 | html   |                                |
 | mutate |                                |
 
-type `logfan doc pluginname` to get more information about plugin configuration and usage
+type `bitfan doc pluginname` to get more information about plugin configuration and usage
 
 ## OUTPUT
 
@@ -153,7 +153,7 @@ type `logfan doc pluginname` to get more information about plugin configuration 
 | rabbitmq       |                                |
 | email          | Sends email when output is received |
 
-type `logfan doc pluginname` to get more information about plugin configuration and usage
+type `bitfan doc pluginname` to get more information about plugin configuration and usage
 
 ## SPECIAL for all sections
 |     PLUGIN     |          DESCRIPTION           |
@@ -165,7 +165,7 @@ type `logfan doc pluginname` to get more information about plugin configuration 
 * kardianos/govendor Go vendor tool that works with the standard vendor file
 * spf13/cobra - A Commander for modern Go CLI interactions
 * bbuck/go-lexer (a forked version) - Lexer based on Rob Pike's talk on YouTube
-* veino/veino - all plugins and runtime used by logfan 
+* veino/veino - all plugins and runtime used by bitfan 
 
 
 # Similar projets in go

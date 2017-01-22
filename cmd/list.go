@@ -22,7 +22,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/veino/logfan/lib"
+	"github.com/veino/bitfan/lib"
 	config "github.com/veino/veino/config"
 )
 

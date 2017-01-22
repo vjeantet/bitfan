@@ -25,12 +25,12 @@ import (
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "logfan",
+	Use:   "bitfan",
 	Short: "logstash like in go",
 	Long: `Process Any Data, From Any Source
 
 	logstash flags can be used but are hidden from usage
-	logfan -f -e -t -w
+	bitfan -f -e -t -w
 
 	`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
@@ -81,7 +81,7 @@ func Execute() {
 
 func initSettings(cmd *cobra.Command) {
 
-	viper.SetConfigName("logfan") // name of config file (without extension)
+	viper.SetConfigName("bitfan") // name of config file (without extension)
 
 	if cmd.Flags().Changed("settings") {
 		settings, _ := cmd.Flags().GetString("settings")
@@ -92,12 +92,12 @@ func initSettings(cmd *cobra.Command) {
 		viper.AddConfigPath(settings) // optionally look for config in the working directory
 		err := viper.ReadInConfig()   // Find and read the config file
 		if err != nil {
-			fmt.Printf("settings: can not find logfan.(json|toml|yml) in %s\nerror: %s\n", settings, err)
+			fmt.Printf("settings: can not find bitfan.(json|toml|yml) in %s\nerror: %s\n", settings, err)
 			os.Exit(2)
 		}
 	} else {
-		viper.AddConfigPath("/etc/logfan/")  // path to look for the config file in
-		viper.AddConfigPath("$HOME/.logfan") // call multiple times to add many search paths
+		viper.AddConfigPath("/etc/bitfan/")  // path to look for the config file in
+		viper.AddConfigPath("$HOME/.bitfan") // call multiple times to add many search paths
 		viper.AddConfigPath(".")             // optionally look for config in the working directory
 		viper.ReadInConfig()                 // Find and read the config file
 	}
@@ -117,7 +117,7 @@ func init() {
 	RootCmd.Flags().MarkDeprecated("version", "use the version command")
 	RootCmd.Flags().MarkHidden("filterworkers")
 
-	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.logfan/ then /etc/logfan/", "Set the directory containing the logfan.toml settings")
+	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.bitfan/ then /etc/bitfan/", "Set the directory containing the bitfan.toml settings")
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
 	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity to the first level (info), less verbose.")
 	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace), more verbose.")
@@ -129,7 +129,7 @@ func init() {
 // 		viper.SetConfigFile(cfgFile)
 // 	}
 
-// 	viper.SetConfigName(".logfan") // name of config file (without extension)
+// 	viper.SetConfigName(".bitfan") // name of config file (without extension)
 // 	viper.AddConfigPath("$HOME")     // adding home directory as first search path
 // 	viper.AutomaticEnv()             // read in environment variables that match
 

@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/veino/logfan/lib"
+	"github.com/veino/bitfan/lib"
 	"github.com/veino/veino/runtime"
 	"github.com/veino/veino/runtime/metrics"
 )
@@ -36,11 +36,11 @@ func init() {
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run [config1] [config2] [config...]",
-	Short: "Run logfan",
+	Short: "Run bitfan",
 	Long: `Load and run pipelines configured in configuration files (logstash format)
 you can set multiples files, urls, diretories, or a configuration content as a string (mimic the logstash -e flag)
 
-When no configuration is passed to the command, logfan use the config set in global settings file logfan.(toml|yml|json)
+When no configuration is passed to the command, bitfan use the config set in global settings file bitfan.(toml|yml|json)
 	`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		initRunConfig(cmd)
@@ -113,7 +113,7 @@ When no configuration is passed to the command, logfan use the config set in glo
 			log.Println("Veino API listening on", viper.GetString("host"))
 		}
 
-		log.Println("logfan ready")
+		log.Println("bitfan ready")
 
 		if service.Interactive() {
 			// Wait for signal CTRL+C for send a stop event to all AgentProcessor

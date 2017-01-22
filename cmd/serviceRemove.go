@@ -21,7 +21,7 @@ var serviceRemoveCmd = &cobra.Command{
 		if err := s.Uninstall(); err != nil {
 			log.Fatal(err)
 		}
-		log.Println("service logfan successfully removed")
+		log.Println("service bitfan successfully removed")
 		os.Exit(0)
 	},
 }

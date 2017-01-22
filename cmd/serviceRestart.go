@@ -13,26 +13,26 @@ func init() {
 // serviceRestartCmd represents the serviceRestart command
 var serviceRestartCmd = &cobra.Command{
 	Use:   "restart",
-	Short: "restart a logfan service",
+	Short: "restart a bitfan service",
 
 	Run: func(cmd *cobra.Command, args []string) {
 
 		s := getService(nil)
 
-		log.Println("stopping logfan service...")
+		log.Println("stopping bitfan service...")
 		err := s.Stop()
 		if err != nil {
 			log.Printf("stop service error : %s", err)
 		} else {
-			// log.Println("service logfan stopped")
+			// log.Println("service bitfan stopped")
 		}
 
-		log.Println("starting logfan service...")
+		log.Println("starting bitfan service...")
 		err = s.Start()
 		if err != nil {
 			log.Printf("start service error : %s", err)
 		} else {
-			// log.Println("service logfan started")
+			// log.Println("service bitfan started")
 		}
 
 	},

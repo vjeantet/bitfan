@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/veino/logfan/parser"
+	"github.com/veino/bitfan/parser"
 	"github.com/veino/veino/config"
 )
 

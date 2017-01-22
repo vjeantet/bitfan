@@ -4,13 +4,13 @@
 
 #host = "127.0.0.1:1234"
 
-data = "/tmp/logfan"
+data = "/tmp/bitfan"
 
 # debug = true
 
 # verbose = true
 
-# log = "/tmp/logfan.log"
+# log = "/tmp/bitfan.log"
 
 [plugin]
 workers = 2
@@ -24,4 +24,4 @@ listen = "127.0.0.1:3333"
 
 # [[log]]
 # type = "file"
-# path = "/tmp/logfan.log"
+# path = "/tmp/bitfan.log"

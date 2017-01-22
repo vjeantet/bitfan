@@ -6,14 +6,14 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/veino/logfan/lib"
+	"github.com/veino/bitfan/lib"
 )
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
 	Use:     "start [config]",
 	Aliases: []string{"add", "create"},
-	Short:   "Start a new pipeline to the running logfan",
+	Short:   "Start a new pipeline to the running bitfan",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},

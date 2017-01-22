@@ -21,7 +21,7 @@ import (
 	"runtime"
 
 	"github.com/kardianos/service"
-	"github.com/veino/logfan/cmd"
+	"github.com/veino/bitfan/cmd"
 )
 
 var version = "dev"

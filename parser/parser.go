@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/veino/logfan/parser/conditionalexpression"
+	"github.com/veino/bitfan/parser/conditionalexpression"
 )
 
 type Parser struct {

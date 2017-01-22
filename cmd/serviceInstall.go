@@ -18,7 +18,7 @@ func init() {
 // serviceInstallCmd represents the serviceInstall command
 var serviceInstallCmd = &cobra.Command{
 	Use:   "install [config1] [config2]",
-	Short: "install logfan as a service",
+	Short: "install bitfan as a service",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		initRunConfig(cmd)
 	},

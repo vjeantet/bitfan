@@ -23,7 +23,7 @@ func init() {
 var serviceCmd = &cobra.Command{
 	Use:     "service",
 	Aliases: []string{"s", "svc"},
-	Short:   "Install and manage logfan service",
+	Short:   "Install and manage bitfan service",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		initSettings(cmd)
 		viper.BindPFlag("workers", cmd.Flags().Lookup("filterworkers"))
@@ -38,9 +38,9 @@ var serviceCmd = &cobra.Command{
 
 func getServiceConfig() *service.Config {
 	return &service.Config{
-		Name:        "logfan",
-		DisplayName: "logfan",
-		Description: "logfan",
+		Name:        "bitfan",
+		DisplayName: "bitfan",
+		Description: "bitfan",
 	}
 }
 func GetService() service.Service {
@@ -71,12 +71,12 @@ func getService(svcConfig *service.Config) service.Service {
 
 func (p *sprogram) Start(s service.Service) error {
 	go Execute()
-	slogger.Infof("Logfan service started")
+	slogger.Infof("Bitfan service started")
 	return nil
 }
 
 func (p *sprogram) Stop(s service.Service) error {
 	runtime.Stop()
-	slogger.Info("Logfan Stopped")
+	slogger.Info("Bitfan Stopped")
 	return nil
 }

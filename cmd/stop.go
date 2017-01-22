@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/veino/logfan/lib"
+	"github.com/veino/bitfan/lib"
 )
 
 // stopCmd represents the stop command
