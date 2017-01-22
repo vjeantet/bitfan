@@ -81,11 +81,13 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) []config.Agent {
 
 	var agent config.Agent
 	agent = config.NewAgent()
-
 	agent.Type = "input_" + plugin.Name
-	agent.Label = fmt.Sprintf("%s", plugin.Name)
-	agent.ID = agent.Label + "-" + agent.ID
-	agent.Buffer = 200
+	if plugin.Label == "" {
+		agent.Label = plugin.Name
+	} else {
+		agent.Label = plugin.Label
+	}
+	agent.Buffer = 20
 	agent.PoolSize = 1
 	agent.Wd = pwd
 
@@ -150,9 +152,12 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	var agent config.Agent
 	agent = config.NewAgent()
 	agent.Type = "output_" + plugin.Name
-	agent.Label = fmt.Sprintf("%s", plugin.Name)
-	agent.ID = agent.Label + "-" + agent.ID
-	agent.Buffer = 200
+	if plugin.Label == "" {
+		agent.Label = plugin.Name
+	} else {
+		agent.Label = plugin.Label
+	}
+	agent.Buffer = 20
 	agent.PoolSize = 1
 	agent.Wd = pwd
 
@@ -239,11 +244,14 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 
 	var agent config.Agent
 	agent = config.NewAgent()
-
 	agent.Type = plugin.Name
-	agent.Label = fmt.Sprintf("%s", plugin.Name)
-	agent.ID = agent.Label + "-" + agent.ID
-	agent.Buffer = 200
+	if plugin.Label == "" {
+		agent.Label = plugin.Name
+	} else {
+		agent.Label = plugin.Label
+	}
+
+	agent.Buffer = 20
 	agent.PoolSize = 2
 	agent.Wd = pwd
 
