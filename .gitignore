@@ -34,3 +34,5 @@ releases
 /.sincedb.json
 
 /test/
+
+/data/
