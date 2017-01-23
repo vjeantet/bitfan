@@ -39,6 +39,9 @@ var RootCmd = &cobra.Command{
 		viper.BindPFlag("log", cmd.Flags().Lookup("log"))
 		viper.BindPFlag("verbose", cmd.Flags().Lookup("verbose"))
 		viper.BindPFlag("debug", cmd.Flags().Lookup("debug"))
+
+		viper.BindPFlag("verboseProc", cmd.Flags().Lookup("verboseProc"))
+		viper.BindPFlag("debugProc", cmd.Flags().Lookup("debugProc"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -121,6 +124,12 @@ func init() {
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
 	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity to the first level (info), less verbose.")
 	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace), more verbose.")
+
+	RootCmd.PersistentFlags().Bool("verboseProc", false, "Increase verbosity to the first level (info), less verbose.")
+	RootCmd.PersistentFlags().Bool("debugProc", false, "Increase verbosity to the last level (trace), more verbose.")
+	RootCmd.Flags().MarkHidden("verboseProc")
+	RootCmd.Flags().MarkHidden("debugProc")
+
 }
 
 // initConfig reads in config file and ENV variables if set.

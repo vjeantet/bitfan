@@ -17,6 +17,7 @@ package cmd
 import (
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/kardianos/service"
@@ -48,8 +49,13 @@ When no configuration is passed to the command, bitfan use the config set in glo
 	Run: func(cmd *cobra.Command, args []string) {
 		runtime.SetLogVerboseMode(viper.GetBool("verbose"))
 		runtime.SetLogDebugMode(viper.GetBool("debug"))
+
+		runtime.SetProcessorLogVerboseMode(viper.GetBool("verboseProc"))
+		runtime.SetProcessorLogDebugMode(viper.GetBool("debugProc"))
+
 		if viper.IsSet("log") {
 			runtime.SetLogOutputFile(viper.GetString("log"))
+			runtime.SetProcessorLogOutputFile(viper.GetString("log"))
 		}
 		log := runtime.Logger()
 
@@ -73,6 +79,12 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			stats = &metrics.StatsVoid{}
 		}
 		runtime.SetIStat(stats)
+
+		if true == viper.IsSet("data") {
+			runtime.SetDataLocation(viper.GetString("data"))
+		} else {
+			runtime.SetDataLocation(filepath.Join(cwd, "data"))
+		}
 
 		if viper.GetBool("no-network") {
 			runtime.Start("")
@@ -140,6 +152,7 @@ func initRunConfig(cmd *cobra.Command) {
 	viper.BindPFlag("webhook.listen", cmd.Flags().Lookup("webhook.listen"))
 	viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	viper.BindPFlag("no-network", cmd.Flags().Lookup("no-network"))
+	viper.BindPFlag("data", cmd.Flags().Lookup("data"))
 }
 
 func initRunFlags(cmd *cobra.Command) {
@@ -151,4 +164,5 @@ func initRunFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("no-network", false, "Disable network (api and webhook)")
 	cmd.Flags().String("name", "", "set pipeline's name")
 	cmd.Flags().String("id", "", "set pipeline's id")
+	cmd.Flags().String("data", "", "Path to data dir")
 }
