@@ -142,9 +142,8 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 				// add "use" plugin to combined pipelines
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
 
-				outPort := config.Port{AgentID: CombinedFileConfigAgents[0].ID, PortNumber: 0}
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, []config.Port{outPort}
+				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}
 			}
 		}
 	}
@@ -354,8 +353,13 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 					// save pipeline a outputs for later return
 					newOutPorts = append(newOutPorts, config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0})
 				}
+				// connect all collected newOutPorts to "use" agent
+				agent.XSources = append(agent.XSources, newOutPorts...)
+
+				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
+
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, newOutPorts
+				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}
 			}
 		}
 	}
