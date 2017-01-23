@@ -380,7 +380,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []config.Agent{agent}...)
 
 		// return untouched outputsPorts
-		return CombinedFileConfigAgents, lastOutPorts
+		return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 1}}
 	}
 
 	// interval can be a number, a string number or a cron string pattern
