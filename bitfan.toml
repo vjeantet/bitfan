@@ -9,7 +9,7 @@
 # debug = true
 
 verbose = true
-
+verboseProc = true
 # log = "/tmp/bitfan.log"
 
 [plugin]

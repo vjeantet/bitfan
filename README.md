@@ -65,7 +65,7 @@ Use "bitfan [command] --help" for more information about a command.
 ## include configuration from other configuration
 ### include configuration from an URL
 ```
-$ bitfan run "input{stdin{}} filter{use{url=>'https://raw.githubusercontent.com/veino/bitfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
+$ bitfan run "input{stdin{}} filter{use{path=>'https://raw.githubusercontent.com/veino/bitfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
 ```
 
 ## use configuration file on local filesystem
@@ -96,7 +96,8 @@ See examples in examples.d/use/ folder
 - [x] list currently runnnung pipelines
 - [x] start new pipelines in a running instance
 - [x] stop a pipeline without stopping other
-
+- [x] import external configuration from configuration (use)
+- [x] dispatch message to another configuration from configuration (fork)
 
 
 # Supported inputs, filters and outputs in config file
