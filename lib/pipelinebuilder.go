@@ -9,13 +9,11 @@ import (
 	"github.com/veino/veino/config"
 )
 
-func parseConfigLocation(name string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
+func parseConfigLocation(name string, path string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
 	var locs Locations
 
-	if v, ok := options["path"]; ok {
-		locs.Add(v.(string), pwd)
-	} else if v, ok := options["url"]; ok {
-		locs.Add(v.(string), pwd)
+	if path != "" {
+		locs.Add(path, pwd)
 	} else {
 		return []config.Agent{}, fmt.Errorf("no location provided to get content from ; options=%v ", options)
 	}
@@ -110,7 +108,8 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 		if v, ok := agent.Options["path"]; ok {
 			switch v.(type) {
 			case string:
-				fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "input", "filter")
+				agent.Options["path"] = []string{v.(string)}
+				fileConfigAgents, _ := parseConfigLocation("", v.(string), agent.Options, pwd, "input", "filter")
 
 				// add agent "use" - set use agent Source as last From FileConfigAgents
 				inPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
@@ -124,9 +123,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 				newOutPorts := []config.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
-					agent.Options["path"] = p.(string)
-
-					fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "input", "filter")
+					fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "input", "filter")
 
 					// save pipeline a for later return
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
@@ -215,7 +212,8 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		if v, ok := agent.Options["path"]; ok {
 			switch v.(type) {
 			case string:
-				fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "filter", "output")
+				agent.Options["path"] = []string{v.(string)}
+				fileConfigAgents, _ := parseConfigLocation("", v.(string), agent.Options, pwd, "filter", "output")
 
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
@@ -229,8 +227,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			case []interface{}:
 				CombinedFileConfigAgents := []config.Agent{}
 				for _, p := range v.([]interface{}) {
-					agent.Options["path"] = p.(string)
-					fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "filter", "output")
+					fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
 
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
@@ -323,7 +320,8 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		if v, ok := agent.Options["path"]; ok {
 			switch v.(type) {
 			case string:
-				fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "filter")
+				agent.Options["path"] = []string{v.(string)}
+				fileConfigAgents, _ := parseConfigLocation("", v.(string), agent.Options, pwd, "filter")
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
 					inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
@@ -340,8 +338,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				newOutPorts := []config.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
-					agent.Options["path"] = p.(string)
-					fileConfigAgents, _ := parseConfigLocation("", agent.Options, pwd, "filter")
+					fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "filter")
 					// connect pipeline a first agent Xsource to lastOutPorts output
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
