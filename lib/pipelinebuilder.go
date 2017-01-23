@@ -350,15 +350,37 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 					// save pipeline a outputs for later return
 					newOutPorts = append(newOutPorts, config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0})
 				}
+
 				// connect all collected newOutPorts to "use" agent
 				agent.XSources = append(agent.XSources, newOutPorts...)
-
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
 				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}
 			}
 		}
+	}
+
+	// Fork = set a pipeline, but do not reconnect it
+	if plugin.Name == "fork" {
+		CombinedFileConfigAgents := []config.Agent{}
+		for _, p := range agent.Options["path"].([]interface{}) {
+			fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
+
+			// connect pipeline a last agent Xsource to lastOutPorts output
+			lastUsedAgent := &fileConfigAgents[0]
+			lastUsedAgent.XSources = append(lastUsedAgent.XSources, config.Port{AgentID: agent.ID, PortNumber: 0})
+
+			CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
+		}
+
+		// connect fork to lastOutPorts
+		agent.XSources = append(agent.XSources, lastOutPorts...)
+		// add fork to forkedpipelines
+		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []config.Agent{agent}...)
+
+		// return untouched outputsPorts
+		return CombinedFileConfigAgents, lastOutPorts
 	}
 
 	// interval can be a number, a string number or a cron string pattern

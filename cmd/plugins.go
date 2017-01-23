@@ -13,6 +13,7 @@ import (
 	mutate "github.com/veino/veino/processors/filter-mutate"
 	split "github.com/veino/veino/processors/filter-split"
 	uuid "github.com/veino/veino/processors/filter-uuid"
+	fork "github.com/veino/veino/processors/fork"
 	beatsinput "github.com/veino/veino/processors/input-beats"
 	execinput "github.com/veino/veino/processors/input-exec"
 	file "github.com/veino/veino/processors/input-file"
@@ -69,6 +70,7 @@ func init() {
 	initPlugin("filter", "when", when.New)
 	initPlugin("filter", "digest", digest.New)
 	initPlugin("filter", "use", use.New)
+	initPlugin("filter", "fork", fork.New)
 
 	initPlugin("output", "stdout", stdout.New)
 	initPlugin("output", "statsd", statsd.New)
