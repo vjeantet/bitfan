@@ -361,8 +361,8 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		}
 	}
 
-	// Fork = set a pipeline, but do not reconnect it
-	if plugin.Name == "fork" {
+	// route = set a pipeline, but do not reconnect it
+	if plugin.Name == "route" {
 		CombinedFileConfigAgents := []config.Agent{}
 		for _, p := range agent.Options["path"].([]interface{}) {
 			fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
@@ -374,9 +374,9 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
 		}
 
-		// connect fork to lastOutPorts
+		// connect route to lastOutPorts
 		agent.XSources = append(agent.XSources, lastOutPorts...)
-		// add fork to forkedpipelines
+		// add route to routeedpipelines
 		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []config.Agent{agent}...)
 
 		// return untouched outputsPorts

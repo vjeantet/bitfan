@@ -13,7 +13,6 @@ import (
 	mutate "github.com/veino/veino/processors/filter-mutate"
 	split "github.com/veino/veino/processors/filter-split"
 	uuid "github.com/veino/veino/processors/filter-uuid"
-	fork "github.com/veino/veino/processors/fork"
 	beatsinput "github.com/veino/veino/processors/input-beats"
 	execinput "github.com/veino/veino/processors/input-exec"
 	file "github.com/veino/veino/processors/input-file"
@@ -36,6 +35,7 @@ import (
 	rabbitmqoutput "github.com/veino/veino/processors/output-rabbitmq"
 	statsd "github.com/veino/veino/processors/output-statsd"
 	stdout "github.com/veino/veino/processors/output-stdout"
+	route "github.com/veino/veino/processors/route"
 	use "github.com/veino/veino/processors/use"
 	when "github.com/veino/veino/processors/when"
 	"github.com/veino/veino/runtime"
@@ -70,7 +70,7 @@ func init() {
 	initPlugin("filter", "when", when.New)
 	initPlugin("filter", "digest", digest.New)
 	initPlugin("filter", "use", use.New)
-	initPlugin("filter", "fork", fork.New)
+	initPlugin("filter", "route", route.New)
 
 	initPlugin("output", "stdout", stdout.New)
 	initPlugin("output", "statsd", statsd.New)
