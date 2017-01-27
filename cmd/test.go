@@ -52,9 +52,9 @@ func testConfigContent(loc *lib.Location) error {
 		return fmt.Errorf("%s", err.Error())
 	}
 
-	configAgentsOrdered := config.Sort(configAgents, config.SortOutputsFirst)
+	configAgentsOrdered := config.Sort(configAgents, config.SortInputsFirst)
 	for _, configAgent := range configAgentsOrdered {
-		_, err := runtime.NewAgent(configAgent, 0)
+		_, err := runtime.NewAgent(configAgent)
 		if err != nil {
 			return fmt.Errorf("%s", err.Error())
 		}

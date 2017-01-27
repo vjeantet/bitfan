@@ -14,16 +14,16 @@ type ApiStarter struct {
 }
 
 func ApiServe(veinoHost string) {
-	gotalk.Handle("findPipelines", func() (config.PipelineList, error) {
-		return config.Pipelines(), nil
-	})
+	// gotalk.Handle("findPipelines", func() (config.PipelineList, error) {
+	// 	return config.Pipelines(), nil
+	// })
 
-	gotalk.Handle("stopPipeline", func(ID string) (bool, error) {
+	gotalk.Handle("stopPipeline", func(ID int) (bool, error) {
 		err := runtime.StopPipeline(ID)
 		return true, err
 	})
 
-	gotalk.Handle("startPipeline", func(starter ApiStarter) (string, error) {
+	gotalk.Handle("startPipeline", func(starter ApiStarter) (int, error) {
 		ID, err := runtime.StartPipeline(&starter.Pipeline, starter.Agents)
 		return ID, err
 	})

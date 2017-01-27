@@ -113,7 +113,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 
 				// add agent "use" - set use agent Source as last From FileConfigAgents
 				inPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
-				agent.XSources = append(agent.XSources, inPort)
+				agent.AgentSources = append(agent.AgentSources, inPort)
 				fileConfigAgents = append([]config.Agent{agent}, fileConfigAgents...)
 
 				outPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
@@ -134,7 +134,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 				}
 
 				// connect all collected inPort to "use" agent
-				agent.XSources = append(agent.XSources, newOutPorts...)
+				agent.AgentSources = append(agent.AgentSources, newOutPorts...)
 
 				// add "use" plugin to combined pipelines
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
@@ -218,7 +218,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
 					inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
-					firstUsedAgent.XSources = append(firstUsedAgent.XSources, inPort)
+					firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 				}
 
 				//specific to output
@@ -232,7 +232,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
 						inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
-						firstUsedAgent.XSources = append(firstUsedAgent.XSources, inPort)
+						firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 					}
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
 				}
@@ -243,10 +243,10 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	}
 
 	// Plugin Sources
-	agent.XSources = config.PortList{}
+	agent.AgentSources = config.PortList{}
 	for _, sourceport := range lastOutPorts {
 		inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
-		agent.XSources = append(agent.XSources, inPort)
+		agent.AgentSources = append(agent.AgentSources, inPort)
 	}
 
 	if plugin.Codec != nil {
@@ -325,7 +325,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
 					inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
-					firstUsedAgent.XSources = append(firstUsedAgent.XSources, inPort)
+					firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 				}
 
 				newOutPorts := []config.Port{
@@ -343,7 +343,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
 						inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
-						firstUsedAgent.XSources = append(firstUsedAgent.XSources, inPort)
+						firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 					}
 					// save pipeline a for later return
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
@@ -352,7 +352,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				}
 
 				// connect all collected newOutPorts to "use" agent
-				agent.XSources = append(agent.XSources, newOutPorts...)
+				agent.AgentSources = append(agent.AgentSources, newOutPorts...)
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
@@ -369,13 +369,13 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 
 			// connect pipeline a last agent Xsource to lastOutPorts output
 			lastUsedAgent := &fileConfigAgents[0]
-			lastUsedAgent.XSources = append(lastUsedAgent.XSources, config.Port{AgentID: agent.ID, PortNumber: 0})
+			lastUsedAgent.AgentSources = append(lastUsedAgent.AgentSources, config.Port{AgentID: agent.ID, PortNumber: 0})
 
 			CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
 		}
 
 		// connect route to lastOutPorts
-		agent.XSources = append(agent.XSources, lastOutPorts...)
+		agent.AgentSources = append(agent.AgentSources, lastOutPorts...)
 		// add route to routeedpipelines
 		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []config.Agent{agent}...)
 
@@ -410,10 +410,10 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	}
 
 	// Plugin Sources
-	agent.XSources = config.PortList{}
+	agent.AgentSources = config.PortList{}
 	for _, sourceport := range lastOutPorts {
 		inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
-		agent.XSources = append(agent.XSources, inPort)
+		agent.AgentSources = append(agent.AgentSources, inPort)
 	}
 
 	// By Default Agents output to port 0

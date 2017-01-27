@@ -40,7 +40,7 @@ var startCmd = &cobra.Command{
 					ppl.Name, _ = cmd.Flags().GetString("name")
 				}
 				if cmd.Flags().Changed("id") {
-					ppl.ID, _ = cmd.Flags().GetString("id")
+					ppl.ID, _ = cmd.Flags().GetInt("id")
 				}
 			}
 
