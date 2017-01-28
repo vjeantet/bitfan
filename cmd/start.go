@@ -50,12 +50,12 @@ var startCmd = &cobra.Command{
 			}
 
 			s := lib.ApiClient(viper.GetString("host"))
-			ID := ""
+			ID := 0
 			if err := s.Request("startPipeline", starter, &ID); err != nil {
 				fmt.Printf("error : %s\n", err.Error())
 				os.Exit(1)
 			} else {
-				fmt.Printf("Started (PID:%s) - %s\n", ID, loc.Path)
+				fmt.Printf("Started (ID:%d) - %s\n", ID, loc.Path)
 			}
 		}
 	},

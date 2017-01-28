@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -21,8 +22,14 @@ var stopCmd = &cobra.Command{
 		s := lib.ApiClient(viper.GetString("host"))
 		for _, ID := range args {
 			// Send a request & read result
-			retour := false
-			if err := s.Request("stopPipeline", ID, &retour); err != nil {
+			IDInt, err := strconv.Atoi(ID)
+			if err != nil {
+				fmt.Printf("error : %s\n", err.Error())
+				return
+			}
+
+			var retour bool
+			if err := s.Request("stopPipeline", IDInt, &retour); err != nil {
 				fmt.Printf("error : %s\n", err.Error())
 				os.Exit(1)
 			} else {

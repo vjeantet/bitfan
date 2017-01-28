@@ -15,8 +15,17 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+	"strconv"
+
+	fqdn "github.com/ShowMax/go-fqdn"
+	humanize "github.com/dustin/go-humanize"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/veino/bitfan/lib"
+	"github.com/veino/veino/runtime"
 )
 
 func init() {
@@ -35,39 +44,41 @@ var listCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		// s := lib.ApiClient(viper.GetString("host"))
+		s := lib.ApiClient(viper.GetString("host"))
 
-		// // Send a request & read result
-		// var pipelines = config.PipelineList{}
-		// if err := s.Request("findPipelines", "", &pipelines); err != nil {
-		// 	fmt.Printf("list error: %v\n", err.Error())
-		// } else {
+		// Send a request & read result
+		var pipelines = map[int]*runtime.Pipeline{}
+		if err := s.Request("findPipelines", "", &pipelines); err != nil {
+			fmt.Printf("list error: %v\n", err.Error())
+		} else {
 
-		// 	table := tablewriter.NewWriter(os.Stdout)
-		// 	table.SetHeader([]string{
-		// 		"ID",
-		// 		"name",
-		// 		"Started at",
-		// 		"processors",
-		// 		"description",
-		// 		"configuration",
-		// 	})
-		// 	for _, pipeline := range pipelines {
-		// 		table.Append([]string{
-		// 			pipeline.ID,
-		// 			pipeline.Name,
-		// 			pipeline.StartedAt.Format("2006-01-02 15:04:05"),
-		// 			strconv.Itoa(len(pipeline.AgentsID)),
-		// 			pipeline.Description,
-		// 			fmt.Sprintf("%s@%s",
-		// 				pipeline.ConfigHostLocation,
-		// 				pipeline.ConfigLocation),
-		// 		})
-		// 	}
-		// 	// table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-		// 	table.SetCenterSeparator("+")
-		// 	table.Render()
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{
+				"ID",
+				"name",
+				"Started",
+				"configuration",
+			})
 
-		// }
+			for _, pipeline := range pipelines {
+				host := ""
+				if pipeline.ConfigHostLocation != fqdn.Get() {
+					host = pipeline.ConfigHostLocation + "@"
+				}
+
+				table.Append([]string{
+					strconv.Itoa(pipeline.ID),
+					pipeline.Label,
+					humanize.Time(pipeline.StartedAt),
+					fmt.Sprintf("%s%s",
+						host,
+						pipeline.ConfigLocation),
+				})
+			}
+			// table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+			table.SetCenterSeparator("+")
+			table.Render()
+
+		}
 	},
 }

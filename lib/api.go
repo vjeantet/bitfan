@@ -14,9 +14,9 @@ type ApiStarter struct {
 }
 
 func ApiServe(veinoHost string) {
-	// gotalk.Handle("findPipelines", func() (config.PipelineList, error) {
-	// 	return config.Pipelines(), nil
-	// })
+	gotalk.Handle("findPipelines", func() (map[int]*runtime.Pipeline, error) {
+		return runtime.Pipelines(), nil
+	})
 
 	gotalk.Handle("stopPipeline", func(ID int) (bool, error) {
 		err := runtime.StopPipeline(ID)
