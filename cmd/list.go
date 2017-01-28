@@ -20,7 +20,6 @@ import (
 	"strconv"
 
 	fqdn "github.com/ShowMax/go-fqdn"
-	humanize "github.com/dustin/go-humanize"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -56,7 +55,6 @@ var listCmd = &cobra.Command{
 			table.SetHeader([]string{
 				"ID",
 				"name",
-				"Started",
 				"configuration",
 			})
 
@@ -69,7 +67,6 @@ var listCmd = &cobra.Command{
 				table.Append([]string{
 					strconv.Itoa(pipeline.ID),
 					pipeline.Label,
-					humanize.Time(pipeline.StartedAt),
 					fmt.Sprintf("%s%s",
 						host,
 						pipeline.ConfigLocation),
