@@ -6,7 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/veino/bitfan/lib"
+	"github.com/vjeantet/bitfan/core/api"
+	"github.com/vjeantet/bitfan/lib"
 )
 
 // startCmd represents the start command
@@ -44,12 +45,12 @@ var startCmd = &cobra.Command{
 				}
 			}
 
-			starter := &lib.ApiStarter{
+			starter := &api.ApiStarter{
 				Pipeline: ppl,
 				Agents:   agt,
 			}
 
-			s := lib.ApiClient(viper.GetString("host"))
+			s := api.ApiClient(viper.GetString("host"))
 			ID := 0
 			if err := s.Request("startPipeline", starter, &ID); err != nil {
 				fmt.Printf("error : %s\n", err.Error())

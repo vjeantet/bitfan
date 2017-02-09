@@ -1,44 +1,44 @@
 package cmd
 
 import (
-	"github.com/veino/veino"
-	date "github.com/veino/veino/processors/filter-date"
-	digest "github.com/veino/veino/processors/filter-digest"
-	drop "github.com/veino/veino/processors/filter-drop"
-	geoip "github.com/veino/veino/processors/filter-geoip"
-	grok "github.com/veino/veino/processors/filter-grok"
-	html "github.com/veino/veino/processors/filter-html"
-	json "github.com/veino/veino/processors/filter-json"
-	kv "github.com/veino/veino/processors/filter-kv"
-	mutate "github.com/veino/veino/processors/filter-mutate"
-	split "github.com/veino/veino/processors/filter-split"
-	uuid "github.com/veino/veino/processors/filter-uuid"
-	beatsinput "github.com/veino/veino/processors/input-beats"
-	execinput "github.com/veino/veino/processors/input-exec"
-	file "github.com/veino/veino/processors/input-file"
-	httppoller "github.com/veino/veino/processors/input-httppoller"
-	rabbitmqinput "github.com/veino/veino/processors/input-rabbitmq"
-	inputsql "github.com/veino/veino/processors/input-sql"
-	stdin "github.com/veino/veino/processors/input-stdin"
-	sysloginput "github.com/veino/veino/processors/input-syslog"
-	tail "github.com/veino/veino/processors/input-tail"
-	twitter "github.com/veino/veino/processors/input-twitter"
-	udpinput "github.com/veino/veino/processors/input-udp"
-	unixinput "github.com/veino/veino/processors/input-unix"
-	elasticsearch "github.com/veino/veino/processors/output-elasticsearch"
-	elasticsearch2 "github.com/veino/veino/processors/output-elasticsearch2"
-	email "github.com/veino/veino/processors/output-email"
-	fileoutput "github.com/veino/veino/processors/output-file"
-	glusterfsoutput "github.com/veino/veino/processors/output-glusterfs"
-	mongodb "github.com/veino/veino/processors/output-mongodb"
-	null "github.com/veino/veino/processors/output-null"
-	rabbitmqoutput "github.com/veino/veino/processors/output-rabbitmq"
-	statsd "github.com/veino/veino/processors/output-statsd"
-	stdout "github.com/veino/veino/processors/output-stdout"
-	route "github.com/veino/veino/processors/route"
-	use "github.com/veino/veino/processors/use"
-	when "github.com/veino/veino/processors/when"
-	"github.com/veino/veino/runtime"
+	"github.com/vjeantet/bitfan/core"
+	date "github.com/vjeantet/bitfan/processors/filter-date"
+	digest "github.com/vjeantet/bitfan/processors/filter-digest"
+	drop "github.com/vjeantet/bitfan/processors/filter-drop"
+	geoip "github.com/vjeantet/bitfan/processors/filter-geoip"
+	grok "github.com/vjeantet/bitfan/processors/filter-grok"
+	html "github.com/vjeantet/bitfan/processors/filter-html"
+	json "github.com/vjeantet/bitfan/processors/filter-json"
+	kv "github.com/vjeantet/bitfan/processors/filter-kv"
+	mutate "github.com/vjeantet/bitfan/processors/filter-mutate"
+	split "github.com/vjeantet/bitfan/processors/filter-split"
+	uuid "github.com/vjeantet/bitfan/processors/filter-uuid"
+	beatsinput "github.com/vjeantet/bitfan/processors/input-beats"
+	execinput "github.com/vjeantet/bitfan/processors/input-exec"
+	file "github.com/vjeantet/bitfan/processors/input-file"
+	gennumbers "github.com/vjeantet/bitfan/processors/input-gennumbers"
+	httppoller "github.com/vjeantet/bitfan/processors/input-httppoller"
+	rabbitmqinput "github.com/vjeantet/bitfan/processors/input-rabbitmq"
+	inputsql "github.com/vjeantet/bitfan/processors/input-sql"
+	stdin "github.com/vjeantet/bitfan/processors/input-stdin"
+	sysloginput "github.com/vjeantet/bitfan/processors/input-syslog"
+	tail "github.com/vjeantet/bitfan/processors/input-tail"
+	twitter "github.com/vjeantet/bitfan/processors/input-twitter"
+	udpinput "github.com/vjeantet/bitfan/processors/input-udp"
+	unixinput "github.com/vjeantet/bitfan/processors/input-unix"
+	elasticsearch "github.com/vjeantet/bitfan/processors/output-elasticsearch"
+	elasticsearch2 "github.com/vjeantet/bitfan/processors/output-elasticsearch2"
+	email "github.com/vjeantet/bitfan/processors/output-email"
+	fileoutput "github.com/vjeantet/bitfan/processors/output-file"
+	glusterfsoutput "github.com/vjeantet/bitfan/processors/output-glusterfs"
+	mongodb "github.com/vjeantet/bitfan/processors/output-mongodb"
+	null "github.com/vjeantet/bitfan/processors/output-null"
+	rabbitmqoutput "github.com/vjeantet/bitfan/processors/output-rabbitmq"
+	statsd "github.com/vjeantet/bitfan/processors/output-statsd"
+	stdout "github.com/vjeantet/bitfan/processors/output-stdout"
+	route "github.com/vjeantet/bitfan/processors/route"
+	use "github.com/vjeantet/bitfan/processors/use"
+	when "github.com/vjeantet/bitfan/processors/when"
 )
 
 func init() {
@@ -56,6 +56,7 @@ func init() {
 	initPlugin("input", "sql", inputsql.New)
 	initPlugin("input", "http", httppoller.New)
 	initPlugin("input", "use", use.New)
+	initPlugin("input", "gennumbers", gennumbers.New)
 
 	initPlugin("filter", "grok", grok.New)
 	initPlugin("filter", "mutate", mutate.New)
@@ -85,21 +86,21 @@ func init() {
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)
-	// plugins = map[string]map[string]*veino.ProcessorFactory{}
+	// plugins = map[string]map[string]*core.ProcessorFactory{}
 
 }
 
-func initPluginsMap() map[string]map[string]veino.ProcessorFactory {
-	return map[string]map[string]veino.ProcessorFactory{
-		"input":  map[string]veino.ProcessorFactory{},
-		"filter": map[string]veino.ProcessorFactory{},
-		"output": map[string]veino.ProcessorFactory{},
+func initPluginsMap() map[string]map[string]core.ProcessorFactory {
+	return map[string]map[string]core.ProcessorFactory{
+		"input":  map[string]core.ProcessorFactory{},
+		"filter": map[string]core.ProcessorFactory{},
+		"output": map[string]core.ProcessorFactory{},
 	}
 }
 
 var plugins = initPluginsMap()
 
-func initPlugin(kind string, name string, proc veino.ProcessorFactory) {
+func initPlugin(kind string, name string, proc core.ProcessorFactory) {
 	pl := plugins[kind]
 	pl[name] = proc
 	plugins[kind] = pl
@@ -108,5 +109,5 @@ func initPlugin(kind string, name string, proc veino.ProcessorFactory) {
 	if kind == "filter" {
 		prefix = ""
 	}
-	runtime.RegisterProcessor(prefix+name, proc)
+	core.RegisterProcessor(prefix+name, proc)
 }

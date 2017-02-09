@@ -1,0 +1,124 @@
+{
+  "swagger": "2.0",
+  "info": {},
+  "paths": {
+    "/pipelines": {
+      "get": {
+        "description": "This will show all running pipelines.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "summary": "Lists pipelines.",
+        "operationId": "listPipelines",
+        "responses": {
+          "200": {
+            "description": "Pipeline",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Pipeline"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/responses/genericError"
+          }
+        }
+      },
+      "post": {
+        "description": "This will start pipeline.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "summary": "Start a pipeline.",
+        "operationId": "addPipeline",
+        "responses": {
+          "200": {
+            "description": "Pipeline",
+            "schema": {
+              "$ref": "#/definitions/Pipeline"
+            }
+          },
+          "default": {
+            "$ref": "#/responses/genericError"
+          }
+        }
+      }
+    },
+    "/pipelines/:id": {
+      "delete": {
+        "description": "This will stop pipeline by ID.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "summary": "Stop a running pipeline.",
+        "operationId": "stopPipeline",
+        "responses": {
+          "200": {
+            "description": "Pipeline",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Pipeline"
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/responses/genericError"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Pipeline": {
+      "type": "object",
+      "properties": {
+        "config_host_location": {
+          "description": "the location's host",
+          "type": "string",
+          "x-go-name": "ConfigHostLocation"
+        },
+        "config_location": {
+          "description": "the location",
+          "type": "string",
+          "x-go-name": "ConfigLocation"
+        },
+        "id": {
+          "description": "the id for this pipeline",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "label": {
+          "description": "the Label",
+          "type": "string",
+          "minLength": 3,
+          "x-go-name": "Label"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/core/api"
+    }
+  }
+}

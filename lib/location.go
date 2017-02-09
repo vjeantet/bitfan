@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/veino/veino/config"
+	"github.com/vjeantet/bitfan/core/config"
 )
 
 const (

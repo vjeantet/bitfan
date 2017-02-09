@@ -24,9 +24,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/veino/bitfan/lib"
-	"github.com/veino/veino/runtime"
-	"github.com/veino/veino/runtime/metrics"
+	"github.com/vjeantet/bitfan/core"
+	"github.com/vjeantet/bitfan/core/api"
+	"github.com/vjeantet/bitfan/lib"
 )
 
 func init() {
@@ -47,17 +47,15 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		initRunConfig(cmd)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		runtime.SetLogVerboseMode(viper.GetBool("verbose"))
-		runtime.SetLogDebugMode(viper.GetBool("debug"))
 
-		runtime.SetProcessorLogVerboseMode(viper.GetBool("verboseProc"))
-		runtime.SetProcessorLogDebugMode(viper.GetBool("debugProc"))
+		core.SetLogVerboseMode(viper.GetStringSlice("verbose"))
+		core.SetLogDebugMode(viper.GetStringSlice("debug"))
 
 		if viper.IsSet("log") {
-			runtime.SetLogOutputFile(viper.GetString("log"))
-			runtime.SetProcessorLogOutputFile(viper.GetString("log"))
+			core.SetLogOutputFile(viper.GetString("log"))
+			core.SetProcessorLogOutputFile(viper.GetString("log"))
 		}
-		log := runtime.Logger()
+		log := core.Log()
 
 		var locations lib.Locations
 		cwd, _ := os.Getwd()
@@ -72,24 +70,21 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			}
 		}
 
-		var stats metrics.IStats
 		if true == viper.IsSet("prometheus") {
-			stats = metrics.NewPrometheus(viper.GetString("prometheus.listen"), viper.GetString("prometheus.path"))
-		} else {
-			stats = &metrics.StatsVoid{}
+			metrics := core.NewPrometheus(viper.GetString("prometheus.listen"), viper.GetString("prometheus.path"))
+			core.SetMetrics(metrics)
 		}
-		runtime.SetIStat(stats)
 
 		if true == viper.IsSet("data") {
-			runtime.SetDataLocation(viper.GetString("data"))
+			core.SetDataLocation(viper.GetString("data"))
 		} else {
-			runtime.SetDataLocation(filepath.Join(cwd, "data"))
+			core.SetDataLocation(filepath.Join(cwd, "data"))
 		}
 
 		if viper.GetBool("no-network") {
-			runtime.Start("")
+			core.Start("")
 		} else {
-			runtime.Start(viper.GetString("webhook.listen"))
+			core.Start(viper.GetString("webhook.listen"))
 		}
 
 		for _, loc := range locations.Items {
@@ -111,7 +106,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 				}
 			}
 
-			_, err = runtime.StartPipeline(&ppl, agt)
+			_, err = core.StartPipeline(&ppl, agt)
 			if err != nil {
 				log.Printf("error : %s\n", err.Error())
 				os.Exit(1)
@@ -119,10 +114,10 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		}
 
 		if viper.GetBool("no-network") {
-			log.Println("Veino API disabled")
+			log.Println("BitFan API disabled")
 		} else {
-			lib.ApiServe(viper.GetString("host"))
-			log.Println("Veino API listening on", viper.GetString("host"))
+			api.ApiServe(viper.GetString("host"))
+			log.Println("BitFan API listening on", viper.GetString("host"))
 		}
 
 		log.Println("bitfan ready")
@@ -137,8 +132,8 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			close(ch)
 
 			log.Println("")
-			log.Printf("LogFan is stopping...")
-			runtime.Stop()
+			log.Printf("BitFan is stopping...")
+			core.Stop()
 			log.Printf("Everything stopped gracefully. Goodbye!\n")
 		}
 

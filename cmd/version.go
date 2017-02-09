@@ -25,5 +25,5 @@ func init() {
 }
 
 func printVersion() {
-	fmt.Println("LogFan Version : " + Version + "\nUTC Build Time : " + Buildstamp)
+	fmt.Println("BitFan Version : " + Version + "\nUTC Build Time : " + Buildstamp)
 }

@@ -1,4 +1,4 @@
-//go:generate go generate github.com/veino/veino/processors/...
+//go:generate go generate github.com/vjeantet/bitfan/processors/...
 // Copyright © 2016 Valere JEANTET <valere.jeantet@gmail.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ import (
 	"runtime"
 
 	"github.com/kardianos/service"
-	"github.com/veino/bitfan/cmd"
+	"github.com/vjeantet/bitfan/cmd"
 )
 
 var version = "dev"

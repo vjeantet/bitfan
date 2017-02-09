@@ -5,9 +5,10 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/veino/bitfan/lib"
-	config "github.com/veino/veino/config"
-	runtime "github.com/veino/veino/runtime"
+
+	"github.com/vjeantet/bitfan/core"
+	config "github.com/vjeantet/bitfan/core/config"
+	"github.com/vjeantet/bitfan/lib"
 )
 
 func init() {
@@ -54,7 +55,7 @@ func testConfigContent(loc *lib.Location) error {
 
 	configAgentsOrdered := config.Sort(configAgents, config.SortInputsFirst)
 	for _, configAgent := range configAgentsOrdered {
-		_, err := runtime.NewAgent(configAgent)
+		_, err := core.NewAgent(configAgent)
 		if err != nil {
 			return fmt.Errorf("%s", err.Error())
 		}

@@ -4,11 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/k0kubun/pp"
 	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	runtime "github.com/veino/veino/runtime"
+	"github.com/vjeantet/bitfan/core"
 )
 
 var slogger service.Logger
@@ -56,7 +55,6 @@ func getService(svcConfig *service.Config) service.Service {
 	prg := &sprogram{}
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
-		pp.Println("svcConfig-->", svcConfig)
 		log.Fatal("getService New err : ", err)
 	}
 
@@ -76,7 +74,7 @@ func (p *sprogram) Start(s service.Service) error {
 }
 
 func (p *sprogram) Stop(s service.Service) error {
-	runtime.Stop()
+	core.Stop()
 	slogger.Info("Bitfan Stopped")
 	return nil
 }

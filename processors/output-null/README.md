@@ -1,0 +1,3 @@
+# NULL
+Drops everything received
+

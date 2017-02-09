@@ -26,22 +26,14 @@ import (
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "bitfan",
-	Short: "logstash like in go",
-	Long: `Process Any Data, From Any Source
-
-	logstash flags can be used but are hidden from usage
-	bitfan -f -e -t -w
-
-	`,
+	Short: "Produce, transform and consume any data",
+	Long:  `Bitfan is an open source data processing pipeline`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		initSettings(cmd)
-		viper.BindPFlag("workers", cmd.Flags().Lookup("filterworkers"))
+		viper.BindPFlag("workers", cmd.Flags().Lookup("workers"))
 		viper.BindPFlag("log", cmd.Flags().Lookup("log"))
 		viper.BindPFlag("verbose", cmd.Flags().Lookup("verbose"))
 		viper.BindPFlag("debug", cmd.Flags().Lookup("debug"))
-
-		viper.BindPFlag("verboseProc", cmd.Flags().Lookup("verboseProc"))
-		viper.BindPFlag("debugProc", cmd.Flags().Lookup("debugProc"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -112,24 +104,18 @@ func init() {
 	RootCmd.Flags().BoolP("configtest", "t", false, "Test config file or directory")
 	RootCmd.Flags().StringP("eval", "e", "", "Use the given string as the configuration data.")
 	RootCmd.Flags().BoolP("version", "V", false, "Display version info.")
-	RootCmd.Flags().IntP("filterworkers", "w", runtime.NumCPU(), "number of workers")
+	RootCmd.Flags().IntP("workers", "w", runtime.NumCPU(), "number of workers")
 
 	RootCmd.Flags().MarkDeprecated("config", "use the run command")
 	RootCmd.Flags().MarkDeprecated("configtest", "use the test command")
 	RootCmd.Flags().MarkDeprecated("eval", "use the run or test command")
 	RootCmd.Flags().MarkDeprecated("version", "use the version command")
-	RootCmd.Flags().MarkHidden("filterworkers")
+	RootCmd.Flags().MarkHidden("workers")
 
 	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.bitfan/ then /etc/bitfan/", "Set the directory containing the bitfan.toml settings")
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
-	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity to the first level (info), less verbose.")
-	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace), more verbose.")
-
-	RootCmd.PersistentFlags().Bool("verboseProc", false, "Increase verbosity to the first level (info), less verbose.")
-	RootCmd.PersistentFlags().Bool("debugProc", false, "Increase verbosity to the last level (trace), more verbose.")
-	RootCmd.Flags().MarkHidden("verboseProc")
-	RootCmd.Flags().MarkHidden("debugProc")
-
+	RootCmd.PersistentFlags().StringSlice("verbose", []string{}, "Increase verbosity of core, processors, etc... (value = core,processors)")
+	RootCmd.PersistentFlags().StringSlice("debug", []string{}, "Increase verbosity to the last level (trace) (value = core,processors)")
 }
 
 // initConfig reads in config file and ENV variables if set.

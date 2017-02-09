@@ -1,27 +1,29 @@
 # This is a TOML document.
 
-#config = [ "./examples.d/simple.conf", "/tmp/toto.conf" ]
-
 #host = "127.0.0.1:1234"
 
+# path to pipelines configuration to load on start
+config = [ "./examples.d/simple.conf"]
+
+# Where to store tmp data, sincedb, etc...
 #data = "/tmp/bitfan"
 
-# debug = true
-
-verbose = true
-verboseProc = true
+# Where to save logs ?
 # log = "/tmp/bitfan.log"
 
+# Set log verbosity on core and/or processors
+verbose = ["core"]
+# verbose = ["core","processors"]
+# debug = ["processors"]
+
+# Default number of concurent packet processing for processor ?
+# Can be overided in pipeline configuration
 [plugin]
 workers = 2
 
-[webhook]
-listen = "127.0.0.1:3333"
 
+# Expose metrics to prometheus
+# metrics names start with "bitfan_"
 [prometheus]
 listen = "127.0.0.1:1421"
 path ="/metrics"
-
-# [[log]]
-# type = "file"
-# path = "/tmp/bitfan.log"

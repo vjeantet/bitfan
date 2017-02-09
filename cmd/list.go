@@ -23,8 +23,8 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/veino/bitfan/lib"
-	"github.com/veino/veino/runtime"
+	"github.com/vjeantet/bitfan/core"
+	"github.com/vjeantet/bitfan/core/api"
 )
 
 func init() {
@@ -43,10 +43,10 @@ var listCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		s := lib.ApiClient(viper.GetString("host"))
+		s := api.ApiClient(viper.GetString("host"))
 
 		// Send a request & read result
-		var pipelines = map[int]*runtime.Pipeline{}
+		var pipelines = map[int]*core.Pipeline{}
 		if err := s.Request("findPipelines", "", &pipelines); err != nil {
 			fmt.Printf("list error: %v\n", err.Error())
 		} else {

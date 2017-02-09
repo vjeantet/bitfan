@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/veino/bitfan/parser"
-	"github.com/veino/veino/config"
+	"github.com/vjeantet/bitfan/core/config"
+	"github.com/vjeantet/bitfan/parser"
 )
 
 func parseConfigLocation(name string, path string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {

@@ -1,34 +1,31 @@
 # Bitfan
 
-Logstash like implementation with GO.
+Bitfan is an open source data processing pipeline.
 
 ![Bitfan logo](docs/static/noun_307496_cc.png "Bitfan")
 
 ## Install
-2 ways to get bitfan : download a released version or compile it from source.
 
 ### Download binary
-linux, windows, osx available here : https://github.com/veino/bitfan/releases
+linux, windows, osx available here : https://github.com/vjeantet/bitfan/releases
 
-### Get source and compile
+### Or compile from sources
 ```
-$ go get -u github.com/veino/bitfan
+$ go get -u github.com/vjeantet/bitfan
 ```
 
 ## Run 
+Example with a remote configuration file which ingest data from stdin and output a tranformation to stdout.
 ```
-$ bitfan run https://raw.githubusercontent.com/veino/bitfan/master/examples.d/simple.conf
+$ bitfan run https://raw.githubusercontent.com/vjeantet/bitfan/master/examples.d/simple.conf
 ```
-
-	logstash flags works as well `-f`, `-e`, `--configtest`, ...
-
 copy/paste this in your console
 
 ```
 127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"
 ```
 
-## Other command
+## Other commands
 type `bitfan help` to display usage information
 
 	
@@ -62,18 +59,8 @@ Flags:
 Use "bitfan [command] --help" for more information about a command.
 ```
 
-## include configuration from other configuration
-### include configuration from an URL
-```
-$ bitfan run "input{stdin{}} filter{use{path=>'https://raw.githubusercontent.com/veino/bitfan/master/examples.d/use/lol/test.conf'}} output{stdout{codec=>rubydebug}}"
-```
+  logstash flags works as well `-f`, `-e`, `--configtest`, ...
 
-## use configuration file on local filesystem
-```
-$ bitfan run "input{stdin{}} filter{use{path=>'apachelogs.conf'}} output{stdout{codec=>rubydebug}}"
-```
-
-See examples in examples.d/use/ folder
 
 ## TODO
 
@@ -101,7 +88,6 @@ See examples in examples.d/use/ folder
 
 
 # Supported inputs, filters and outputs in config file
-can be found here : https://github.com/veino/veino/tree/master/processors
 
 type `bitfan doc` to list all available plugins
 
@@ -166,7 +152,7 @@ type `bitfan doc pluginname` to get more information about plugin configuration 
 * kardianos/govendor Go vendor tool that works with the standard vendor file
 * spf13/cobra - A Commander for modern Go CLI interactions
 * bbuck/go-lexer (a forked version) - Lexer based on Rob Pike's talk on YouTube
-* veino/veino - all plugins and runtime used by bitfan 
+* vjeantet/bitfan/lib - all plugins and runtime used by bitfan 
 
 
 # Similar projets in go
