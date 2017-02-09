@@ -1,6 +1,9 @@
 # Bitfan
 
 Bitfan is an open source data processing pipeline.
+[![GoDoc](https://godoc.org/github.com/vjeantet/bitfan?status.svg)](https://godoc.org/github.com/vjeantet/bitfan)
+[![Go Report Card](http://goreportcard.com/badge/vjeantet/bitfan)](http:/goreportcard.com/report/vjeantet/bitfan)
+
 
 ![Bitfan logo](docs/static/noun_307496_cc.png "Bitfan")
 
@@ -28,7 +31,7 @@ copy/paste this in your console
 ## Other commands
 type `bitfan help` to display usage information
 
-	
+  
 ```
 Usage:
   bitfan [flags]
@@ -91,68 +94,66 @@ Use "bitfan [command] --help" for more information about a command.
 
 type `bitfan doc` to list all available plugins
 
-## INPUT
+## INPUT `bitfan doc --type input`
 
-|  PLUGIN  |          DESCRIPTION           |
-|----------|--------------------------------|
-| twitter  |                                |
-| exec     |                                |
-| unix     |                                |
-| stdin    | Reads events from standard  input  |
-| file     |                                |
-| beats    |                                |
-| rabbitmq |                                |
-| udp      |                                |
-| syslog   |                                |
-| readfile |                                |
+|   PLUGIN   |          DESCRIPTION           |
+|------------|--------------------------------|
+| rabbitmq   |                                |
+| syslog     |                                |
+| sql        |                                |
+| file       |                                |
+| beats      |                                |
+| exec       |                                |
+| unix       |                                |
+| http       |                                |
+| gennumbers | generate a number of event     |
+| stdin      | Reads events from stdin        |
+| tail       |                                |
+| readfile   |                                |
+| twitter    |                                |
+| udp        |                                |
+| use        | Include a config file          |
 
 type `bitfan doc pluginname` to get more information about plugin configuration and usage
 
-## FILTER
+## FILTER `bitfan doc --type filter`
 
 | PLUGIN |          DESCRIPTION           |
 |--------|--------------------------------|
-| date   | Parses dates from fields to use as the Bitfan timestamp  for an event |
 | grok   |                                |
-| split  | Splits multi-line messages into distinct events |
+| split  | Splits multi-line messages into distinct events     |
+| drop   | Drops all events               |
+| html   |                                |
+| digest | Digest events every x          |
+| mutate |                                |
 | json   | Parses JSON events             |
 | uuid   | Adds a UUID to events          |
-| drop   | Drops all events               |
-| geoip  | Adds geographical information about an IP address |
+| date   | Parses dates from fields    |
+| geoip  | Adds geographical information from IP |
 | kv     | Parses key-value pairs         |
-| html   |                                |
-| mutate |                                |
+| use    | Include a config file          |
+| route  | route message to other pipelines  |
 
 type `bitfan doc pluginname` to get more information about plugin configuration and usage
 
-## OUTPUT
+## OUTPUT `bitfan doc --type output`
 
 |     PLUGIN     |          DESCRIPTION           |
 |----------------|--------------------------------|
-| stdout         | Prints events to the standard output |
 | null           | Drops everything received      |
-| file           |                                |
-| glusterfs      |                                |
-| statsd         |                                |
-| mongodb        |                                |
 | elasticsearch  |                                |
 | elasticsearch2 |                                |
+| file           |                                |
+| stdout         | Prints events to the stdout    |
+| statsd         |                                |
+| mongodb        |                                |
+| glusterfs      |                                |
 | rabbitmq       |                                |
-| email          | Sends email when output is received |
+| email          | Sends email      |
+| use            | Include a config file          |
 
 type `bitfan doc pluginname` to get more information about plugin configuration and usage
 
-## SPECIAL for all sections
-|     PLUGIN     |          DESCRIPTION           |
-|----------------|--------------------------------|
-| use         | reference another configuration file (URL or local path) to include (copy/paste) in your current configuration  |
-
-
-# Used package
-* kardianos/govendor Go vendor tool that works with the standard vendor file
-* spf13/cobra - A Commander for modern Go CLI interactions
-* bbuck/go-lexer (a forked version) - Lexer based on Rob Pike's talk on YouTube
-* vjeantet/bitfan/lib - all plugins and runtime used by bitfan 
 
 
 # Similar projets in go
@@ -166,6 +167,34 @@ type `bitfan doc pluginname` to get more information about plugin configuration 
 logo "hand fan" by lastspark from the Noun Project
 
 # Contributors
-* Valere JEANTET
-* Merlin Gaillard
-* Alexander AKULOV
+* @vjeantet - Valere JEANTET
+* @mirdhyn - Merlin Gaillard
+* @AlexAkulov - Alexander AKULOV
+
+
+# Used packages
+* mitchellh/mapstructure
+* ChimeraCoder/anaconda
+* etrepat/postman/watch
+* go-fsnotify/fsnotify
+* hpcloud/tail
+* nu7hatch/gouuid
+* parnurzeal/gorequest
+* vjeantet/go.enmime
+* Knetic/govaluate
+* vjeantet/grok
+* vjeantet/jodaTime
+* streadway/amqp
+* ShowMax/go-fqdn
+* oschwald/geoip2-golang
+* gopkg.in/fsnotify.v1
+* gopkg.in/go-playground/validator.v8
+* gopkg.in/mgo.v2
+* gopkg.in/olivere/elastic.v2
+* gopkg.in/olivere/elastic.v3
+* gopkg.in/alexcesaro/statsd.v2
+* kardianos/govendor 
+* spf13/cobra
+* bbuck/go-lexer
+
+* k0kubun/pp (debug)
