@@ -24,8 +24,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/vjeantet/bitfan/api"
 	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/core/api"
 	"github.com/vjeantet/bitfan/lib"
 )
 
@@ -62,11 +62,23 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 		if len(args) == 0 {
 			for _, v := range viper.GetStringSlice("config") {
-				locations.Add(v, cwd)
+				loc, _ := lib.NewLocation(v, cwd)
+				locations.AddLocation(loc)
 			}
 		} else {
 			for _, v := range args {
-				locations.Add(v, cwd)
+				var loc *lib.Location
+				var err error
+				loc, err = lib.NewLocation(v, cwd)
+				if err != nil {
+					// is a content ?
+					loc, err = lib.NewLocationContent(v, cwd)
+					if err != nil {
+						return
+					}
+				}
+
+				locations.AddLocation(loc)
 			}
 		}
 
@@ -116,7 +128,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		if viper.GetBool("no-network") {
 			log.Println("BitFan API disabled")
 		} else {
-			api.ApiServe(viper.GetString("host"))
+			api.ServeREST(viper.GetString("host"), plugins)
 			log.Println("BitFan API listening on", viper.GetString("host"))
 		}
 

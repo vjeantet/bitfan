@@ -23,8 +23,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/core/api"
+	"github.com/vjeantet/bitfan/api"
 )
 
 func init() {
@@ -43,14 +42,11 @@ var listCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		s := api.ApiClient(viper.GetString("host"))
-
-		// Send a request & read result
-		var pipelines = map[int]*core.Pipeline{}
-		if err := s.Request("findPipelines", "", &pipelines); err != nil {
+		cli := api.NewRestClient(viper.GetString("host"))
+		pipelines, err := cli.ListPipelines()
+		if err != nil {
 			fmt.Printf("list error: %v\n", err.Error())
 		} else {
-
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{
 				"ID",
@@ -72,7 +68,7 @@ var listCmd = &cobra.Command{
 						pipeline.ConfigLocation),
 				})
 			}
-			// table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+			//table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 			table.SetCenterSeparator("+")
 			table.Render()
 

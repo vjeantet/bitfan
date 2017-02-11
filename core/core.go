@@ -1,6 +1,10 @@
 package core
 
-import "github.com/vjeantet/bitfan/core/config"
+import (
+	"fmt"
+
+	"github.com/vjeantet/bitfan/core/config"
+)
 
 var (
 	metrics     Metrics
@@ -56,10 +60,17 @@ func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent)
 }
 
 func StopPipeline(ID int) error {
-	err := pipelines[ID].stop()
+	var err error
+	if p, ok := pipelines[ID]; ok {
+		err = p.stop()
+	} else {
+		err = fmt.Errorf("Pipeline %d not found", ID)
+	}
+
 	if err != nil {
 		return err
 	}
+
 	delete(pipelines, ID)
 	return nil
 }

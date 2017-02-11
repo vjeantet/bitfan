@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/core/api"
+	"github.com/vjeantet/bitfan/api"
 	"github.com/vjeantet/bitfan/lib"
 )
 
@@ -19,44 +19,50 @@ var startCmd = &cobra.Command{
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		cli := api.NewRestClient(viper.GetString("host"))
 
 		var locations lib.Locations
 		cwd, _ := os.Getwd()
 		for _, v := range args {
-			locations.Add(v, cwd)
+			var loc *lib.Location
+			var err error
+			loc, err = lib.NewLocation(v, cwd)
+			if err != nil {
+				// is a content ?
+				loc, err = lib.NewLocationContent(v, cwd)
+				if err != nil {
+					return
+				}
+			}
+			locations.AddLocation(loc)
 		}
 
 		for _, loc := range locations.Items {
-			agt, err := loc.ConfigAgents()
 
-			if err != nil {
-				fmt.Printf("Error : %s %s", loc.Path, err)
-				os.Exit(2)
+			nPipeline := &api.Pipeline{}
+			if loc.Kind == lib.CONTENT_INLINE {
+				nPipeline.Content = loc.Content
+			} else {
+				nPipeline.ConfigLocation = loc.Path
 			}
-			ppl := loc.ConfigPipeline()
 
 			// Allow pipeline customisation only when only one location was provided by user
 			if len(locations.Items) == 1 {
 				if cmd.Flags().Changed("name") {
-					ppl.Name, _ = cmd.Flags().GetString("name")
+					nPipeline.Label, _ = cmd.Flags().GetString("name")
 				}
 				if cmd.Flags().Changed("id") {
-					ppl.ID, _ = cmd.Flags().GetInt("id")
+					nPipeline.ID, _ = cmd.Flags().GetInt("id")
 				}
 			}
 
-			starter := &api.ApiStarter{
-				Pipeline: ppl,
-				Agents:   agt,
-			}
+			pipeline, err := cli.AddPipeline(nPipeline)
 
-			s := api.ApiClient(viper.GetString("host"))
-			ID := 0
-			if err := s.Request("startPipeline", starter, &ID); err != nil {
+			if err != nil {
 				fmt.Printf("error : %s\n", err.Error())
 				os.Exit(1)
 			} else {
-				fmt.Printf("Started (ID:%d) - %s\n", ID, loc.Path)
+				fmt.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)
 			}
 		}
 	},

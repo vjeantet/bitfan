@@ -24,7 +24,17 @@ var testCmd = &cobra.Command{
 		var locations lib.Locations
 		cwd, _ := os.Getwd()
 		for _, v := range args {
-			locations.Add(v, cwd)
+			var loc *lib.Location
+			var err error
+			loc, err = lib.NewLocation(v, cwd)
+			if err != nil {
+				loc, err = lib.NewLocationContent(v, cwd)
+				if err != nil {
+					return
+				}
+			}
+
+			locations.AddLocation(loc)
 		}
 
 		var cko int

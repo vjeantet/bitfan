@@ -23,22 +23,33 @@ type Location struct {
 	Path        string
 	Kind        int
 	Workingpath string
+	Content     string
 }
 
 type Locations struct {
 	Items []*Location
 }
 
-func (l *Locations) Add(ref string, cwl string) error {
+func NewLocationContent(content string, cwl string) (*Location, error) {
+	loc := &Location{
+		Kind:    CONTENT_INLINE,
+		Content: content,
+	}
+	return loc, nil
+}
+
+func NewLocation(ref string, cwl string) (*Location, error) {
 	loc := &Location{}
+
 	if v, _ := url.Parse(ref); v.Scheme == "http" || v.Scheme == "https" {
 		loc.Kind = CONTENT_URL
 		loc.Path = ref
 	} else if _, err := os.Stat(ref); err == nil {
+		var err error
 		loc.Kind = CONTENT_FS
 		loc.Path, err = filepath.Abs(ref)
 		if err != nil {
-			return err
+			return loc, err
 		}
 	} else if _, err := os.Stat(filepath.Join(cwl, ref)); err == nil {
 		loc.Kind = CONTENT_FS
@@ -47,13 +58,13 @@ func (l *Locations) Add(ref string, cwl string) error {
 		loc.Kind = CONTENT_URL
 		loc.Path = cwl + ref
 	} else {
-		loc.Kind = CONTENT_INLINE
-		loc.Path = ref
-
-		// return fmt.Errorf("unknow location %s -- current working location is %s", ref, cwl)
+		return nil, fmt.Errorf("can not find any configuration ref=%s, cwl=%s", ref, cwl)
 	}
 
 	loc.Workingpath = cwl
+	return loc, nil
+}
+func (l *Locations) AddLocation(loc *Location) error {
 
 	// if it's a file try to expand
 	if loc.Kind == CONTENT_FS {
@@ -82,7 +93,7 @@ func (l *Location) ConfigPipeline() config.Pipeline {
 
 	switch l.Kind {
 	case CONTENT_INLINE:
-		pipeline = config.NewPipeline("inline", "nodescription", "stdin")
+		pipeline = config.NewPipeline("inline", "nodescription", "inline")
 	case CONTENT_URL:
 		uriSegments := strings.Split(l.Path, "/")
 		pipelineName := strings.Join(uriSegments[2:], ".")
@@ -122,7 +133,7 @@ func (l *Location) content(options map[string]interface{}) ([]byte, string, erro
 
 	switch l.Kind {
 	case CONTENT_INLINE:
-		content = []byte(l.Path)
+		content = []byte(l.Content)
 		cwl = l.Workingpath
 
 	case CONTENT_URL:

@@ -13,7 +13,8 @@ func parseConfigLocation(name string, path string, options map[string]interface{
 	var locs Locations
 
 	if path != "" {
-		locs.Add(path, pwd)
+		loc, _ := NewLocation(path, pwd)
+		locs.AddLocation(loc)
 	} else {
 		return []config.Agent{}, fmt.Errorf("no location provided to get content from ; options=%v ", options)
 	}
