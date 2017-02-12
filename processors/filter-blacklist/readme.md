@@ -11,7 +11,7 @@ The blacklist rule will check a certain field against a blacklist, and match if 
 | remove_field  | array  | false    | []            |
 | remove_tag    | array  | false    | []            |
 | compare_field | string | true     | ""            |
-| blacklist     | array  | true     | []            |
+| list          | array  | true     | []            |
 
 
 ## Details
@@ -57,7 +57,7 @@ If the event has field "somefield" == "hello" this filter, on success, would rem
 The name of the field to use to compare to the blacklist.
 If the field is null, those events will be ignored.
 
-### blacklist
+### list
 * This is a required setting.
 * Value type is array
 * Default value is `[]`
@@ -76,6 +76,6 @@ blacklist{
 	remove_field => []
 	remove_tag => []
 	compare_field => "message"
-	blacklist => ["val1","val2","val3"]
+	list => ["val1","val2","val3"]
 }
 ```

@@ -17,22 +17,14 @@ func TestDoc(t *testing.T) {
 	assert.IsType(t, &doc.Processor{}, New().(*processor).Doc())
 }
 
-func getExampleConfiguration() map[string]interface{} {
-	return map[string]interface{}{
-		"add_field": map[string]interface{}{
-			"test1": "myvalue",
-		},
-	}
-}
-
 func TestReceiveDropAll(t *testing.T) {
 	p := New().(*processor)
 	ctx := testutils.NewProcessorContext()
 	p.Configure(
 		ctx,
 		map[string]interface{}{
-			"CompareField": "message",
-			"Blacklist":    []string{"val1", "val2"},
+			"Compare_Field": "message",
+			"list":          []string{"val1", "val2"},
 		},
 	)
 
@@ -43,5 +35,5 @@ func TestReceiveDropAll(t *testing.T) {
 	p.Receive(testutils.NewPacket("val1", nil))
 	p.Receive(testutils.NewPacket("val3", nil))
 	p.Receive(testutils.NewPacket("val2", nil))
-	assert.Equal(t, 0, ctx.SentPacketsCount(2), "2 events should pass")
+	assert.Equal(t, 2, ctx.SentPacketsCount(0), "2 events should pass")
 }

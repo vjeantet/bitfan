@@ -54,8 +54,8 @@ type options struct {
 
 	// A list of blacklisted values.
 	// The compare_field term must be equal to one of these values for it to match.
-	// @ExampleLS blacklist => ["val1","val2","val3"]
-	Blacklist []string `mapstructure:"blacklist" validate:"required"`
+	// @ExampleLS list => ["val1","val2","val3"]
+	List []string `mapstructure:"list" validate:"required"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
@@ -66,7 +66,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
-	if len(p.opt.Blacklist) == 0 {
+	if len(p.opt.List) == 0 {
 		return fmt.Errorf("blacklist option should have at least one value")
 	}
 
@@ -74,7 +74,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	for _, v := range p.opt.Blacklist {
+	for _, v := range p.opt.List {
 		if v == e.Fields().ValueOrEmptyForPathString(p.opt.CompareField) {
 			p.Logger.Debugf("blacklisted word %s found in %s", v, p.opt.CompareField)
 
