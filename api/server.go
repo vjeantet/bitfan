@@ -1,6 +1,4 @@
-package api
-
-// Package Pipelines API.
+// Bitfan API.
 //
 // the purpose of this api....
 //
@@ -11,21 +9,23 @@ package api
 //
 // there are no TOS
 //
-//     Schemes: http, https
-//     Host: localhost
-//     BasePath: /v1
-//     Version: 0.0.1
-//     License: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.html
-//     Contact: Valere JEANTET<valere.jeantet@gmail.com> http://vjeantet.fr
 //
-//     Consumes:
-//     - application/json
+// Host: 127.0.0.1:5123
+// BasePath: /api/v1
+// Version: 0.0.1
+// License: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.html
+// Contact: Valere JEANTET<valere.jeantet@gmail.com> http://vjeantet.fr
+// Schemes: http
 //
-//     Produces:
-//     - application/json
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
 //
 //
 // swagger:meta
+package api
 
 import (
 	"fmt"
@@ -36,24 +36,161 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/lib"
-	"github.com/vjeantet/bitfan/processors/doc"
 )
 
 var plugins map[string]map[string]core.ProcessorFactory
 
+func init() {
+	gin.SetMode(gin.ReleaseMode)
+}
+
 func ServeREST(hostport string, plugs map[string]map[string]core.ProcessorFactory) {
 	plugins = plugs
-	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
-	r.Use(cors())
+
+	r := gin.New()
+	r.Use(gin.Recovery(), cors())
 	v1 := r.Group("api/v1")
 	{
+
+		// swagger:operation GET /pipelines pipeline listPipelines
+		//
+		// Lists pipelines.
+		//
+		// This will show all running pipelines.
+		//
+		// ---
+		//
+		// produces:
+		// - application/json
+		//
+		//
+		// responses:
+		//   200:
+		//     description: pipelines response
+		//     schema:
+		//       type: array
+		//       items:
+		//         "$ref": "#/definitions/Pipeline"
+		//   default:
+		//     description: unexpected error
+		//     schema:
+		//       "$ref": "#/definitions/Error"
 		v1.GET("/pipelines", getPipelines)
+
+		// swagger:operation DELETE /pipelines/{id} pipeline stopPipeline
+		//
+		// Stop a running pipeline.
+		//
+		// This will stop pipeline by ID.
+		//
+		// ---
+		//
+		//
+		// produces:
+		// - application/json
+		//
+		// parameters:
+		//   - name: "id"
+		//     in: "path"
+		//     description: "Pipeline ID"
+		//     required: true
+		//     type: integer
+		//
+		//
+		// responses:
+		//   200:
+		//     description: pipelines response
+		//   default:
+		//     description: unexpected error
+		//     schema:
+		//       "$ref": "#/definitions/Error"
 		v1.DELETE("/pipelines/:id", deletePipeline)
+
+		// swagger:operation POST /pipelines pipeline addPipeline
+		//
+		// Start a pipeline.
+		//
+		// This will start pipeline.
+		//
+		// ---
+		// consumes:
+		// - application/json
+		//
+		// produces:
+		// - application/json
+		//
+		// parameters:
+		// - in: "body"
+		//   name: "body"
+		//   description: "Pipeline object that needs to be started"
+		//   required: true
+		//   schema:
+		//     $ref: "#/definitions/Pipeline"
+		//
+		// responses:
+		//   200:
+		//     description: pipeline response
+		//     schema:
+		//       "$ref": "#/definitions/Pipeline"
+		//   default:
+		//     description: unexpected error
+		//     schema:
+		//       "$ref": "#/definitions/Error"
 		v1.POST("/pipelines", addPipeline)
+
+		// swagger:operation GET /pipelines/{id} pipeline getPipeline
+		//
+		// Get a pipeline.
+		//
+		// This will show a running pipeline.
+		//
+		// ---
+		//
+		// produces:
+		// - application/json
+		//
+		//
+		// parameters:
+		//   - name: "id"
+		//     in: "path"
+		//     description: "Pipeline ID"
+		//     required: true
+		//     type: integer
+		//
+		// responses:
+		//   200:
+		//     description: pipeline response
+		//     schema:
+		//       "$ref": "#/definitions/Pipeline"
+		//   default:
+		//     description: unexpected error
+		//     schema:
+		//       "$ref": "#/definitions/Error"
 		v1.GET("/pipelines/:id", getPipeline)
 
+		// swagger:operation GET /docs doc listDocs
+		//
+		// Lists plugins.
+		//
+		// This will show all avaialable plugins.
+		//
+		// ---
+		// produces:
+		// - application/json
+		//
+		// responses:
+		//   200:
+		//     description: processor doc response
+		//     schema:
+		//       type: array
+		//       items:
+		//         "$ref": "#/definitions/processorDoc"
+		//   default:
+		//     description: unexpected error
+		//     schema:
+		//       "$ref": "#/definitions/Error"
 		v1.GET("/docs", getDocs)
+
 		v1.GET("/docs/inputs", getDocsInputs)
 		v1.GET("/docs/inputs/:name", getDocsInputsByName)
 		v1.GET("/docs/filters", getDocsFilters)
@@ -68,24 +205,7 @@ func ServeREST(hostport string, plugs map[string]map[string]core.ProcessorFactor
 }
 
 func getPipelines(c *gin.Context) {
-	// swagger:route GET /pipelines listPipelines
-	//
-	// Lists pipelines.
-	//
-	// This will show all running pipelines.
-	//
-	//     Consumes:
-	//     - application/json
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http, https
-	//
-	//
-	//     Responses:
-	//       default: genericError
-	//       200: []Pipeline
+
 	var pipelines []Pipeline
 	var err error
 
@@ -139,24 +259,6 @@ func getPipeline(c *gin.Context) {
 }
 
 func addPipeline(c *gin.Context) {
-	// swagger:route POST /pipelines addPipeline
-	//
-	// Start a pipeline.
-	//
-	// This will start pipeline.
-	//
-	//     Consumes:
-	//     - application/json
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http, https
-	//
-	//
-	//     Responses:
-	//       default: genericError
-	//       200: Pipeline
 
 	// ID, err := core.StartPipeline(&starter.Pipeline, starter.Agents)
 
@@ -214,24 +316,7 @@ func addPipeline(c *gin.Context) {
 }
 
 func deletePipeline(c *gin.Context) {
-	// swagger:route DELETE /pipelines/:id stopPipeline
-	//
-	// Stop a running pipeline.
-	//
-	// This will stop pipeline by ID.
-	//
-	//     Consumes:
-	//     - application/json
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http, https
-	//
-	//
-	//     Responses:
-	//       default: genericError
-	//       200: []Pipeline
+
 	var err error
 	id, err := strconv.Atoi(c.Params.ByName("id"))
 	if err != nil {
@@ -250,42 +335,12 @@ func deletePipeline(c *gin.Context) {
 }
 
 func getDocs(c *gin.Context) {
-	// swagger:route GET /docs listDocs
-	//
-	// Lists plugins.
-	//
-	// This will show all avaialable plugins.
-	//
-	//     Consumes:
-	//     - application/json
-	//
-	//     Produces:
-	//     - application/json
-	//
-	//     Schemes: http, https
-	//
-	//
-	//     Responses:
-	//       default: genericError
-	//       200: []Pipeline
-	var err error
 
-	data := map[string]map[string]*doc.Processor{}
+	data := docsByKind("input")
+	data = append(data, docsByKind("filter")...)
+	data = append(data, docsByKind("output")...)
 
-	data["input"] = map[string]*doc.Processor{}
-	data["input"] = docsByKind("input")
-
-	data["filter"] = map[string]*doc.Processor{}
-	data["filter"] = docsByKind("filter")
-
-	data["output"] = map[string]*doc.Processor{}
-	data["output"] = docsByKind("output")
-
-	if err == nil {
-		c.JSON(200, data)
-	} else {
-		c.JSON(404, gin.H{"error": "not found"})
-	}
+	c.JSON(200, data)
 	// curl -i http://localhost:8080/api/v1/docs
 }
 
@@ -329,61 +384,4 @@ func getDocsOutputsByName(c *gin.Context) {
 	} else {
 		c.JSON(200, data)
 	}
-}
-
-// swagger:model Doc
-// Doce represents a processor documentation
-//
-// A Doc is ....
-//
-// A Doc can have.....
-//
-type ProcessorDoc struct {
-	Name     string `json:"name"`
-	Doc      string `json:"doc"`
-	DocShort string `json:"doc_short"`
-	Options  *struct {
-		Doc     string `json:"doc"`
-		Options []*struct {
-			Name         string      `json:"name"`
-			Alias        string      `json:"alias"`
-			Doc          string      `json:"doc"`
-			Required     bool        `json:"requiered"`
-			Type         string      `json:"type"`
-			DefaultValue interface{} `json:"default_value"`
-			//LogstashExample
-			ExampleLS string `json:"example"`
-		} `json:"options"`
-	} `json:"options"`
-	Ports []*struct {
-		Default bool   `json:"default"`
-		Name    string `json:"name"`
-		Number  int    `json:"number"`
-		Doc     string `json:"doc"`
-	} `json:"ports"`
-}
-
-// swagger:model Pipeline
-// Pipeline represents a pipeline
-//
-// A Pipeline is ....
-//
-// A Pipeline can have.....
-//
-type Pipeline struct {
-	// the id for this pipeline
-	ID int `json:"id"`
-	// the Label
-	// min length: 3
-	Label string `json:"label"`
-	// the location
-	ConfigLocation string `json:"config_location"`
-	// the location's host
-	ConfigHostLocation string `json:"config_host_location"`
-
-	Content string `json:"config_content"`
-}
-
-type Error struct {
-	Message string `json:"error"`
 }

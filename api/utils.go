@@ -13,13 +13,13 @@ func cors() gin.HandlerFunc {
 		c.Next()
 	}
 }
-func docsByKind(kind string) map[string]*doc.Processor {
-	data := map[string]*doc.Processor{}
+func docsByKind(kind string) []*doc.Processor {
+	data := []*doc.Processor{}
 	for name, proc := range plugins[kind] {
 		if name == "when" {
 			continue
 		}
-		data[name] = proc().Doc()
+		data = append(data, proc().Doc())
 	}
 	return data
 }
