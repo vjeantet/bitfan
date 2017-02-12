@@ -57,8 +57,8 @@ func (p *processor) Doc() *doc.Processor {
         ExampleLS:    "compare_field => \"message\"",
       },
       &doc.ProcessorOption{
-        Name:         "IgnoreNull",
-        Alias:        "ignore_null",
+        Name:         "IgnoreMissing",
+        Alias:        "ignore_missing",
         Doc:          "If true, events without a compare_key field will not count as changed.",
         Required:     false,
         Type:         "bool",

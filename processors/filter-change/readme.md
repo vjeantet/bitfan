@@ -4,15 +4,15 @@ This rule will monitor a certain field and match if that field changes. The fiel
 ## Synopsys
 
 
-|    SETTING    |  TYPE  | REQUIRED |  DEFAULT VALUE   |
-|---------------|--------|----------|------------------|
-| add_field     | hash   | false    | {}               |
-| add_tag       | array  | false    | []               |
-| remove_field  | array  | false    | []               |
-| remove_tag    | array  | false    | []               |
-| compare_field | string | true     | ""               |
-| ignore_null   | bool   | false    | true             |
-| timeframe     | int    | false    | 0 (no timeframe) |
+|    SETTING     |  TYPE  | REQUIRED |  DEFAULT VALUE   |
+|----------------|--------|----------|------------------|
+| add_field      | hash   | false    | {}               |
+| add_tag        | array  | false    | []               |
+| remove_field   | array  | false    | []               |
+| remove_tag     | array  | false    | []               |
+| compare_field  | string | true     | ""               |
+| ignore_missing | bool   | false    | true             |
+| timeframe      | int    | false    | 0 (no timeframe) |
 
 
 ## Details
@@ -58,7 +58,7 @@ If the event has field "somefield" == "hello" this filter, on success, would rem
 The name of the field to use to compare to the blacklist.
 If the field is null, those events will be ignored.
 
-### ignore_null
+### ignore_missing
 * Value type is bool
 * Default value is `true`
 
@@ -81,7 +81,7 @@ change{
 	remove_field => []
 	remove_tag => []
 	compare_field => "message"
-	ignore_null => true
+	ignore_missing => true
 	timeframe => 10
 }
 ```
