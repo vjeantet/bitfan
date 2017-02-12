@@ -14,6 +14,7 @@ import (
 	mutate "github.com/vjeantet/bitfan/processors/filter-mutate"
 	split "github.com/vjeantet/bitfan/processors/filter-split"
 	uuid "github.com/vjeantet/bitfan/processors/filter-uuid"
+	whitelist "github.com/vjeantet/bitfan/processors/filter-whitelist"
 	beatsinput "github.com/vjeantet/bitfan/processors/input-beats"
 	execinput "github.com/vjeantet/bitfan/processors/input-exec"
 	file "github.com/vjeantet/bitfan/processors/input-file"
@@ -72,6 +73,7 @@ func init() {
 	initPlugin("filter", "when", when.New)
 	initPlugin("filter", "digest", digest.New)
 	initPlugin("filter", "blacklist", blacklist.New)
+	initPlugin("filter", "whitelist", whitelist.New)
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)
 
