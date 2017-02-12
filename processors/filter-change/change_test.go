@@ -28,17 +28,19 @@ func TestReceiveDropAll(t *testing.T) {
 	)
 
 	p.Receive(testutils.NewPacket("test", nil))
-	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed !")
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
 	p.Receive(testutils.NewPacket("test", nil))
 	p.Receive(testutils.NewPacket("test", nil))
 	p.Receive(testutils.NewPacket("test", nil))
 	p.Receive(testutils.NewPacket("test", nil))
-	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed !")
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 1")
 	p.Receive(testutils.NewPacket("toto", nil))
-	assert.Equal(t, 2, ctx.SentPacketsCount(0), "changed !")
+	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 2")
 	p.Receive(testutils.NewPacket("toto", nil))
 	p.Receive(testutils.NewPacket("toto", nil))
 	p.Receive(testutils.NewPacket("toto", nil))
-	assert.Equal(t, 2, ctx.SentPacketsCount(0), "changed !")
+	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 3")
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 2, ctx.SentPacketsCount(0), "changed ! 4")
 
 }

@@ -2,7 +2,12 @@
 // This rule will monitor a certain field and match if that field changes. The field must change with respect to the last event
 package change
 
-import "github.com/vjeantet/bitfan/processors"
+import (
+	"sync"
+	"time"
+
+	"github.com/vjeantet/bitfan/processors"
+)
 
 func New() processors.Processor {
 	return &processor{opt: &options{}}
@@ -18,8 +23,12 @@ func (p *processor) MaxConcurent() int { return 1 }
 // drop event when field value is the same in the last event
 type processor struct {
 	processors.Base
-	opt       *options
+	opt   *options
+	first bool
+
+	mu        sync.Mutex
 	lastValue string
+	hop       *time.Timer
 }
 
 type options struct {
@@ -53,36 +62,80 @@ type options struct {
 	// @Default true
 	IgnoreNull bool `mapstructure:"ignore_null"`
 
-	// The maximum time in seconds between changes. After this time period, ElastAlert will forget the old value of the compare_key field.
-	// Timeframe string `mapstructure:"timeframe"`
+	// The maximum time in seconds between changes. After this time period, Bitfan will forget the old value of the compare_field field.
+	// @Default 0 (no timeframe)
+	// @ExampleLS timeframe => 10
+	Timeframe int `mapstructure:"timeframe"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
 	defaults := options{
 		IgnoreNull: true,
+		Timeframe:  0,
 	}
 	p.opt = &defaults
+	p.first = true
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-
 	if p.opt.IgnoreNull == true && e.Fields().Exists(p.opt.CompareField) == false {
 		p.Logger.Debugf("event does not have a field [%s]", p.opt.CompareField)
 	}
 
-	if p.lastValue != e.Fields().ValueOrEmptyForPathString(p.opt.CompareField) {
-		p.Logger.Debugf("[%s] value change from '%s' to '%s'", p.opt.CompareField, p.lastValue, e.Fields().ValueOrEmptyForPathString(p.opt.CompareField))
+	p.mu.Lock()
 
-		p.lastValue = e.Fields().ValueOrEmptyForPathString(p.opt.CompareField)
+	if p.lastValue == e.Fields().ValueOrEmptyForPathString(p.opt.CompareField) {
+		p.mu.Unlock()
+		return nil
+	}
 
-		processors.ProcessCommonFields2(e.Fields(),
-			p.opt.AddField,
-			p.opt.AddTag,
-			p.opt.RemoveField,
-			p.opt.RemoveTag,
-		)
-		p.Send(e, 0)
+	p.Logger.Debugf("[%s] value change from '%s' to '%s'", p.opt.CompareField, p.lastValue, e.Fields().ValueOrEmptyForPathString(p.opt.CompareField))
+	p.lastValue = e.Fields().ValueOrEmptyForPathString(p.opt.CompareField)
+
+	if p.first == true {
+		p.Logger.Debugf("ignore first change on field [%s]", p.opt.CompareField)
+		p.first = false
+		p.mu.Unlock()
+		return nil
+	}
+
+	// Change occured !
+	if p.opt.Timeframe > 0 {
+		if p.hop == nil { // Initiate timer
+			p.Logger.Debugf("Timer inited")
+			p.hop = time.AfterFunc(time.Second*3, func() { // when timeframe expires, reset old value
+				p.Logger.Debugf("expired !")
+				p.lastValue = ""
+				p.hop = nil
+			})
+		} else { // Change occured before timeout -> reset timeframe
+			p.Logger.Debugf("change before timeout")
+			if !p.hop.Stop() {
+				<-p.hop.C
+				p.Logger.Debugf("expired ! B")
+				p.lastValue = ""
+			}
+			p.Logger.Debugf("reset")
+			p.hop.Reset(time.Second * 3)
+		}
+	}
+
+	p.mu.Unlock()
+	processors.ProcessCommonFields2(e.Fields(),
+		p.opt.AddField,
+		p.opt.AddTag,
+		p.opt.RemoveField,
+		p.opt.RemoveTag,
+	)
+	p.Send(e, 0)
+
+	return nil
+}
+
+func (p *processor) Stop(e processors.IPacket) error {
+	if p.hop != nil {
+		p.hop.Stop()
 	}
 
 	return nil

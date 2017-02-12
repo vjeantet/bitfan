@@ -4,14 +4,15 @@ This rule will monitor a certain field and match if that field changes. The fiel
 ## Synopsys
 
 
-|    SETTING    |  TYPE  | REQUIRED | DEFAULT VALUE |
-|---------------|--------|----------|---------------|
-| add_field     | hash   | false    | {}            |
-| add_tag       | array  | false    | []            |
-| remove_field  | array  | false    | []            |
-| remove_tag    | array  | false    | []            |
-| compare_field | string | true     | ""            |
-| ignore_null   | bool   | false    | true          |
+|    SETTING    |  TYPE  | REQUIRED |  DEFAULT VALUE   |
+|---------------|--------|----------|------------------|
+| add_field     | hash   | false    | {}               |
+| add_tag       | array  | false    | []               |
+| remove_field  | array  | false    | []               |
+| remove_tag    | array  | false    | []               |
+| compare_field | string | true     | ""               |
+| ignore_null   | bool   | false    | true             |
+| timeframe     | int    | false    | 0 (no timeframe) |
 
 
 ## Details
@@ -63,6 +64,12 @@ If the field is null, those events will be ignored.
 
 If true, events without a compare_key field will not count as changed.
 
+### timeframe
+* Value type is int
+* Default value is `0 (no timeframe)`
+
+The maximum time in seconds between changes. After this time period, Bitfan will forget the old value of the compare_field field.
+
 
 
 ## Configuration blueprint
@@ -75,5 +82,6 @@ change{
 	remove_tag => []
 	compare_field => "message"
 	ignore_null => true
+	timeframe => 10
 }
 ```

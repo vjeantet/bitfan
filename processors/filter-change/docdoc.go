@@ -65,6 +65,15 @@ func (p *processor) Doc() *doc.Processor {
         DefaultValue: "true",
         ExampleLS:    "",
       },
+      &doc.ProcessorOption{
+        Name:         "Timeframe",
+        Alias:        "timeframe",
+        Doc:          "The maximum time in seconds between changes. After this time period, Bitfan will forget the old value of the compare_field field.",
+        Required:     false,
+        Type:         "int",
+        DefaultValue: "0 (no timeframe)",
+        ExampleLS:    "timeframe => 10",
+      },
     },
   },
   Ports: []*doc.ProcessorPort{
