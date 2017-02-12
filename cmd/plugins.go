@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/vjeantet/bitfan/core"
+	blacklist "github.com/vjeantet/bitfan/processors/filter-blacklist"
 	date "github.com/vjeantet/bitfan/processors/filter-date"
 	digest "github.com/vjeantet/bitfan/processors/filter-digest"
 	drop "github.com/vjeantet/bitfan/processors/filter-drop"
@@ -70,6 +71,7 @@ func init() {
 	initPlugin("filter", "html", html.New)
 	initPlugin("filter", "when", when.New)
 	initPlugin("filter", "digest", digest.New)
+	initPlugin("filter", "blacklist", blacklist.New)
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)
 

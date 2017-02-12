@@ -1,6 +1,8 @@
 package testutils
 
 import (
+	"fmt"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/vjeantet/bitfan/processors"
 )
@@ -11,6 +13,7 @@ type DummyProcessorContext struct {
 	packetBuilder processors.PacketBuilder
 	sentPackets   map[int][]processors.IPacket
 	builtPackets  []processors.IPacket
+	memory        processors.Memory
 }
 
 func NewProcessorContext() *DummyProcessorContext {
@@ -20,6 +23,7 @@ func NewProcessorContext() *DummyProcessorContext {
 	dp.sentPackets = map[int][]processors.IPacket{}
 	dp.packetSender = newSender(dp)
 	dp.packetBuilder = newPacket(dp)
+	dp.memory = newMemory(dp)
 	return dp
 }
 
@@ -71,4 +75,15 @@ func (d *DummyProcessorContext) ConfigWorkingLocation() string {
 
 func (d *DummyProcessorContext) DataLocation() string {
 	return ""
+}
+
+func (d *DummyProcessorContext) Memory() processors.Memory {
+	return d.memory
+}
+
+var i = 0
+
+func newMemory(p *DummyProcessorContext) processors.Memory {
+	i += 1
+	return NewMemory("").Space(fmt.Sprintf("test_%d", i))
 }
