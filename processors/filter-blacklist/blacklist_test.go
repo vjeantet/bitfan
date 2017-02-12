@@ -16,15 +16,40 @@ func TestNew(t *testing.T) {
 func TestDoc(t *testing.T) {
 	assert.IsType(t, &doc.Processor{}, New().(*processor).Doc())
 }
+func TestMaxConcurent(t *testing.T) {
+	max := New().(*processor).MaxConcurent()
+	assert.Equal(t, 0, max, "this processor support concurency with no limit")
+}
 
-func TestReceiveDropAll(t *testing.T) {
+func TestConfigureNoCompareFields(t *testing.T) {
+	p := New().(*processor)
+	conf := map[string]interface{}{
+		"terms": []string{"val"},
+	}
+	ctx := testutils.NewProcessorContext()
+	err := p.Configure(ctx, conf)
+	assert.Error(t, err, "configuration is not correct")
+}
+
+func TestConfigureNoTerms(t *testing.T) {
+	p := New().(*processor)
+	conf := map[string]interface{}{
+		"Compare_Field": "message",
+		"terms":         []string{},
+	}
+	ctx := testutils.NewProcessorContext()
+	err := p.Configure(ctx, conf)
+	assert.Error(t, err, "configuration is not correct")
+}
+
+func TestReceiveMatch(t *testing.T) {
 	p := New().(*processor)
 	ctx := testutils.NewProcessorContext()
 	p.Configure(
 		ctx,
 		map[string]interface{}{
 			"Compare_Field": "message",
-			"list":          []string{"val1", "val2"},
+			"terms":         []string{"val1", "val2"},
 		},
 	)
 
