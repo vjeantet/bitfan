@@ -13,6 +13,7 @@ import (
 	json "github.com/vjeantet/bitfan/processors/filter-json"
 	kv "github.com/vjeantet/bitfan/processors/filter-kv"
 	mutate "github.com/vjeantet/bitfan/processors/filter-mutate"
+	newterm "github.com/vjeantet/bitfan/processors/filter-newterm"
 	split "github.com/vjeantet/bitfan/processors/filter-split"
 	uuid "github.com/vjeantet/bitfan/processors/filter-uuid"
 	whitelist "github.com/vjeantet/bitfan/processors/filter-whitelist"
@@ -76,6 +77,7 @@ func init() {
 	initPlugin("filter", "blacklist", blacklist.New)
 	initPlugin("filter", "whitelist", whitelist.New)
 	initPlugin("filter", "change", change.New)
+	initPlugin("filter", "newterm", newterm.New)
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)
 
