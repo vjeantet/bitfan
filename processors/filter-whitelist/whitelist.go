@@ -55,17 +55,17 @@ type options struct {
 
 	// If true, events without a compare_key field will not match.
 	// @Default true
-	IgnoreNull bool `mapstructure:"ignore_null"`
+	IgnoreMissing bool `mapstructure:"ignore_missing"`
 
-	// A list of whitelisted values.
+	// A list of whitelisted terms.
 	// The compare_field term must be in this list or else it will match.
-	// @ExampleLS list => ["val1","val2","val3"]
-	List []string `mapstructure:"list" validate:"required"`
+	// @ExampleLS terms => ["val1","val2","val3"]
+	Terms []string `mapstructure:"terms" validate:"required"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
 	defaults := options{
-		IgnoreNull: true,
+		IgnoreMissing: true,
 	}
 	p.opt = &defaults
 	err = p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -73,7 +73,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
-	if len(p.opt.List) == 0 {
+	if len(p.opt.Terms) == 0 {
 		return fmt.Errorf("whitelist option should have at least one value")
 	}
 
@@ -81,24 +81,22 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	if p.opt.IgnoreNull == false && e.Fields().Exists(p.opt.CompareField) == false {
-		p.Logger.Debugf("event does not have a field [%s]", p.opt.CompareField)
-		processors.ProcessCommonFields2(e.Fields(),
-			p.opt.AddField,
-			p.opt.AddTag,
-			p.opt.RemoveField,
-			p.opt.RemoveTag,
-		)
-		p.Send(e, 0)
-	}
-
-	for _, v := range p.opt.List {
-		if v == e.Fields().ValueOrEmptyForPathString(p.opt.CompareField) {
-			p.Logger.Debugf("white word %s found in %s", v, p.opt.CompareField)
+	eValue, err := e.Fields().ValueForPathString(p.opt.CompareField)
+	if err != nil { // path not found
+		if p.opt.IgnoreMissing == true {
 			return nil
 		}
+		p.Logger.Debugf("missing field [%s]", p.opt.CompareField)
+	} else {
+		for _, v := range p.opt.Terms {
+			if v == eValue {
+				p.Logger.Debugf("white word %s found in %s", v, p.opt.CompareField)
+				return nil
+			}
+		}
+		p.Logger.Debugf("content of [%s] is not in the whitelist", p.opt.CompareField)
 	}
-	p.Logger.Debugf("content of [%s] is not in the whitelist", p.opt.CompareField)
+
 	processors.ProcessCommonFields2(e.Fields(),
 		p.opt.AddField,
 		p.opt.AddTag,

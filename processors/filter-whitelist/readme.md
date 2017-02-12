@@ -5,15 +5,15 @@ if the list does not contain the term
 ## Synopsys
 
 
-|    SETTING    |  TYPE  | REQUIRED | DEFAULT VALUE |
-|---------------|--------|----------|---------------|
-| add_field     | hash   | false    | {}            |
-| add_tag       | array  | false    | []            |
-| remove_field  | array  | false    | []            |
-| remove_tag    | array  | false    | []            |
-| compare_field | string | true     | ""            |
-| ignore_null   | bool   | false    | true          |
-| list          | array  | true     | []            |
+|    SETTING     |  TYPE  | REQUIRED | DEFAULT VALUE |
+|----------------|--------|----------|---------------|
+| add_field      | hash   | false    | {}            |
+| add_tag        | array  | false    | []            |
+| remove_field   | array  | false    | []            |
+| remove_tag     | array  | false    | []            |
+| compare_field  | string | true     | ""            |
+| ignore_missing | bool   | false    | true          |
+| terms          | array  | true     | []            |
 
 
 ## Details
@@ -59,18 +59,18 @@ If the event has field "somefield" == "hello" this filter, on success, would rem
 The name of the field to use to compare to the whitelist.
 If the field is null, those events will be ignored.
 
-### ignore_null
+### ignore_missing
 * Value type is bool
 * Default value is `true`
 
 If true, events without a compare_key field will not match.
 
-### list
+### terms
 * This is a required setting.
 * Value type is array
 * Default value is `[]`
 
-A list of whitelisted values.
+A list of whitelisted terms.
 The compare_field term must be in this list or else it will match.
 
 
@@ -84,7 +84,7 @@ whitelist{
 	remove_field => []
 	remove_tag => []
 	compare_field => "message"
-	ignore_null => true
-	list => ["val1","val2","val3"]
+	ignore_missing => true
+	terms => ["val1","val2","val3"]
 }
 ```
