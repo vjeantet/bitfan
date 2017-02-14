@@ -132,7 +132,6 @@ func (p *processor) Receive(e processors.IPacket) error {
 		Doc(e.Fields().Old())
 
 	p.bulkProcessor.Add(event)
-	p.Logger.Debugf("doc bulked")
 	return nil
 }
 
