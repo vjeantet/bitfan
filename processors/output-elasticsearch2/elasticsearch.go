@@ -22,6 +22,7 @@ type processor struct {
 	bulkProcessor *elastic.BulkProcessor
 	client        *elastic.Client
 	opt           *options
+	lastIndex     string
 }
 
 type options struct {
@@ -30,15 +31,19 @@ type options struct {
 	// Generally you should try to write only similar events to the same type.
 	// String expansion %{foo} works here. Unless you set document_type, the event type will
 	// be used if it exists otherwise the document type will be assigned the value of logs
+	// @Default "%{type}"
 	DocumentType string `mapstructure:"document_type"`
 
 	// The number of requests that can be enqueued before flushing them. Default value is 1000
+	// @Default 1000
 	FlushCount int `mapstructure:"flush_count"`
 
 	// The number of bytes that the bulk requests can take up before the bulk processor decides to flush. Default value is 5242880 (5MB).
+	// @Default 5242880
 	FlushSize int `mapstructure:"flush_size"`
 
 	// Host of the remote instance. Default value is "localhost"
+	// @Default "localhost"
 	Host string `mapstructure:"host"`
 
 	// The amount of seconds since last flush before a flush is forced. Default value is 1
@@ -48,12 +53,14 @@ type options struct {
 	// and it has been more than idle_flush_time seconds since the last flush,
 	// those 10 events will be flushed automatically.
 	// This helps keep both fast and slow log streams moving along in near-real-time.
+	// @Default 1
 	IdleFlushTime int `mapstructure:"idle_flush_time"`
 
 	// The index to write events to. Default value is "logstash-%Y.%m.%d"
 	//
 	// This can be dynamic using the %{foo} syntax and strftime syntax (see http://strftime.org/).
 	// The default value will partition your indices by day.
+	// @Default "logstash-%Y.%m.%d"
 	Index string `mapstructure:"index"`
 
 	// Password to authenticate to a secure Elasticsearch cluster. There is no default value for this setting.
@@ -62,15 +69,18 @@ type options struct {
 	// HTTP Path at which the Elasticsearch server lives. Default value is "/"
 	//
 	// Use this if you must run Elasticsearch behind a proxy that remaps the root path for the Elasticsearch HTTP API lives.
+	// @Default "/"
 	Path string `mapstructure:"path"`
 
 	// ElasticSearch port to connect on. Default value is 9200
+	// @Default 9200
 	Port int `mapstructure:"port"`
 
 	// Username to authenticate to a secure Elasticsearch cluster. There is no default value for this setting.
 	User string `mapstructure:"user"`
 
 	// Enable SSL/TLS secured communication to Elasticsearch cluster. Default value is false
+	// @Default false
 	SSL bool `mapstructure:"ssl"`
 }
 
@@ -122,6 +132,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		Doc(e.Fields().Old())
 
 	p.bulkProcessor.Add(event)
+	p.Logger.Debugf("doc bulked")
 	return nil
 }
 
@@ -147,6 +158,10 @@ func (p *processor) startBulkProcessor() (err error) {
 }
 
 func (p *processor) checkIndex(name string) error {
+	// alreadyseen index ?
+	if p.lastIndex == name {
+		return nil
+	}
 	// Check if the index exists
 	exists, err := p.client.IndexExists(name).Do()
 	if err != nil {
@@ -155,6 +170,7 @@ func (p *processor) checkIndex(name string) error {
 	if !exists {
 		p.client.CreateIndex(name).Do()
 	}
+	p.lastIndex = name
 	return nil
 }
 
