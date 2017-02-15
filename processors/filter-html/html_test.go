@@ -63,7 +63,7 @@ func TestReceiveHTML1(t *testing.T) {
 	ctx := testutils.NewProcessorContext()
 	p.Configure(ctx, getExampleConfiguration())
 
-	em := processors.NewPacket("", nil)
+	em := testutils.NewPacket("", nil)
 	em.Fields().SetValueForPath(HTML1, "source")
 
 	p.Receive(em)
