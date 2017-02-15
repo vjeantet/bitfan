@@ -104,7 +104,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	go func(channel syslog.LogPartsChannel) {
 		for message := range channel {
 			// Use syslog timestamp as @timestamp field, with correct format
-			message["@timestamp"] = message["timestamp"].(time.Time).Format(processors.TimeFormat)
+			message["@timestamp"] = message["timestamp"].(time.Time)
 			delete(message, "timestamp")
 
 			ne := p.NewPacket("", message)

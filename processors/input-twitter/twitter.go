@@ -148,7 +148,7 @@ func (p *processor) doStream(stream *anaconda.Stream, packet processors.IPacket,
 
 			createdAtTime, err := t.CreatedAtTime()
 			if err == nil {
-				r["@timestamp"] = createdAtTime.Format(processors.TimeFormat)
+				r["@timestamp"] = createdAtTime
 			}
 
 			e := p.NewPacket(t.Text, r)

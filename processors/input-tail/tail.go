@@ -251,7 +251,7 @@ func (p *processor) tailFile(path string, q chan bool) error {
 				e = p.NewPacket(line.Text, map[string]interface{}{
 					"host":       p.host,
 					"path":       path,
-					"@timestamp": line.Time.Format(processors.TimeFormat),
+					"@timestamp": line.Time,
 				})
 			} else {
 				e = p.NewPacket("", json)
@@ -264,7 +264,7 @@ func (p *processor) tailFile(path string, q chan bool) error {
 				e = p.NewPacket(line.Text, map[string]interface{}{
 					"host":       p.host,
 					"path":       path,
-					"@timestamp": line.Time.Format(processors.TimeFormat),
+					"@timestamp": line.Time,
 				})
 			} else {
 				e = p.NewPacket("", xml)
@@ -286,7 +286,7 @@ func (p *processor) tailFile(path string, q chan bool) error {
 			e = p.NewPacket(line.Text, map[string]interface{}{
 				"host":       p.host,
 				"path":       path,
-				"@timestamp": line.Time.Format(processors.TimeFormat),
+				"@timestamp": line.Time,
 			})
 		}
 

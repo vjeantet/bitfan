@@ -44,7 +44,7 @@ func NewPacket(message string, fields map[string]interface{}) processors.IPacket
 	}
 
 	if _, k := fields["@timestamp"]; !k {
-		fields["@timestamp"] = time.Now().Format(processors.TimeFormat)
+		fields["@timestamp"] = time.Now()
 	}
 	return &event{
 		fields: fields,

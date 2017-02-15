@@ -26,10 +26,13 @@ package stdout
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/processors"
 )
+
+const timeFormat = "2006-01-02T15:04:05.999Z07:00"
 
 const (
 	CODEC_PRETTYPRINT string = "pp"
@@ -76,8 +79,9 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 func (p *processor) Receive(e processors.IPacket) error {
 	switch p.opt.Codec {
 	case CODEC_LINE:
+		t, _ := e.Fields().ValueForPath("@timestamp")
 		fmt.Printf("%s %s %s\n",
-			e.Fields().ValueOrEmptyForPathString("@timestamp"),
+			t.(time.Time).Format(timeFormat),
 			e.Fields().ValueOrEmptyForPathString("host"),
 			e.Message(),
 		)

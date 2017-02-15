@@ -110,11 +110,11 @@ func (p *processor) Receive(e processors.IPacket) error {
 	processors.Dynamic(&name, e.Fields())
 
 	// use @timestamp to compute index name, on error use time.Now()
-	t, err := time.Parse(processors.TimeFormat, e.Fields().ValueOrEmptyForPathString("@timestamp"))
+	t, err := e.Fields().ValueForPath("@timestamp")
 	if err != nil {
 		t = time.Now()
 	}
-	index := strftime.Format(name, t)
+	index := strftime.Format(name, t.(time.Time))
 
 	// Create Index if it does not exists
 	p.checkIndex(index)

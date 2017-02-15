@@ -6,8 +6,6 @@ import (
 	"gopkg.in/go-playground/validator.v8"
 )
 
-const TimeFormat = "2006-01-02T15:04:05.999Z07:00"
-
 type Base struct {
 	Send                  PacketSender
 	NewPacket             PacketBuilder

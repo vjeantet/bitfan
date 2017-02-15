@@ -109,7 +109,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 			}
 
 			dated = true
-			e.Fields().SetValueForPath(t.Format(processors.TimeFormat), p.opt.Target)
+			e.Fields().SetValueForPath(t, p.opt.Target)
 			processors.ProcessCommonFields2(e.Fields(),
 				p.opt.AddField,
 				p.opt.AddTag,

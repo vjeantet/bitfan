@@ -34,13 +34,17 @@ func Dynamic(str *string, fields *mxj.Map) {
 		// Search for all %{+word}
 		for _, values := range maskTimePattern.FindAllStringSubmatch(*str, -1) {
 			// Search matching value, when not found use ""
-			t, err := time.Parse(TimeFormat, fields.ValueOrEmptyForPathString("@timestamp"))
-			if err != nil {
-				*str = ""
+			*str = ""
+			if fields.Exists("@timestamp") == false {
 				return
 			}
 
-			replaceBy := jodaTime.Format(values[1], t)
+			t, err := fields.ValueForPath("@timestamp")
+			if err != nil {
+				return
+			}
+
+			replaceBy := jodaTime.Format(values[1], t.(time.Time))
 			*str = strings.Replace(*str, values[0], replaceBy, -1)
 		}
 	} else if true == strings.Contains(*str, mark) { // If %{ exists in value
