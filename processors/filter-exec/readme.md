@@ -12,7 +12,7 @@
 | remove_tag   | array  | false    | []            |
 | command      | string | true     | ""            |
 | args         | array  | false    | []            |
-| stdin        | bool   | false    | true          |
+| stdin        | bool   | false    | false         |
 | target       | string | false    | "stdout"      |
 
 
@@ -66,7 +66,7 @@ If the event has field "somefield" == "hello" this filter, on success, would rem
 
 ### stdin
 * Value type is bool
-* Default value is `true`
+* Default value is `false`
 
 Pass the complete event to stdin as a json string
 
@@ -90,7 +90,7 @@ exec{
 	remove_tag => []
 	command => ""
 	args => []
-	stdin => true
+	stdin => false
 	target => "stdout"
 }
 ```

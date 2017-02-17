@@ -71,7 +71,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Pass the complete event to stdin as a json string",
         Required:     false,
         Type:         "bool",
-        DefaultValue: "true",
+        DefaultValue: "false",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
