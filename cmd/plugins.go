@@ -7,6 +7,7 @@ import (
 	date "github.com/vjeantet/bitfan/processors/filter-date"
 	digest "github.com/vjeantet/bitfan/processors/filter-digest"
 	drop "github.com/vjeantet/bitfan/processors/filter-drop"
+	exec "github.com/vjeantet/bitfan/processors/filter-exec"
 	geoip "github.com/vjeantet/bitfan/processors/filter-geoip"
 	grok "github.com/vjeantet/bitfan/processors/filter-grok"
 	html "github.com/vjeantet/bitfan/processors/filter-html"
@@ -33,9 +34,9 @@ import (
 	elasticsearch "github.com/vjeantet/bitfan/processors/output-elasticsearch"
 	elasticsearch2 "github.com/vjeantet/bitfan/processors/output-elasticsearch2"
 	email "github.com/vjeantet/bitfan/processors/output-email"
-	httpoutput "github.com/vjeantet/bitfan/processors/output-http"
 	fileoutput "github.com/vjeantet/bitfan/processors/output-file"
 	glusterfsoutput "github.com/vjeantet/bitfan/processors/output-glusterfs"
+	httpoutput "github.com/vjeantet/bitfan/processors/output-http"
 	mongodb "github.com/vjeantet/bitfan/processors/output-mongodb"
 	null "github.com/vjeantet/bitfan/processors/output-null"
 	rabbitmqoutput "github.com/vjeantet/bitfan/processors/output-rabbitmq"
@@ -79,6 +80,8 @@ func init() {
 	initPlugin("filter", "whitelist", whitelist.New)
 	initPlugin("filter", "change", change.New)
 	initPlugin("filter", "newterm", newterm.New)
+	initPlugin("filter", "exec", exec.New)
+
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)
 
