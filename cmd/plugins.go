@@ -33,6 +33,7 @@ import (
 	elasticsearch "github.com/vjeantet/bitfan/processors/output-elasticsearch"
 	elasticsearch2 "github.com/vjeantet/bitfan/processors/output-elasticsearch2"
 	email "github.com/vjeantet/bitfan/processors/output-email"
+	httpoutput "github.com/vjeantet/bitfan/processors/output-http"
 	fileoutput "github.com/vjeantet/bitfan/processors/output-file"
 	glusterfsoutput "github.com/vjeantet/bitfan/processors/output-glusterfs"
 	mongodb "github.com/vjeantet/bitfan/processors/output-mongodb"
@@ -91,6 +92,7 @@ func init() {
 	initPlugin("output", "glusterfs", glusterfsoutput.New)
 	initPlugin("output", "rabbitmq", rabbitmqoutput.New)
 	initPlugin("output", "email", email.New)
+	initPlugin("output", "http", httpoutput.New)
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)
