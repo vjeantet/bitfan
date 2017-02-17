@@ -123,6 +123,12 @@
 			"revisionTime": "2014-07-25T18:44:12Z"
 		},
 		{
+			"checksumSHA1": "IElCUEuECHxNWiDinhWFpi0U6oQ=",
+			"path": "github.com/facebookgo/muster",
+			"revision": "fd3d7953fd52354a74b9f6b3d70d0c9650c4ec2a",
+			"revisionTime": "2015-07-08T23:28:44Z"
+		},
+		{
 			"checksumSHA1": "40Ns85VYa4smQPcewZ7SOdfLnKU=",
 			"path": "github.com/fatih/structs",
 			"revision": "a720dfa8df582c51dee1b36feabb906bde1588bd",
