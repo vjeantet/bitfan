@@ -1,4 +1,4 @@
-//go:generate veinoDoc
+//go:generate bitfanDoc
 
 package httpoutput
 
@@ -41,32 +41,42 @@ type options struct {
 	Headers map[string]string `mapstructure:"headers"`
 
 	// The HTTP Verb. One of "put", "post", "patch", "delete", "get", "head". Default value is "post"
+	// @Default "post"
 	HTTPMethod string `mapstructure:"http_method"`
 
 	// Turn this on to enable HTTP keepalive support. Default value is true
+	// @Default true
 	KeepAlive bool `mapstructure:"keepalive"`
 
 	// Max number of concurrent connections. Default value is 1
+	// @Default 1
 	PoolMax int `mapstructure:"pool_max"`
 
 	// Timeout (in seconds) to wait for a connection to be established. Default value is 10
+	// @Default 5
 	ConnectTimeout uint `mapstructure:"connect_timeout"`
 
 	// Timeout (in seconds) for the entire request. Default value is 60
+	// @Default 30
 	RequestTimeout uint `mapstructure:"request_timeout"`
 
 	// Set the format of the http body. Now supports only "json_lines"
+	// @Default "json_lines"
 	Format string `mapstructure:"format"`
 
 	// If encountered as response codes this plugin will retry these requests
+	// @Default [429, 500, 502, 503, 504]
 	RetryableCodes []int `mapstructure:"retryable_codes"`
 
 	// If you would like to consider some non-2xx codes to be successes
 	// enumerate them here. Responses returning these codes will be considered successes
 	IgnorableCodes []int `mapstructure:"ignorable_codes"`
 
+	// @Default 5
 	BatchInterval uint `mapstructure:"batch_interval"`
-	BatchSize     uint `mapstructure:"batch_size"`
+
+	// @Default 100
+	BatchSize uint `mapstructure:"batch_size"`
 
 	// Add any number of arbitrary tags to your event. There is no default value for this setting.
 	// This can help with processing later. Tags can be dynamic and include parts of the event using the %{field} syntax.
@@ -125,8 +135,7 @@ func (p *processor) Start(e processors.IPacket) error {
 			Timeout:   time.Duration(p.opt.ConnectTimeout) * time.Second,
 			KeepAlive: time.Duration(time.Second * 300),
 		}).Dial,
-		TLSClientConfig: &tls.Config{
-		},
+		TLSClientConfig:       &tls.Config{},
 		DisableCompression:    true,
 		DisableKeepAlives:     !p.opt.KeepAlive,
 		MaxIdleConns:          p.opt.PoolMax,
@@ -154,7 +163,7 @@ func (p *processor) Stop(e processors.IPacket) error {
 type batch struct {
 	p     *processor
 	Items bytes.Buffer
-	size uint
+	size  uint
 }
 
 func (b *batch) Add(item interface{}) {

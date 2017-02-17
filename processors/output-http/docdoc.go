@@ -44,7 +44,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "The HTTP Verb. One of \"put\", \"post\", \"patch\", \"delete\", \"get\", \"head\". Default value is \"post\"",
         Required:     false,
         Type:         "string",
-        DefaultValue: nil,
+        DefaultValue: "\"post\"",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -53,7 +53,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Turn this on to enable HTTP keepalive support. Default value is true",
         Required:     false,
         Type:         "bool",
-        DefaultValue: nil,
+        DefaultValue: "true",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -62,7 +62,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Max number of concurrent connections. Default value is 1",
         Required:     false,
         Type:         "int",
-        DefaultValue: nil,
+        DefaultValue: "1",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -71,7 +71,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Timeout (in seconds) to wait for a connection to be established. Default value is 10",
         Required:     false,
         Type:         "uint",
-        DefaultValue: nil,
+        DefaultValue: "5",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -80,7 +80,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Timeout (in seconds) for the entire request. Default value is 60",
         Required:     false,
         Type:         "uint",
-        DefaultValue: nil,
+        DefaultValue: "30",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -89,7 +89,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Set the format of the http body. Now supports only \"json_lines\"",
         Required:     false,
         Type:         "string",
-        DefaultValue: nil,
+        DefaultValue: "\"json_lines\"",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -98,7 +98,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "If encountered as response codes this plugin will retry these requests",
         Required:     false,
         Type:         "array",
-        DefaultValue: nil,
+        DefaultValue: "[429, 500, 502, 503, 504]",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -116,7 +116,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "",
         Required:     false,
         Type:         "uint",
-        DefaultValue: nil,
+        DefaultValue: "5",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -125,7 +125,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "",
         Required:     false,
         Type:         "uint",
-        DefaultValue: nil,
+        DefaultValue: "100",
         ExampleLS:    "",
       },
     },
