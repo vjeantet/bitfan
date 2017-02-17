@@ -17,7 +17,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "The document type to write events to. There is no default value for this setting.\n\nGenerally you should try to write only similar events to the same type.\nString expansion %{foo} works here. Unless you set document_type, the event type will\nbe used if it exists otherwise the document type will be assigned the value of logs",
         Required:     false,
         Type:         "string",
-        DefaultValue: nil,
+        DefaultValue: "\"%{type}\"",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -26,7 +26,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "The number of requests that can be enqueued before flushing them. Default value is 1000",
         Required:     false,
         Type:         "int",
-        DefaultValue: nil,
+        DefaultValue: "1000",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -35,7 +35,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "The number of bytes that the bulk requests can take up before the bulk processor decides to flush. Default value is 5242880 (5MB).",
         Required:     false,
         Type:         "int",
-        DefaultValue: nil,
+        DefaultValue: "5242880",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -44,7 +44,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Host of the remote instance. Default value is \"localhost\"",
         Required:     false,
         Type:         "string",
-        DefaultValue: nil,
+        DefaultValue: "\"localhost\"",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -53,7 +53,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "The amount of seconds since last flush before a flush is forced. Default value is 1\n\nThis setting helps ensure slow event rates don’t get stuck.\nFor example, if your flush_size is 100, and you have received 10 events,\nand it has been more than idle_flush_time seconds since the last flush,\nthose 10 events will be flushed automatically.\nThis helps keep both fast and slow log streams moving along in near-real-time.",
         Required:     false,
         Type:         "int",
-        DefaultValue: nil,
+        DefaultValue: "1",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -62,7 +62,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "The index to write events to. Default value is \"logstash-%Y.%m.%d\"\n\nThis can be dynamic using the %{foo} syntax and strftime syntax (see http://strftime.org/).\nThe default value will partition your indices by day.",
         Required:     false,
         Type:         "string",
-        DefaultValue: nil,
+        DefaultValue: "\"logstash-%Y.%m.%d\"",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -80,7 +80,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "HTTP Path at which the Elasticsearch server lives. Default value is \"/\"\n\nUse this if you must run Elasticsearch behind a proxy that remaps the root path for the Elasticsearch HTTP API lives.",
         Required:     false,
         Type:         "string",
-        DefaultValue: nil,
+        DefaultValue: "\"/\"",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -89,7 +89,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "ElasticSearch port to connect on. Default value is 9200",
         Required:     false,
         Type:         "int",
-        DefaultValue: nil,
+        DefaultValue: "9200",
         ExampleLS:    "",
       },
       &doc.ProcessorOption{
@@ -107,7 +107,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:          "Enable SSL/TLS secured communication to Elasticsearch cluster. Default value is false",
         Required:     false,
         Type:         "bool",
-        DefaultValue: nil,
+        DefaultValue: "false",
         ExampleLS:    "",
       },
     },
