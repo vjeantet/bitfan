@@ -23,7 +23,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "Match",
         Alias:        "match",
-        Doc:          "The date formats allowed are anything allowed by Golang time format.\nYou can see the docs for this format https://golang.org/src/time/format.go#L20\nAn array with field name first, and format patterns following, [ field, formats... ]",
+        Doc:          "The date formats allowed are anything allowed by Joda time format.\nYou can see the docs for this format http://www.joda.org/joda-time/key_format.html\nAn array with field name first, and format patterns following, [ field, formats... ]",
         Required:     false,
         Type:         "array",
         DefaultValue: nil,

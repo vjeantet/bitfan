@@ -3,23 +3,6 @@ package jodaTime
 /*
 jodaTime provides a date formatter using the yoda syntax.
 http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html
-
-Why?
-
-because :)
-
-Usage
-
-	package main
-	import (
-		"vjeantet/jodaTime"
-		"fmt"
-	)
-
-	func main() {
-		date := jodaTime.Format("YYYY.MM.dd", time.Now())
-		fmt.Println(date)
-	}
 */
 
 import (
@@ -62,17 +45,15 @@ import (
  ''      single quote                 literal       '
 */
 
-// Format formats a date based on Microsoft Excel (TM) conventions
+// Format formats a date based on joda conventions
 func Format(format string, date time.Time) string {
 	formatRune := []rune(format)
 	lenFormat := len(formatRune)
 	out := ""
 	for i := 0; i < len(formatRune); i++ {
-		// pp.Println("i,v-->", i, string(formatRune[i]))
 		switch r := formatRune[i]; r {
 		case 'Y', 'y', 'x': // Y YYYY YY year
-			// while next is Y, combine
-			// switch combined and replace
+
 			j := 1
 			for ; i+j < lenFormat; j++ {
 				if formatRune[i+j] != r {
@@ -83,7 +64,7 @@ func Format(format string, date time.Time) string {
 			i = i + j - 1
 
 			switch j {
-			case 1, 3, 4: // Y
+			case 1, 3, 4: // Y YYY YYY
 				out += strconv.Itoa(date.Year())
 			case 2: // YY
 				out += strconv.Itoa(date.Year())[2:4]
@@ -117,9 +98,9 @@ func Format(format string, date time.Time) string {
 			i = i + j - 1
 			_, w := date.ISOWeek()
 			switch j {
-			case 1: // D
+			case 1: // w
 				out = fmt.Sprintf("%s%d", out, w)
-			case 2: // DD
+			case 2: // ww
 				out = fmt.Sprintf("%s%02d", out, w)
 			}
 
@@ -155,9 +136,9 @@ func Format(format string, date time.Time) string {
 			i = i + j - 1
 			v := date.Day()
 			switch j {
-			case 1: // D
+			case 1: // d
 				out = fmt.Sprintf("%s%d", out, v)
-			case 2: // DD
+			case 2: // dd
 				out = fmt.Sprintf("%s%02d", out, v)
 			}
 
@@ -189,9 +170,9 @@ func Format(format string, date time.Time) string {
 			i = i + j - 1
 			v := date.Weekday()
 			switch j {
-			case 1: // E
+			case 1, 2, 3: // E
 				out = fmt.Sprintf("%s%s", out, v.String()[0:3])
-			case 2: // EE
+			case 4: // EE
 				out = fmt.Sprintf("%s%s", out, v.String())
 			}
 		case 'h': // h hh clockhour of halfday (1~12)
@@ -208,9 +189,9 @@ func Format(format string, date time.Time) string {
 				v = v - 11
 			}
 			switch j {
-			case 1: // e
+			case 1: // h
 				out = fmt.Sprintf("%s%d", out, v)
-			case 2: // ee
+			case 2: // hh
 				out = fmt.Sprintf("%s%02d", out, v)
 			}
 
@@ -225,9 +206,9 @@ func Format(format string, date time.Time) string {
 			i = i + j - 1
 			v := date.Hour()
 			switch j {
-			case 1: // e
+			case 1: // H
 				out = fmt.Sprintf("%s%d", out, v)
-			case 2: // ee
+			case 2: // HH
 				out = fmt.Sprintf("%s%02d", out, v)
 			}
 
@@ -249,9 +230,9 @@ func Format(format string, date time.Time) string {
 			i = i + j - 1
 			v := date.Minute()
 			switch j {
-			case 1: // e
+			case 1: // m
 				out = fmt.Sprintf("%s%d", out, v)
-			case 2: // ee
+			case 2: // mm
 				out = fmt.Sprintf("%s%02d", out, v)
 			}
 		case 's': // s ss
@@ -307,13 +288,14 @@ func Format(format string, date time.Time) string {
 			sign := "+"
 			if z < 0 {
 				sign = "-"
+				z = -z
 			}
 			switch j {
-			case 1: // Y
+			case 1: // Z
 				out = fmt.Sprintf("%s%s%02d00", out, sign, z/3600)
-			case 2: // YY
+			case 2: // ZZ
 				out = fmt.Sprintf("%s%s%02d:00", out, sign, z/3600)
-			case 3: // YYY
+			case 3: // ZZZ
 				out = fmt.Sprintf("%s%s", out, timeZone[zs])
 			}
 
@@ -339,9 +321,9 @@ func Format(format string, date time.Time) string {
 				v = v - 12
 			}
 			switch j {
-			case 1: // e
+			case 1: // K
 				out = fmt.Sprintf("%s%d", out, v)
-			case 2: // ee
+			case 2: // KK
 				out = fmt.Sprintf("%s%02d", out, v)
 			}
 
@@ -356,9 +338,9 @@ func Format(format string, date time.Time) string {
 			i = i + j - 1
 			v := date.Hour() + 1
 			switch j {
-			case 1: // e
+			case 1: // k
 				out = fmt.Sprintf("%s%d", out, v)
-			case 2: // ee
+			case 2: // kk
 				out = fmt.Sprintf("%s%02d", out, v)
 			}
 		default:

@@ -33,8 +33,8 @@ If this filter is successful, add any arbitrary fields to this event.
 * Value type is array
 * Default value is `[]`
 
-The date formats allowed are anything allowed by Golang time format.
-You can see the docs for this format https://golang.org/src/time/format.go#L20
+The date formats allowed are anything allowed by Joda time format.
+You can see the docs for this format http://www.joda.org/joda-time/key_format.html
 An array with field name first, and format patterns following, [ field, formats... ]
 
 ### add_tag

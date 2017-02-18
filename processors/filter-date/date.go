@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/vjeantet/bitfan/processors"
+	"github.com/vjeantet/jodaTime"
 )
 
 func New() processors.Processor {
@@ -31,8 +32,8 @@ type options struct {
 	// If this filter is successful, add any arbitrary fields to this event.
 	AddField map[string]interface{} `mapstructure:"add_field"`
 
-	// The date formats allowed are anything allowed by Golang time format.
-	// You can see the docs for this format https://golang.org/src/time/format.go#L20
+	// The date formats allowed are anything allowed by Joda time format.
+	// You can see the docs for this format http://www.joda.org/joda-time/key_format.html
 	// An array with field name first, and format patterns following, [ field, formats... ]
 	Match []string `mapstructure:"match"`
 
@@ -87,9 +88,9 @@ func (p *processor) Receive(e processors.IPacket) error {
 			var t time.Time
 
 			if p.opt.Timezone != "" {
-				location, err := time.LoadLocation(p.opt.Timezone)
-				if err == nil {
-					t, err = time.ParseInLocation(layout, value, location)
+				t, err = jodaTime.ParseInLocation(layout, value, p.opt.Timezone)
+				if err != nil {
+					return err
 				}
 			} else {
 				if layout == "UNIX" {
@@ -99,7 +100,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 						t = time.Unix(i, 0)
 					}
 				} else {
-					t, err = time.Parse(layout, value)
+					t, err = jodaTime.Parse(layout, value)
 				}
 
 			}
