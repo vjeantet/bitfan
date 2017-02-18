@@ -2,8 +2,8 @@
 
 Bitfan is an open source data processing pipeline.
 [![GoDoc](https://godoc.org/github.com/vjeantet/bitfan?status.svg)](https://godoc.org/github.com/vjeantet/bitfan)
-[![Go Report Card](http://goreportcard.com/badge/vjeantet/bitfan)](http:/goreportcard.com/report/vjeantet/bitfan)
-
+[![Go Report Card](https://goreportcard.com/badge/github.com/vjeantet/bitfan)](https://goreportcard.com/report/github.com/vjeantet/bitfan)
+[![Build Status](https://travis-ci.org/vjeantet/bitfan.svg?branch=master)](https://travis-ci.org/vjeantet/bitfan)
 
 ![Bitfan logo](docs/static/noun_307496_cc.png "Bitfan")
 
