@@ -299,8 +299,6 @@ func Format(format string, date time.Time) string {
 				out = fmt.Sprintf("%s%s", out, timeZone[zs])
 			}
 
-		case '\'': // ' (text delimiter)  or '' (real quote)
-
 		case 'G': //era                          text
 			out = fmt.Sprintf("%sAD", out)
 
@@ -343,6 +341,28 @@ func Format(format string, date time.Time) string {
 			case 2: // kk
 				out = fmt.Sprintf("%s%02d", out, v)
 			}
+		case '\'': // ' (text delimiter)  or '' (real quote)
+
+			// real quote
+			if formatRune[i+1] == r {
+				out = fmt.Sprintf("%s'", out)
+				i = i + 1
+				continue
+			}
+
+			tmp := []rune{}
+			j := 1
+			for ; i+j < lenFormat; j++ {
+				if formatRune[i+j] != r {
+					tmp = append(tmp, formatRune[i+j])
+					continue
+				}
+				break
+			}
+			i = i + j
+
+			out = fmt.Sprintf("%s%s", out, string(tmp))
+
 		default:
 			out = fmt.Sprintf("%s%s", out, string(r))
 		}
