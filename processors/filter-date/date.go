@@ -89,9 +89,6 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 			if p.opt.Timezone != "" {
 				t, err = jodaTime.ParseInLocation(layout, value, p.opt.Timezone)
-				if err != nil {
-					return err
-				}
 			} else {
 				if layout == "UNIX" {
 					var i int64
