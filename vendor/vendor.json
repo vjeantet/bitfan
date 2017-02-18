@@ -99,6 +99,36 @@
 			"revisionTime": "2015-01-15T16:53:11Z"
 		},
 		{
+			"checksumSHA1": "ZIgOGAYrMnc+qAVcBN/qht3WUr0=",
+			"path": "github.com/elastic/go-lumber/lj",
+			"revision": "616041e345fc33c97bc0eb0fa6b388aa07bca3e1",
+			"revisionTime": "2016-06-17T14:03:01Z"
+		},
+		{
+			"checksumSHA1": "ZYW2Gn5En04g39XG/uEpDwqwGj8=",
+			"path": "github.com/elastic/go-lumber/log",
+			"revision": "616041e345fc33c97bc0eb0fa6b388aa07bca3e1",
+			"revisionTime": "2016-06-17T14:03:01Z"
+		},
+		{
+			"checksumSHA1": "m6HLKpDAZlkTTQMqabf3aT6TQ/s=",
+			"path": "github.com/elastic/go-lumber/protocol/v2",
+			"revision": "616041e345fc33c97bc0eb0fa6b388aa07bca3e1",
+			"revisionTime": "2016-06-17T14:03:01Z"
+		},
+		{
+			"checksumSHA1": "H5Fwve/3E9K8CTN/u7XdpOn58Zk=",
+			"path": "github.com/elastic/go-lumber/server/internal",
+			"revision": "616041e345fc33c97bc0eb0fa6b388aa07bca3e1",
+			"revisionTime": "2016-06-17T14:03:01Z"
+		},
+		{
+			"checksumSHA1": "3vfLXdvjt0w8+zrEqaH/01eZ5n0=",
+			"path": "github.com/elastic/go-lumber/server/v2",
+			"revision": "616041e345fc33c97bc0eb0fa6b388aa07bca3e1",
+			"revisionTime": "2016-06-17T14:03:01Z"
+		},
+		{
 			"checksumSHA1": "xw+J5sjZGi2Z6jm3kjLQjkv5zuA=",
 			"path": "github.com/etrepat/postman/handler",
 			"revision": "739b9fdbb08757a56b4f12a3e1b119ea229d349a",
@@ -325,6 +355,24 @@
 			"path": "github.com/kardianos/service",
 			"revision": "7a88211485df5d3da6ec68f4f8a5ff9bec297327",
 			"revisionTime": "2016-08-24T00:03:17Z"
+		},
+		{
+			"checksumSHA1": "nfsPW9mmBQaK2gKbfRwXlRZmeuM=",
+			"path": "github.com/klauspost/compress/flate",
+			"revision": "14eb9c4951195779ecfbec34431a976de7335b0a",
+			"revisionTime": "2016-04-21T08:16:54Z"
+		},
+		{
+			"checksumSHA1": "MSfzKJkDgCfuW95gPLm4wbf08Q4=",
+			"path": "github.com/klauspost/compress/zlib",
+			"revision": "14eb9c4951195779ecfbec34431a976de7335b0a",
+			"revisionTime": "2016-04-21T08:16:54Z"
+		},
+		{
+			"checksumSHA1": "iKPMvbAueGfdyHcWCgzwKzm8WVo=",
+			"path": "github.com/klauspost/cpuid",
+			"revision": "09cded8978dc9e80714c4d85b0322337b0a1e5e0",
+			"revisionTime": "2016-03-02T07:53:16Z"
 		},
 		{
 			"checksumSHA1": "1YeGotQXMZMqk+mmm8sbBVJywpw=",
