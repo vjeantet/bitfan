@@ -94,7 +94,7 @@ func (p *processor) clientServe(c net.Conn, wg *sync.WaitGroup, clientTerm chan 
 	// log.Printf("[%s] accepting lumberjack connection", c.RemoteAddr().String())
 
 	dataChan := make(chan map[string]interface{}, 3)
-	go NewParser(c, dataChan).Parse()
+	go NewParser(c, dataChan, p.Logger).Parse()
 
 	for {
 		select {

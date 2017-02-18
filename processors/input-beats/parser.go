@@ -1,5 +1,8 @@
 package beatsinput
 
+// This code come from https://github.com/packetzoom/logzoom
+// https://github.com/packetzoom/logzoom/blob/master/input/filebeat/parser.go
+
 import (
 	"bytes"
 	"compress/zlib"
@@ -10,6 +13,9 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
+
+	"github.com/vjeantet/bitfan/processors"
 )
 
 const (
@@ -20,15 +26,17 @@ const (
 
 type Parser struct {
 	Conn       net.Conn
-	out        chan map[string]interface{}
+	Recv       chan map[string]interface{}
 	wlen, plen uint32
 	buffer     io.Reader
+	Logger     processors.Logger
 }
 
-func NewParser(c net.Conn, dc chan map[string]interface{}) *Parser {
+func NewParser(c net.Conn, r chan map[string]interface{}, log processors.Logger) *Parser {
 	return &Parser{
-		Conn: c,
-		out:  dc,
+		Conn:   c,
+		Recv:   r,
+		Logger: log,
 	}
 }
 
@@ -82,7 +90,7 @@ func (p *Parser) readKV() ([]byte, []byte, error) {
 // read parses the compressed data frame
 func (p *Parser) read() (uint32, error) {
 	var seq, count uint32
-	// var k, v []byte
+	var k, v []byte
 	var err error
 
 	r, err := zlib.NewReader(p.Conn)
@@ -106,30 +114,29 @@ func (p *Parser) read() (uint32, error) {
 		if n == 0 {
 			continue
 		}
-
 		switch string(b) {
 		case "2D": // window size
 			binary.Read(buff, binary.BigEndian, &seq)
 			binary.Read(buff, binary.BigEndian, &count)
 
-			fields := make(map[string]interface{})
-			// fields["@timestamp"] = time.Now().Format(processors.TimeFormat)
+			var fields map[string]interface{}
+			fields = make(map[string]interface{})
 
-			// for j := uint32(0); j < count; j++ {
-			// 	if k, v, err = p.readKV(); err != nil {
-			// 		return seq, err
-			// 	}
-			// 	fields[string(k)] = string(v)
-			// }
+			for j := uint32(0); j < count; j++ {
+				if k, v, err = p.readKV(); err != nil {
+					return seq, err
+				}
+				fields[string(k)] = string(v)
+			}
 
-			// fields["Source"] = fmt.Sprintf("lumberjack://%s%s", fields["host"], fields["file"])
-			// fields["Offset"], _ = strconv.ParseInt(fields["offset"].(string), 10, 64)
-			// fields["Line"] = uint64(seq)
-			// t := fields["line"].(string)
-			// fields["Text"] = &t
+			if val, ok := fields["@timestamp"]; !ok {
+				fields["@timestamp"] = time.Now()
+			} else {
+				fields["@timestamp"], _ = time.Parse("2006-01-02T15:04:05Z07:00", val.(string))
+			}
 
 			// Send to the receiver which is a buffer. We block because...
-			p.out <- fields
+			p.Recv <- fields
 		case "2J": // JSON
 			//log.Printf("Got JSON data")
 			binary.Read(buff, binary.BigEndian, &seq)
@@ -143,22 +150,24 @@ func (p *Parser) read() (uint32, error) {
 			}
 
 			var fields map[string]interface{}
+
 			decoder := json.NewDecoder(strings.NewReader(string(jsonData)))
-			//decoder.UseNumber()
+			decoder.UseNumber()
 			err = decoder.Decode(&fields)
+
+			if val, ok := fields["@timestamp"]; !ok {
+				fields["@timestamp"] = time.Now()
+			} else {
+				fields["@timestamp"], _ = time.Parse("2006-01-02T15:04:05Z07:00", val.(string))
+			}
 
 			if err != nil {
 				return seq, err
 			}
-			//fields["Source"] = fmt.Sprintf("lumberjack://%s%s", fields["host"], fields["file"])
-			// jsonNumber := fields["offset"].(json.Number)
-			// fields["Offset"], _ = jsonNumber.Int64()
-			// fields["Line"] = uint64(seq)
-			// t := fields["message"].(string)
-			// fields["Text"] = &t
 
 			// Send to the receiver which is a buffer. We block because...
-			p.out <- fields
+			p.Recv <- fields
+
 		default:
 			return seq, fmt.Errorf("unknown type: %s", b)
 		}
@@ -169,19 +178,18 @@ func (p *Parser) read() (uint32, error) {
 
 // Parse initialises the read loop and begins parsing the incoming request
 func (p *Parser) Parse() {
-	defer close(p.out)
 	b := make([]byte, 2)
 
 Read:
 	for {
-		//TODO : handle congestion_threshold (readtimeout)
 		n, err := p.Conn.Read(b)
 
 		if err != nil || n == 0 {
 			if opErr, ok := err.(*net.OpError); ok && opErr.Timeout() {
+				p.Logger.Debugf("[%s] error reading %v", p.Conn.RemoteAddr().String(), err)
 				break Read
 			}
-			log.Printf("[%s] error reading %v", p.Conn.RemoteAddr().String(), err)
+			p.Logger.Errorf("[%s] error reading %v", p.Conn.RemoteAddr().String(), err)
 			break Read
 		}
 
@@ -202,10 +210,13 @@ Read:
 				log.Printf("[%s] error acking %v", p.Conn.RemoteAddr().String(), err)
 				break Read
 			}
+		case "2J":
+
 		default:
 			// This really shouldn't happen
-			log.Printf("[%s] Received unknown type (%s): %s", p.Conn.RemoteAddr().String(), b, err)
+			p.Logger.Errorf("[%s] Received unknown type (%s): %s", p.Conn.RemoteAddr().String(), b, err)
 			break Read
 		}
 	}
+	close(p.Recv)
 }
