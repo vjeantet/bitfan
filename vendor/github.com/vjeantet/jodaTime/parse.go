@@ -1,7 +1,6 @@
 package jodaTime
 
 import (
-	"fmt"
 	"strings"
 	"time"
 )
@@ -25,7 +24,7 @@ func getLayout(format string) string {
 	formatRune := []rune(format)
 	lenFormat := len(formatRune)
 	layout := ""
-	for i := 0; i < len(formatRune); i++ {
+	for i := 0; i < lenFormat; i++ {
 		switch r := formatRune[i]; r {
 		case 'h':
 			j := 1
@@ -36,9 +35,9 @@ func getLayout(format string) string {
 			}
 			switch j {
 			case 1: // d
-				layout = fmt.Sprintf("%s3", layout)
+				layout += "3"
 			default:
-				layout = fmt.Sprintf("%s03", layout)
+				layout += "03"
 			}
 
 			i = i + j - 1
@@ -50,7 +49,7 @@ func getLayout(format string) string {
 				}
 			}
 
-			layout = fmt.Sprintf("%s15", layout)
+			layout += "15"
 
 			i = i + j - 1
 		case 'm':
@@ -62,9 +61,9 @@ func getLayout(format string) string {
 			}
 			switch j {
 			case 1: // d
-				layout = fmt.Sprintf("%s4", layout)
+				layout += "4"
 			default:
-				layout = fmt.Sprintf("%s04", layout)
+				layout += "04"
 			}
 
 			i = i + j - 1
@@ -77,9 +76,9 @@ func getLayout(format string) string {
 			}
 			switch j {
 			case 1: // d
-				layout = fmt.Sprintf("%s5", layout)
+				layout += "5"
 			default:
-				layout = fmt.Sprintf("%s05", layout)
+				layout += "05"
 			}
 
 			i = i + j - 1
@@ -92,9 +91,9 @@ func getLayout(format string) string {
 			}
 			switch j {
 			case 1: // d
-				layout = fmt.Sprintf("%s2", layout)
+				layout += "2"
 			default:
-				layout = fmt.Sprintf("%s02", layout)
+				layout += "02"
 			}
 			i = i + j - 1
 		case 'E':
@@ -106,9 +105,9 @@ func getLayout(format string) string {
 			}
 			switch j {
 			case 1, 2, 3: // d
-				layout = fmt.Sprintf("%sMon", layout)
+				layout += "Mon"
 			default:
-				layout = fmt.Sprintf("%sMonday", layout)
+				layout += "Monday"
 			}
 			i = i + j - 1
 		case 'M':
@@ -121,13 +120,13 @@ func getLayout(format string) string {
 
 			switch j {
 			case 1: // d
-				layout = fmt.Sprintf("%s1", layout)
+				layout += "1"
 			case 2:
-				layout = fmt.Sprintf("%s01", layout)
+				layout += "01"
 			case 3:
-				layout = fmt.Sprintf("%sJan", layout)
+				layout += "Jan"
 			case 4:
-				layout = fmt.Sprintf("%sJanuary", layout)
+				layout += "January"
 
 			}
 			i = i + j - 1
@@ -141,9 +140,9 @@ func getLayout(format string) string {
 			}
 			switch j {
 			case 2: // d
-				layout = fmt.Sprintf("%s06", layout)
+				layout += "06"
 			default: // dd
-				layout = fmt.Sprintf("%s2006", layout)
+				layout += "2006"
 			}
 
 			i = i + j - 1
@@ -156,7 +155,7 @@ func getLayout(format string) string {
 				}
 			}
 
-			layout = fmt.Sprintf("%s%s", layout, strings.Repeat("9", j))
+			layout += strings.Repeat("9", j)
 
 			i = i + j - 1
 
@@ -168,7 +167,7 @@ func getLayout(format string) string {
 				}
 			}
 
-			layout = fmt.Sprintf("%sPM", layout)
+			layout += "PM"
 		case 'Z':
 			j := 1
 			for ; i+j < lenFormat; j++ {
@@ -179,14 +178,35 @@ func getLayout(format string) string {
 
 			switch j {
 			case 1: // d
-				layout = fmt.Sprintf("%s-0700", layout)
+				layout += "-0700"
 			case 2: // d
-				layout = fmt.Sprintf("%s-07:00", layout)
+				layout += "-07:00"
 			}
 
 			i = i + j - 1
+		case '\'': // ' (text delimiter)  or '' (real quote)
+
+			// real quote
+			if formatRune[i+1] == r {
+				layout += "'"
+				i = i + 1
+				continue
+			}
+
+			tmp := []rune{}
+			j := 1
+			for ; i+j < lenFormat; j++ {
+				if formatRune[i+j] != r {
+					tmp = append(tmp, formatRune[i+j])
+					continue
+				}
+				break
+			}
+			i = i + j
+
+			layout += string(tmp)
 		default:
-			layout = fmt.Sprintf("%s%s", layout, string(r))
+			layout += string(r)
 		}
 	}
 	return layout

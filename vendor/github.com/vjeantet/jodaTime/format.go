@@ -6,7 +6,6 @@ http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.htm
 */
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -82,9 +81,15 @@ func Format(format string, date time.Time) string {
 
 			switch j {
 			case 1: // D
-				out = fmt.Sprintf("%s%d", out, date.YearDay())
+				out += strconv.Itoa(date.YearDay())
 			case 2: // DD
-				out = fmt.Sprintf("%s%02d", out, date.YearDay())
+				if date.YearDay() < 10 {
+					out += "0"
+					out += strconv.Itoa(int(date.YearDay()))
+				} else {
+					out += strconv.Itoa(int(date.YearDay()))
+				}
+
 			}
 
 		case 'w': // w ww week of weekyear
@@ -99,9 +104,14 @@ func Format(format string, date time.Time) string {
 			_, w := date.ISOWeek()
 			switch j {
 			case 1: // w
-				out = fmt.Sprintf("%s%d", out, w)
+				out += strconv.Itoa(w)
 			case 2: // ww
-				out = fmt.Sprintf("%s%02d", out, w)
+				if w < 10 {
+					out += "0"
+					out += strconv.Itoa(int(w))
+				} else {
+					out += strconv.Itoa(int(w))
+				}
 			}
 
 		case 'M': // M MM MMM MMMM month of year
@@ -116,13 +126,19 @@ func Format(format string, date time.Time) string {
 			v := date.Month()
 			switch j {
 			case 1: // M
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(int(v))
 			case 2: // MM
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(int(v))
+				} else {
+					out += strconv.Itoa(int(v))
+				}
+
 			case 3: // MMM
-				out = fmt.Sprintf("%s%s", out, v.String()[0:3])
+				out += v.String()[0:3]
 			case 4: // MMMM
-				out = fmt.Sprintf("%s%s", out, v.String())
+				out += v.String()
 			}
 
 		case 'd': // d dd day of month
@@ -137,9 +153,15 @@ func Format(format string, date time.Time) string {
 			v := date.Day()
 			switch j {
 			case 1: // d
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // dd
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+
 			}
 
 		case 'e': // e ee day of week(number)
@@ -154,9 +176,15 @@ func Format(format string, date time.Time) string {
 			v := date.Weekday()
 			switch j {
 			case 1: // e
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(int(v))
 			case 2: // ee
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(int(v))
+				} else {
+					out += strconv.Itoa(int(v))
+				}
+
 			}
 
 		case 'E': // E EE
@@ -171,9 +199,9 @@ func Format(format string, date time.Time) string {
 			v := date.Weekday()
 			switch j {
 			case 1, 2, 3: // E
-				out = fmt.Sprintf("%s%s", out, v.String()[0:3])
+				out += v.String()[0:3]
 			case 4: // EE
-				out = fmt.Sprintf("%s%s", out, v.String())
+				out += v.String()
 			}
 		case 'h': // h hh clockhour of halfday (1~12)
 			j := 1
@@ -190,9 +218,15 @@ func Format(format string, date time.Time) string {
 			}
 			switch j {
 			case 1: // h
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // hh
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+
 			}
 
 		case 'H': // H HH
@@ -207,16 +241,21 @@ func Format(format string, date time.Time) string {
 			v := date.Hour()
 			switch j {
 			case 1: // H
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // HH
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
 			}
 
 		case 'a': // a
 			if date.Hour() > 12 {
-				out = fmt.Sprintf("%s%s", out, "PM")
+				out += "PM"
 			} else {
-				out = fmt.Sprintf("%s%s", out, "AM")
+				out += "AM"
 			}
 
 		case 'm': // m mm minute of hour
@@ -231,9 +270,15 @@ func Format(format string, date time.Time) string {
 			v := date.Minute()
 			switch j {
 			case 1: // m
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // mm
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+
 			}
 		case 's': // s ss
 			j := 1
@@ -247,9 +292,15 @@ func Format(format string, date time.Time) string {
 			v := date.Second()
 			switch j {
 			case 1: // s
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // ss
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+
 			}
 
 		case 'S': // S SS SSS
@@ -264,16 +315,29 @@ func Format(format string, date time.Time) string {
 			v := date.Nanosecond()
 			switch j {
 			case 1: // S
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // SS
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
 			case 3: // SSS
-				out = fmt.Sprintf("%s%03d", out, v)
+				if v < 10 {
+					out += "00"
+					out += strconv.Itoa(v)
+				} else if v < 100 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
 			}
 
 		case 'z': // z
 			z, _ := date.Zone()
-			out = fmt.Sprintf("%s%s", out, z)
+			out += z
 
 		case 'Z': // Z ZZ
 			j := 1
@@ -290,17 +354,36 @@ func Format(format string, date time.Time) string {
 				sign = "-"
 				z = -z
 			}
+
+			v := z / 3600
+
 			switch j {
 			case 1: // Z
-				out = fmt.Sprintf("%s%s%02d00", out, sign, z/3600)
+				out += sign
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+				out += "00"
+
 			case 2: // ZZ
-				out = fmt.Sprintf("%s%s%02d:00", out, sign, z/3600)
+				out += sign
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+				out += ":00"
+
 			case 3: // ZZZ
-				out = fmt.Sprintf("%s%s", out, timeZone[zs])
+				out += timeZone[zs]
 			}
 
 		case 'G': //era                          text
-			out = fmt.Sprintf("%sAD", out)
+			out += "AD"
 
 		case 'C': //century of era (>=0)         number
 			out += strconv.Itoa(date.Year())[0:2]
@@ -320,9 +403,15 @@ func Format(format string, date time.Time) string {
 			}
 			switch j {
 			case 1: // K
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // KK
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+
 			}
 
 		case 'k': // k kk clockhour of day (1~24)
@@ -337,15 +426,21 @@ func Format(format string, date time.Time) string {
 			v := date.Hour() + 1
 			switch j {
 			case 1: // k
-				out = fmt.Sprintf("%s%d", out, v)
+				out += strconv.Itoa(v)
 			case 2: // kk
-				out = fmt.Sprintf("%s%02d", out, v)
+				if v < 10 {
+					out += "0"
+					out += strconv.Itoa(v)
+				} else {
+					out += strconv.Itoa(v)
+				}
+
 			}
 		case '\'': // ' (text delimiter)  or '' (real quote)
 
 			// real quote
 			if formatRune[i+1] == r {
-				out = fmt.Sprintf("%s'", out)
+				out += "'"
 				i = i + 1
 				continue
 			}
@@ -361,10 +456,10 @@ func Format(format string, date time.Time) string {
 			}
 			i = i + j
 
-			out = fmt.Sprintf("%s%s", out, string(tmp))
+			out += string(tmp)
 
 		default:
-			out = fmt.Sprintf("%s%s", out, string(r))
+			out += string(r)
 		}
 	}
 	return out

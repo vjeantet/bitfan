@@ -4,7 +4,8 @@
 [![Go Report Card](http://goreportcard.com/badge/vjeantet/jodaTime)](http:/goreportcard.com/report/vjeantet/jodaTime)
 
 # JodaTime
-Format golang date time.Time with joda layout
+* Format golang date time.Time with joda layout
+* Parse time with joda layout
 
 reference : [http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html](http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html)
 
@@ -22,7 +23,11 @@ import (
 func main() {
 	date := jodaTime.Format("YYYY.MM.dd", time.Now())
 	fmt.Println(date)
+
+	dateTime, _ := jodaTime.Parse("dd/MMMM/yyyy:HH:mm:ss", "30/August/2015:21:44:25")
+	fmt.Println(dateTime.String())
 }
+
 ```
 
 # Format
