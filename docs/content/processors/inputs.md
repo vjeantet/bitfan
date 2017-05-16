@@ -1,11 +1,11 @@
 +++
-title = "Inputs"
+title = "Inputs processors"
 description = ""
 
 [menu.main]
-parent = "plugins"
+parent = "processors"
 identifier = "inputs"
-weight = 50
+weight = 10
 +++
 
 {{%children style="h2" description="true"%}}

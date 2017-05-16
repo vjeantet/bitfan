@@ -1,12 +1,12 @@
 +++
-title = "Getting Started with Bitfan"
+title = "Processors"
 description = ""
 
 [menu.main]
 parent = ""
-name = "Getting Started"
-identifier = "start"
-weight = 2
+name = "Processors"
+identifier = "processors"
+weight = 50
 +++
 
 {{%children style="h2" description="true"%}}

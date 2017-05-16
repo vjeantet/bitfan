@@ -1,12 +1,12 @@
 +++
-title = "Commands"
+title = "Command-Line Flags"
 description = ""
 
 [menu.main]
-parent = ""
+parent = "use"
 name = "Commands"
 identifier = "commands"
-weight = 3
+weight = 300
 +++
 
 ```
