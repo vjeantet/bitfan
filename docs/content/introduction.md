@@ -51,16 +51,6 @@ Its configuration format is a extension of the logstash's one, with ability to r
 Bitfan works on every platform and does not require a runtime or any library to run it.
 
 
-Beehive is an event and agent system, which allows you to create your own agents that perform automated tasks triggered by events and filters. It is modular, flexible and really easy to extend for anyone. It has modules (we call them Hives), so it can interface with, talk to, or retrieve information from Twitter, Tumblr, Email, IRC, Jabber, RSS, Jenkins, Hue - to name just a few. Check out the full list of available Hives in our Wiki.
-
-Huginn is a system for building agents that perform automated tasks for you online. They can read the web, watch for events, and take actions on your behalf. Huginn's Agents create and consume events, propagating them along a directed graph. Think of it as a hackable version of IFTTT or Zapier on your own server. You always know who has your data. You do.
-
-
-“Trigger Happy” is a free software that provides a bridge to automatically share data between popular services you use on the web. And instead of giving your credentials to them, keep them with your own Trigger Happy to keep the control of your data !
-
-Logstash is an open source, server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then sends it to your favorite “stash.” (Ours is Elasticsearch, naturally.)
-
-
 
 
 {{%children style="h2" description="true"%}}
