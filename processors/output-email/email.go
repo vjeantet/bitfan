@@ -46,23 +46,28 @@ type options struct {
 	// @ExampleLS replyto => "test@nowhere.com"
 	Replyto string `mapstructure:"replyto"`
 
-	//The fully-qualified email address to send the email to.
+	// The fully-qualified email address to send the email to.
+	//
 	// This field also accepts a comma-separated string of addresses, for example: `"me@host.com, you@host.com"`
+	//
 	// You can also use dynamic fields from the event with the %{fieldname} syntax
 	// @ExampleLS to => "me@host.com, you@host.com"
 	To string `mapstructure:"to", validate:"required"`
 
 	// The fully-qualified email address(es) to include as cc: address(es).
+	//
 	// This field also accepts a comma-separated string of addresses, for example: `"me@host.com, you@host.com"`
 	// @ExampleLS cc => "me@host.com, you@host.com"
 	Cc string `mapstructure:"cc"`
 
 	// The fully-qualified email address(es) to include as bcc: address(es).
+	//
 	// This field also accepts a comma-separated string of addresses, for example: `"me@host.com, you@host.com"`
 	// @ExampleLS bcc => "me@host.com, you@host.com"
 	Bcc string `mapstructure:"bcc"`
 
 	// Subject: for the email
+	//
 	// You can use template
 	// @ExampleLS subject => "message from {{.host}}"
 	Subject string `mapstructure:"subject"`

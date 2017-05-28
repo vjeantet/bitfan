@@ -33,7 +33,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "RemoveField",
         Alias:        "remove_field",
-        Doc:          "If this filter is successful, remove arbitrary fields from this event. Example:\n` kv {\n`   remove_field => [ \"foo_%{somefield}\" ]\n` }",
+        Doc:          "If this filter is successful, remove arbitrary fields from this event. Example:\n```\nkv {\n  remove_field => [ \"foo_%{somefield}\" ]\n}\n```",
         Required:     false,
         Type:         "array",
         DefaultValue: nil,
@@ -42,7 +42,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "RemoveTag",
         Alias:        "remove_tag",
-        Doc:          "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\nExample:\n` kv {\n`   remove_tag => [ \"foo_%{somefield}\" ]\n` }\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
+        Doc:          "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\n\nExample:\n```\nkv {\n  remove_tag => [ \"foo_%{somefield}\" ]\n}\n```\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
         Required:     false,
         Type:         "array",
         DefaultValue: nil,
@@ -51,7 +51,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "CompareField",
         Alias:        "compare_field",
-        Doc:          "The name of the field to use to compare to the blacklist.\nIf the field is null, those events will be ignored.",
+        Doc:          "The name of the field to use to compare to the blacklist.\n\nIf the field is null, those events will be ignored.",
         Required:     true,
         Type:         "string",
         DefaultValue: nil,

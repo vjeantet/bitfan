@@ -1,3 +1,4 @@
+//go:generate bitfanDoc
 // +build !extra
 
 package glusterfsoutput

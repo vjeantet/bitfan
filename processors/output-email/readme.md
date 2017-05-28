@@ -68,7 +68,9 @@ The fully qualified email address for the Reply-To: field
 * Default value is `""`
 
 The fully-qualified email address to send the email to.
+
 This field also accepts a comma-separated string of addresses, for example: `"me@host.com, you@host.com"`
+
 You can also use dynamic fields from the event with the %{fieldname} syntax
 
 ### cc
@@ -76,6 +78,7 @@ You can also use dynamic fields from the event with the %{fieldname} syntax
 * Default value is `""`
 
 The fully-qualified email address(es) to include as cc: address(es).
+
 This field also accepts a comma-separated string of addresses, for example: `"me@host.com, you@host.com"`
 
 ### bcc
@@ -83,6 +86,7 @@ This field also accepts a comma-separated string of addresses, for example: `"me
 * Default value is `""`
 
 The fully-qualified email address(es) to include as bcc: address(es).
+
 This field also accepts a comma-separated string of addresses, for example: `"me@host.com, you@host.com"`
 
 ### subject
@@ -90,6 +94,7 @@ This field also accepts a comma-separated string of addresses, for example: `"me
 * Default value is `""`
 
 Subject: for the email
+
 You can use template
 
 ### subjectfile

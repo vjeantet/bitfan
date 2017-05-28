@@ -35,19 +35,24 @@ and include parts of the event using the %{field} syntax.
 * Default value is `[]`
 
 If this filter is successful, remove arbitrary fields from this event. Example:
-` kv {
-`   remove_field => [ "foo_%{somefield}" ]
-` }
+```
+kv {
+  remove_field => [ "foo_%{somefield}" ]
+}
+```
 
 ### remove_tag
 * Value type is array
 * Default value is `[]`
 
 If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.
+
 Example:
-` kv {
-`   remove_tag => [ "foo_%{somefield}" ]
-` }
+```
+kv {
+  remove_tag => [ "foo_%{somefield}" ]
+}
+```
 If the event has field "somefield" == "hello" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.
 
 ### compare_field
@@ -56,6 +61,7 @@ If the event has field "somefield" == "hello" this filter, on success, would rem
 * Default value is `""`
 
 The name of the field to use to compare to the blacklist.
+
 If the field is null, those events will be ignored.
 
 ### ignore_missing

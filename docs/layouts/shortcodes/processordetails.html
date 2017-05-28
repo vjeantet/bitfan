@@ -2,7 +2,8 @@
 
 <p>{{markdownify .Doc}}</p>
 
-<h2>Synopsys</h2>
+{{if .Options}}
+<h2  id="synopsys">Synopsys</h2>
 <table>
 	<thead>
 		<tr>
@@ -15,7 +16,9 @@
 	<tbody>
 	{{ range .Options.Options }}
 	<tr>
-		<td>{{if .Required}}<strong>{{end}}{{.Name | lower}}{{if .Required}}</strong>{{end}}</td>
+		<td>{{if .Required}}<strong>{{end}}
+		<a href="#{{.Name}}">{{.Name | lower}}</a>
+		{{if .Required}}</strong>{{end}}</td>
 		<td>{{.Type}}</td>
 		<td>{{if .Required}}yes{{else}}no{{end}}</td>
 		<td><code>{{ template "proc-defaultvalue" . }}</code></td>
@@ -23,12 +26,15 @@
 	{{ end }}
 	</tbody>
 </table>
+{{else}}
+  No params for this processor.
+{{ end }}
 
-
+{{if .Options}}
 <h2>Details</h2>
 <p>{{markdownify .Options.Doc}}</p>
 {{ range .Options.Options }}
-	<h3>{{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}}</h3>
+	<h3 id="{{.Name}}">{{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}}</h3>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
 	<li>Value type is {{.Type}}</li>
 	<li>Default value is <code>{{ template "proc-defaultvalue" . }}</code></li>
@@ -36,7 +42,7 @@
 {{ end }}
 
 
-<h2>Configuration blueprint</h2>
+<h2 id="blueprint">Configuration blueprint</h2>
 <pre><code>
 {
 {{ range .Options.Options }}
@@ -44,6 +50,7 @@
 {{end -}}
 }
 </code></pre>
+{{ end }}
 
 {{end}}
 
@@ -63,11 +70,11 @@
 {{- end}}
 {{- end }}
 
+
 {{ define "proc-example" }}
 {{- if .ExampleLS }}    # {{delimit (split .Doc "\n") "\n    # "}}
     {{.ExampleLS}}
 {{ else }}    # {{delimit (split .Doc "\n") "\n    # "}}
     {{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}} => {{- template "proc-defaultvalue" . }}
 {{ end -}}
-
 {{ end }}

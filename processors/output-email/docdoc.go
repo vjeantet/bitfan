@@ -69,7 +69,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "To",
         Alias:        "to",
-        Doc:          "The fully-qualified email address to send the email to.\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`\nYou can also use dynamic fields from the event with the %{fieldname} syntax",
+        Doc:          "The fully-qualified email address to send the email to.\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`\n\nYou can also use dynamic fields from the event with the %{fieldname} syntax",
         Required:     true,
         Type:         "string",
         DefaultValue: nil,
@@ -78,7 +78,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "Cc",
         Alias:        "cc",
-        Doc:          "The fully-qualified email address(es) to include as cc: address(es).\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
+        Doc:          "The fully-qualified email address(es) to include as cc: address(es).\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
         Required:     false,
         Type:         "string",
         DefaultValue: nil,
@@ -87,7 +87,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "Bcc",
         Alias:        "bcc",
-        Doc:          "The fully-qualified email address(es) to include as bcc: address(es).\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
+        Doc:          "The fully-qualified email address(es) to include as bcc: address(es).\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
         Required:     false,
         Type:         "string",
         DefaultValue: nil,
@@ -96,7 +96,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "Subject",
         Alias:        "subject",
-        Doc:          "Subject: for the email\nYou can use template",
+        Doc:          "Subject: for the email\n\nYou can use template",
         Required:     false,
         Type:         "string",
         DefaultValue: nil,

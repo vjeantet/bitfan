@@ -63,7 +63,7 @@
       {
         "Alias": "to",
         "DefaultValue": null,
-        "Doc": "The fully-qualified email address to send the email to.\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`\nYou can also use dynamic fields from the event with the %{fieldname} syntax",
+        "Doc": "The fully-qualified email address to send the email to.\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`\n\nYou can also use dynamic fields from the event with the %{fieldname} syntax",
         "ExampleLS": "to =\u003e \"me@host.com, you@host.com\"",
         "Name": "To",
         "Required": true,
@@ -72,7 +72,7 @@
       {
         "Alias": "cc",
         "DefaultValue": null,
-        "Doc": "The fully-qualified email address(es) to include as cc: address(es).\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
+        "Doc": "The fully-qualified email address(es) to include as cc: address(es).\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
         "ExampleLS": "cc =\u003e \"me@host.com, you@host.com\"",
         "Name": "Cc",
         "Required": false,
@@ -81,7 +81,7 @@
       {
         "Alias": "bcc",
         "DefaultValue": null,
-        "Doc": "The fully-qualified email address(es) to include as bcc: address(es).\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
+        "Doc": "The fully-qualified email address(es) to include as bcc: address(es).\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
         "ExampleLS": "bcc =\u003e \"me@host.com, you@host.com\"",
         "Name": "Bcc",
         "Required": false,
@@ -90,7 +90,7 @@
       {
         "Alias": "subject",
         "DefaultValue": null,
-        "Doc": "Subject: for the email\nYou can use template",
+        "Doc": "Subject: for the email\n\nYou can use template",
         "ExampleLS": "subject =\u003e \"message from {{.host}}\"",
         "Name": "Subject",
         "Required": false,

@@ -1,0 +1,84 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-glusterfs",
+  "Name": "glusterfsoutput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "codec",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "create_if_deleted",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "CreateIfDeleted",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "dir_mode",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "DirMode",
+        "Required": false,
+        "Type": "os.FileMode"
+      },
+      {
+        "Alias": "file_mode",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "FileMode",
+        "Required": false,
+        "Type": "os.FileMode"
+      },
+      {
+        "Alias": "flush_interval",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "FlushInterval",
+        "Required": false,
+        "Type": "time.Duration"
+      },
+      {
+        "Alias": "host",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Host",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "path",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Path",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "volume",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Volume",
+        "Required": true,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

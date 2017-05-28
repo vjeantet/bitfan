@@ -27,7 +27,7 @@
       {
         "Alias": "remove_field",
         "DefaultValue": null,
-        "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n` kv {\n`   remove_field =\u003e [ \"foo_%{somefield}\" ]\n` }",
+        "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n```\nkv {\n  remove_field =\u003e [ \"foo_%{somefield}\" ]\n}\n```",
         "ExampleLS": "",
         "Name": "RemoveField",
         "Required": false,
@@ -36,7 +36,7 @@
       {
         "Alias": "remove_tag",
         "DefaultValue": null,
-        "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\nExample:\n` kv {\n`   remove_tag =\u003e [ \"foo_%{somefield}\" ]\n` }\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
+        "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\n\nExample:\n```\nkv {\n  remove_tag =\u003e [ \"foo_%{somefield}\" ]\n}\n```\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
         "ExampleLS": "",
         "Name": "RemoveTag",
         "Required": false,
@@ -45,7 +45,7 @@
       {
         "Alias": "compare_field",
         "DefaultValue": null,
-        "Doc": "The name of the field to use to compare to the blacklist.\nIf the field is null, those events will be ignored.",
+        "Doc": "The name of the field to use to compare to the blacklist.\n\nIf the field is null, those events will be ignored.",
         "ExampleLS": "compare_field =\u003e \"message\"",
         "Name": "CompareField",
         "Required": true,
