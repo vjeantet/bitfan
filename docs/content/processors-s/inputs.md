@@ -3,6 +3,7 @@ title = "Inputs processors"
 description = ""
 
 [menu.main]
+name="Inputs"
 parent = "processors"
 identifier = "inputs"
 weight = 10

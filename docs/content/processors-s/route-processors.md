@@ -8,4 +8,4 @@ identifier = "routeproc"
 weight = 40
 +++
 
-{{%children style="h2" description="true"%}}
+{{% processordetails route %}}

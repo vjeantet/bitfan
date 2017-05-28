@@ -56,6 +56,7 @@ Add a type field to all events handled by this processor
 
 Path to configuration to import in this pipeline, it could be a local file or an url
 can be relative path to the current configuration.
+
 SPLIT and JOIN : in filter Section, set multiples path to make a split and join into your pipeline
 
 ### var
@@ -64,6 +65,7 @@ SPLIT and JOIN : in filter Section, set multiples path to make a split and join 
 
 You can set variable references in the used configuration by using ${var}.
 each reference will be replaced by the value of the variable found in this option
+
 The replacement is case-sensitive.
 
 

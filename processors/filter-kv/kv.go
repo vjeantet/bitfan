@@ -39,37 +39,51 @@ type options struct {
 	// For example, consider a source like from=me from=me.
 	// [from] will map to an Array with two elements: ["me", "me"].
 	// to only keep unique key/value pairs, you could use this configuration
-	// ` kv {
-	// `   allow_duplicate_values => false
-	// ` }
+	// ```
+	// kv {
+	//   allow_duplicate_values => false
+	// }
+	// ```
 	AllowDuplicateValues bool `mapstructure:"allow_duplicate_values"`
 
 	// A hash specifying the default keys and their values which should be added
 	// to the event in case these keys do not exist in the source field being parsed.
+	//
 	// Example
-	// `kv {
-	// `  default_keys => { "from"=> "logstash@example.com",
-	// `                   "to"=> "default@dev.null" }
-	// `}
+	// ```
+	// kv {
+	//   default_keys => { "from"=> "logstash@example.com",
+	//                    "to"=> "default@dev.null" }
+	// }
+	// ```
 	DefaultKeys map[string]interface{} `mapstructure:"default_keys"`
 
-	//An array specifying the parsed keys which should not be added to the event.
+	// An array specifying the parsed keys which should not be added to the event.
+	//
 	// By default no keys will be excluded.
+	//
 	// For example, consider a source like Hey, from=<abc>, to=def foo=bar.
+	//
 	// To exclude from and to, but retain the foo key, you could use this configuration:
-	// `kv {
-	// `  exclude_keys => [ "from", "to" ]
-	// `}
+	// ```
+	// kv {
+	//   exclude_keys => [ "from", "to" ]
+	// }
+	// ```
 	ExcludeKeys []string `mapstructure:"exclude_keys"`
 
 	// A string of characters to use as delimiters for parsing out key-value pairs.
+	//
 	// These characters form a regex character class and thus you must escape special regex characters like [ or ] using \.
-	// ## Example with URL Query Strings
+	// #### Example with URL Query Strings
 	// For example, to split out the args from a url query string such as ?pin=12345~0&d=123&e=foo@bar.com&oq=bobo&ss=12345:
-	// ` kv {
-	// `   field_split => "&?"
-	// ` }
+	// ```
+	//  kv {
+	//    field_split => "&?"
+	//  }
+	// ```
 	// The above splits on both & and ? characters, giving you the following fields:
+	//
 	// * pin: 12345~0
 	// * d: 123
 	// * e: foo@bar.com
@@ -78,82 +92,118 @@ type options struct {
 	FieldSplit string `mapstructure:"field_split"`
 
 	// A boolean specifying whether to include brackets as value wrappers (the default is true)
-	// ` kv {
-	// `   include_brackets => true
-	// ` }
+	// ```
+	// kv {
+	//   include_brackets => true
+	// }
+	// ```
 	// For example, the result of this line: bracketsone=(hello world) bracketstwo=[hello world]
 	// will be:
+	//
 	// * bracketsone: hello world
 	// * bracketstwo: hello world
+	//
 	// instead of:
+	//
 	// * bracketsone: (hello
 	// * bracketstwo: [hello
 	IncludeBrackets bool `mapstructure:"include_brackets"`
 
 	// An array specifying the parsed keys which should be added to the event. By default all keys will be added.
+	//
 	// For example, consider a source like Hey, from=<abc>, to=def foo=bar. To include from and to, but exclude the foo key, you could use this configuration:
-	// ` kv {
-	// ` include_keys => [ "from", "to" ]
-	// ` }
+	// ```
+	// kv {
+	//   include_keys => [ "from", "to" ]
+	// }
+	// ```
 	IncludeKeys []string `mapstructure:"include_keys"`
 
 	// A string to prepend to all of the extracted keys.
+	//
 	// For example, to prepend arg_ to all keys:
-	// ` kv {
-	// `   prefix => "arg_" }
-	// ` }
+	// ```
+	// kv {
+	//   prefix => "arg_" }
+	// }
+	// ```
 	Prefix string
 
 	// A boolean specifying whether to drill down into values and recursively get more key-value pairs from it. The extra key-value pairs will be stored as subkeys of the root key.
+	//
 	// Default is not to recursive values.
-	// ` kv {
-	// `  recursive => "true"
-	// ` }
+	// ```
+	// kv {
+	//  recursive => "true"
+	// }
+	// ```
 	Recursive bool
 
 	// If this filter is successful, remove arbitrary fields from this event. Example:
-	// ` kv {
-	// `   remove_field => [ "foo_%{somefield}" ]
-	// ` }
+	// ```
+	// kv {
+	//   remove_field => [ "foo_%{somefield}" ]
+	// }
+	// ```
 	RemoveField []string `mapstructure:"remove_field"`
 
 	// If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.
+	//
 	// Example:
-	// ` kv {
-	// `   remove_tag => [ "foo_%{somefield}" ]
-	// ` }
+	// ```
+	// kv {
+	//   remove_tag => [ "foo_%{somefield}" ]
+	// }
+	// ```
 	// If the event has field "somefield" == "hello" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.
 	RemoveTag []string `mapstructure:"remove_tag"`
 
 	// The field to perform key=value searching on
+	//
 	// For example, to process the not_the_message field:
-	// ` kv { source => "not_the_message" }
+	// ```
+	// kv { source => "not_the_message" }
+	// ```
 	Source string
 
 	// The name of the container to put all of the key-value pairs into.
+	//
 	// If this setting is omitted, fields will be written to the root of the event, as individual fields.
+	//
 	// For example, to place all keys into the event field kv:
-	// ` kv { target => "kv" }
+	// ```
+	// kv { target => "kv" }
+	// ```
 	Target string
 
 	// A string of characters to trim from the value. This is useful if your values are wrapped in brackets or are terminated with commas (like postfix logs).
+	//
 	// For example, to strip <, >, [, ] and , characters from values:
-	// ` kv {
-	// `   trim => "<>[],"
-	// ` }
+	// ```
+	// kv {
+	//   trim => "<>[],"
+	// }
+	// ```
 	Trim string
 
 	// A string of characters to trim from the key. This is useful if your keys are wrapped in brackets or start with space.
+	//
 	// For example, to strip < > [ ] and , characters from keys:
-	// ` kv {
-	// `   trimkey => "<>[],"
-	// ` }
+	// ```
+	// kv {
+	//   trimkey => "<>[],"
+	// }
+	// ```
 	Trimkey string `mapstructure:"trimkey"`
 
-	// 	A string of characters to use as delimiters for identifying key-value relations.
+	// A string of characters to use as delimiters for identifying key-value relations.
+	//
 	// These characters form a regex character class and thus you must escape special regex characters like [ or ] using \.
+	//
 	// For example, to identify key-values such as key1:value1 key2:value2:
-	// ` { kv { value_split => ":" }
+	// ```
+	// { kv { value_split => ":" }
+	// ```
 	ValueSplit string `mapstructure:"value_split"`
 }
 

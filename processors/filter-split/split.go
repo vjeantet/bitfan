@@ -1,6 +1,8 @@
 //go:generate bitfanDoc
 // The split filter clones an event by splitting one of its fields and placing each value resulting from the split into a clone of the original event. The field being split can either be a string or an array.
+//
 // An example use case of this filter is for taking output from the exec input plugin which emits one event for the whole output of a command and splitting that output by newline - making each line an event.
+//
 // The end result of each split is a complete copy of the event with only the current split section of the given field changed.
 package split
 

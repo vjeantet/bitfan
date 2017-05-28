@@ -60,7 +60,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "Path",
         Alias:        "path",
-        Doc:          "Path to configuration to import in this pipeline, it could be a local file or an url\ncan be relative path to the current configuration.\nSPLIT and JOIN : in filter Section, set multiples path to make a split and join into your pipeline",
+        Doc:          "Path to configuration to import in this pipeline, it could be a local file or an url\ncan be relative path to the current configuration.\n\nSPLIT and JOIN : in filter Section, set multiples path to make a split and join into your pipeline",
         Required:     true,
         Type:         "array",
         DefaultValue: nil,
@@ -69,7 +69,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "Var",
         Alias:        "var",
-        Doc:          "You can set variable references in the used configuration by using ${var}.\neach reference will be replaced by the value of the variable found in this option\nThe replacement is case-sensitive.",
+        Doc:          "You can set variable references in the used configuration by using ${var}.\neach reference will be replaced by the value of the variable found in this option\n\nThe replacement is case-sensitive.",
         Required:     false,
         Type:         "hash",
         DefaultValue: nil,

@@ -1,9 +1,13 @@
 //go:generate bitfanDoc
 // The date filter is used for parsing dates from fields, and then using that date or timestamp as the logstash timestamp for the event.
+//
 // For example, syslog events usually have timestamps like this:
 // `"Apr 17 09:32:01"`
+//
 // You would use the date format MMM dd HH:mm:ss to parse this.
+//
 // The date filter is especially important for sorting events and for backfilling old data. If you don’t get the date correct in your event, then searching for them later will likely sort out of order.
+//
 // In the absence of this filter, logstash will choose a timestamp based on the first time it sees the event (at input time), if the timestamp is not already set in the event. For example, with file input, the timestamp is set to the time of each read.
 package date
 
@@ -55,11 +59,14 @@ type options struct {
 	Target string `mapstructure:"target"`
 
 	// Specify a time zone canonical ID to be used for date parsing.
+	//
 	// The valid IDs are listed on IANA Time Zone database, such as "America/New_York".
+	//
 	// This is useful in case the time zone cannot be extracted from the value,
 	// and is not the platform default. If this is not specified the platform default
 	//  will be used. Canonical ID is good as it takes care of daylight saving time
 	// for you For example, America/Los_Angeles or Europe/Paris are valid IDs.
+	//
 	// This field can be dynamic and include parts of the event using the %{field} syntax
 	Timezone string `mapstructure:"timezone"`
 }

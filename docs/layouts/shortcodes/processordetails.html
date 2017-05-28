@@ -1,6 +1,6 @@
 {{with (index .Page.Site.Data.processors (.Get 0))}}
 
-<p>{{.Doc}}</p>
+<p>{{markdownify .Doc}}</p>
 
 <h2>Synopsys</h2>
 <table>
@@ -15,7 +15,7 @@
 	<tbody>
 	{{ range .Options.Options }}
 	<tr>
-		<td>{{.Name | lower}}</td>
+		<td>{{if .Required}}<strong>{{end}}{{.Name | lower}}{{if .Required}}</strong>{{end}}</td>
 		<td>{{.Type}}</td>
 		<td>{{if .Required}}yes{{else}}no{{end}}</td>
 		<td><code>{{ template "proc-defaultvalue" . }}</code></td>
@@ -26,13 +26,13 @@
 
 
 <h2>Details</h2>
-<p>{{.Options.Doc}}</p>
+<p>{{markdownify .Options.Doc}}</p>
 {{ range .Options.Options }}
 	<h3>{{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}}</h3>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
 	<li>Value type is {{.Type}}</li>
 	<li>Default value is <code>{{ template "proc-defaultvalue" . }}</code></li>
-	<p>{{markdownify (replace .Doc "\n" "\n\n") }}</p>
+	<p>{{markdownify .Doc }}</p>
 {{ end }}
 
 

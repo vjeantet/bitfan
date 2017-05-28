@@ -27,7 +27,7 @@
       {
         "Alias": "allow_duplicate_values",
         "DefaultValue": null,
-        "Doc": "A bool option for removing duplicate key/value pairs.\nWhen set to false, only one unique key/value pair will be preserved.\nFor example, consider a source like from=me from=me.\n[from] will map to an Array with two elements: [\"me\", \"me\"].\nto only keep unique key/value pairs, you could use this configuration\n` kv {\n`   allow_duplicate_values =\u003e false\n` }",
+        "Doc": "A bool option for removing duplicate key/value pairs.\nWhen set to false, only one unique key/value pair will be preserved.\nFor example, consider a source like from=me from=me.\n[from] will map to an Array with two elements: [\"me\", \"me\"].\nto only keep unique key/value pairs, you could use this configuration\n```\nkv {\n  allow_duplicate_values =\u003e false\n}\n```",
         "ExampleLS": "",
         "Name": "AllowDuplicateValues",
         "Required": false,
@@ -36,7 +36,7 @@
       {
         "Alias": "default_keys",
         "DefaultValue": null,
-        "Doc": "A hash specifying the default keys and their values which should be added\nto the event in case these keys do not exist in the source field being parsed.\nExample\n`kv {\n`  default_keys =\u003e { \"from\"=\u003e \"logstash@example.com\",\n`                   \"to\"=\u003e \"default@dev.null\" }\n`}",
+        "Doc": "A hash specifying the default keys and their values which should be added\nto the event in case these keys do not exist in the source field being parsed.\n\nExample\n```\nkv {\n  default_keys =\u003e { \"from\"=\u003e \"logstash@example.com\",\n                   \"to\"=\u003e \"default@dev.null\" }\n}\n```",
         "ExampleLS": "",
         "Name": "DefaultKeys",
         "Required": false,
@@ -45,7 +45,7 @@
       {
         "Alias": "exclude_keys",
         "DefaultValue": null,
-        "Doc": "An array specifying the parsed keys which should not be added to the event.\nBy default no keys will be excluded.\nFor example, consider a source like Hey, from=\u003cabc\u003e, to=def foo=bar.\nTo exclude from and to, but retain the foo key, you could use this configuration:\n`kv {\n`  exclude_keys =\u003e [ \"from\", \"to\" ]\n`}",
+        "Doc": "An array specifying the parsed keys which should not be added to the event.\n\nBy default no keys will be excluded.\n\nFor example, consider a source like Hey, from=\u003cabc\u003e, to=def foo=bar.\n\nTo exclude from and to, but retain the foo key, you could use this configuration:\n```\nkv {\n  exclude_keys =\u003e [ \"from\", \"to\" ]\n}\n```",
         "ExampleLS": "",
         "Name": "ExcludeKeys",
         "Required": false,
@@ -54,7 +54,7 @@
       {
         "Alias": "field_split",
         "DefaultValue": null,
-        "Doc": "A string of characters to use as delimiters for parsing out key-value pairs.\nThese characters form a regex character class and thus you must escape special regex characters like [ or ] using \\.\n## Example with URL Query Strings\nFor example, to split out the args from a url query string such as ?pin=12345~0\u0026d=123\u0026e=foo@bar.com\u0026oq=bobo\u0026ss=12345:\n` kv {\n`   field_split =\u003e \"\u0026?\"\n` }\nThe above splits on both \u0026 and ? characters, giving you the following fields:\n* pin: 12345~0\n* d: 123\n* e: foo@bar.com\n* oq: bobo\n* ss: 12345",
+        "Doc": "A string of characters to use as delimiters for parsing out key-value pairs.\n\nThese characters form a regex character class and thus you must escape special regex characters like [ or ] using \\.\n#### Example with URL Query Strings\nFor example, to split out the args from a url query string such as ?pin=12345~0\u0026d=123\u0026e=foo@bar.com\u0026oq=bobo\u0026ss=12345:\n```\n kv {\n   field_split =\u003e \"\u0026?\"\n }\n```\nThe above splits on both \u0026 and ? characters, giving you the following fields:\n\n* pin: 12345~0\n* d: 123\n* e: foo@bar.com\n* oq: bobo\n* ss: 12345",
         "ExampleLS": "",
         "Name": "FieldSplit",
         "Required": false,
@@ -63,7 +63,7 @@
       {
         "Alias": "include_brackets",
         "DefaultValue": null,
-        "Doc": "A boolean specifying whether to include brackets as value wrappers (the default is true)\n` kv {\n`   include_brackets =\u003e true\n` }\nFor example, the result of this line: bracketsone=(hello world) bracketstwo=[hello world]\nwill be:\n* bracketsone: hello world\n* bracketstwo: hello world\ninstead of:\n* bracketsone: (hello\n* bracketstwo: [hello",
+        "Doc": "A boolean specifying whether to include brackets as value wrappers (the default is true)\n```\nkv {\n  include_brackets =\u003e true\n}\n```\nFor example, the result of this line: bracketsone=(hello world) bracketstwo=[hello world]\nwill be:\n\n* bracketsone: hello world\n* bracketstwo: hello world\n\ninstead of:\n\n* bracketsone: (hello\n* bracketstwo: [hello",
         "ExampleLS": "",
         "Name": "IncludeBrackets",
         "Required": false,
@@ -72,7 +72,7 @@
       {
         "Alias": "include_keys",
         "DefaultValue": null,
-        "Doc": "An array specifying the parsed keys which should be added to the event. By default all keys will be added.\nFor example, consider a source like Hey, from=\u003cabc\u003e, to=def foo=bar. To include from and to, but exclude the foo key, you could use this configuration:\n` kv {\n` include_keys =\u003e [ \"from\", \"to\" ]\n` }",
+        "Doc": "An array specifying the parsed keys which should be added to the event. By default all keys will be added.\n\nFor example, consider a source like Hey, from=\u003cabc\u003e, to=def foo=bar. To include from and to, but exclude the foo key, you could use this configuration:\n```\nkv {\n  include_keys =\u003e [ \"from\", \"to\" ]\n}\n```",
         "ExampleLS": "",
         "Name": "IncludeKeys",
         "Required": false,
@@ -81,7 +81,7 @@
       {
         "Alias": "",
         "DefaultValue": null,
-        "Doc": "A string to prepend to all of the extracted keys.\nFor example, to prepend arg_ to all keys:\n` kv {\n`   prefix =\u003e \"arg_\" }\n` }",
+        "Doc": "A string to prepend to all of the extracted keys.\n\nFor example, to prepend arg_ to all keys:\n```\nkv {\n  prefix =\u003e \"arg_\" }\n}\n```",
         "ExampleLS": "",
         "Name": "Prefix",
         "Required": false,
@@ -90,7 +90,7 @@
       {
         "Alias": "",
         "DefaultValue": null,
-        "Doc": "A boolean specifying whether to drill down into values and recursively get more key-value pairs from it. The extra key-value pairs will be stored as subkeys of the root key.\nDefault is not to recursive values.\n` kv {\n`  recursive =\u003e \"true\"\n` }",
+        "Doc": "A boolean specifying whether to drill down into values and recursively get more key-value pairs from it. The extra key-value pairs will be stored as subkeys of the root key.\n\nDefault is not to recursive values.\n```\nkv {\n recursive =\u003e \"true\"\n}\n```",
         "ExampleLS": "",
         "Name": "Recursive",
         "Required": false,
@@ -99,7 +99,7 @@
       {
         "Alias": "remove_field",
         "DefaultValue": null,
-        "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n` kv {\n`   remove_field =\u003e [ \"foo_%{somefield}\" ]\n` }",
+        "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n```\nkv {\n  remove_field =\u003e [ \"foo_%{somefield}\" ]\n}\n```",
         "ExampleLS": "",
         "Name": "RemoveField",
         "Required": false,
@@ -108,7 +108,7 @@
       {
         "Alias": "remove_tag",
         "DefaultValue": null,
-        "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\nExample:\n` kv {\n`   remove_tag =\u003e [ \"foo_%{somefield}\" ]\n` }\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
+        "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\n\nExample:\n```\nkv {\n  remove_tag =\u003e [ \"foo_%{somefield}\" ]\n}\n```\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
         "ExampleLS": "",
         "Name": "RemoveTag",
         "Required": false,
@@ -117,7 +117,7 @@
       {
         "Alias": "",
         "DefaultValue": null,
-        "Doc": "The field to perform key=value searching on\nFor example, to process the not_the_message field:\n` kv { source =\u003e \"not_the_message\" }",
+        "Doc": "The field to perform key=value searching on\n\nFor example, to process the not_the_message field:\n```\nkv { source =\u003e \"not_the_message\" }\n```",
         "ExampleLS": "",
         "Name": "Source",
         "Required": false,
@@ -126,7 +126,7 @@
       {
         "Alias": "",
         "DefaultValue": null,
-        "Doc": "The name of the container to put all of the key-value pairs into.\nIf this setting is omitted, fields will be written to the root of the event, as individual fields.\nFor example, to place all keys into the event field kv:\n` kv { target =\u003e \"kv\" }",
+        "Doc": "The name of the container to put all of the key-value pairs into.\n\nIf this setting is omitted, fields will be written to the root of the event, as individual fields.\n\nFor example, to place all keys into the event field kv:\n```\nkv { target =\u003e \"kv\" }\n```",
         "ExampleLS": "",
         "Name": "Target",
         "Required": false,
@@ -135,7 +135,7 @@
       {
         "Alias": "",
         "DefaultValue": null,
-        "Doc": "A string of characters to trim from the value. This is useful if your values are wrapped in brackets or are terminated with commas (like postfix logs).\nFor example, to strip \u003c, \u003e, [, ] and , characters from values:\n` kv {\n`   trim =\u003e \"\u003c\u003e[],\"\n` }",
+        "Doc": "A string of characters to trim from the value. This is useful if your values are wrapped in brackets or are terminated with commas (like postfix logs).\n\nFor example, to strip \u003c, \u003e, [, ] and , characters from values:\n```\nkv {\n  trim =\u003e \"\u003c\u003e[],\"\n}\n```",
         "ExampleLS": "",
         "Name": "Trim",
         "Required": false,
@@ -144,7 +144,7 @@
       {
         "Alias": "trimkey",
         "DefaultValue": null,
-        "Doc": "A string of characters to trim from the key. This is useful if your keys are wrapped in brackets or start with space.\nFor example, to strip \u003c \u003e [ ] and , characters from keys:\n` kv {\n`   trimkey =\u003e \"\u003c\u003e[],\"\n` }",
+        "Doc": "A string of characters to trim from the key. This is useful if your keys are wrapped in brackets or start with space.\n\nFor example, to strip \u003c \u003e [ ] and , characters from keys:\n```\nkv {\n  trimkey =\u003e \"\u003c\u003e[],\"\n}\n```",
         "ExampleLS": "",
         "Name": "Trimkey",
         "Required": false,
@@ -153,7 +153,7 @@
       {
         "Alias": "value_split",
         "DefaultValue": null,
-        "Doc": "A string of characters to use as delimiters for identifying key-value relations.\nThese characters form a regex character class and thus you must escape special regex characters like [ or ] using \\.\nFor example, to identify key-values such as key1:value1 key2:value2:\n` { kv { value_split =\u003e \":\" }",
+        "Doc": "A string of characters to use as delimiters for identifying key-value relations.\n\nThese characters form a regex character class and thus you must escape special regex characters like [ or ] using \\.\n\nFor example, to identify key-values such as key1:value1 key2:value2:\n```\n{ kv { value_split =\u003e \":\" }\n```",
         "ExampleLS": "",
         "Name": "ValueSplit",
         "Required": false,

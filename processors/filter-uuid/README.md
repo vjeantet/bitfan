@@ -1,6 +1,8 @@
 # UUID
 The uuid filter allows you to generate a UUID and add it as a field to each processed event.
+
 This is useful if you need to generate a string that’s unique for every event, even if the same input is processed multiple times. If you want to generate strings that are identical each time a event with a given content is processed (i.e. a hash) you should use the fingerprint filter instead.
+
 The generated UUIDs follow the version 4 definition in RFC 4122).
 
 ## Synopsys

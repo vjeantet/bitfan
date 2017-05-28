@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "date",
   ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-date",
-  Doc:        "The date filter is used for parsing dates from fields, and then using that date or timestamp as the logstash timestamp for the event.\nFor example, syslog events usually have timestamps like this:\n`\"Apr 17 09:32:01\"`\nYou would use the date format MMM dd HH:mm:ss to parse this.\nThe date filter is especially important for sorting events and for backfilling old data. If you don’t get the date correct in your event, then searching for them later will likely sort out of order.\nIn the absence of this filter, logstash will choose a timestamp based on the first time it sees the event (at input time), if the timestamp is not already set in the event. For example, with file input, the timestamp is set to the time of each read.",
+  Doc:        "The date filter is used for parsing dates from fields, and then using that date or timestamp as the logstash timestamp for the event.\n\nFor example, syslog events usually have timestamps like this:\n`\"Apr 17 09:32:01\"`\n\nYou would use the date format MMM dd HH:mm:ss to parse this.\n\nThe date filter is especially important for sorting events and for backfilling old data. If you don’t get the date correct in your event, then searching for them later will likely sort out of order.\n\nIn the absence of this filter, logstash will choose a timestamp based on the first time it sees the event (at input time), if the timestamp is not already set in the event. For example, with file input, the timestamp is set to the time of each read.",
   DocShort:   "Parses dates from fields to use as the BitFan timestamp for an event",
   Options:    &doc.ProcessorOptions{
     Doc:     "",
@@ -78,7 +78,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:         "Timezone",
         Alias:        "timezone",
-        Doc:          "Specify a time zone canonical ID to be used for date parsing.\nThe valid IDs are listed on IANA Time Zone database, such as \"America/New_York\".\nThis is useful in case the time zone cannot be extracted from the value,\nand is not the platform default. If this is not specified the platform default\n will be used. Canonical ID is good as it takes care of daylight saving time\nfor you For example, America/Los_Angeles or Europe/Paris are valid IDs.\nThis field can be dynamic and include parts of the event using the %{field} syntax",
+        Doc:          "Specify a time zone canonical ID to be used for date parsing.\n\nThe valid IDs are listed on IANA Time Zone database, such as \"America/New_York\".\n\nThis is useful in case the time zone cannot be extracted from the value,\nand is not the platform default. If this is not specified the platform default\n will be used. Canonical ID is good as it takes care of daylight saving time\nfor you For example, America/Los_Angeles or Europe/Paris are valid IDs.\n\nThis field can be dynamic and include parts of the event using the %{field} syntax",
         Required:     false,
         Type:         "string",
         DefaultValue: nil,
