@@ -3,6 +3,10 @@ title = "Home"
 description = ""
 +++
 
+<span id="sidebar-toggle-span">
+<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fa fa-bars"></i></a>
+</span>
+
 
 > Bitfan is an open source data processing pipeline.
 
