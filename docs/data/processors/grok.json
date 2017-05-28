@@ -1,0 +1,109 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-grok",
+  "Name": "grok",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event. Field names can\nbe dynamic and include parts of the event using the %{field}.",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "add_tag",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "AddTag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "break_on_match",
+        "DefaultValue": null,
+        "Doc": "Break on first match. The first successful match by grok will result in the filter being\nfinished. If you want grok to try all patterns (maybe you are parsing different things),\nthen set this to false",
+        "ExampleLS": "",
+        "Name": "BreakOnMatch",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "keep_empty_captures",
+        "DefaultValue": null,
+        "Doc": "If true, keep empty captures as event fields",
+        "ExampleLS": "",
+        "Name": "KeepEmptyCaptures",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "match",
+        "DefaultValue": null,
+        "Doc": "A hash of matches of field ⇒ value\n@nodefault\n\nFor example:\n```\n    filter {\n      grok { match =\u003e { \"message\" =\u003e \"Duration: %{NUMBER:duration}\" } }\n    }\n```\nIf you need to match multiple patterns against a single field, the value can be an array of patterns\n```\n    filter {\n      grok { match =\u003e { \"message\" =\u003e [ \"Duration: %{NUMBER:duration}\", \"Speed: %{NUMBER:speed}\" ] } }\n    }\n```",
+        "ExampleLS": "",
+        "Name": "Match",
+        "Required": true,
+        "Type": "hash"
+      },
+      {
+        "Alias": "named_capture_only",
+        "DefaultValue": null,
+        "Doc": "If true, only store named captures from grok.",
+        "ExampleLS": "",
+        "Name": "NamedCapturesOnly",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "patterns_dir",
+        "DefaultValue": null,
+        "Doc": "BitFan ships by default with a bunch of patterns, so you don’t necessarily need to\ndefine this yourself unless you are adding additional patterns. You can point to\nmultiple pattern directories using this setting Note that Grok will read all files\nin the directory and assume its a pattern file (including any tilde backup files)",
+        "ExampleLS": "",
+        "Name": "PatternsDir",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "remove_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary fields from this event",
+        "ExampleLS": "",
+        "Name": "RemoveField",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "remove_tag",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
+        "ExampleLS": "",
+        "Name": "RemoveTag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "tag_on_failure",
+        "DefaultValue": null,
+        "Doc": "Append values to the tags field when there has been no successful match",
+        "ExampleLS": "",
+        "Name": "TagOnFailure",
+        "Required": false,
+        "Type": "array"
+      }
+    ]
+  },
+  "Ports": [
+    {
+      "Default": true,
+      "Doc": "",
+      "Name": "PORT_SUCCESS",
+      "Number": 0
+    }
+  ]
+}

@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "mutate",
-  Doc:      "mutate filter allows to perform general mutations on fields. You can rename, remove, replace, and modify fields in your event.",
-  DocShort: "",
-  Options:  &doc.ProcessorOptions{
+  Name:       "mutate",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-mutate",
+  Doc:        "mutate filter allows to perform general mutations on fields. You can rename, remove, replace, and modify fields in your event.",
+  DocShort:   "",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

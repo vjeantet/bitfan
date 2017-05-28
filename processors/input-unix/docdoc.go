@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "unixinput",
-  Doc:      "",
-  DocShort: "",
-  Options:  &doc.ProcessorOptions{
+  Name:       "unixinput",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-unix",
+  Doc:        "",
+  DocShort:   "",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

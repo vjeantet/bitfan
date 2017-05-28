@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "udpinput",
-  Doc:      "",
-  DocShort: "",
-  Options:  &doc.ProcessorOptions{
+  Name:       "udpinput",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-udp",
+  Doc:        "",
+  DocShort:   "",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

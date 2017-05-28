@@ -1,0 +1,147 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-tail",
+  "Name": "tail",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "Add a field to an event. Default value is {}",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "close_older",
+        "DefaultValue": "3600",
+        "Doc": "Closes any files that were last read the specified timespan in seconds ago.\nDefault value is 3600 (i.e. 1 hour)\nThis has different implications depending on if a file is being tailed or read.\nIf tailing, and there is a large time gap in incoming data the file can be\nclosed (allowing other files to be opened) but will be queued for reopening\nwhen new data is detected. If reading, the file will be closed after\nclose_older seconds from when the last bytes were read.",
+        "ExampleLS": "",
+        "Name": "CloseOlder",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "codec",
+        "DefaultValue": null,
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "delimiter",
+        "DefaultValue": "\"\\n\"",
+        "Doc": "Set the new line delimiter. Default value is \"\\n\"",
+        "ExampleLS": "",
+        "Name": "Delimiter",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "discover_interval",
+        "DefaultValue": "15",
+        "Doc": "How often (in seconds) we expand the filename patterns in the path option\nto discover new files to watch. Default value is 15",
+        "ExampleLS": "",
+        "Name": "DiscoverInterval",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "exclude",
+        "DefaultValue": null,
+        "Doc": "Exclusions (matched against the filename, not full path).\nFilename patterns are valid here, too.",
+        "ExampleLS": "",
+        "Name": "Exclude",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "ignore_older",
+        "DefaultValue": "86400",
+        "Doc": "When the file input discovers a file that was last modified before the\nspecified timespan in seconds, the file is ignored.\nAfter it’s discovery, if an ignored file is modified it is no longer ignored\nand any new data is read.\nDefault value is 86400 (i.e. 24 hours)",
+        "ExampleLS": "",
+        "Name": "IgnoreOlder",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "max_open_files",
+        "DefaultValue": null,
+        "Doc": "What is the maximum number of file_handles that this input consumes at any one time.\nUse close_older to close some files if you need to process more files than this number.",
+        "ExampleLS": "",
+        "Name": "MaxOpenFiles",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "path",
+        "DefaultValue": null,
+        "Doc": "The path(s) to the file(s) to use as an input.\nYou can use filename patterns here, such as /var/log/*.log.\nIf you use a pattern like /var/log/**/*.log, a recursive search of /var/log\nwill be done for all *.log files.\nPaths must be absolute and cannot be relative.\nYou may also configure multiple paths.",
+        "ExampleLS": "",
+        "Name": "Path",
+        "Required": true,
+        "Type": "array"
+      },
+      {
+        "Alias": "sincedb_path",
+        "DefaultValue": "\".sincedb.json\"",
+        "Doc": "Path of the sincedb database file\nThe sincedb database keeps track of the current position of monitored\nlog files that will be written to disk.",
+        "ExampleLS": "",
+        "Name": "SincedbPath",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "sincedb_write_interval",
+        "DefaultValue": "15",
+        "Doc": "How often (in seconds) to write a since database with the current position of monitored log files.\nDefault value is 15",
+        "ExampleLS": "",
+        "Name": "SincedbWriteInterval",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "start_position",
+        "DefaultValue": "\"end\"",
+        "Doc": "Choose where BitFan starts initially reading files: at the beginning or at the end.\nThe default behavior treats files like live streams and thus starts at the end.\nIf you have old data you want to import, set this to beginning.\nThis option only modifies \"first contact\" situations where a file is new\nand not seen before, i.e. files that don’t have a current position recorded in a sincedb file.\nIf a file has already been seen before, this option has no effect and the\nposition recorded in the sincedb file will be used.\nDefault value is \"end\"\nValue can be any of: \"beginning\", \"end\"",
+        "ExampleLS": "",
+        "Name": "StartPosition",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "stat_interval",
+        "DefaultValue": "1",
+        "Doc": "How often (in seconds) we stat files to see if they have been modified.\nIncreasing this interval will decrease the number of system calls we make,\nbut increase the time to detect new log lines.\nDefault value is 1",
+        "ExampleLS": "",
+        "Name": "StatInterval",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "tags",
+        "DefaultValue": null,
+        "Doc": "Add any number of arbitrary tags to your event. There is no default value for this setting.\nThis can help with processing later. Tags can be dynamic and include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "type",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input.\nTypes are used mainly for filter activation.",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

@@ -1,0 +1,75 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-exec",
+  "Name": "execinput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Command",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Args",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Interval",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

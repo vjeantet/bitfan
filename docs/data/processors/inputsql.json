@@ -1,0 +1,111 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-sql",
+  "Name": "inputsql",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "driver",
+        "DefaultValue": null,
+        "Doc": "GOLANG driver class to load, for example, \"mysql\".",
+        "ExampleLS": "driver =\u003e \"mysql\"",
+        "Name": "Driver",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "event_by",
+        "DefaultValue": "\"row\"",
+        "Doc": "Send an event row by row or one event with all results\npossible values \"row\", \"result\"",
+        "ExampleLS": "",
+        "Name": "EventBy",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "statement",
+        "DefaultValue": null,
+        "Doc": "SQL Statement\nWhen there is more than 1 statement, only data from the last one will generate events.",
+        "ExampleLS": "statement =\u003e \"SELECT * FROM mytable\"",
+        "Name": "Statement",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "interval",
+        "DefaultValue": null,
+        "Doc": "Set an interval when this processor is used as a input",
+        "ExampleLS": "interval =\u003e \"10\"",
+        "Name": "Interval",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "connection_string",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "connection_string =\u003e \"username:password@tcp(192.168.1.2:3306)/mydatabase?charset=utf8\"",
+        "Name": "ConnectionString",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "var",
+        "DefaultValue": null,
+        "Doc": "You can set variable to be used in Statements by using ${var}.\neach reference will be replaced by the value of the variable found in Statement's content\nThe replacement is case-sensitive.",
+        "ExampleLS": "var =\u003e {\"hostname\"=\u003e\"myhost\",\"varname\"=\u003e\"varvalue\"}",
+        "Name": "Var",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "target",
+        "DefaultValue": "\"data\"",
+        "Doc": "Define the target field for placing the retrieved data. If this setting is omitted,\nthe data will be stored in the \"data\" field\nSet the value to \".\" to store value to the root (top level) of the event",
+        "ExampleLS": "target =\u003e \"data\"",
+        "Name": "Target",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

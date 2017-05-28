@@ -1,0 +1,75 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-mongodb",
+  "Name": "mongodb",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The codec used for output data. Output codecs are a convenient method\nfor encoding your data before it leaves the output, without needing a\nseparate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The collection to use. This value can use %{foo} values to dynamically\nselect a collection based on data in the event",
+        "ExampleLS": "",
+        "Name": "Collection",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The database to use",
+        "ExampleLS": "",
+        "Name": "Database",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If true, an \"_id\" field will be added to the document before insertion.\nThe \"_id\" field will use the timestamp of the event and overwrite an\nexisting \"_id\" field in the event",
+        "ExampleLS": "",
+        "Name": "GenerateId",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If true, store the @timestamp field in mongodb as an ISODate type\ninstead of an ISO8601 string. For more information about this,\nsee http://www.mongodb.org/display/DOCS/Dates",
+        "ExampleLS": "",
+        "Name": "Isodate",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Number of seconds to wait after failure before retrying",
+        "ExampleLS": "",
+        "Name": "Retry_delay",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "a MongoDB URI to connect to See http://docs.mongodb.org/manual/reference/connection-string/",
+        "ExampleLS": "",
+        "Name": "Uri",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

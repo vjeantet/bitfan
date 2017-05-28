@@ -1,0 +1,66 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-elasticsearch",
+  "Name": "elasticsearch",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Host",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Cluster",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Protocol",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Port",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "User",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Password",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

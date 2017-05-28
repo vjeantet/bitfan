@@ -11,13 +11,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/clbanning/mxj"
 	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/processors/doc"
 )
 
 var (
 	processorStructName = flag.String("processor", "processor", "name of BitFan Processor")
-	output              = flag.String("output", "docdoc.go", "output file name; default doc.go")
+	output              = flag.String("output", "docdoc.go", "output file name; default docdoc.go")
 )
 
 func main() {
@@ -29,6 +30,13 @@ func main() {
 
 	// charger un doc.Processor
 	dp, _ := doc.NewProcessor(cwd)
+
+	JsonFilePath := filepath.Join(cwd+"../../../docs/data/processors/", strings.ToLower(dp.Name)+".json")
+	dataMap, _ := mxj.NewMapStruct(dp)
+	jsonBytes, _ := dataMap.JsonIndent("", "  ", true)
+	if err := ioutil.WriteFile(filepath.Clean(JsonFilePath), jsonBytes, 0644); err != nil {
+		log.Printf("writing output: %s\n", err)
+	}
 
 	g := &Generator{
 		buf: bytes.Buffer{},

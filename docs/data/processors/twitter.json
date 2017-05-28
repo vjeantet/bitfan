@@ -1,0 +1,120 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-twitter",
+  "Name": "twitter",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Consumer_key",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Consumer_secret",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Oauth_token",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Oauth_token_secret",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Any keywords to track in the Twitter stream. For multiple keywords,\nuse the syntax [\"foo\", \"bar\"]. There’s a logical OR between each keyword\nstring listed and a logical AND between words separated by spaces per keyword string.\nSee https://dev.twitter.com/streaming/overview/request-parameters#track for more details.",
+        "ExampleLS": "",
+        "Name": "Keywords",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "A comma separated list of user IDs, indicating the users to return statuses for\nin the Twitter stream.\nSee https://dev.twitter.com/streaming/overview/request-parameters#follow for more details.",
+        "ExampleLS": "",
+        "Name": "Follows",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Record full tweet object as given to us by the Twitter Streaming API",
+        "ExampleLS": "",
+        "Name": "Full_tweet",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Lets you ingore the retweets coming out of the Twitter API. Default false",
+        "ExampleLS": "",
+        "Name": "Ignore_retweets",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "A list of BCP 47 language identifiers corresponding to any of the languages\nlisted on Twitter’s advanced search page will only return tweets that have been\ndetected as being written in the specified languages",
+        "ExampleLS": "",
+        "Name": "Languages",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "A comma-separated list of longitude, latitude pairs specifying a set of bounding boxes\nto filter tweets by. See\nhttps://dev.twitter.com/streaming/overview/request-parameters#locations for more details",
+        "ExampleLS": "",
+        "Name": "Locations",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      }
+    ]
+  },
+  "Ports": []
+}

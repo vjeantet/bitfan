@@ -10,11 +10,12 @@ import (
 )
 
 type Processor struct {
-	Name     string
-	Doc      string
-	DocShort string
-	Options  *ProcessorOptions
-	Ports    []*ProcessorPort
+	Name       string
+	ImportPath string
+	Doc        string
+	DocShort   string
+	Options    *ProcessorOptions
+	Ports      []*ProcessorPort
 }
 
 type ProcessorPort struct {

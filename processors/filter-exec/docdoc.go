@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "exec",
-  Doc:      "",
-  DocShort: "drop event when field value is the same in the last event",
-  Options:  &doc.ProcessorOptions{
+  Name:       "exec",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-exec",
+  Doc:        "",
+  DocShort:   "drop event when field value is the same in the last event",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

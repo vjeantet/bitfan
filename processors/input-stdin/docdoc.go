@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "stdin",
-  Doc:      "Read events from standard input.\nBy default, each event is assumed to be one line. If you want to join lines, you’ll want to use the multiline filter.",
-  DocShort: "Reads events from standard input",
-  Options:  &doc.ProcessorOptions{
+  Name:       "stdin",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-stdin",
+  Doc:        "Read events from standard input.\nBy default, each event is assumed to be one line. If you want to join lines, you’ll want to use the multiline filter.",
+  DocShort:   "Reads events from standard input",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

@@ -1,0 +1,84 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-unix",
+  "Name": "unixinput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "data_timeout",
+        "DefaultValue": null,
+        "Doc": "The read timeout in seconds. If a particular connection is idle for more than this timeout period, we will assume it is dead and close it.\nIf you never want to timeout, use 0.\nDefault value is 0",
+        "ExampleLS": "",
+        "Name": "DataTimeout",
+        "Required": false,
+        "Type": "time.Duration"
+      },
+      {
+        "Alias": "force_unlink",
+        "DefaultValue": null,
+        "Doc": "Remove socket file in case of EADDRINUSE failure\nDefault value is false",
+        "ExampleLS": "",
+        "Name": "ForceUnlink",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "mode",
+        "DefaultValue": null,
+        "Doc": "Mode to operate in. server listens for client connections, client connects to a server.\nValue can be any of: \"server\", \"client\"\nDefault value is \"server\"",
+        "ExampleLS": "",
+        "Name": "Mode",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "path",
+        "DefaultValue": null,
+        "Doc": "When mode is server, the path to listen on. When mode is client, the path to connect to.",
+        "ExampleLS": "",
+        "Name": "Path",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "tags",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "type",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "codec",
+        "DefaultValue": null,
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

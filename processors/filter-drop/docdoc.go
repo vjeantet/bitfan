@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "drop",
-  Doc:      "Drops everything received\nDrops everything that gets to this filter.\n\nThis is best used in combination with conditionals, for example:\n```\nfilter {\n  if [loglevel] == \"debug\" {\n    drop { }\n  }\n}\n```\nThe above will only pass events to the drop filter if the loglevel field is debug. This will cause all events matching to be dropped.",
-  DocShort: "Drops all events",
-  Options:  &doc.ProcessorOptions{
+  Name:       "drop",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-drop",
+  Doc:        "Drops everything received\nDrops everything that gets to this filter.\n\nThis is best used in combination with conditionals, for example:\n```\nfilter {\n  if [loglevel] == \"debug\" {\n    drop { }\n  }\n}\n```\nThe above will only pass events to the drop filter if the loglevel field is debug. This will cause all events matching to be dropped.",
+  DocShort:   "Drops all events",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

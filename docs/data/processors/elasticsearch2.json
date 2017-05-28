@@ -1,0 +1,111 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-elasticsearch2",
+  "Name": "elasticsearch2",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "document_type",
+        "DefaultValue": "\"%{type}\"",
+        "Doc": "The document type to write events to. There is no default value for this setting.\n\nGenerally you should try to write only similar events to the same type.\nString expansion %{foo} works here. Unless you set document_type, the event type will\nbe used if it exists otherwise the document type will be assigned the value of logs",
+        "ExampleLS": "",
+        "Name": "DocumentType",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "flush_count",
+        "DefaultValue": "1000",
+        "Doc": "The number of requests that can be enqueued before flushing them. Default value is 1000",
+        "ExampleLS": "",
+        "Name": "FlushCount",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "flush_size",
+        "DefaultValue": "5242880",
+        "Doc": "The number of bytes that the bulk requests can take up before the bulk processor decides to flush. Default value is 5242880 (5MB).",
+        "ExampleLS": "",
+        "Name": "FlushSize",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "host",
+        "DefaultValue": "\"localhost\"",
+        "Doc": "Host of the remote instance. Default value is \"localhost\"",
+        "ExampleLS": "",
+        "Name": "Host",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "idle_flush_time",
+        "DefaultValue": "1",
+        "Doc": "The amount of seconds since last flush before a flush is forced. Default value is 1\n\nThis setting helps ensure slow event rates don’t get stuck.\nFor example, if your flush_size is 100, and you have received 10 events,\nand it has been more than idle_flush_time seconds since the last flush,\nthose 10 events will be flushed automatically.\nThis helps keep both fast and slow log streams moving along in near-real-time.",
+        "ExampleLS": "",
+        "Name": "IdleFlushTime",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "index",
+        "DefaultValue": "\"logstash-%Y.%m.%d\"",
+        "Doc": "The index to write events to. Default value is \"logstash-%Y.%m.%d\"\n\nThis can be dynamic using the %{foo} syntax and strftime syntax (see http://strftime.org/).\nThe default value will partition your indices by day.",
+        "ExampleLS": "",
+        "Name": "Index",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "password",
+        "DefaultValue": null,
+        "Doc": "Password to authenticate to a secure Elasticsearch cluster. There is no default value for this setting.",
+        "ExampleLS": "",
+        "Name": "Password",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "path",
+        "DefaultValue": "\"/\"",
+        "Doc": "HTTP Path at which the Elasticsearch server lives. Default value is \"/\"\n\nUse this if you must run Elasticsearch behind a proxy that remaps the root path for the Elasticsearch HTTP API lives.",
+        "ExampleLS": "",
+        "Name": "Path",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": "9200",
+        "Doc": "ElasticSearch port to connect on. Default value is 9200",
+        "ExampleLS": "",
+        "Name": "Port",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "user",
+        "DefaultValue": null,
+        "Doc": "Username to authenticate to a secure Elasticsearch cluster. There is no default value for this setting.",
+        "ExampleLS": "",
+        "Name": "User",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "ssl",
+        "DefaultValue": "false",
+        "Doc": "Enable SSL/TLS secured communication to Elasticsearch cluster. Default value is false",
+        "ExampleLS": "",
+        "Name": "SSL",
+        "Required": false,
+        "Type": "bool"
+      }
+    ]
+  },
+  "Ports": []
+}

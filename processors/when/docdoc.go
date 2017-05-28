@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "when",
-  Doc:      "",
-  DocShort: "",
-  Options:  &doc.ProcessorOptions{
+  Name:       "when",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/when",
+  Doc:        "",
+  DocShort:   "",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

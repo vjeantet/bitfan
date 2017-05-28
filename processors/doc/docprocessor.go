@@ -61,8 +61,9 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 	}
 
 	docPkg := doc.New(astPkg, pkgPath, doc.AllDecls)
-
 	dp.Name = docPkg.Name
+	dp.ImportPath = docPkg.ImportPath
+
 	dp.Doc = removeSpecialComment(docPkg.Doc)
 
 	for _, typ := range docPkg.Types {

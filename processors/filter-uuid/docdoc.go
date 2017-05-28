@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "uuid",
-  Doc:      "The uuid filter allows you to generate a UUID and add it as a field to each processed event.\nThis is useful if you need to generate a string that’s unique for every event, even if the same input is processed multiple times. If you want to generate strings that are identical each time a event with a given content is processed (i.e. a hash) you should use the fingerprint filter instead.\nThe generated UUIDs follow the version 4 definition in RFC 4122).",
-  DocShort: "Adds a UUID to events",
-  Options:  &doc.ProcessorOptions{
+  Name:       "uuid",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-uuid",
+  Doc:        "The uuid filter allows you to generate a UUID and add it as a field to each processed event.\nThis is useful if you need to generate a string that’s unique for every event, even if the same input is processed multiple times. If you want to generate strings that are identical each time a event with a given content is processed (i.e. a hash) you should use the fingerprint filter instead.\nThe generated UUIDs follow the version 4 definition in RFC 4122).",
+  DocShort:   "Adds a UUID to events",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

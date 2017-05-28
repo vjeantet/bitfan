@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "tail",
-  Doc:      "",
-  DocShort: "",
-  Options:  &doc.ProcessorOptions{
+  Name:       "tail",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-tail",
+  Doc:        "",
+  DocShort:   "",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

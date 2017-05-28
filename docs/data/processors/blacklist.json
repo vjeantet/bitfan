@@ -1,0 +1,73 @@
+{
+  "Doc": "The blacklist rule will check a certain field against a blacklist, and match if it is in the blacklist.",
+  "DocShort": "drop event when term not in a given list",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-blacklist",
+  "Name": "blacklist",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "add_tag",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "AddTag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "remove_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n` kv {\n`   remove_field =\u003e [ \"foo_%{somefield}\" ]\n` }",
+        "ExampleLS": "",
+        "Name": "RemoveField",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "remove_tag",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\nExample:\n` kv {\n`   remove_tag =\u003e [ \"foo_%{somefield}\" ]\n` }\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
+        "ExampleLS": "",
+        "Name": "RemoveTag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "compare_field",
+        "DefaultValue": null,
+        "Doc": "The name of the field to use to compare to the blacklist.\nIf the field is null, those events will be ignored.",
+        "ExampleLS": "compare_field =\u003e \"message\"",
+        "Name": "CompareField",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "terms",
+        "DefaultValue": null,
+        "Doc": "List of blacklisted terms.\nThe compare_field term must be equal to one of these values for it to match.",
+        "ExampleLS": "terms =\u003e [\"val1\",\"val2\",\"val3\"]",
+        "Name": "Terms",
+        "Required": true,
+        "Type": "array"
+      }
+    ]
+  },
+  "Ports": [
+    {
+      "Default": true,
+      "Doc": "",
+      "Name": "PORT_SUCCESS",
+      "Number": 0
+    }
+  ]
+}

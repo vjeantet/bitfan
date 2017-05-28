@@ -1,0 +1,66 @@
+{
+  "Doc": "",
+  "DocShort": "Parses JSON events",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-json",
+  "Name": "json",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Add_tag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary fields from this event.",
+        "ExampleLS": "",
+        "Name": "Remove_field",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
+        "ExampleLS": "",
+        "Name": "Remove_tag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The configuration for the JSON filter",
+        "ExampleLS": "",
+        "Name": "Source",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Define the target field for placing the parsed data. If this setting is omitted,\nthe JSON data will be stored at the root (top level) of the event",
+        "ExampleLS": "",
+        "Name": "Target",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

@@ -1,0 +1,57 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-udp",
+  "Name": "udpinput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": null,
+        "Doc": "UDP port number to listen on",
+        "ExampleLS": "",
+        "Name": "Port",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "tags",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "type",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "codec",
+        "DefaultValue": null,
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

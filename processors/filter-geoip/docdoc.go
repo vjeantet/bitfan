@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "geoip",
-  Doc:      "",
-  DocShort: "Adds geographical information about an IP address",
-  Options:  &doc.ProcessorOptions{
+  Name:       "geoip",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-geoip",
+  Doc:        "",
+  DocShort:   "Adds geographical information about an IP address",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "imap_input",
-  Doc:      "",
-  DocShort: "",
-  Options:  (*doc.ProcessorOptions)(nil),
-  Ports:    []*doc.ProcessorPort{},
+  Name:       "imap_input",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-imap",
+  Doc:        "",
+  DocShort:   "",
+  Options:    (*doc.ProcessorOptions)(nil),
+  Ports:      []*doc.ProcessorPort{},
 }
 }

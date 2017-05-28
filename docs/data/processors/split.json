@@ -1,0 +1,88 @@
+{
+  "Doc": "The split filter clones an event by splitting one of its fields and placing each value resulting from the split into a clone of the original event. The field being split can either be a string or an array.\nAn example use case of this filter is for taking output from the exec input plugin which emits one event for the whole output of a command and splitting that output by newline - making each line an event.\nThe end result of each split is a complete copy of the event with only the current split section of the given field changed.",
+  "DocShort": "Splits multi-line messages into distinct events",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-split",
+  "Name": "split",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The field which value is split by the terminator",
+        "ExampleLS": "",
+        "Name": "Field",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The field within the new event which the value is split into. If not set, target field defaults to split field name",
+        "ExampleLS": "",
+        "Name": "Target",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The string to split on. This is usually a line terminator, but can be any string\nDefault value is \"\\n\"",
+        "ExampleLS": "",
+        "Name": "Terminator",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Add_tag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary fields from this event.",
+        "ExampleLS": "",
+        "Name": "Remove_field",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
+        "ExampleLS": "",
+        "Name": "Remove_Tag",
+        "Required": false,
+        "Type": "array"
+      }
+    ]
+  },
+  "Ports": [
+    {
+      "Default": true,
+      "Doc": "",
+      "Name": "PORT_SUCCESS",
+      "Number": 0
+    },
+    {
+      "Default": false,
+      "Doc": "",
+      "Name": "PORT_ERROR",
+      "Number": 1
+    }
+  ]
+}

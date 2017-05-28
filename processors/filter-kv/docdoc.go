@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "kv",
-  Doc:      "This filter helps automatically parse messages (or specific event fields)\nwhich are of the foo=bar variety.",
-  DocShort: "Parses key-value pairs",
-  Options:  &doc.ProcessorOptions{
+  Name:       "kv",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-kv",
+  Doc:        "This filter helps automatically parse messages (or specific event fields)\nwhich are of the foo=bar variety.",
+  DocShort:   "Parses key-value pairs",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

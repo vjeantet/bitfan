@@ -1,0 +1,129 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-http",
+  "Name": "httpoutput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "Add a field to an event. Default value is {}",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "url",
+        "DefaultValue": null,
+        "Doc": "This output lets you send events to a generic HTTP(S) endpoint\nThis setting can be dynamic using the %{foo} syntax.",
+        "ExampleLS": "",
+        "Name": "URL",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "headers",
+        "DefaultValue": null,
+        "Doc": "Custom headers to use format is headers =\u003e {\"X-My-Header\", \"%{host}\"}. Default value is {}\nThis setting can be dynamic using the %{foo} syntax.",
+        "ExampleLS": "",
+        "Name": "Headers",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "http_method",
+        "DefaultValue": "\"post\"",
+        "Doc": "The HTTP Verb. One of \"put\", \"post\", \"patch\", \"delete\", \"get\", \"head\". Default value is \"post\"",
+        "ExampleLS": "",
+        "Name": "HTTPMethod",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "keepalive",
+        "DefaultValue": "true",
+        "Doc": "Turn this on to enable HTTP keepalive support. Default value is true",
+        "ExampleLS": "",
+        "Name": "KeepAlive",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "pool_max",
+        "DefaultValue": "1",
+        "Doc": "Max number of concurrent connections. Default value is 1",
+        "ExampleLS": "",
+        "Name": "PoolMax",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "connect_timeout",
+        "DefaultValue": "5",
+        "Doc": "Timeout (in seconds) to wait for a connection to be established. Default value is 10",
+        "ExampleLS": "",
+        "Name": "ConnectTimeout",
+        "Required": false,
+        "Type": "uint"
+      },
+      {
+        "Alias": "request_timeout",
+        "DefaultValue": "30",
+        "Doc": "Timeout (in seconds) for the entire request. Default value is 60",
+        "ExampleLS": "",
+        "Name": "RequestTimeout",
+        "Required": false,
+        "Type": "uint"
+      },
+      {
+        "Alias": "format",
+        "DefaultValue": "\"json_lines\"",
+        "Doc": "Set the format of the http body. Now supports only \"json_lines\"",
+        "ExampleLS": "",
+        "Name": "Format",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "retryable_codes",
+        "DefaultValue": "[429, 500, 502, 503, 504]",
+        "Doc": "If encountered as response codes this plugin will retry these requests",
+        "ExampleLS": "",
+        "Name": "RetryableCodes",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "ignorable_codes",
+        "DefaultValue": null,
+        "Doc": "If you would like to consider some non-2xx codes to be successes\nenumerate them here. Responses returning these codes will be considered successes",
+        "ExampleLS": "",
+        "Name": "IgnorableCodes",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "batch_interval",
+        "DefaultValue": "5",
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "BatchInterval",
+        "Required": false,
+        "Type": "uint"
+      },
+      {
+        "Alias": "batch_size",
+        "DefaultValue": "100",
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "BatchSize",
+        "Required": false,
+        "Type": "uint"
+      }
+    ]
+  },
+  "Ports": []
+}

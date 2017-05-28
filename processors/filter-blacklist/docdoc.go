@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "blacklist",
-  Doc:      "The blacklist rule will check a certain field against a blacklist, and match if it is in the blacklist.",
-  DocShort: "drop event when term not in a given list",
-  Options:  &doc.ProcessorOptions{
+  Name:       "blacklist",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-blacklist",
+  Doc:        "The blacklist rule will check a certain field against a blacklist, and match if it is in the blacklist.",
+  DocShort:   "drop event when term not in a given list",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

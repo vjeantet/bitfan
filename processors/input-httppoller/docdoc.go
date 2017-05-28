@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "httppoller",
-  Doc:      "HTTPPoller allows you to call an HTTP Endpoint, decode the output of it into an event",
-  DocShort: "",
-  Options:  &doc.ProcessorOptions{
+  Name:       "httppoller",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-httppoller",
+  Doc:        "HTTPPoller allows you to call an HTTP Endpoint, decode the output of it into an event",
+  DocShort:   "",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

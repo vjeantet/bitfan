@@ -1,0 +1,111 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-file",
+  "Name": "file",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "read_older",
+        "DefaultValue": null,
+        "Doc": "How many seconds a file should stay unmodified to be read\nuse this to prevent reading a file while another process is writing into.",
+        "ExampleLS": "",
+        "Name": "ReadOlder",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "discover_interval",
+        "DefaultValue": null,
+        "Doc": "How often (in seconds) we expand the filename patterns in the path option\nto discover new files to watch. Default value is 15",
+        "ExampleLS": "",
+        "Name": "DiscoverInterval",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "exclude",
+        "DefaultValue": null,
+        "Doc": "Exclusions (matched against the filename, not full path).\nFilename patterns are valid here, too.",
+        "ExampleLS": "",
+        "Name": "Exclude",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "ignore_older",
+        "DefaultValue": null,
+        "Doc": "When the file input discovers a file that was last modified before the\nspecified timespan in seconds, the file is ignored.\nAfter it’s discovery, if an ignored file is modified it is no longer ignored\nand any new data is read.\nDefault value is 86400 (i.e. 24 hours)",
+        "ExampleLS": "",
+        "Name": "IgnoreOlder",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "max_open_files",
+        "DefaultValue": null,
+        "Doc": "What is the maximum number of file_handles that this input consumes at any one time.\nUse close_older to close some files if you need to process more files than this number.",
+        "ExampleLS": "",
+        "Name": "MaxOpenFiles",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "path",
+        "DefaultValue": null,
+        "Doc": "The path(s) to the file(s) to use as an input.\nYou can use filename patterns here, such as /var/log/*.log.\nIf you use a pattern like /var/log/**/*.log, a recursive search of /var/log\nwill be done for all *.log files.\nPaths must be absolute and cannot be relative.\nYou may also configure multiple paths.",
+        "ExampleLS": "",
+        "Name": "Path",
+        "Required": true,
+        "Type": "array"
+      },
+      {
+        "Alias": "sincedb_path",
+        "DefaultValue": null,
+        "Doc": "Path of the sincedb database file\nThe sincedb database keeps track of the current position of monitored\nlog files that will be written to disk.",
+        "ExampleLS": "",
+        "Name": "SincedbPath",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

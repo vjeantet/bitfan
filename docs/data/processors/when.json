@@ -1,0 +1,21 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/when",
+  "Name": "when",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Expressions",
+        "Required": false,
+        "Type": "hash"
+      }
+    ]
+  },
+  "Ports": []
+}

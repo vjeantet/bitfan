@@ -1,0 +1,91 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-html",
+  "Name": "html",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "source_field",
+        "DefaultValue": null,
+        "Doc": "Which field contains the html document",
+        "ExampleLS": "",
+        "Name": "SourceField",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "text",
+        "DefaultValue": null,
+        "Doc": "Add fields with the text of elements found with css selector",
+        "ExampleLS": "",
+        "Name": "Text",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "size",
+        "DefaultValue": null,
+        "Doc": "Add fields with the number of elements found with css selector",
+        "ExampleLS": "",
+        "Name": "Size",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "tag_on_failure",
+        "DefaultValue": null,
+        "Doc": "Append values to the tags field when the html document can not be parsed",
+        "ExampleLS": "",
+        "Name": "TagOnFailure",
+        "Required": false,
+        "Type": "array"
+      }
+    ]
+  },
+  "Ports": [
+    {
+      "Default": true,
+      "Doc": "all events",
+      "Name": "PORT_SUCCESS",
+      "Number": 0
+    }
+  ]
+}

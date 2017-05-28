@@ -1,0 +1,8 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-imap",
+  "Name": "imap_input",
+  "Options": null,
+  "Ports": []
+}

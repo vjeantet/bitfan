@@ -1,0 +1,66 @@
+{
+  "Doc": "The uuid filter allows you to generate a UUID and add it as a field to each processed event.\nThis is useful if you need to generate a string that’s unique for every event, even if the same input is processed multiple times. If you want to generate strings that are identical each time a event with a given content is processed (i.e. a hash) you should use the fingerprint filter instead.\nThe generated UUIDs follow the version 4 definition in RFC 4122).",
+  "DocShort": "Adds a UUID to events",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-uuid",
+  "Name": "uuid",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Add_tag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary fields from this event.",
+        "ExampleLS": "",
+        "Name": "Remove_field",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
+        "ExampleLS": "",
+        "Name": "Remove_Tag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If the value in the field currently (if any) should be overridden by the generated UUID.\nDefaults to false (i.e. if the field is present, with ANY value, it won’t be overridden)",
+        "ExampleLS": "",
+        "Name": "Overwrite",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a UUID to a field",
+        "ExampleLS": "",
+        "Name": "Target",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

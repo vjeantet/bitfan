@@ -1,0 +1,8 @@
+{
+  "Doc": "Drops everything received",
+  "DocShort": "Drops everything received",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-null",
+  "Name": "null",
+  "Options": null,
+  "Ports": []
+}

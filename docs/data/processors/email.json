@@ -1,0 +1,156 @@
+{
+  "Doc": "Send email when an output is received. Alternatively, you may include or exclude the email output execution using conditionals.",
+  "DocShort": "Sends email to a specified address when output is received",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-email",
+  "Name": "email",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "address",
+        "DefaultValue": "\"localhost\"",
+        "Doc": "The address used to connect to the mail server",
+        "ExampleLS": "",
+        "Name": "Host",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": "25",
+        "Doc": "Port used to communicate with the mail server",
+        "ExampleLS": "",
+        "Name": "Port",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "username",
+        "DefaultValue": null,
+        "Doc": "Username to authenticate with the server",
+        "ExampleLS": "",
+        "Name": "Username",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "password",
+        "DefaultValue": null,
+        "Doc": "Password to authenticate with the server",
+        "ExampleLS": "",
+        "Name": "Password",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "from",
+        "DefaultValue": "\"bitfan@nowhere.com\"",
+        "Doc": "The fully-qualified email address for the From: field in the email",
+        "ExampleLS": "",
+        "Name": "From",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "replyto",
+        "DefaultValue": null,
+        "Doc": "The fully qualified email address for the Reply-To: field",
+        "ExampleLS": "replyto =\u003e \"test@nowhere.com\"",
+        "Name": "Replyto",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "to",
+        "DefaultValue": null,
+        "Doc": "The fully-qualified email address to send the email to.\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`\nYou can also use dynamic fields from the event with the %{fieldname} syntax",
+        "ExampleLS": "to =\u003e \"me@host.com, you@host.com\"",
+        "Name": "To",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "cc",
+        "DefaultValue": null,
+        "Doc": "The fully-qualified email address(es) to include as cc: address(es).\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
+        "ExampleLS": "cc =\u003e \"me@host.com, you@host.com\"",
+        "Name": "Cc",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "bcc",
+        "DefaultValue": null,
+        "Doc": "The fully-qualified email address(es) to include as bcc: address(es).\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
+        "ExampleLS": "bcc =\u003e \"me@host.com, you@host.com\"",
+        "Name": "Bcc",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "subject",
+        "DefaultValue": null,
+        "Doc": "Subject: for the email\nYou can use template",
+        "ExampleLS": "subject =\u003e \"message from {{.host}}\"",
+        "Name": "Subject",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "subjectfile",
+        "DefaultValue": null,
+        "Doc": "Path to Subject template file for the email",
+        "ExampleLS": "",
+        "Name": "Subjectfile",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "htmlbody",
+        "DefaultValue": null,
+        "Doc": "HTML Body for the email, which may contain HTML markup",
+        "ExampleLS": "htmlbody =\u003e \"\u003ch1\u003eHello\u003c/h1\u003e message received : {{.message}}\"",
+        "Name": "Htmlbody",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "htmlbodyfile",
+        "DefaultValue": null,
+        "Doc": "Local path to HTML Body template file for the email, which may contain HTML markup\ncan be relative to the configuration file",
+        "ExampleLS": "",
+        "Name": "Htmlbodyfile",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "body",
+        "DefaultValue": null,
+        "Doc": "Body for the email - plain text only.",
+        "ExampleLS": "body =\u003e \"message : {{.message}}. from {{.host}}.\"",
+        "Name": "Body",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "bodyfile",
+        "DefaultValue": null,
+        "Doc": "Path to Body template file for the email.",
+        "ExampleLS": "",
+        "Name": "Bodyfile",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "attachments",
+        "DefaultValue": null,
+        "Doc": "Attachments - specify the name(s) and location(s) of the files",
+        "ExampleLS": "",
+        "Name": "Attachments",
+        "Required": false,
+        "Type": "array"
+      }
+    ]
+  },
+  "Ports": []
+}

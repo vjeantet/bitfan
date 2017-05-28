@@ -1,0 +1,57 @@
+{
+  "Doc": "Drops everything received\nDrops everything that gets to this filter.\n\nThis is best used in combination with conditionals, for example:\n```\nfilter {\n  if [loglevel] == \"debug\" {\n    drop { }\n  }\n}\n```\nThe above will only pass events to the drop filter if the loglevel field is debug. This will cause all events matching to be dropped.",
+  "DocShort": "Drops all events",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-drop",
+  "Name": "drop",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this event survice to drop, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this event survice to drop, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Add_tag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this event survice to drop, remove arbitrary fields from this event.",
+        "ExampleLS": "",
+        "Name": "Remove_field",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this event survice to drop, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
+        "ExampleLS": "",
+        "Name": "Remove_Tag",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Drop all the events within a pre-configured percentage.\nThis is useful if you just need a percentage but not the whole.",
+        "ExampleLS": "",
+        "Name": "Percentage",
+        "Required": false,
+        "Type": "int"
+      }
+    ]
+  },
+  "Ports": []
+}

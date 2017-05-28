@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "digest",
-  Doc:      "",
-  DocShort: "Digest events every x",
-  Options:  &doc.ProcessorOptions{
+  Name:       "digest",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-digest",
+  Doc:        "",
+  DocShort:   "Digest events every x",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{

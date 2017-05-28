@@ -1,0 +1,183 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-rabbitmq",
+  "Name": "rabbitmqoutput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "Add a field to an event. Default value is {}",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "arguments",
+        "DefaultValue": null,
+        "Doc": "Extra exchange arguments. Default value is {}",
+        "ExampleLS": "",
+        "Name": "Arguments",
+        "Required": false,
+        "Type": "amqp.Table"
+      },
+      {
+        "Alias": "connect_retry_interval",
+        "DefaultValue": null,
+        "Doc": "Time in seconds to wait before retrying a connection. Default value is 1",
+        "ExampleLS": "",
+        "Name": "ConnectRetryInterval",
+        "Required": false,
+        "Type": "time.Duration"
+      },
+      {
+        "Alias": "connection_timeout",
+        "DefaultValue": null,
+        "Doc": "Time in seconds to wait before timing-out. Default value is 0 (no timeout)",
+        "ExampleLS": "",
+        "Name": "ConnectionTimeout",
+        "Required": false,
+        "Type": "time.Duration"
+      },
+      {
+        "Alias": "durable",
+        "DefaultValue": null,
+        "Doc": "Is this exchange durable - should it survive a broker restart? Default value is true",
+        "ExampleLS": "",
+        "Name": "Durable",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "exchange",
+        "DefaultValue": null,
+        "Doc": "The name of the exchange to send message to. There is no default value for this setting.",
+        "ExampleLS": "",
+        "Name": "Exchange",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "exchange_type",
+        "DefaultValue": null,
+        "Doc": "The exchange type (fanout, topic, direct). There is no default value for this setting.",
+        "ExampleLS": "",
+        "Name": "ExchangeType",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "heartbeat",
+        "DefaultValue": null,
+        "Doc": "Interval (in second) to send heartbeat to rabbitmq. Default value is 0\nIf value if lower than 1, server's interval setting will be used.",
+        "ExampleLS": "",
+        "Name": "Heartbeat",
+        "Required": false,
+        "Type": "time.Duration"
+      },
+      {
+        "Alias": "host",
+        "DefaultValue": null,
+        "Doc": "RabbitMQ server address. There is no default value for this setting.",
+        "ExampleLS": "",
+        "Name": "Host",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "key",
+        "DefaultValue": null,
+        "Doc": "The routing key to use when binding a queue to the exchange. Default value is \"\"\nThis is only relevant for direct or topic exchanges (Routing keys are ignored on fanout exchanges).\nThis setting can be dynamic using the %{foo} syntax.",
+        "ExampleLS": "",
+        "Name": "Key",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "passive",
+        "DefaultValue": null,
+        "Doc": "Use queue passively declared, meaning it must already exist on the server. Default value is false\nTo have BitFan to create the queue if necessary leave this option as false.\nIf actively declaring a queue that already exists, the queue options for this plugin (durable, etc) must match those of the existing queue.",
+        "ExampleLS": "",
+        "Name": "Passive",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "password",
+        "DefaultValue": null,
+        "Doc": "RabbitMQ password. Default value is \"guest\"",
+        "ExampleLS": "",
+        "Name": "Password",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "persistent",
+        "DefaultValue": null,
+        "Doc": "Should RabbitMQ persist messages to disk? Default value is true",
+        "ExampleLS": "",
+        "Name": "Persistent",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": null,
+        "Doc": "RabbitMQ port to connect on. Default value is 5672",
+        "ExampleLS": "",
+        "Name": "Port",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "ssl",
+        "DefaultValue": null,
+        "Doc": "Enable or disable SSL. Default value is false",
+        "ExampleLS": "",
+        "Name": "SSL",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "tags",
+        "DefaultValue": null,
+        "Doc": "Add any number of arbitrary tags to your event. There is no default value for this setting.\nThis can help with processing later. Tags can be dynamic and include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "user",
+        "DefaultValue": null,
+        "Doc": "RabbitMQ username. Default value is \"guest\"",
+        "ExampleLS": "",
+        "Name": "User",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "verify_ssl",
+        "DefaultValue": null,
+        "Doc": "Validate SSL certificate. Default value is false",
+        "ExampleLS": "",
+        "Name": "VerifySSL",
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "vhost",
+        "DefaultValue": null,
+        "Doc": "The vhost to use. Default value is \"/\"",
+        "ExampleLS": "",
+        "Name": "Vhost",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

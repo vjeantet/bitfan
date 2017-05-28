@@ -1,0 +1,120 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-statsd",
+  "Name": "statsd",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "host",
+        "DefaultValue": null,
+        "Doc": "The address of the statsd server.",
+        "ExampleLS": "",
+        "Name": "Host",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": null,
+        "Doc": "The port to connect to on your statsd server.",
+        "ExampleLS": "",
+        "Name": "Port",
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "protocol",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Protocol",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "sender",
+        "DefaultValue": null,
+        "Doc": "The name of the sender. Dots will be replaced with underscores.",
+        "ExampleLS": "",
+        "Name": "Sender",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "count",
+        "DefaultValue": null,
+        "Doc": "A count metric. metric_name =\u003e count as hash",
+        "ExampleLS": "",
+        "Name": "Count",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "decrement",
+        "DefaultValue": null,
+        "Doc": "A decrement metric. Metric names as array.",
+        "ExampleLS": "",
+        "Name": "Decrement",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "gauge",
+        "DefaultValue": null,
+        "Doc": "A gauge metric. metric_name =\u003e gauge as hash.",
+        "ExampleLS": "",
+        "Name": "Gauge",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "increment",
+        "DefaultValue": null,
+        "Doc": "An increment metric. Metric names as array.",
+        "ExampleLS": "",
+        "Name": "Increment",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "namespace",
+        "DefaultValue": null,
+        "Doc": "The statsd namespace to use for this metric.",
+        "ExampleLS": "",
+        "Name": "NameSpace",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "sample_rate",
+        "DefaultValue": null,
+        "Doc": "The sample rate for the metric.",
+        "ExampleLS": "",
+        "Name": "SampleRate",
+        "Required": false,
+        "Type": "float32"
+      },
+      {
+        "Alias": "set",
+        "DefaultValue": null,
+        "Doc": "A set metric. metric_name =\u003e \"string\" to append as hash",
+        "ExampleLS": "",
+        "Name": "Set",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "timing",
+        "DefaultValue": null,
+        "Doc": "A timing metric. metric_name =\u003e duration as hash",
+        "ExampleLS": "",
+        "Name": "Timing",
+        "Required": false,
+        "Type": "hash"
+      }
+    ]
+  },
+  "Ports": []
+}

@@ -1,3 +1,4 @@
+//go:generate bitfanDoc
 package beatsinput
 
 import (

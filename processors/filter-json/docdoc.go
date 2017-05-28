@@ -5,10 +5,11 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:     "json",
-  Doc:      "",
-  DocShort: "Parses JSON events",
-  Options:  &doc.ProcessorOptions{
+  Name:       "json",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-json",
+  Doc:        "",
+  DocShort:   "Parses JSON events",
+  Options:    &doc.ProcessorOptions{
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{
