@@ -2,14 +2,41 @@
 
 <p>{{markdownify .Doc}}</p>
 
+
 {{if .Options}}
 <h2  id="synopsys">Synopsys</h2>
+
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
+    	<i style="font-size:x-small;" class="fa fa-chevron-right"></i>
+    	<span>
+    		Minimum config
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+<pre><code>
+{
+{{ range .Options.Options }}
+{{- if .Required }}
+{{- template "proc-example-min" . }}
+{{ end -}}
+{{- end -}}
+}
+</code></pre>
+
+    </div>
+</div>
+
+
+
+
+<p>Available settings</p>
 <table>
 	<thead>
 		<tr>
 			<th>Setting</th>
 			<th>Type</th>
-			<th>Required</th>
+			<th>Info</th>
 			<th>Default value</th>
 		</tr>
 	</thead>
@@ -17,11 +44,11 @@
 	{{ range .Options.Options }}
 	<tr>
 		<td>{{if .Required}}<strong>{{end}}
-		<a href="#{{.Name}}">{{.Name | lower}}</a>
+		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
 		{{if .Required}}</strong>{{end}}</td>
-		<td>{{.Type}}</td>
-		<td>{{if .Required}}yes{{else}}no{{end}}</td>
-		<td><code>{{ template "proc-defaultvalue" . }}</code></td>
+		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-file.md" }}#{{.Type}}">{{.Type}}</a></td>
+		<td>{{if .Required}}required{{end}}</td>
+		<td><span>{{ template "proc-defaultvalue" . }}</span></td>
 	</tr>
 	{{ end }}
 	</tbody>
@@ -34,7 +61,7 @@
 <h2>Details</h2>
 <p>{{markdownify .Options.Doc}}</p>
 {{ range .Options.Options }}
-	<h3 id="{{.Name}}">{{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}}</h3>
+	<h3 id="{{.Name}}">{{ template "proc-identifier" . }}</h3>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
 	<li>Value type is {{.Type}}</li>
 	<li>Default value is <code>{{ template "proc-defaultvalue" . }}</code></li>
@@ -64,17 +91,25 @@
 {{- else if eq .Type "int" }} 0
 {{- else if eq .Type "int64" }} 0
 {{- else if eq .Type "int32" }} 0
+{{- else if eq .Type "bool" }} false
 {{- else if eq .Type "time.Duration" }} timeDuration
 {{- else -}} ?
 {{- end -}}
 {{- end}}
 {{- end }}
 
+{{ define "proc-identifier" }}{{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}}{{ end }}
 
 {{ define "proc-example" }}
 {{- if .ExampleLS }}    # {{delimit (split .Doc "\n") "\n    # "}}
     {{.ExampleLS}}
 {{ else }}    # {{delimit (split .Doc "\n") "\n    # "}}
-    {{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}} => {{- template "proc-defaultvalue" . }}
+    {{ template "proc-identifier" . }} => {{- template "proc-defaultvalue" . }}
+{{ end -}}
+{{ end }}
+
+{{ define "proc-example-min" }}
+{{- if .ExampleLS }}    {{.ExampleLS -}}
+{{ else }}    {{ template "proc-identifier" . }} => {{- template "proc-defaultvalue" . -}}
 {{ end -}}
 {{ end }}
