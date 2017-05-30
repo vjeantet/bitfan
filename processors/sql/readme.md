@@ -1,4 +1,4 @@
-# INPUTSQL
+# SQLPROCESSOR
 
 
 ## Synopsys
@@ -104,7 +104,7 @@ Set the value to "." to store value to the root (top level) of the event
 ## Configuration blueprint
 
 ```
-inputsql{
+sqlprocessor{
 	add_field => {}
 	tags => []
 	type => ""

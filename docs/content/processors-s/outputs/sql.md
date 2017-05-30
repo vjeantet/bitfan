@@ -8,4 +8,4 @@ identifier = "proc-output-sql"
 weight = 10
 +++
 
-{{% processordetails inputsql %}}
+{{% processordetails sqlprocessor %}}

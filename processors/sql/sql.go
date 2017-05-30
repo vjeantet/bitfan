@@ -1,5 +1,5 @@
 //go:generate bitfanDoc
-package inputsql
+package sqlprocessor
 
 import (
 	"database/sql"
