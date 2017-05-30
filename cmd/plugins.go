@@ -83,6 +83,7 @@ func init() {
 	initPlugin("filter", "change", change.New)
 	initPlugin("filter", "newterm", newterm.New)
 	initPlugin("filter", "exec", exec.New)
+	initPlugin("filter", "sql", inputsql.New)
 
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)
@@ -98,6 +99,7 @@ func init() {
 	initPlugin("output", "rabbitmq", rabbitmqoutput.New)
 	initPlugin("output", "email", email.New)
 	initPlugin("output", "http", httpoutput.New)
+	initPlugin("output", "sql", inputsql.New)
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)
