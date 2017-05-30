@@ -1,0 +1,156 @@
+{
+  "Doc": "Performs a search for a specified filter on the directory and fire events with results",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-ldap",
+  "Name": "ldapinput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "host",
+        "DefaultValue": null,
+        "Doc": "ldap hostname",
+        "ExampleLS": "host =\u003e \"ldap.forumsys.com\"",
+        "Name": "Host",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": "389",
+        "Doc": "ldap port",
+        "ExampleLS": "port =\u003e 389",
+        "Name": "Port",
+        "Required": true,
+        "Type": "int"
+      },
+      {
+        "Alias": "bind_dn",
+        "DefaultValue": null,
+        "Doc": "Bind dn",
+        "ExampleLS": "bind_dn =\u003e \"cn=read-only-admin,dc=example,dc=com\"",
+        "Name": "BindDn",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "bind_password",
+        "DefaultValue": null,
+        "Doc": "Bind password",
+        "ExampleLS": "bind_password =\u003e \"password\"",
+        "Name": "BindPassword",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "base_dn",
+        "DefaultValue": null,
+        "Doc": "Base DN\nIf bind_dn is not specified or is empty, an anonymous bind is attempted.\nThis is defined in https://tools.ietf.org/html/rfc2251#section-4.2.2",
+        "ExampleLS": "base_dn =\u003e \"dc=example,dc=com\"",
+        "Name": "BaseDn",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "search_base",
+        "DefaultValue": null,
+        "Doc": "A search base (the distinguished name of the search base object) defines the\nlocation in the directory from which the LDAP search begins.",
+        "ExampleLS": "",
+        "Name": "SearchBase",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "search_filter",
+        "DefaultValue": "\"(objectClass=*)\"",
+        "Doc": "The search filter can be simple or advanced, using boolean operators in the format\ndescribed in the LDAP documentation (see [RFC4515](http://www.faqs.org/rfcs/rfc4515) for full information on filters).",
+        "ExampleLS": "",
+        "Name": "SearchFilter",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "search_attributes",
+        "DefaultValue": null,
+        "Doc": "An array of the required attributes, e.g. [\"mail\", \"sn\", \"cn\"].\n\nNote that the \"dn\" is always returned irrespective of which attributes types are requested.\n\nUsing this parameter is much more efficient than the default action (which is to return all attributes and their associated values).\n\nThe use of this parameter should therefore be considered good practice.",
+        "ExampleLS": "search_attributes =\u003e [\"mail\", \"sn\", \"cn\"]",
+        "Name": "SearchAttributes",
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "search_scope",
+        "DefaultValue": "\"subtree\"",
+        "Doc": "The SCOPE setting is the starting point of an LDAP search and the depth from the\nbase DN to which the search should occur.\n\nThere are three options (values) that can be assigned to the SCOPE parameter:\n\n* **base** : indicate searching only the entry at the base DN, resulting in only that entry being returned\n* **one** : indicate searching all entries one level under the base DN - but not including the base DN and not including any entries under that one level under the base DN.\n* **subtree** : indicate searching of all entries at all levels under and including the specified base DN\n\n![scope](../ldapscope.gif)",
+        "ExampleLS": "",
+        "Name": "SearchScope",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "event_by",
+        "DefaultValue": "\"entry\"",
+        "Doc": "Send an event row by row or one event with all results\npossible values \"entry\", \"result\"",
+        "ExampleLS": "",
+        "Name": "EventBy",
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "interval",
+        "DefaultValue": null,
+        "Doc": "Set an interval when this processor is used as a input",
+        "ExampleLS": "interval =\u003e \"10\"",
+        "Name": "Interval",
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "var",
+        "DefaultValue": null,
+        "Doc": "You can set variable to be used in Search Query by using ${var}.\neach reference will be replaced by the value of the variable found in search query content\nThe replacement is case-sensitive.",
+        "ExampleLS": "var =\u003e {\"hostname\"=\u003e\"myhost\",\"varname\"=\u003e\"varvalue\"}",
+        "Name": "Var",
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "target",
+        "DefaultValue": "\"data\"",
+        "Doc": "Define the target field for placing the retrieved data. If this setting is omitted,\nthe data will be stored in the \"data\" field\nSet the value to \".\" to store value to the root (top level) of the event",
+        "ExampleLS": "target =\u003e \"data\"",
+        "Name": "Target",
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

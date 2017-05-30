@@ -23,6 +23,7 @@ import (
 	file "github.com/vjeantet/bitfan/processors/input-file"
 	gennumbers "github.com/vjeantet/bitfan/processors/input-gennumbers"
 	httppoller "github.com/vjeantet/bitfan/processors/input-httppoller"
+	ldapinput "github.com/vjeantet/bitfan/processors/input-ldap"
 	rabbitmqinput "github.com/vjeantet/bitfan/processors/input-rabbitmq"
 	inputsql "github.com/vjeantet/bitfan/processors/input-sql"
 	stdin "github.com/vjeantet/bitfan/processors/input-stdin"
@@ -63,6 +64,7 @@ func init() {
 	initPlugin("input", "http", httppoller.New)
 	initPlugin("input", "use", use.New)
 	initPlugin("input", "gennumbers", gennumbers.New)
+	initPlugin("input", "ldap", ldapinput.New)
 
 	initPlugin("filter", "grok", grok.New)
 	initPlugin("filter", "mutate", mutate.New)

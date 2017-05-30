@@ -38,3 +38,5 @@ releases
 /data/
 
 /docs/themes/hugo-theme-docdock
+
+/docs/public/
