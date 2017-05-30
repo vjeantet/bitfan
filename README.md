@@ -94,63 +94,14 @@ Use "bitfan [command] --help" for more information about a command.
 
 type `bitfan doc` to list all available plugins
 
-## INPUT `bitfan doc --type input`
+* `bitfan doc --type input` to filter
 
-|   PLUGIN   |          DESCRIPTION           |
-|------------|--------------------------------|
-| rabbitmq   |                                |
-| syslog     |                                |
-| sql        |                                |
-| file       |                                |
-| beats      |                                |
-| exec       |                                |
-| unix       |                                |
-| http       |                                |
-| gennumbers | generate a number of event     |
-| stdin      | Reads events from stdin        |
-| tail       |                                |
-| readfile   |                                |
-| twitter    |                                |
-| udp        |                                |
-| use        | Include a config file          |
+## Availables processors  :
 
-type `bitfan doc pluginname` to get more information about plugin configuration and usage
+* inputs : [https://bitfan.io/processors-s/inputs/](https://bitfan.io/processors-s/inputs/) 
+* filters : [https://bitfan.io/processors-s/filters/](https://bitfan.io/processors-s/filters/) 
+* outputs : [https://bitfan.io/processors-s/outputs/](https://bitfan.io/processors-s/outputs/) 
 
-## FILTER `bitfan doc --type filter`
-
-| PLUGIN |          DESCRIPTION           |
-|--------|--------------------------------|
-| grok   |                                |
-| split  | Splits multi-line messages into distinct events     |
-| drop   | Drops all events               |
-| html   |                                |
-| digest | Digest events every x          |
-| mutate |                                |
-| json   | Parses JSON events             |
-| uuid   | Adds a UUID to events          |
-| date   | Parses dates from fields    |
-| geoip  | Adds geographical information from IP |
-| kv     | Parses key-value pairs         |
-| use    | Include a config file          |
-| route  | route message to other pipelines  |
-
-type `bitfan doc pluginname` to get more information about plugin configuration and usage
-
-## OUTPUT `bitfan doc --type output`
-
-|     PLUGIN     |          DESCRIPTION           |
-|----------------|--------------------------------|
-| null           | Drops everything received      |
-| elasticsearch  |                                |
-| elasticsearch2 |                                |
-| file           |                                |
-| stdout         | Prints events to the stdout    |
-| statsd         |                                |
-| mongodb        |                                |
-| glusterfs      |                                |
-| rabbitmq       |                                |
-| email          | Sends email      |
-| use            | Include a config file          |
 
 type `bitfan doc pluginname` to get more information about plugin configuration and usage
 
