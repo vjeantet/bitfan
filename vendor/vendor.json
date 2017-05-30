@@ -753,6 +753,12 @@
 			"revisionTime": "2016-03-20T18:21:10Z"
 		},
 		{
+			"checksumSHA1": "xsaHqy6/sonLV6xIxTNh4FfkWbU=",
+			"path": "gopkg.in/asn1-ber.v1",
+			"revision": "379148ca0225df7a432012b8df0355c2a2063ac0",
+			"revisionTime": "2017-05-11T16:59:59Z"
+		},
+		{
 			"checksumSHA1": "4dBzqSb+A88peSlMzzfVotJNb0U=",
 			"path": "gopkg.in/bluesuncorp/validator.v5",
 			"revision": "c06d47f593d786142436a43334f724d819093c04",
