@@ -177,23 +177,23 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 
 		if p.opt.EventBy == "row" {
-			var e processors.IPacket
-			e = p.NewPacket("", map[string]interface{}{})
-			e.Fields().SetValueForPath(p.host, "host")
+			var e2 processors.IPacket
+			e2 = e.Clone()
+			e2.Fields().SetValueForPath(p.host, "host")
 			if len(p.opt.Var) > 0 {
-				e.Fields().SetValueForPath(p.opt.Var, "var")
+				e2.Fields().SetValueForPath(p.opt.Var, "var")
 			}
 
 			if p.opt.Target == "." {
 				for k, v := range record {
-					e.Fields().SetValueForPath(v, k)
+					e2.Fields().SetValueForPath(v, k)
 				}
 			} else {
-				e.Fields().SetValueForPath(record, p.opt.Target)
+				e2.Fields().SetValueForPath(record, p.opt.Target)
 			}
 
-			processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
-			p.Send(e)
+			processors.ProcessCommonFields(e2.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
+			p.Send(e2)
 		} else {
 			records = append(records, record)
 		}
