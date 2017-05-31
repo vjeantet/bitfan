@@ -24,6 +24,12 @@ func removeSpecialComment(comment string) string {
 		if strings.HasPrefix(strings.ToLower(line), "@examplels ") {
 			continue
 		}
+		if strings.HasPrefix(strings.ToLower(line), "@type ") {
+			continue
+		}
+		if strings.HasPrefix(strings.ToLower(line), "@enum ") {
+			continue
+		}
 		if strings.HasPrefix(line, "go:generate") {
 			continue
 		}
@@ -118,6 +124,7 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 				var fieldType string
 				fieldTags := map[string]string{}
 
+				customType := ""
 				if field.Doc != nil {
 					for _, c := range field.Doc.List {
 						if strings.HasPrefix(c.Text, "// @Default ") {
@@ -125,6 +132,14 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 						}
 						if strings.HasPrefix(c.Text, "// @ExampleLS ") {
 							dpo.ExampleLS = strings.TrimPrefix(c.Text, "// @ExampleLS ")
+						}
+						if strings.HasPrefix(c.Text, "// @Type ") {
+							customType = strings.ToLower(strings.TrimPrefix(c.Text, "// @Type "))
+						}
+
+						if strings.HasPrefix(c.Text, "// @Enum ") {
+							st := strings.ToLower(strings.TrimPrefix(c.Text, "// @Enum "))
+							dpo.PossibleValues = strings.Split(st, ",")
 						}
 					}
 				}
@@ -162,6 +177,10 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 				}
 				// pp.Println("field tag-->", field.Tag.Value)
 				dpo.Type = fieldType
+				if customType != "" {
+					dpo.Type = customType
+				}
+
 				if _, ok := fieldTags["mapstructure"]; ok {
 					dpo.Alias = fieldTags["mapstructure"]
 				}

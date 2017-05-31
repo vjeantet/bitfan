@@ -12,6 +12,7 @@
         "Doc": "Add a field to an event",
         "ExampleLS": "",
         "Name": "Add_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "Add any number of arbitrary tags to your event.\nThis can help with processing later.",
         "ExampleLS": "",
         "Name": "Tags",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "Add a type field to all events handled by this input",
         "ExampleLS": "",
         "Name": "Type",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -39,6 +42,7 @@
         "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
         "ExampleLS": "",
         "Name": "Codec",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }

@@ -12,6 +12,7 @@
         "Doc": "If this filter is successful, add any arbitrary fields to this event.",
         "ExampleLS": "",
         "Name": "AddField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "AddTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n```\nkv {\n  remove_field =\u003e [ \"foo_%{somefield}\" ]\n}\n```",
         "ExampleLS": "",
         "Name": "RemoveField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -39,6 +42,7 @@
         "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\n\nExample:\n```\nkv {\n  remove_tag =\u003e [ \"foo_%{somefield}\" ]\n}\n```\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
         "ExampleLS": "",
         "Name": "RemoveTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -48,6 +52,7 @@
         "Doc": "The name of the field to use to compare to the blacklist.\n\nIf the field is null, those events will be ignored.",
         "ExampleLS": "compare_field =\u003e \"message\"",
         "Name": "CompareField",
+        "PossibleValues": null,
         "Required": true,
         "Type": "string"
       },
@@ -57,6 +62,7 @@
         "Doc": "If true, events without a compare_key field will not count as changed.",
         "ExampleLS": "",
         "Name": "IgnoreMissing",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -66,6 +72,7 @@
         "Doc": "The maximum time in seconds between changes. After this time period, Bitfan will forget the old value of the compare_field field.",
         "ExampleLS": "timeframe =\u003e 10",
         "Name": "Timeframe",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       }

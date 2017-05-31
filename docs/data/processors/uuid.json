@@ -12,6 +12,7 @@
         "Doc": "If this filter is successful, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
         "ExampleLS": "",
         "Name": "Add_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this filter is successful, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "Add_tag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "If this filter is successful, remove arbitrary fields from this event.",
         "ExampleLS": "",
         "Name": "Remove_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -39,6 +42,7 @@
         "Doc": "If this filter is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
         "ExampleLS": "",
         "Name": "Remove_Tag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -48,6 +52,7 @@
         "Doc": "If the value in the field currently (if any) should be overridden by the generated UUID.\nDefaults to false (i.e. if the field is present, with ANY value, it won’t be overridden)",
         "ExampleLS": "",
         "Name": "Overwrite",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -57,6 +62,7 @@
         "Doc": "Add a UUID to a field",
         "ExampleLS": "",
         "Name": "Target",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }

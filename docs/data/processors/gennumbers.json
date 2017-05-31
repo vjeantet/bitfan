@@ -12,6 +12,7 @@
         "Doc": "If this filter is successful, add any arbitrary fields to this event.",
         "ExampleLS": "",
         "Name": "Add_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "Tags",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "Add a type field to all events handled by this input",
         "ExampleLS": "",
         "Name": "Type",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -39,6 +42,7 @@
         "Doc": "How many events to generate",
         "ExampleLS": "count =\u003e 1000000",
         "Name": "Count",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       }

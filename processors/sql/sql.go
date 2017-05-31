@@ -40,15 +40,19 @@ type options struct {
 	// Send an event row by row or one event with all results
 	// possible values "row", "result"
 	// @Default "row"
+	// @Enum "row","result"
 	EventBy string `mapstructure:"event_by"`
 
 	// SQL Statement
-	// When there is more than 1 statement, only data from the last one will generate events.
+	//
+	// When there are more than 1 statement, only data from the last one will generate events.
 	// @ExampleLS statement => "SELECT * FROM mytable"
+	// @Type Location
 	Statement string `mapstructure:"statement" validate:"required"`
 
 	// Set an interval when this processor is used as a input
 	// @ExampleLS interval => "10"
+	// @Type Interval
 	Interval string `mapstructure:"interval" `
 
 	// @ExampleLS connection_string => "username:password@tcp(192.168.1.2:3306)/mydatabase?charset=utf8"

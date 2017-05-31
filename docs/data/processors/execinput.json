@@ -12,6 +12,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Command",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -21,6 +22,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Args",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Add_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -39,6 +42,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Interval",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -48,6 +52,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Codec",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -57,6 +62,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Tags",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -66,6 +72,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Type",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }

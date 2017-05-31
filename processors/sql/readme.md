@@ -4,19 +4,19 @@
 ## Synopsys
 
 
-|      SETTING      |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-------------------|--------|----------|---------------|
-| Add_field         | hash   | false    | {}            |
-| Tags              | array  | false    | []            |
-| Type              | string | false    | ""            |
-| Codec             | string | false    | ""            |
-| driver            | string | true     | ""            |
-| event_by          | string | false    | "row"         |
-| statement         | string | true     | ""            |
-| interval          | string | false    | ""            |
-| connection_string | string | true     | ""            |
-| var               | hash   | false    | {}            |
-| target            | string | false    | "data"        |
+|      SETTING      |   TYPE   | REQUIRED | DEFAULT VALUE |
+|-------------------|----------|----------|---------------|
+| Add_field         | hash     | false    | {}            |
+| Tags              | array    | false    | []            |
+| Type              | string   | false    | ""            |
+| Codec             | string   | false    | ""            |
+| driver            | string   | true     | ""            |
+| event_by          | string   | false    | "row"         |
+| statement         | location | true     | ?             |
+| interval          | interval | false    | ?             |
+| connection_string | string   | true     | ""            |
+| var               | hash     | false    | {}            |
+| target            | string   | false    | "data"        |
 
 
 ## Details
@@ -63,15 +63,16 @@ possible values "row", "result"
 
 ### statement
 * This is a required setting.
-* Value type is string
-* Default value is `""`
+* Value type is location
+* Default value is `?`
 
 SQL Statement
-When there is more than 1 statement, only data from the last one will generate events.
+
+When there are more than 1 statement, only data from the last one will generate events.
 
 ### interval
-* Value type is string
-* Default value is `""`
+* Value type is interval
+* Default value is `?`
 
 Set an interval when this processor is used as a input
 

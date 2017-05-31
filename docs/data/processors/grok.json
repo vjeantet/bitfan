@@ -12,6 +12,7 @@
         "Doc": "If this filter is successful, add any arbitrary fields to this event. Field names can\nbe dynamic and include parts of the event using the %{field}.",
         "ExampleLS": "",
         "Name": "AddField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "AddTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "Break on first match. The first successful match by grok will result in the filter being\nfinished. If you want grok to try all patterns (maybe you are parsing different things),\nthen set this to false",
         "ExampleLS": "",
         "Name": "BreakOnMatch",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -39,6 +42,7 @@
         "Doc": "If true, keep empty captures as event fields",
         "ExampleLS": "",
         "Name": "KeepEmptyCaptures",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -48,6 +52,7 @@
         "Doc": "A hash of matches of field ⇒ value\n@nodefault\n\nFor example:\n```\n    filter {\n      grok { match =\u003e { \"message\" =\u003e \"Duration: %{NUMBER:duration}\" } }\n    }\n```\nIf you need to match multiple patterns against a single field, the value can be an array of patterns\n```\n    filter {\n      grok { match =\u003e { \"message\" =\u003e [ \"Duration: %{NUMBER:duration}\", \"Speed: %{NUMBER:speed}\" ] } }\n    }\n```",
         "ExampleLS": "",
         "Name": "Match",
+        "PossibleValues": null,
         "Required": true,
         "Type": "hash"
       },
@@ -57,6 +62,7 @@
         "Doc": "If true, only store named captures from grok.",
         "ExampleLS": "",
         "Name": "NamedCapturesOnly",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -66,6 +72,7 @@
         "Doc": "BitFan ships by default with a bunch of patterns, so you don’t necessarily need to\ndefine this yourself unless you are adding additional patterns. You can point to\nmultiple pattern directories using this setting Note that Grok will read all files\nin the directory and assume its a pattern file (including any tilde backup files)",
         "ExampleLS": "",
         "Name": "PatternsDir",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -75,6 +82,7 @@
         "Doc": "If this filter is successful, remove arbitrary fields from this event",
         "ExampleLS": "",
         "Name": "RemoveField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -84,6 +92,7 @@
         "Doc": "If this filter is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
         "ExampleLS": "",
         "Name": "RemoveTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -93,6 +102,7 @@
         "Doc": "Append values to the tags field when there has been no successful match",
         "ExampleLS": "",
         "Name": "TagOnFailure",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       }

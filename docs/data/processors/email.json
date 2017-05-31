@@ -12,6 +12,7 @@
         "Doc": "The address used to connect to the mail server",
         "ExampleLS": "",
         "Name": "Host",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -21,6 +22,7 @@
         "Doc": "Port used to communicate with the mail server",
         "ExampleLS": "",
         "Name": "Port",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       },
@@ -30,6 +32,7 @@
         "Doc": "Username to authenticate with the server",
         "ExampleLS": "",
         "Name": "Username",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -39,6 +42,7 @@
         "Doc": "Password to authenticate with the server",
         "ExampleLS": "",
         "Name": "Password",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -48,6 +52,7 @@
         "Doc": "The fully-qualified email address for the From: field in the email",
         "ExampleLS": "",
         "Name": "From",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -57,6 +62,7 @@
         "Doc": "The fully qualified email address for the Reply-To: field",
         "ExampleLS": "replyto =\u003e \"test@nowhere.com\"",
         "Name": "Replyto",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -66,6 +72,7 @@
         "Doc": "The fully-qualified email address to send the email to.\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`\n\nYou can also use dynamic fields from the event with the %{fieldname} syntax",
         "ExampleLS": "to =\u003e \"me@host.com, you@host.com\"",
         "Name": "To",
+        "PossibleValues": null,
         "Required": true,
         "Type": "string"
       },
@@ -75,6 +82,7 @@
         "Doc": "The fully-qualified email address(es) to include as cc: address(es).\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
         "ExampleLS": "cc =\u003e \"me@host.com, you@host.com\"",
         "Name": "Cc",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -84,6 +92,7 @@
         "Doc": "The fully-qualified email address(es) to include as bcc: address(es).\n\nThis field also accepts a comma-separated string of addresses, for example: `\"me@host.com, you@host.com\"`",
         "ExampleLS": "bcc =\u003e \"me@host.com, you@host.com\"",
         "Name": "Bcc",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -93,6 +102,7 @@
         "Doc": "Subject: for the email\n\nYou can use template",
         "ExampleLS": "subject =\u003e \"message from {{.host}}\"",
         "Name": "Subject",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -102,6 +112,7 @@
         "Doc": "Path to Subject template file for the email",
         "ExampleLS": "",
         "Name": "Subjectfile",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -111,6 +122,7 @@
         "Doc": "HTML Body for the email, which may contain HTML markup",
         "ExampleLS": "htmlbody =\u003e \"\u003ch1\u003eHello\u003c/h1\u003e message received : {{.message}}\"",
         "Name": "Htmlbody",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -120,6 +132,7 @@
         "Doc": "Local path to HTML Body template file for the email, which may contain HTML markup\ncan be relative to the configuration file",
         "ExampleLS": "",
         "Name": "Htmlbodyfile",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -129,6 +142,7 @@
         "Doc": "Body for the email - plain text only.",
         "ExampleLS": "body =\u003e \"message : {{.message}}. from {{.host}}.\"",
         "Name": "Body",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -138,6 +152,7 @@
         "Doc": "Path to Body template file for the email.",
         "ExampleLS": "",
         "Name": "Bodyfile",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -147,6 +162,7 @@
         "Doc": "Attachments - specify the name(s) and location(s) of the files",
         "ExampleLS": "",
         "Name": "Attachments",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       }

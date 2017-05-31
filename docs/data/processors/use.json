@@ -12,6 +12,7 @@
         "Doc": "If this processor is successful, add any arbitrary fields to this event.",
         "ExampleLS": "",
         "Name": "Add_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this processor is successful, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "Add_tag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "If this processor is successful, remove arbitrary fields from this event.",
         "ExampleLS": "",
         "Name": "Remove_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -39,6 +42,7 @@
         "Doc": "If this processor is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
         "ExampleLS": "",
         "Name": "Remove_tag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -48,6 +52,7 @@
         "Doc": "Add a type field to all events handled by this processor",
         "ExampleLS": "",
         "Name": "Type",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -57,6 +62,7 @@
         "Doc": "Path to configuration to import in this pipeline, it could be a local file or an url\ncan be relative path to the current configuration.\n\nSPLIT and JOIN : in filter Section, set multiples path to make a split and join into your pipeline",
         "ExampleLS": "path=\u003e [\"meteo-input.conf\"]",
         "Name": "Path",
+        "PossibleValues": null,
         "Required": true,
         "Type": "array"
       },
@@ -66,6 +72,7 @@
         "Doc": "You can set variable references in the used configuration by using ${var}.\neach reference will be replaced by the value of the variable found in this option\n\nThe replacement is case-sensitive.",
         "ExampleLS": "var =\u003e {\"hostname\"=\u003e\"myhost\",\"varname\"=\u003e\"varvalue\"}",
         "Name": "Var",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       }

@@ -12,6 +12,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Expressions",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       }

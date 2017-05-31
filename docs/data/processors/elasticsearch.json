@@ -12,6 +12,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Host",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -21,6 +22,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Cluster",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -30,6 +32,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Protocol",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -39,6 +42,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Port",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       },
@@ -48,6 +52,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "User",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -57,6 +62,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Password",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }

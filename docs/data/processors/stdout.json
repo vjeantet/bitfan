@@ -12,6 +12,12 @@
         "Doc": "Codec can be one of  \"json\", \"line\", \"pp\" or \"rubydebug\"",
         "ExampleLS": "codec =\u003e \"pp\"",
         "Name": "Codec",
+        "PossibleValues": [
+          "\"json\"",
+          "\"line\"",
+          "\"pp\"",
+          "\"rubydebug\""
+        ],
         "Required": false,
         "Type": "string"
       }

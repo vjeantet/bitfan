@@ -31,12 +31,13 @@ type ProcessorOptions struct {
 }
 
 type ProcessorOption struct {
-	Name         string
-	Alias        string
-	Doc          string
-	Required     bool
-	Type         string
-	DefaultValue interface{}
+	Name           string
+	Alias          string
+	Doc            string
+	Required       bool
+	Type           string
+	DefaultValue   interface{}
+	PossibleValues []string
 	//LogstashExample
 	ExampleLS string
 }

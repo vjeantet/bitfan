@@ -12,6 +12,7 @@
         "Doc": "If this filter is successful, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
         "ExampleLS": "",
         "Name": "AddField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this filter is successful, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "AddTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "Path or URL to the MaxMind GeoIP2 database.\nDefault value is \"http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz\"\nNote that URL can point to gzipped database (*.mmdb.gz) but local path must point to an unzipped file.",
         "ExampleLS": "",
         "Name": "Database",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -39,6 +42,7 @@
         "Doc": "Type of GeoIP database. Default value is \"city\"\nMust be one of \"city\", \"asn\", \"isp\" or \"organization\".",
         "ExampleLS": "",
         "Name": "DatabaseType",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -48,6 +52,7 @@
         "Doc": "GeoIP database refresh interval, in minutes. Default value is 60\nIf `database` field is a path, file will be reloaded from disk.\nIf it is an URL, database will be fetched (if ETAG differs) and reloaded.",
         "ExampleLS": "",
         "Name": "RefreshInterval",
+        "PossibleValues": null,
         "Required": false,
         "Type": "time.Duration"
       },
@@ -57,6 +62,7 @@
         "Doc": "An array of geoip fields to be included in the event.\nPossible fields depend on the database type. By default, all geoip fields are included in the event.",
         "ExampleLS": "",
         "Name": "Fields",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -66,6 +72,7 @@
         "Doc": "Cache size. Default value is 1000",
         "ExampleLS": "",
         "Name": "LruCacheSize",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int64"
       },
@@ -75,6 +82,7 @@
         "Doc": "If this filter is successful, remove arbitrary fields from this event.",
         "ExampleLS": "",
         "Name": "RemoveField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -84,6 +92,7 @@
         "Doc": "If this filter is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
         "ExampleLS": "",
         "Name": "RemoveTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -93,6 +102,7 @@
         "Doc": "The field containing the IP address or hostname to map via geoip.",
         "ExampleLS": "",
         "Name": "Source",
+        "PossibleValues": null,
         "Required": true,
         "Type": "string"
       },
@@ -102,6 +112,7 @@
         "Doc": "Append values to the tags field when there has been no successful match\nDefault value is [\"_geoipparsefailure\"]",
         "ExampleLS": "",
         "Name": "TagOnFailure",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -111,6 +122,7 @@
         "Doc": "Define the target field for placing the parsed data. If this setting is omitted,\nthe geoip data will be stored at the root (top level) of the event",
         "ExampleLS": "",
         "Name": "Target",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -120,6 +132,7 @@
         "Doc": "Language to use for city/region/continent names",
         "ExampleLS": "",
         "Name": "Language",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }

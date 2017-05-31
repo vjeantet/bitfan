@@ -12,6 +12,7 @@
         "Doc": "Add a field to an event. Default value is {}",
         "ExampleLS": "",
         "Name": "AddField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "This output lets you send events to a generic HTTP(S) endpoint\nThis setting can be dynamic using the %{foo} syntax.",
         "ExampleLS": "",
         "Name": "URL",
+        "PossibleValues": null,
         "Required": true,
         "Type": "string"
       },
@@ -30,6 +32,7 @@
         "Doc": "Custom headers to use format is headers =\u003e {\"X-My-Header\", \"%{host}\"}. Default value is {}\nThis setting can be dynamic using the %{foo} syntax.",
         "ExampleLS": "",
         "Name": "Headers",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -39,6 +42,7 @@
         "Doc": "The HTTP Verb. One of \"put\", \"post\", \"patch\", \"delete\", \"get\", \"head\". Default value is \"post\"",
         "ExampleLS": "",
         "Name": "HTTPMethod",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -48,6 +52,7 @@
         "Doc": "Turn this on to enable HTTP keepalive support. Default value is true",
         "ExampleLS": "",
         "Name": "KeepAlive",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -57,6 +62,7 @@
         "Doc": "Max number of concurrent connections. Default value is 1",
         "ExampleLS": "",
         "Name": "PoolMax",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       },
@@ -66,6 +72,7 @@
         "Doc": "Timeout (in seconds) to wait for a connection to be established. Default value is 10",
         "ExampleLS": "",
         "Name": "ConnectTimeout",
+        "PossibleValues": null,
         "Required": false,
         "Type": "uint"
       },
@@ -75,6 +82,7 @@
         "Doc": "Timeout (in seconds) for the entire request. Default value is 60",
         "ExampleLS": "",
         "Name": "RequestTimeout",
+        "PossibleValues": null,
         "Required": false,
         "Type": "uint"
       },
@@ -84,6 +92,7 @@
         "Doc": "Set the format of the http body. Now supports only \"json_lines\"",
         "ExampleLS": "",
         "Name": "Format",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -93,6 +102,7 @@
         "Doc": "If encountered as response codes this plugin will retry these requests",
         "ExampleLS": "",
         "Name": "RetryableCodes",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -102,6 +112,7 @@
         "Doc": "If you would like to consider some non-2xx codes to be successes\nenumerate them here. Responses returning these codes will be considered successes",
         "ExampleLS": "",
         "Name": "IgnorableCodes",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -111,6 +122,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "BatchInterval",
+        "PossibleValues": null,
         "Required": false,
         "Type": "uint"
       },
@@ -120,6 +132,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "BatchSize",
+        "PossibleValues": null,
         "Required": false,
         "Type": "uint"
       }

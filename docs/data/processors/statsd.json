@@ -12,6 +12,7 @@
         "Doc": "The address of the statsd server.",
         "ExampleLS": "",
         "Name": "Host",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -21,6 +22,7 @@
         "Doc": "The port to connect to on your statsd server.",
         "ExampleLS": "",
         "Name": "Port",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       },
@@ -30,6 +32,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Protocol",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -39,6 +42,7 @@
         "Doc": "The name of the sender. Dots will be replaced with underscores.",
         "ExampleLS": "",
         "Name": "Sender",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -48,6 +52,7 @@
         "Doc": "A count metric. metric_name =\u003e count as hash",
         "ExampleLS": "",
         "Name": "Count",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -57,6 +62,7 @@
         "Doc": "A decrement metric. Metric names as array.",
         "ExampleLS": "",
         "Name": "Decrement",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -66,6 +72,7 @@
         "Doc": "A gauge metric. metric_name =\u003e gauge as hash.",
         "ExampleLS": "",
         "Name": "Gauge",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -75,6 +82,7 @@
         "Doc": "An increment metric. Metric names as array.",
         "ExampleLS": "",
         "Name": "Increment",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -84,6 +92,7 @@
         "Doc": "The statsd namespace to use for this metric.",
         "ExampleLS": "",
         "Name": "NameSpace",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -93,6 +102,7 @@
         "Doc": "The sample rate for the metric.",
         "ExampleLS": "",
         "Name": "SampleRate",
+        "PossibleValues": null,
         "Required": false,
         "Type": "float32"
       },
@@ -102,6 +112,7 @@
         "Doc": "A set metric. metric_name =\u003e \"string\" to append as hash",
         "ExampleLS": "",
         "Name": "Set",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -111,6 +122,7 @@
         "Doc": "A timing metric. metric_name =\u003e duration as hash",
         "ExampleLS": "",
         "Name": "Timing",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       }

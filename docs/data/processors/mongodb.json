@@ -12,6 +12,7 @@
         "Doc": "The codec used for output data. Output codecs are a convenient method\nfor encoding your data before it leaves the output, without needing a\nseparate filter in your bitfan pipeline",
         "ExampleLS": "",
         "Name": "Codec",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -21,6 +22,7 @@
         "Doc": "The collection to use. This value can use %{foo} values to dynamically\nselect a collection based on data in the event",
         "ExampleLS": "",
         "Name": "Collection",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -30,6 +32,7 @@
         "Doc": "The database to use",
         "ExampleLS": "",
         "Name": "Database",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -39,6 +42,7 @@
         "Doc": "If true, an \"_id\" field will be added to the document before insertion.\nThe \"_id\" field will use the timestamp of the event and overwrite an\nexisting \"_id\" field in the event",
         "ExampleLS": "",
         "Name": "GenerateId",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -48,6 +52,7 @@
         "Doc": "If true, store the @timestamp field in mongodb as an ISODate type\ninstead of an ISO8601 string. For more information about this,\nsee http://www.mongodb.org/display/DOCS/Dates",
         "ExampleLS": "",
         "Name": "Isodate",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -57,6 +62,7 @@
         "Doc": "Number of seconds to wait after failure before retrying",
         "ExampleLS": "",
         "Name": "Retry_delay",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       },
@@ -66,6 +72,7 @@
         "Doc": "a MongoDB URI to connect to See http://docs.mongodb.org/manual/reference/connection-string/",
         "ExampleLS": "",
         "Name": "Uri",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }

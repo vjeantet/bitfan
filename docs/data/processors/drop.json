@@ -12,6 +12,7 @@
         "Doc": "If this event survice to drop, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
         "ExampleLS": "",
         "Name": "Add_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this event survice to drop, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "Add_tag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "If this event survice to drop, remove arbitrary fields from this event.",
         "ExampleLS": "",
         "Name": "Remove_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -39,6 +42,7 @@
         "Doc": "If this event survice to drop, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
         "ExampleLS": "",
         "Name": "Remove_Tag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -48,6 +52,7 @@
         "Doc": "Drop all the events within a pre-configured percentage.\nThis is useful if you just need a percentage but not the whole.",
         "ExampleLS": "",
         "Name": "Percentage",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       }

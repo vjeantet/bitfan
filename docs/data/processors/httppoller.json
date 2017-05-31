@@ -12,6 +12,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Method",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -21,6 +22,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Url",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }

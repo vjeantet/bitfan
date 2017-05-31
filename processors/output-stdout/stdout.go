@@ -49,6 +49,7 @@ type options struct {
 	// Codec can be one of  "json", "line", "pp" or "rubydebug"
 	// @ExampleLS codec => "pp"
 	// @Default "line"
+	// @Enum "json","line","pp","rubydebug"
 	Codec string
 }
 

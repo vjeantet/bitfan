@@ -12,6 +12,7 @@
         "Doc": "If this filter is successful, add any arbitrary fields to this event.",
         "ExampleLS": "",
         "Name": "AddField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
         "ExampleLS": "",
         "Name": "AddTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -30,6 +32,7 @@
         "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n` kv {\n`   remove_field =\u003e [ \"foo_%{somefield}\" ]\n` }",
         "ExampleLS": "",
         "Name": "RemoveField",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -39,6 +42,7 @@
         "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\nExample:\n` kv {\n`   remove_tag =\u003e [ \"foo_%{somefield}\" ]\n` }\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
         "ExampleLS": "",
         "Name": "RemoveTag",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -48,6 +52,7 @@
         "Doc": "The name of the field to use to compare to terms list.\nIf the field is null, those events will be ignored.",
         "ExampleLS": "compare_field =\u003e \"message\"",
         "Name": "CompareField",
+        "PossibleValues": null,
         "Required": true,
         "Type": "string"
       },
@@ -57,6 +62,7 @@
         "Doc": "If true, events without a compare_field field will be ignored.",
         "ExampleLS": "ignore_missing =\u003e true",
         "Name": "IgnoreMissing",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -66,6 +72,7 @@
         "Doc": "A list of initial terms to consider now new.\nThe compare_field term must be in this list or else it will match.",
         "ExampleLS": "terms =\u003e [\"val1\",\"val2\",\"val3\"]",
         "Name": "Terms",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       }

@@ -12,6 +12,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Add_field",
+        "PossibleValues": null,
         "Required": false,
         "Type": "hash"
       },
@@ -21,6 +22,7 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "Codec",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -30,6 +32,7 @@
         "Doc": "The number of seconds before we raise a timeout,\nthis option is useful to control how much time to wait if something is blocking\nthe pipeline",
         "ExampleLS": "",
         "Name": "Congestion_threshold",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       },
@@ -39,6 +42,7 @@
         "Doc": "The IP address to listen on",
         "ExampleLS": "",
         "Name": "Host",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -48,6 +52,7 @@
         "Doc": "The port to listen on (default 5044)",
         "ExampleLS": "",
         "Name": "Port",
+        "PossibleValues": null,
         "Required": false,
         "Type": "int"
       },
@@ -57,6 +62,7 @@
         "Doc": "Events are by default send in plain text,\nyou can enable encryption by using ssl to true and\nconfiguring the ssl_certificate and ssl_key options",
         "ExampleLS": "",
         "Name": "Ssl",
+        "PossibleValues": null,
         "Required": false,
         "Type": "bool"
       },
@@ -66,6 +72,7 @@
         "Doc": "SSL certificate to use (path)",
         "ExampleLS": "",
         "Name": "Ssl_certificate",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -75,6 +82,7 @@
         "Doc": "Validate client certificates against theses authorities\n You can defined multiples files or path, all the certificates will be read\n and added to the trust store.\n You need to configure the ssl_verify_mode to peer or force_peer to enable\n the verification.\nThis feature only support certificate directly signed by your root ca.\nIntermediate CA are currently not supported.",
         "ExampleLS": "",
         "Name": "Ssl_certificate_authorities",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -84,6 +92,7 @@
         "Doc": "SSL key to use (path)",
         "ExampleLS": "",
         "Name": "Ssl_key",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -93,6 +102,7 @@
         "Doc": "SSL key passphrase to use. (not yet implemented)",
         "ExampleLS": "",
         "Name": "Ssl_key_passphrase",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -102,6 +112,7 @@
         "Doc": "By default the server dont do any client verification,\npeer will make the server ask the client to provide a certificate,\n  if the client provide the certificate it will be validated.\nforce_peer will make the server ask the client for their certificate,\n  if the clients doesn’t provide it the connection will be closed.\nThis option need to be used with ssl_certificate_authorities and a defined list of CA.\nValue can be any of: none, peer, force_peer",
         "ExampleLS": "",
         "Name": "Ssl_verify_mode",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       },
@@ -111,6 +122,7 @@
         "Doc": "Add any number of arbitrary tags to your event",
         "ExampleLS": "",
         "Name": "Tags",
+        "PossibleValues": null,
         "Required": false,
         "Type": "array"
       },
@@ -120,6 +132,7 @@
         "Doc": "Add a type field to all events handled by this input",
         "ExampleLS": "",
         "Name": "Type",
+        "PossibleValues": null,
         "Required": false,
         "Type": "string"
       }
