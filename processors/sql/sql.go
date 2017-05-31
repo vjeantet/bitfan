@@ -2,9 +2,11 @@
 package sqlprocessor
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"strings"
+	"text/template"
 
 	"github.com/ShowMax/go-fqdn"
 	_ "github.com/go-sql-driver/mysql"
@@ -47,7 +49,7 @@ type options struct {
 
 	// Set an interval when this processor is used as a input
 	// @ExampleLS interval => "10"
-	Interval string `mapstructure:"interval"  validate:"required"`
+	Interval string `mapstructure:"interval" `
 
 	// @ExampleLS connection_string => "username:password@tcp(192.168.1.2:3306)/mydatabase?charset=utf8"
 	ConnectionString string `mapstructure:"connection_string" validate:"required"`
@@ -68,10 +70,11 @@ type options struct {
 
 type processor struct {
 	processors.Base
-	db   *sql.DB
-	opt  *options
-	q    chan bool
-	host string
+	db            *sql.DB
+	opt           *options
+	q             chan bool
+	host          string
+	StatementTmpl *template.Template
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -103,6 +106,12 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	}
 	p.opt.Statement = string(content)
 
+	p.StatementTmpl, err = template.New("statement").Parse(p.opt.Statement)
+	if err != nil {
+		p.Logger.Errorf("sql Statement tpl error : %s", err)
+		return err
+	}
+
 	p.db, err = sql.Open(p.opt.Driver, p.opt.ConnectionString)
 	if err != nil {
 		return err
@@ -121,11 +130,17 @@ func (p *processor) Tick(e processors.IPacket) error {
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	p.opt.Statement = strings.Trim(p.opt.Statement, ";")
-	reqs := strings.Split(p.opt.Statement, ";")
-	for _, r := range reqs[:len(reqs)-1] {
-		p.Logger.Debugf("db.Exec - %s", r)
-		p.db.Exec(r)
+
+	buff := bytes.NewBufferString("")
+	p.StatementTmpl.Execute(buff, e.Fields())
+
+	statements := strings.Trim(buff.String(), ";")
+	reqs := strings.Split(statements, ";")
+	if len(reqs) > 1 {
+		for _, r := range reqs[:len(reqs)-1] {
+			p.Logger.Debugf("db.Exec - %s", r)
+			p.db.Exec(r)
+		}
 	}
 
 	p.Logger.Debugf("db.Query - %s", reqs[len(reqs)-1])

@@ -23,9 +23,7 @@ import (
 	file "github.com/vjeantet/bitfan/processors/input-file"
 	gennumbers "github.com/vjeantet/bitfan/processors/input-gennumbers"
 	httppoller "github.com/vjeantet/bitfan/processors/input-httppoller"
-	ldapinput "github.com/vjeantet/bitfan/processors/input-ldap"
 	rabbitmqinput "github.com/vjeantet/bitfan/processors/input-rabbitmq"
-	inputsql "github.com/vjeantet/bitfan/processors/input-sql"
 	stdin "github.com/vjeantet/bitfan/processors/input-stdin"
 	sysloginput "github.com/vjeantet/bitfan/processors/input-syslog"
 	tail "github.com/vjeantet/bitfan/processors/input-tail"
@@ -44,8 +42,12 @@ import (
 	statsd "github.com/vjeantet/bitfan/processors/output-statsd"
 	stdout "github.com/vjeantet/bitfan/processors/output-stdout"
 	route "github.com/vjeantet/bitfan/processors/route"
+
 	use "github.com/vjeantet/bitfan/processors/use"
 	when "github.com/vjeantet/bitfan/processors/when"
+
+	ldapprocessor "github.com/vjeantet/bitfan/processors/ldap"
+	sqlprocessor "github.com/vjeantet/bitfan/processors/sql"
 )
 
 func init() {
@@ -60,11 +62,11 @@ func init() {
 	initPlugin("input", "syslog", sysloginput.New)
 	initPlugin("input", "unix", unixinput.New)
 	initPlugin("input", "readfile", file.New)
-	initPlugin("input", "sql", inputsql.New)
+	initPlugin("input", "sql", sqlprocessor.New)
 	initPlugin("input", "http", httppoller.New)
 	initPlugin("input", "use", use.New)
 	initPlugin("input", "gennumbers", gennumbers.New)
-	initPlugin("input", "ldap", ldapinput.New)
+	initPlugin("input", "ldap", ldapprocessor.New)
 
 	initPlugin("filter", "grok", grok.New)
 	initPlugin("filter", "mutate", mutate.New)
@@ -83,7 +85,8 @@ func init() {
 	initPlugin("filter", "change", change.New)
 	initPlugin("filter", "newterm", newterm.New)
 	initPlugin("filter", "exec", exec.New)
-	initPlugin("filter", "sql", inputsql.New)
+	initPlugin("filter", "sql", sqlprocessor.New)
+	initPlugin("filter", "ldap", ldapprocessor.New)
 
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)
@@ -99,7 +102,7 @@ func init() {
 	initPlugin("output", "rabbitmq", rabbitmqoutput.New)
 	initPlugin("output", "email", email.New)
 	initPlugin("output", "http", httpoutput.New)
-	initPlugin("output", "sql", inputsql.New)
+	initPlugin("output", "sql", sqlprocessor.New)
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)

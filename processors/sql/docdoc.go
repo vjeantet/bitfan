@@ -79,7 +79,7 @@ func (p *processor) Doc() *doc.Processor {
         Name:         "Interval",
         Alias:        "interval",
         Doc:          "Set an interval when this processor is used as a input",
-        Required:     true,
+        Required:     false,
         Type:         "string",
         DefaultValue: nil,
         ExampleLS:    "interval => \"10\"",

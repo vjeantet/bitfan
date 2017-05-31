@@ -1,4 +1,4 @@
-# LDAPINPUT
+# LDAPPROCESSOR
 Performs a search for a specified filter on the directory and fire events with results
 
 ## Synopsys
@@ -19,7 +19,7 @@ Performs a search for a specified filter on the directory and fire events with r
 | search_attributes | array  | false    | []                |
 | search_scope      | string | false    | "subtree"         |
 | event_by          | string | false    | "entry"           |
-| interval          | string | true     | ""                |
+| interval          | string | false    | ""                |
 | var               | hash   | false    | {}                |
 | target            | string | false    | "data"            |
 
@@ -130,7 +130,6 @@ Send an event row by row or one event with all results
 possible values "entry", "result"
 
 ### interval
-* This is a required setting.
 * Value type is string
 * Default value is `""`
 
@@ -157,7 +156,7 @@ Set the value to "." to store value to the root (top level) of the event
 ## Configuration blueprint
 
 ```
-ldapinput{
+ldapprocessor{
 	add_field => {}
 	tags => []
 	type => ""

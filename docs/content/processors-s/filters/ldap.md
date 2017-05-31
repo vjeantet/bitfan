@@ -3,8 +3,8 @@ title = "ldap"
 description = ""
 
 [menu.main]
-parent = "inputs"
-identifier = "proc-input-ldap"
+parent = "filters"
+identifier = "proc-filter-ldap"
 weight = 10
 +++
 

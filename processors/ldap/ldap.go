@@ -1,6 +1,6 @@
 //go:generate bitfanDoc
 // Performs a search for a specified filter on the directory and fire events with results
-package ldapinput
+package ldapprocessor
 
 import (
 	"fmt"
@@ -94,7 +94,7 @@ type options struct {
 
 	// Set an interval when this processor is used as a input
 	// @ExampleLS interval => "10"
-	Interval string `mapstructure:"interval"  validate:"required"`
+	Interval string `mapstructure:"interval"`
 
 	// You can set variable to be used in Search Query by using ${var}.
 	// each reference will be replaced by the value of the variable found in search query content
@@ -207,7 +207,6 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 		if p.opt.EventBy == "row" {
 			e2 := e.Clone()
-			e2 = p.NewPacket("", map[string]interface{}{})
 			e2.Fields().SetValueForPath(p.opt.Host, "host")
 			if len(p.opt.Var) > 0 {
 				e2.Fields().SetValueForPath(p.opt.Var, "var")

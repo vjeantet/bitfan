@@ -1,8 +1,8 @@
 {
   "Doc": "Performs a search for a specified filter on the directory and fire events with results",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-ldap",
-  "Name": "ldapinput",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/ldap",
+  "Name": "ldapprocessor",
   "Options": {
     "Doc": "",
     "Options": [
@@ -129,7 +129,7 @@
         "Doc": "Set an interval when this processor is used as a input",
         "ExampleLS": "interval =\u003e \"10\"",
         "Name": "Interval",
-        "Required": true,
+        "Required": false,
         "Type": "string"
       },
       {

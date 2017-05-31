@@ -13,7 +13,7 @@
 | driver            | string | true     | ""            |
 | event_by          | string | false    | "row"         |
 | statement         | string | true     | ""            |
-| interval          | string | true     | ""            |
+| interval          | string | false    | ""            |
 | connection_string | string | true     | ""            |
 | var               | hash   | false    | {}            |
 | target            | string | false    | "data"        |
@@ -70,7 +70,6 @@ SQL Statement
 When there is more than 1 statement, only data from the last one will generate events.
 
 ### interval
-* This is a required setting.
 * Value type is string
 * Default value is `""`
 
