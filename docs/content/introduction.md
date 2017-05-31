@@ -38,9 +38,8 @@ When a device on my network requests a domain know to be used by wannacry, alert
 
 Send a http request to a specific endpoint and send a mail to security teams when an event with a blacklisted word appears in the dns server log.
 
-
-
-
+### ETL like
+Search for entries in a LDAP, and insert each of them in a mysql database
 
 
 
