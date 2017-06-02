@@ -1,4 +1,8 @@
 # SLEEPPROCESSOR
+Sleep a given amount of time.
+
+This will cause bitfan to stall for the given amount of time.
+
 This is useful for rate limiting, etc.
 
 ## Synopsys

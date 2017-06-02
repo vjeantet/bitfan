@@ -27,9 +27,9 @@ type options struct {
 	// Add a type field to all events handled by this input
 	Type string
 
-	// Stop bitfan with the pipeline ending ?
+	// Stop bitfan after stopping the pipeline ?
 	// @Default true
-	ExitBitfan bool
+	ExitBitfan bool `mapstructure:"exit_bitfan"`
 }
 
 type processor struct {

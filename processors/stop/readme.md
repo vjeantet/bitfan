@@ -7,12 +7,12 @@ Permit to launch bitfan with a pipeline and quit when work is done.
 ## Synopsys
 
 
-|  SETTING   |  TYPE  | REQUIRED | DEFAULT VALUE |
-|------------|--------|----------|---------------|
-| Add_field  | hash   | false    | {}            |
-| Tags       | array  | false    | []            |
-| Type       | string | false    | ""            |
-| ExitBitfan | bool   | false    | true          |
+|   SETTING   |  TYPE  | REQUIRED | DEFAULT VALUE |
+|-------------|--------|----------|---------------|
+| Add_field   | hash   | false    | {}            |
+| Tags        | array  | false    | []            |
+| Type        | string | false    | ""            |
+| exit_bitfan | bool   | false    | true          |
 
 
 ## Details
@@ -36,11 +36,11 @@ and include parts of the event using the %{field} syntax.
 
 Add a type field to all events handled by this input
 
-### ExitBitfan
+### exit_bitfan
 * Value type is bool
 * Default value is `true`
 
-Stop bitfan with the pipeline ending ?
+Stop bitfan after stopping the pipeline ?
 
 
 
@@ -51,6 +51,6 @@ stopprocessor{
 	add_field => {}
 	tags => []
 	type => ""
-	exitbitfan => true
+	exit_bitfan => true
 }
 ```

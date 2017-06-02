@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "sleepprocessor",
   ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/sleep",
-  Doc:        "This is useful for rate limiting, etc.",
+  Doc:        "Sleep a given amount of time.\n\nThis will cause bitfan to stall for the given amount of time.\n\nThis is useful for rate limiting, etc.",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{
     Doc:     "",

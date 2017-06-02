@@ -44,8 +44,8 @@ func (p *processor) Doc() *doc.Processor {
       },
       &doc.ProcessorOption{
         Name:           "ExitBitfan",
-        Alias:          "",
-        Doc:            "Stop bitfan with the pipeline ending ?",
+        Alias:          "exit_bitfan",
+        Doc:            "Stop bitfan after stopping the pipeline ?",
         Required:       false,
         Type:           "bool",
         DefaultValue:   "true",

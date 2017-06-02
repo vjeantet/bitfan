@@ -37,9 +37,9 @@
         "Type": "string"
       },
       {
-        "Alias": "",
+        "Alias": "exit_bitfan",
         "DefaultValue": "true",
-        "Doc": "Stop bitfan with the pipeline ending ?",
+        "Doc": "Stop bitfan after stopping the pipeline ?",
         "ExampleLS": "",
         "Name": "ExitBitfan",
         "PossibleValues": null,
