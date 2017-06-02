@@ -46,7 +46,7 @@
 		<td>{{if .Required}}<strong>{{end}}
 		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
 		{{if .Required}}</strong>{{end}}</td>
-		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-file.md" }}#{{.Type}}">{{.Type}}</a></td>
+		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
 		<td>{{if .Required}}required{{end}}
 		{{if .PossibleValues}}{{delimit .PossibleValues ", " " or "}}{{end}}
 		</td>
@@ -65,7 +65,7 @@
 {{ range .Options.Options }}
 	<h3 id="{{.Name}}">{{ template "proc-identifier" . }}</h3>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
-	<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-file.md" }}#{{.Type}}">{{.Type}}</a></li>
+	<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
 
 	{{if .PossibleValues}}
 	<li>Possible values : {{delimit .PossibleValues ", " " or "}}</li>

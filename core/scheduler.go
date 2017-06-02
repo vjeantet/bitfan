@@ -7,23 +7,6 @@ import (
 	"github.com/vjeantet/cron"
 )
 
-var planningDuration = map[string]int{
-	"every_5s":  5,
-	"every_10s": 10,
-	"every_1m":  60,
-	"every_2m":  60 * 2,
-	"every_5m":  60 * 5,
-	"every_10m": 60 * 10,
-	"every_30m": 60 * 30,
-	"every_1h":  60 * 60,
-	"every_2h":  60 * 120,
-	"every_5h":  60 * 300,
-	"every_12h": 60 * 720,
-	"every_1d":  60 * 1440,
-	"every_2d":  60 * 2880,
-	"every_7d":  60 * 10080,
-}
-
 var planningDailyHour = map[string]int{
 	"midnight": 0,
 	"1am":      1,
@@ -70,9 +53,9 @@ func newScheduler() *scheduler {
 func (s *scheduler) Add(jobName string, planning string, callbackFunc func()) error {
 	var w string
 
-	if val, ok := planningDuration[planning]; ok { // Every X
-		w = fmt.Sprintf("@every %ds", val)
-	} else if val, ok := planningDailyHour[planning]; ok { // Daily At
+	// Allow 11:13
+
+	if val, ok := planningDailyHour[planning]; ok { // Daily At
 		w = fmt.Sprintf("0 0 %d * * *", val)
 	} else {
 		planning = strings.TrimSpace(planning)

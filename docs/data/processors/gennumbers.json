@@ -45,6 +45,16 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "int"
+      },
+      {
+        "Alias": "interval",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "interval =\u003e \"10\"",
+        "Name": "Interval",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "interval"
       }
     ]
   },

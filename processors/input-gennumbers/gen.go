@@ -22,6 +22,10 @@ type options struct {
 	// @Default 1000000
 	// @ExampleLS count => 1000000
 	Count int `mapstructure:"count"`
+
+	// @ExampleLS interval => "10"
+	// @Type Interval
+	Interval string `mapstructure:"interval" `
 }
 
 // generate a number of event
@@ -47,6 +51,16 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 // 0 = no limit !
 func (p *processor) MaxConcurent() int { return 0 }
+
+func (p *processor) Tick(e processors.IPacket) error {
+	return p.Receive(e)
+}
+
+func (p *processor) Receive(e processors.IPacket) error {
+	processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
+	p.Send(e)
+	return nil
+}
 
 func (p *processor) Start(e processors.IPacket) error {
 	p.q = make(chan bool)

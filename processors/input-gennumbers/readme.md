@@ -4,12 +4,13 @@
 ## Synopsys
 
 
-|  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-----------|--------|----------|---------------|
-| Add_field | hash   | false    | {}            |
-| Tags      | array  | false    | []            |
-| Type      | string | false    | ""            |
-| count     | int    | false    |       1000000 |
+|  SETTING  |   TYPE   | REQUIRED | DEFAULT VALUE |
+|-----------|----------|----------|---------------|
+| Add_field | hash     | false    | {}            |
+| Tags      | array    | false    | []            |
+| Type      | string   | false    | ""            |
+| count     | int      | false    |       1000000 |
+| interval  | interval | false    | ?             |
 
 
 ## Details
@@ -39,6 +40,12 @@ Add a type field to all events handled by this input
 
 How many events to generate
 
+### interval
+* Value type is interval
+* Default value is `?`
+
+
+
 
 
 ## Configuration blueprint
@@ -49,5 +56,6 @@ gennumbers{
 	tags => []
 	type => ""
 	count => 1000000
+	interval => "10"
 }
 ```
