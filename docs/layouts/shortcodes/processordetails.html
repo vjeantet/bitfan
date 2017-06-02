@@ -6,7 +6,7 @@
 {{if .Options}}
 <h2  id="synopsys">Synopsys</h2>
 
-<pre><code>{{$.Page.Title}} {
+<pre><code>{{if $.Page.Params.Processor}}{{$.Page.Params.Processor}}{{else}}{{$.Page.Title}}{{end}} {
 {{ range .Options.Options }}
 {{- if .Required }}
 {{- template "proc-example-min" . }}
@@ -61,16 +61,18 @@
 	<p>{{markdownify .Doc }}</p>
 {{ end }}
 
+
+<h2>Full configuration blueprint</h2>
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
     	<i style="font-size:x-small;" class="fa fa-chevron-right"></i>
     	<span>
-    		Full config
+    		Expand me...
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
 <pre><code>
-{{$.Page.Title}} {
+{{if $.Page.Params.Processor}}{{$.Page.Params.Processor}}{{else}}{{$.Page.Title}}{{end}} {
 {{ range .Options.Options }}
 {{- template "proc-example" . }}
 {{end -}}

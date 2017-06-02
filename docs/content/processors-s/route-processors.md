@@ -1,6 +1,7 @@
 +++
 title = "The Route processor"
 description = ""
+processor = "route"
 
 [menu.main]
 parent = "processors"
