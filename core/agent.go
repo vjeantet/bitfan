@@ -8,6 +8,7 @@ import (
 
 	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/processors"
+	"github.com/vjeantet/bitfan/processors/codec"
 )
 
 type agent struct {
@@ -72,6 +73,13 @@ func (a *agent) configure(conf *config.Agent) error {
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
 		if err = os.MkdirAll(ctx.dataLocation, 0777); err != nil {
 			Log().Errorf("data location creation error : ", err)
+		}
+	}
+
+	if v, ok := conf.Options["codec"]; ok {
+		switch v.(type) {
+		case *config.Codec:
+			conf.Options["codec"] = codec.NewFromConfig(v.(*config.Codec))
 		}
 	}
 

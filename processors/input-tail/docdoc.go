@@ -37,7 +37,7 @@ func (p *processor) Doc() *doc.Processor {
         Alias:          "codec",
         Doc:            "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
         Required:       false,
-        Type:           "string",
+        Type:           "codec",
         DefaultValue:   nil,
         PossibleValues: []string{},
         ExampleLS:      "",

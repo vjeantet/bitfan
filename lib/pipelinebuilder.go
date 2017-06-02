@@ -96,10 +96,15 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 		agent.Options[setting.K] = setting.V
 	}
 
-	//todo : handle codec
+	// handle codec
 
 	if plugin.Codec.Name != "" {
-		agent.Options["codec"] = plugin.Codec.Name
+		pcodec := config.NewCodec(plugin.Codec.Name)
+		for _, setting := range plugin.Codec.Settings {
+			pcodec.Options[setting.K] = setting.V
+		}
+
+		agent.Options["codec"] = pcodec
 	}
 
 	// If agent is a "use"

@@ -34,7 +34,7 @@
         "Name": "Codec",
         "PossibleValues": null,
         "Required": false,
-        "Type": "string"
+        "Type": "codec"
       },
       {
         "Alias": "delimiter",

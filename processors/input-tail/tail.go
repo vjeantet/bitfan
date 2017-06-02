@@ -9,10 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/net/html/charset"
-
 	"github.com/ShowMax/go-fqdn"
-	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/processors/codec"
 
 	"github.com/vjeantet/bitfan/processors"
@@ -54,7 +51,8 @@ type options struct {
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
-	Codec string `mapstructure:"codec"`
+	// @Type Codec
+	Codec codec.Codec `mapstructure:"codec"`
 
 	// Set the new line delimiter. Default value is "\n"
 	// @Default "\n"
@@ -134,7 +132,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		SincedbPath:          ".sincedb.json",
 		SincedbWriteInterval: 15,
 		StatInterval:         1,
-		Codec:                "line",
+		Codec:                codec.New("plain"),
 	}
 	p.opt = &defaults
 	p.host = fqdn.Get()
@@ -149,6 +147,8 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Start(e processors.IPacket) error {
+	// pp.Println("p-->", p)
+
 	watch.POLL_DURATION = time.Second * time.Duration(p.opt.StatInterval)
 	p.q = make(chan bool)
 
@@ -244,7 +244,8 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	}()
 
 	var dec codec.Decoder
-	if dec, err = codec.NewDecoder(p.opt.Codec); err != nil {
+
+	if dec, err = p.opt.Codec.Decoder(); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
 		return err
 	}
@@ -252,18 +253,11 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	for line := range t.Lines {
 		var e processors.IPacket
 
-		cr, err := charset.NewReaderLabel("utf8", strings.NewReader(line.Text))
-		if err != nil {
-			p.Logger.Errorln("charset reader error : ", err.Error())
-			continue
-		}
-
-		if record, err := dec.DecodeReader(cr); err != nil {
+		if record, err := dec.DecodeReader(strings.NewReader(line.Text)); err != nil {
 			p.Logger.Errorln("codec error : ", err.Error())
 		} else if record == nil {
 			p.Logger.Debugln("waiting for more content...")
 		} else {
-			pp.Println("record,err-->", record, err)
 			e = p.NewPacket("", record)
 			processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
 			p.Send(e)
