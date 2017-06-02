@@ -1,0 +1,52 @@
+{
+  "Doc": "Stop after emiting a blank event on start\nAllow you to put first event and then stop processors as soon as they finish their job.\n\nPermit to launch bitfan with a pipeline and quit when work is done.",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/stop",
+  "Name": "stopprocessor",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": "true",
+        "Doc": "Stop bitfan with the pipeline ending ?",
+        "ExampleLS": "",
+        "Name": "ExitBitfan",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "bool"
+      }
+    ]
+  },
+  "Ports": []
+}

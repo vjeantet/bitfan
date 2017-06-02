@@ -57,6 +57,7 @@ func newAgent(conf config.Agent) (*agent, error) {
 func (a *agent) configure(conf *config.Agent) error {
 	a.ID = conf.ID
 	a.Label = conf.Label
+	a.processor.SetPipelineID(a.conf.PipelineID)
 
 	ctx := processorContext{}
 	ctx.logger = newProcessorLogger(conf.Label, conf.Type, conf.PipelineName)
@@ -138,7 +139,7 @@ func (a *agent) addOutput(in chan *event, portNumber int) error {
 // Start agent
 func (a *agent) start() error {
 	// Start processor
-	a.processor.Start(NewPacket("message", nil))
+	a.processor.Start(NewPacket("start", map[string]interface{}{}))
 
 	// Maximum number of concurent packet consumption ?
 	var maxConcurentPackets = a.conf.PoolSize
@@ -159,12 +160,12 @@ func (a *agent) start() error {
 		}
 		wg.Wait()
 
-		Log().Debugf("processor (%s) - stopping (no more packets)", a.ID)
+		Log().Debugf("processor (%d) - stopping (no more packets)", a.ID)
 		if err := a.processor.Stop(NewPacket("", nil)); err != nil {
 			Log().Errorf("%s %d : %s", a.conf.Type, a.ID, err.Error())
 		}
 		close(a.Done)
-		Log().Debugf("processor (%s) - stopped", a.ID)
+		Log().Debugf("processor (%d) - stopped", a.ID)
 		return
 	}(maxConcurentPackets)
 
@@ -200,7 +201,7 @@ func (a *agent) listen(wg *sync.WaitGroup) {
 
 func (a *agent) stop() {
 	myScheduler.Remove(a.Label)
-	Log().Debugf("agent %s schedule job removed", a.ID)
+	Log().Debugf("agent %d schedule job removed", a.ID)
 
 	Log().Debugf("Processor '%s' stopping... - %d in pipe ", a.Label, len(a.packetChan))
 	close(a.packetChan)

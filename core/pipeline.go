@@ -59,7 +59,7 @@ func (p *Pipeline) addAgent(a *agent) error {
 func (p *Pipeline) start() error {
 	orderedAgentConfList := config.Sort(p.agentsConfiguration(), config.SortOutputsFirst)
 	for _, agentConf := range orderedAgentConfList {
-		Log().Debugf("start %s - %s", agentConf.ID, p.agents[agentConf.ID].Label)
+		Log().Debugf("start %d - %s", agentConf.ID, p.agents[agentConf.ID].Label)
 		p.agents[agentConf.ID].start()
 	}
 	return nil

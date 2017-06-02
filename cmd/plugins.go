@@ -47,7 +47,9 @@ import (
 	when "github.com/vjeantet/bitfan/processors/when"
 
 	ldapprocessor "github.com/vjeantet/bitfan/processors/ldap"
+	sleepprocessor "github.com/vjeantet/bitfan/processors/sleep"
 	sqlprocessor "github.com/vjeantet/bitfan/processors/sql"
+	stopprocessor "github.com/vjeantet/bitfan/processors/stop"
 )
 
 func init() {
@@ -67,6 +69,7 @@ func init() {
 	initPlugin("input", "use", use.New)
 	initPlugin("input", "gennumbers", gennumbers.New)
 	initPlugin("input", "ldap", ldapprocessor.New)
+	initPlugin("input", "stop", stopprocessor.New)
 
 	initPlugin("filter", "grok", grok.New)
 	initPlugin("filter", "mutate", mutate.New)
@@ -87,6 +90,7 @@ func init() {
 	initPlugin("filter", "exec", exec.New)
 	initPlugin("filter", "sql", sqlprocessor.New)
 	initPlugin("filter", "ldap", ldapprocessor.New)
+	initPlugin("filter", "sleep", sleepprocessor.New)
 
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)

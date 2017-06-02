@@ -13,10 +13,15 @@ type Base struct {
 	Memory                Memory
 	ConfigWorkingLocation string
 	DataLocation          string
+	PipelineID            int
 }
 
 func (b *Base) Doc() *doc.Processor {
 	return &doc.Processor{}
+}
+
+func (b *Base) SetPipelineID(ID int) {
+	b.PipelineID = ID
 }
 
 func (b *Base) Configure(ctx ProcessorContext, conf map[string]interface{}) error { return nil }
