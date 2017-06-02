@@ -14,8 +14,7 @@
     	</span>
     </div>
     <div class="expand-content" style="display: none;">
-<pre><code>
-{
+<pre><code>{{$.Page.Title}} {
 {{ range .Options.Options }}
 {{- if .Required }}
 {{- template "proc-example-min" . }}
@@ -78,7 +77,7 @@
 
 <h2 id="blueprint">Configuration blueprint</h2>
 <pre><code>
-{
+{{$.Page.Title}} {
 {{ range .Options.Options }}
 {{- template "proc-example" . }}
 {{end -}}
