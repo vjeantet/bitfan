@@ -9,8 +9,11 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/net/html/charset"
+
 	"github.com/ShowMax/go-fqdn"
-	"github.com/clbanning/mxj"
+	"github.com/k0kubun/pp"
+	"github.com/vjeantet/bitfan/processors/codec"
 
 	"github.com/vjeantet/bitfan/processors"
 
@@ -152,6 +155,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	var matches []string
 
 	for _, currentPath := range p.opt.Path {
+		p.Logger.Debugf("currentPath : %s", currentPath)
 		if currentMatches, err := filepath.Glob(currentPath); err == nil {
 			matches = append(matches, currentMatches...)
 			continue
@@ -170,7 +174,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	}
 
 	p.loadSinceDBInfos()
-
+	p.Logger.Debugf("Files matches : %s", matches)
 	for _, filePath := range matches {
 		p.wg.Add(1)
 		go p.tailFile(filePath, p.q)
@@ -239,62 +243,34 @@ func (p *processor) tailFile(path string, q chan bool) error {
 		t.Stop()
 	}()
 
-	var csvHeaders []string
+	var dec codec.Decoder
+	if dec, err = codec.NewDecoder(p.opt.Codec); err != nil {
+		p.Logger.Errorln("decoder error : ", err.Error())
+		return err
+	}
 
 	for line := range t.Lines {
 		var e processors.IPacket
-		switch p.opt.Codec {
-		case "json":
-			json, err := mxj.NewMapJson([]byte(line.Text))
-			if err != nil {
-				p.Logger.Debugf(err.Error())
-				e = p.NewPacket(line.Text, map[string]interface{}{
-					"host":       p.host,
-					"path":       path,
-					"@timestamp": line.Time,
-				})
-			} else {
-				e = p.NewPacket("", json)
-			}
 
-		case "xml":
-			xml, err := mxj.NewMapXml([]byte(line.Text))
-			if err != nil {
-				p.Logger.Debugf(err.Error())
-				e = p.NewPacket(line.Text, map[string]interface{}{
-					"host":       p.host,
-					"path":       path,
-					"@timestamp": line.Time,
-				})
-			} else {
-				e = p.NewPacket("", xml)
-			}
-		case "csv":
-			if csvHeaders == nil {
-				csvHeaders = strings.Split(line.Text, ";")
-				continue
-			}
-			data := strings.Split(line.Text, ";")
-			mama := map[string]interface{}{}
-			for k, v := range csvHeaders {
-				mama[v] = data[k]
-			}
-			mama["host"] = p.host
-			mama["path"] = path
-			e = p.NewPacket("", mama)
-		default:
-			e = p.NewPacket(line.Text, map[string]interface{}{
-				"host":       p.host,
-				"path":       path,
-				"@timestamp": line.Time,
-			})
+		cr, err := charset.NewReaderLabel("utf8", strings.NewReader(line.Text))
+		if err != nil {
+			p.Logger.Errorln("charset reader error : ", err.Error())
+			continue
 		}
 
-		since.Offset, _ = t.Tell()
+		if record, err := dec.DecodeReader(cr); err != nil {
+			p.Logger.Errorln("codec error : ", err.Error())
+		} else if record == nil {
+			p.Logger.Debugln("waiting for more content...")
+		} else {
+			pp.Println("record,err-->", record, err)
+			e = p.NewPacket("", record)
+			processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+			p.Send(e)
 
-		processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
-		p.Send(e)
-		p.checkSaveSinceDBInfos()
+			since.Offset, _ = t.Tell()
+			p.checkSaveSinceDBInfos()
+		}
 	}
 
 	return nil

@@ -48,9 +48,13 @@ func (p *processor) Doc() *doc.Processor {
         Doc:            "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
         Required:       false,
         Type:           "string",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
+        DefaultValue:   "\"plain\"",
+        PossibleValues: []string{
+          "plain",
+          "csv",
+          "json",
+        },
+        ExampleLS: "",
       },
       &doc.ProcessorOption{
         Name:           "ReadOlder",

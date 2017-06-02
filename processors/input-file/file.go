@@ -32,6 +32,8 @@ type options struct {
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
+	// @Enum plain,csv,json
+	// @Default "plain"
 	Codec string
 
 	// How many seconds a file should stay unmodified to be read
@@ -92,6 +94,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		DiscoverInterval: 15,
 		ReadOlder:        5,
 		SincedbPath:      ".sincedb-readfile.json",
+		Codec:            "plain",
 	}
 
 	p.opt = &defaults
