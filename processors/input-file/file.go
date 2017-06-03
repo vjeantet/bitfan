@@ -10,8 +10,8 @@ import (
 
 	"github.com/ShowMax/go-fqdn"
 	zglob "github.com/mattn/go-zglob"
+	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
-	"github.com/vjeantet/bitfan/processors/codec"
 )
 
 func New() processors.Processor {
@@ -33,7 +33,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Default "plain"
 	// @Type Codec
-	Codec codec.Codec `mapstructure:"codec"`
+	Codec codecs.Codec `mapstructure:"codec"`
 
 	// How many seconds a file should stay unmodified to be read
 	// use this to prevent reading a file while another process is writing into.
@@ -93,7 +93,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		DiscoverInterval: 15,
 		ReadOlder:        5,
 		SincedbPath:      ".sincedb-readfile.json",
-		Codec:            codec.New("plain"),
+		Codec:            codecs.New("plain"),
 	}
 
 	p.opt = &defaults
@@ -166,6 +166,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	var matches []string
 
 	// find files
+	p.Logger.Debugln("p.opt.Path = ", p.opt.Path)
 	for _, currentPath := range p.opt.Path {
 		if currentMatches, err := zglob.Glob(currentPath); err == nil {
 			// if currentMatches, err := filepath.Glob(currentPath); err == nil {
@@ -174,6 +175,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 		return fmt.Errorf("glob(%q) failed", currentPath)
 	}
+	p.Logger.Debugln("files = ", matches)
 
 	// ignore excluded
 	if len(p.opt.Exclude) > 0 {

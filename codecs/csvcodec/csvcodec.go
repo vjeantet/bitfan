@@ -1,7 +1,8 @@
-package codec
+package csvcodec
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 
 	"github.com/mitchellh/mapstructure"
@@ -45,9 +46,10 @@ type csvDecoderOptions struct {
 	Columns []string
 }
 
-func NewCsvDecoder(r io.Reader, opt map[string]interface{}) Decoder {
+func New(r io.Reader, opt map[string]interface{}) *csvDecoder {
+
 	d := &csvDecoder{
-		r:    csv.NewReader(r),
+		// r:    csv.NewReader(r),
 		more: true,
 		options: csvDecoderOptions{
 			Charset:                 "utf-8",
@@ -61,6 +63,14 @@ func NewCsvDecoder(r io.Reader, opt map[string]interface{}) Decoder {
 	if err := mapstructure.Decode(opt, &d.options); err != nil {
 		return nil
 	}
+
+	var cr io.Reader
+	var err error
+	cr, err = charset.NewReaderLabel(d.options.Charset, r)
+	if err != nil {
+		return nil
+	}
+	d.r = csv.NewReader(cr)
 
 	d.r.Comma = []rune(d.options.Separator)[0]
 	d.comma = d.r.Comma
@@ -112,8 +122,11 @@ func (c *csvDecoder) Decode() (map[string]interface{}, error) {
 	}
 
 	for i, v := range c.columnnames {
-		data[v] = record[i]
-		// data[fmt.Sprintf("col_%d", i)] = v
+		if true == c.options.AutogenerateColumnNames {
+			data[v] = record[i]
+		} else {
+			data[fmt.Sprintf("col_%d", i)] = record[i]
+		}
 	}
 
 	return data, nil

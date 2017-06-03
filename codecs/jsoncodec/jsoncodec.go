@@ -1,4 +1,4 @@
-package codec
+package jsoncodec
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ type jsonDecoder struct {
 	options map[string]interface{}
 }
 
-func NewJsonDecoder(r io.Reader, opt map[string]interface{}) Decoder {
+func New(r io.Reader, opt map[string]interface{}) *jsonDecoder {
 	return &jsonDecoder{
 		d:       json.NewDecoder(r),
 		options: opt,

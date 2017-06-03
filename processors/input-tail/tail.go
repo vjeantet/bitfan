@@ -11,8 +11,8 @@ import (
 
 	"github.com/ShowMax/go-fqdn"
 	zglob "github.com/mattn/go-zglob"
-	"github.com/vjeantet/bitfan/processors/codec"
 
+	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
 
 	"github.com/hpcloud/tail"
@@ -53,7 +53,7 @@ type options struct {
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Type Codec
-	Codec codec.Codec `mapstructure:"codec"`
+	Codec codecs.Codec `mapstructure:"codec"`
 
 	// Set the new line delimiter. Default value is "\n"
 	// @Default "\n"
@@ -133,7 +133,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		SincedbPath:          ".sincedb.json",
 		SincedbWriteInterval: 15,
 		StatInterval:         1,
-		Codec:                codec.New("plain"),
+		Codec:                codecs.New("plain"),
 	}
 	p.opt = &defaults
 	p.host = fqdn.Get()
@@ -253,7 +253,7 @@ func (p *processor) tailFile(path string, q chan bool) error {
 		t.Stop()
 	}()
 
-	var dec codec.Decoder
+	var dec codecs.Decoder
 
 	if dec, err = p.opt.Codec.Decoder(nil); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())

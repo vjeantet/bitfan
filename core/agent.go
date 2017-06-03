@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/processors"
-	"github.com/vjeantet/bitfan/processors/codec"
 )
 
 type agent struct {
@@ -78,7 +78,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	if v, ok := conf.Options["codec"]; ok {
 		switch v.(type) {
 		case *config.Codec:
-			conf.Options["codec"] = codec.NewFromConfig(v.(*config.Codec))
+			conf.Options["codec"] = codecs.NewFromConfig(v.(*config.Codec))
 		}
 	}
 

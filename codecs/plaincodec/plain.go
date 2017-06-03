@@ -1,4 +1,4 @@
-package codec
+package plaincodec
 
 import (
 	"io"
@@ -13,7 +13,7 @@ type plainDecoder struct {
 	options map[string]interface{}
 }
 
-func NewPlainDecoder(r io.Reader, opt map[string]interface{}) Decoder {
+func New(r io.Reader, opt map[string]interface{}) *plainDecoder {
 	return &plainDecoder{
 		r:       r,
 		more:    true,
