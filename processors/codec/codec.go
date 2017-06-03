@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"io"
 
-	"golang.org/x/net/html/charset"
-
 	"github.com/vjeantet/bitfan/core/config"
+	"golang.org/x/net/html/charset"
 )
 
 type Codec struct {
@@ -21,15 +20,23 @@ func New(name string) Codec {
 	}
 }
 
+func NewFromConfig(conf *config.Codec) Codec {
+	name := conf.Name
+	c := New(name)
+	for i, k := range conf.Options {
+		c.Options[i] = k
+	}
+	return c
+}
+
 func (c *Codec) String() string {
 	return c.Name
 }
 
 func (c *Codec) Decoder(f io.Reader) (Decoder, error) {
-	// return NewDecoder(c.Name)
 	var dec Decoder
-
 	var cr io.Reader
+
 	if f == nil {
 		f = bytes.NewReader(nil)
 	}
@@ -52,17 +59,10 @@ func (c *Codec) Decoder(f io.Reader) (Decoder, error) {
 		dec = NewJsonDecoder(cr, c.Options)
 	case "csv":
 		dec = NewCsvDecoder(cr, c.Options)
+	case "multiline":
+		dec = NewMultilineDecoder(cr, c.Options)
 	default:
 		dec = NewPlainDecoder(cr, c.Options)
 	}
 	return dec, nil
-}
-
-func NewFromConfig(conf *config.Codec) Codec {
-	name := conf.Name
-	c := New(name)
-	for i, k := range conf.Options {
-		c.Options[i] = k
-	}
-	return c
 }
