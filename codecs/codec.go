@@ -8,6 +8,7 @@ import (
 
 	"github.com/vjeantet/bitfan/codecs/csvcodec"
 	"github.com/vjeantet/bitfan/codecs/jsoncodec"
+	"github.com/vjeantet/bitfan/codecs/jsonlinescodec"
 	"github.com/vjeantet/bitfan/codecs/linecodec"
 	"github.com/vjeantet/bitfan/codecs/multilinecodec"
 	"github.com/vjeantet/bitfan/codecs/plaincodec"
@@ -60,14 +61,16 @@ func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
 	}
 
 	switch c.Name {
-	case "line":
+	case "line": // OK
 		dec = linecodec.New(cr, c.Options)
-	case "multiline":
+	case "multiline": // OK
 		dec = multilinecodec.New(cr, c.Options)
-	case "json":
-		dec = jsoncodec.New(cr, c.Options)
-	case "csv":
+	case "csv": // OK
 		dec = csvcodec.New(cr, c.Options)
+	case "json": // OK
+		dec = jsoncodec.New(cr, c.Options)
+	case "json_lines": // OK
+		dec = jsonlinescodec.New(cr, c.Options)
 	default:
 		dec = plaincodec.New(cr, c.Options)
 	}
