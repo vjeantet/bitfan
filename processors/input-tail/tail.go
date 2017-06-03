@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ShowMax/go-fqdn"
+	zglob "github.com/mattn/go-zglob"
 	"github.com/vjeantet/bitfan/processors/codec"
 
 	"github.com/vjeantet/bitfan/processors"
@@ -143,11 +144,20 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.opt.SincedbPath = filepath.Join(p.DataLocation, p.opt.SincedbPath)
 	}
 
+	// Fix relative paths
+	fixedPaths := []string{}
+	for _, path := range p.opt.Path {
+		if !filepath.IsAbs(path) {
+			path = filepath.Join(p.ConfigWorkingLocation, path)
+		}
+		fixedPaths = append(fixedPaths, path)
+	}
+	p.opt.Path = fixedPaths
+
 	return err
 }
 
 func (p *processor) Start(e processors.IPacket) error {
-	// pp.Println("p-->", p)
 
 	watch.POLL_DURATION = time.Second * time.Duration(p.opt.StatInterval)
 	p.q = make(chan bool)
@@ -156,7 +166,7 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	for _, currentPath := range p.opt.Path {
 		p.Logger.Debugf("currentPath : %s", currentPath)
-		if currentMatches, err := filepath.Glob(currentPath); err == nil {
+		if currentMatches, err := zglob.Glob(currentPath); err == nil {
 			matches = append(matches, currentMatches...)
 			continue
 		}
@@ -245,7 +255,7 @@ func (p *processor) tailFile(path string, q chan bool) error {
 
 	var dec codec.Decoder
 
-	if dec, err = p.opt.Codec.Decoder(); err != nil {
+	if dec, err = p.opt.Codec.Decoder(nil); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
 		return err
 	}

@@ -201,10 +201,17 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	for _, setting := range plugin.Settings {
 		agent.Options[setting.K] = setting.V
 	}
-	//todo : handle codec
+
+	// handle codec
 	if plugin.Codec.Name != "" {
-		agent.Options["codec"] = plugin.Codec.Name
+		pcodec := config.NewCodec(plugin.Codec.Name)
+		for _, setting := range plugin.Codec.Settings {
+			pcodec.Options[setting.K] = setting.V
+		}
+
+		agent.Options["codec"] = pcodec
 	}
+
 	// if its a use plugin
 	// load filter and output parts of pipeline
 	// connect pipeline Xsource to lastOutPorts
@@ -315,6 +322,17 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	agent.Options = map[string]interface{}{}
 	for _, setting := range plugin.Settings {
 		agent.Options[setting.K] = setting.V
+	}
+
+	// handle codec
+
+	if plugin.Codec.Name != "" {
+		pcodec := config.NewCodec(plugin.Codec.Name)
+		for _, setting := range plugin.Codec.Settings {
+			pcodec.Options[setting.K] = setting.V
+		}
+
+		agent.Options["codec"] = pcodec
 	}
 
 	// handle use plugin

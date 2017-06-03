@@ -69,7 +69,6 @@ func (a *agent) configure(conf *config.Agent) error {
 	ctx.memory = myStore.Space(conf.Type)
 
 	Log().Debugf("data location : %s", ctx.dataLocation)
-
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
 		if err = os.MkdirAll(ctx.dataLocation, 0777); err != nil {
 			Log().Errorf("data location creation error : ", err)

@@ -2,7 +2,6 @@ package codec
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 
 	"github.com/mitchellh/mapstructure"
@@ -106,9 +105,17 @@ func (c *csvDecoder) Decode() (map[string]interface{}, error) {
 		c.more = false
 		return data, err
 	}
-	for i, v := range record {
-		data[fmt.Sprintf("col_%d", i)] = v
+
+	if c.columnnames == nil {
+		c.columnnames = record
+		return nil, nil
 	}
+
+	for i, v := range c.columnnames {
+		data[v] = record[i]
+		// data[fmt.Sprintf("col_%d", i)] = v
+	}
+
 	return data, nil
 }
 

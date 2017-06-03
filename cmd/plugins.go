@@ -71,6 +71,7 @@ func init() {
 	initPlugin("input", "ldap", ldapprocessor.New)
 	initPlugin("input", "stop", stopprocessor.New)
 
+	initPlugin("filter", "readfile", file.New)
 	initPlugin("filter", "grok", grok.New)
 	initPlugin("filter", "mutate", mutate.New)
 	initPlugin("filter", "split", split.New)

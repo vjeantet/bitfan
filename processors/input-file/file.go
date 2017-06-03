@@ -8,11 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/net/html/charset"
-
 	"github.com/ShowMax/go-fqdn"
 	zglob "github.com/mattn/go-zglob"
 	"github.com/vjeantet/bitfan/processors"
+	"github.com/vjeantet/bitfan/processors/codec"
 )
 
 func New() processors.Processor {
@@ -32,9 +31,8 @@ type options struct {
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
-	// @Enum plain,csv,json
-	// @Default "plain"
-	Codec string
+	// @Type Codec
+	Codec codec.Codec `mapstructure:"codec"`
 
 	// How many seconds a file should stay unmodified to be read
 	// use this to prevent reading a file while another process is writing into.
@@ -94,7 +92,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		DiscoverInterval: 15,
 		ReadOlder:        5,
 		SincedbPath:      ".sincedb-readfile.json",
-		Codec:            "plain",
+		Codec:            codec.New("plain"),
 	}
 
 	p.opt = &defaults
@@ -126,19 +124,21 @@ func (p *processor) MaxConcurent() int { return 1 }
 
 func (p *processor) Start(e processors.IPacket) error {
 
+	p.loadSinceDBInfos()
 	p.q2 = make(chan bool)
 	p.q = make(chan bool)
-	p.loadSinceDBInfos()
 
 	p.filestoWatch = make(chan string, p.opt.MaxOpenFiles)
 	p.Logger.Debug("Start discovering file looper -> towatch ")
 	// Start discovering file looper -> towatch
-	go func() {
-		err := p.discoverFilesToRead()
-		if err != nil {
-			p.Logger.Debugf("discover files to read : %s", err)
-		}
-	}()
+	if p.opt.DiscoverInterval > 0 {
+		go func() {
+			err := p.discoverFilesToRead()
+			if err != nil {
+				p.Logger.Debugf("discover files to read : %s", err)
+			}
+		}()
+	}
 
 	p.Logger.Debug("Start file reader <- towatch")
 	// Start file reader <- towatch
@@ -156,6 +156,68 @@ func (p *processor) Start(e processors.IPacket) error {
 		}
 
 	}()
+
+	return nil
+}
+
+func (p *processor) Receive(e processors.IPacket) error {
+	// read files
+	var matches []string
+
+	// find files
+	for _, currentPath := range p.opt.Path {
+		if currentMatches, err := zglob.Glob(currentPath); err == nil {
+			// if currentMatches, err := filepath.Glob(currentPath); err == nil {
+			matches = append(matches, currentMatches...)
+			continue
+		}
+		return fmt.Errorf("glob(%q) failed", currentPath)
+	}
+
+	// ignore excluded
+	if len(p.opt.Exclude) > 0 {
+		var matches_tmp []string
+		for _, pattern := range p.opt.Exclude {
+			for _, name := range matches {
+				if match, _ := filepath.Match(pattern, name); match == false {
+					matches_tmp = append(matches_tmp, name)
+				}
+			}
+		}
+		matches = matches_tmp
+	}
+
+	// ignore already seen files
+	var matches_tmp []string
+	for _, name := range matches {
+		if !p.sinceDBInfos.has(name) {
+			matches_tmp = append(matches_tmp, name)
+		}
+	}
+	matches = matches_tmp
+
+	matches_tmp = []string{}
+	for _, name := range matches {
+		info, err := os.Stat(name)
+		if err != nil {
+			p.Logger.Warnf("Error while stating " + name)
+			break
+		}
+		duration := time.Since(info.ModTime()).Seconds()
+		// ignore modified to soon
+		if duration > float64(p.opt.ReadOlder) {
+			// ignore  too old file
+			if p.opt.IgnoreOlder > 0 && duration < float64(p.opt.IgnoreOlder) {
+			} else {
+				matches_tmp = append(matches_tmp, name)
+			}
+		}
+	}
+	matches = matches_tmp
+	// send to watchChan
+	for _, name := range matches {
+		p.readfile(name)
+	}
 
 	return nil
 }
@@ -244,23 +306,21 @@ func (p *processor) readfile(pathfile string) error {
 	defer f.Close()
 
 	var dec Decoder
-	//todo get Charset from Codec settings
-	cr, err := charset.NewReaderLabel("utf8", f)
-	if err != nil {
+
+	if dec, err = p.opt.Codec.Decoder(f); err != nil {
+		p.Logger.Errorln("decoder error : ", err.Error())
 		return err
 	}
 
-	switch p.opt.Codec {
-	case "json":
-		dec = NewJsonDecoder(cr)
-	case "csv":
-		dec = NewCsvDecoder(cr)
-	default:
-		dec = NewPlainDecoder(cr)
-	}
-
 	for dec.More() {
-		if record, err := dec.Decode(); err == nil {
+		if record, err := dec.Decode(); err != nil {
+			return err
+			break
+		} else if record == nil {
+			p.Logger.Debugln("waiting for more content...")
+			continue
+		} else {
+
 			record["file"] = map[string]interface{}{
 				"basename": filepath.Base(pathfile),
 				"path":     pathfile,
@@ -269,9 +329,6 @@ func (p *processor) readfile(pathfile string) error {
 			e := p.NewPacket("", record)
 			processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
 			p.Send(e)
-		} else {
-			return err
-			break
 		}
 
 		select {

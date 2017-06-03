@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/vjeantet/bitfan/core/config"
 	"golang.org/x/net/html/charset"
+
+	"github.com/vjeantet/bitfan/core/config"
 )
 
 type Codec struct {
@@ -24,21 +25,26 @@ func (c *Codec) String() string {
 	return c.Name
 }
 
-func (c *Codec) Decoder() (Decoder, error) {
+func (c *Codec) Decoder(f io.Reader) (Decoder, error) {
 	// return NewDecoder(c.Name)
 	var dec Decoder
 
 	var cr io.Reader
+	if f == nil {
+		f = bytes.NewReader(nil)
+	}
+
 	//todo get Charset from Codec settings
+
+	var err error
+	var charsetLabel = "utf-8"
 	if char7, ok := c.Options["charset"]; ok {
-		var err error
-		r1 := bytes.NewReader(nil)
-		cr, err = charset.NewReaderLabel(char7.(string), r1)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		cr = bytes.NewReader(nil)
+		charsetLabel = char7.(string)
+	}
+
+	cr, err = charset.NewReaderLabel(charsetLabel, f)
+	if err != nil {
+		return nil, err
 	}
 
 	switch c.Name {
