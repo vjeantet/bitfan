@@ -20,6 +20,21 @@ func New(r io.Reader, opt map[string]interface{}) *plainDecoder {
 		options: opt,
 	}
 }
+
+func (p *plainDecoder) Decode() (map[string]interface{}, error) {
+	data := map[string]interface{}{}
+	p.more = false
+	bytes, err := ioutil.ReadAll(p.r)
+	if err != nil {
+		return data, err
+	}
+	data["message"] = string(bytes)
+	return data, nil
+}
+func (p *plainDecoder) More() bool {
+	return p.more
+}
+
 func (p *plainDecoder) DecodeReader(r io.Reader) (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 
@@ -41,17 +56,4 @@ func (p *plainDecoder) DecodeReader(r io.Reader) (map[string]interface{}, error)
 	}
 	data["message"] = string(bytes)
 	return data, nil
-}
-func (p *plainDecoder) Decode() (map[string]interface{}, error) {
-	data := map[string]interface{}{}
-	p.more = false
-	bytes, err := ioutil.ReadAll(p.r)
-	if err != nil {
-		return data, err
-	}
-	data["message"] = string(bytes)
-	return data, nil
-}
-func (p *plainDecoder) More() bool {
-	return p.more
 }
