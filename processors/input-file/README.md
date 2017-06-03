@@ -9,7 +9,7 @@
 | Add_field         | hash   | false    | {}            |
 | Tags              | array  | false    | []            |
 | Type              | string | false    | ""            |
-| Codec             | string | false    | "plain"       |
+| codec             | codec  | false    | "plain"       |
 | read_older        | int    | false    |             0 |
 | discover_interval | int    | false    |             0 |
 | exclude           | array  | false    | []            |
@@ -40,8 +40,8 @@ and include parts of the event using the %{field} syntax.
 
 Add a type field to all events handled by this input
 
-### Codec
-* Value type is string
+### codec
+* Value type is codec
 * Default value is `"plain"`
 
 The codec used for input data. Input codecs are a convenient method for decoding
