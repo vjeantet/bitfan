@@ -1,22 +1,34 @@
+//go:generate bitfanDoc -codec plainDecoder
 package plaincodec
 
 import (
 	"io"
 	"io/ioutil"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 type plainDecoder struct {
 	more    bool
 	r       io.Reader
-	options map[string]interface{}
+	options options
+}
+
+type options struct {
 }
 
 func New(r io.Reader, opt map[string]interface{}) *plainDecoder {
-	return &plainDecoder{
+	d := &plainDecoder{
 		r:       r,
 		more:    true,
-		options: opt,
+		options: options{},
 	}
+
+	if err := mapstructure.Decode(opt, &d.options); err != nil {
+		return nil
+	}
+
+	return d
 }
 
 func (p *plainDecoder) Decode() (map[string]interface{}, error) {

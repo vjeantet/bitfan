@@ -1,3 +1,69 @@
+//go:generate bitfanDoc -codec multilineDecoder
+// The multiline codec will collapse multiline messages and merge them into a single event.
+//
+// The original goal of this codec was to allow joining of multiline messages from files into a single event. For example, joining Java exception and stacktrace messages into a single event.
+//
+// The config looks like this:
+// ```
+// input {
+//   stdin {
+//     codec => multiline {
+//       pattern => "pattern, a regexp"
+//       negate => true or false
+//       what => "previous" or "next"
+//     }
+//   }
+// }
+// ```
+// The pattern should match what you believe to be an indicator that the field is part of a multi-line event.
+//
+// The what must be previous or next and indicates the relation to the multi-line event.
+//
+// The negate can be true or false (defaults to false). If true, a message not matching the pattern will constitute a match of the multiline filter and the what will be applied. (vice-versa is also true)
+//
+// For example, Java stack traces are multiline and usually have the message starting at the far-left, with each subsequent line indented. Do this:
+//
+// ```
+// input {
+//   stdin {
+//     codec => multiline {
+//       pattern => "^\\s"
+//       what => "previous"
+//     }
+//   }
+// }
+// ```
+// This says that any line starting with whitespace belongs to the previous line.
+//
+// Another example is to merge lines not starting with a date up to the previous line..
+//
+// ```
+// input {
+//   file {
+//     path => "/var/log/someapp.log"
+//     codec => multiline {
+//       # Grok pattern names are valid! :)
+//       pattern => "^%{TIMESTAMP_ISO8601} "
+//       negate => true
+//       what => previous
+//     }
+//   }
+// }
+// ```
+// This says that any line not starting with a timestamp should be merged with the previous line.
+//
+// One more common example is C line continuations (backslash). Here’s how to do that:
+//
+// ```
+// filter {
+//   multiline {
+//     type => "somefiletype"
+//     pattern => "\\$"
+//     what => "next"
+//   }
+// }
+// ```
+// This says that any line ending with a backslash should be combined with the following line.
 package multilinecodec
 
 import (
@@ -9,25 +75,39 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// Merges multiline messages into a single event
 type multilineDecoder struct {
 	more    bool
 	r       *bufio.Scanner
-	options multilineDecoderOptions
+	options options
 	memory  string
 }
 
-type multilineDecoderOptions struct {
-	Delimiter string
-	Negate    bool
-	Pattern   string
-	What      string
+//
+type options struct {
+	// Change the delimiter that separates lines
+	// @Default "\n"
+	Delimiter string `mapstructure:"delimiter"`
+
+	// Negate the regexp pattern (if not matched).
+	// @Default false
+	Negate bool `mapstructure:"negate"`
+
+	// The regular expression to match
+	// @ExampleLS pattern => "^\\s"
+	Pattern string `mapstructure:"pattern" validate:"required"`
+
+	// If the pattern matched, does event belong to the next or previous event?
+	// @Enum previous,next
+	// @Default "previous"
+	What string `mapstructure:"what"`
 }
 
 func New(r io.Reader, opt map[string]interface{}) *multilineDecoder {
 	d := &multilineDecoder{
 		r:    bufio.NewScanner(r),
 		more: true,
-		options: multilineDecoderOptions{
+		options: options{
 			Delimiter: "\n",
 			Negate:    false,
 			Pattern:   "\\s",

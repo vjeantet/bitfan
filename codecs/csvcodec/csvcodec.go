@@ -1,3 +1,5 @@
+//go:generate bitfanDoc -codec csvDecoder
+// Parses comma-separated value data into individual fields
 package csvcodec
 
 import (
@@ -12,11 +14,12 @@ type csvDecoder struct {
 	more        bool
 	r           *csv.Reader
 	columnnames []string
-	options     csvDecoderOptions
+	options     options
 	comma       rune
 }
 
-type csvDecoderOptions struct {
+// Parses comma-separated value data into individual fields
+type options struct {
 
 	// Define the column separator value. If this is not specified, the default is a comma ,. Optional
 	// @Default ","
@@ -48,7 +51,7 @@ func New(r io.Reader, opt map[string]interface{}) *csvDecoder {
 	d := &csvDecoder{
 		r:    csv.NewReader(r),
 		more: true,
-		options: csvDecoderOptions{
+		options: options{
 			Separator:               ",",
 			AutogenerateColumnNames: true,
 			QuoteChar:               "\"",

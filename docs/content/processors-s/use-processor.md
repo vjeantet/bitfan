@@ -6,7 +6,7 @@ processor = "use"
 [menu.main]
 parent = "processors"
 identifier = "useproc"
-weight = 40
+weight = 55
 +++
 
 {{% processordetails use %}}

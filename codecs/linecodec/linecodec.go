@@ -1,3 +1,4 @@
+//go:generate bitfanDoc -codec lineDecoder
 package linecodec
 
 import (

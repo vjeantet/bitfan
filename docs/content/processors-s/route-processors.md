@@ -6,7 +6,7 @@ processor = "route"
 [menu.main]
 parent = "processors"
 identifier = "routeproc"
-weight = 40
+weight = 50
 +++
 
 {{% processordetails route %}}

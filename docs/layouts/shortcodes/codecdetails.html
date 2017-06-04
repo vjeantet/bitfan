@@ -1,0 +1,156 @@
+{{with (index .Page.Site.Data.codecs (.Get 0))}}
+
+<p>{{markdownify .Doc}}</p>
+
+
+{{if .Options}}
+<h2  id="synopsys">Synopsys</h2>
+
+<pre><code>codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title}}{{end}} {
+{{ range .Options.Options }}
+{{- if .Required }}
+{{- template "proc-example-min" . }}
+{{ end -}}
+{{- end -}}
+}
+</code></pre>
+
+
+<p>Available settings</p>
+<table>
+	<thead>
+		<tr>
+			<th>Setting</th>
+			<th>Type</th>
+			<th>Info</th>
+			<th>Default value</th>
+		</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><a href="#charset">charset</a></td>
+		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></td>
+		<td></td>
+		<td>"utf-8"</td>
+	</tr>
+	{{ range .Options.Options }}
+	<tr>
+		<td>{{if .Required}}<strong>{{end}}
+		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
+		{{if .Required}}</strong>{{end}}</td>
+		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
+		<td>{{if .Required}}required{{end}}
+		{{if .PossibleValues}}{{delimit .PossibleValues ", " " or "}}{{end}}
+		</td>
+		<td><span>{{ template "proc-defaultvalue" . }}</span></td>
+	</tr>
+	{{ end }}
+	</tbody>
+</table>
+{{else}}
+  No params for this Codec.
+{{ end }}
+
+{{if .Options}}
+<h2>Details</h2>
+<p>{{markdownify .Options.Doc}}</p>
+
+<h3 id="charset">charset</h3>
+<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></li>
+<li>Default value is <code>"utf-8"</code> </li>
+<p>
+one of :
+"unicode-1-1-utf-8"
+,"utf-8"
+,"utf8"
+,"cp866"
+,"arabic"
+,"hebrew"
+,"iso8859-15"
+,"ascii"
+,"latin1"
+,"iso88591"
+,"windows-1250"
+,"utf-16"
+,"euc-jp"
+...
+<br/>
+The full mapping list from encoding labels to encodings is defined at <a href="https://encoding.spec.whatwg.org/">https://encoding.spec.whatwg.org/</a>
+
+</p>
+
+
+{{ range .Options.Options }}
+	<h3 id="{{.Name}}">{{ template "proc-identifier" . }}</h3>
+	{{with .Required}}<li>This is a required setting</li>{{end}}
+	<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
+
+	{{if .PossibleValues}}
+	<li>Possible values : {{delimit .PossibleValues ", " " or "}}</li>
+	{{end}}
+
+	<li>Default value is <code>{{ template "proc-defaultvalue" . }}</code></li>
+	<p>{{markdownify .Doc }}</p>
+{{ end }}
+
+
+<h2>Full configuration blueprint</h2>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
+    	<i style="font-size:x-small;" class="fa fa-chevron-right"></i>
+    	<span>
+    		Expand me...
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+<pre><code>
+codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title}}{{end}} {
+    charset => "utf-8"
+
+{{ range .Options.Options }}
+{{- template "proc-example" . }}
+{{end -}}
+}
+</code></pre>
+    </div>
+</div>
+
+{{ end }}
+
+{{end}}
+
+{{ define "proc-defaultvalue" -}}
+{{- if .DefaultValue -}}
+{{- .DefaultValue -}}
+{{- else -}}
+{{- if eq .Type "array" }} []
+{{- else if eq .Type "hash" }} {}
+{{- else if eq .Type "string" }} ""
+{{- else if eq .Type "int" }} 0
+{{- else if eq .Type "int64" }} 0
+{{- else if eq .Type "int32" }} 0
+{{- else if eq .Type "bool" }} false
+{{- else if eq .Type "time.Duration" }} timeDuration
+{{- else if eq .Type "interval" }} ""
+{{- else if eq .Type "template" }} ""
+{{- else if eq .Type "location" }} ""
+{{- else -}} ?
+{{- end -}}
+{{- end}}
+{{- end }}
+
+{{ define "proc-identifier" }}{{if .Alias}}{{.Alias| lower}}{{else}}{{.Name| lower}}{{end}}{{ end }}
+
+{{ define "proc-example" }}
+{{- if .ExampleLS }}    # {{delimit (split .Doc "\n") "\n    # "}}
+    {{.ExampleLS}}
+{{ else }}    # {{delimit (split .Doc "\n") "\n    # "}}
+    {{ template "proc-identifier" . }} => {{- template "proc-defaultvalue" . }}
+{{ end -}}
+{{ end }}
+
+{{ define "proc-example-min" }}    # {{delimit (split .Doc "\n") "\n    # "}}
+{{ if .ExampleLS }}    {{.ExampleLS -}}
+{{ else }}    {{ template "proc-identifier" . }} => {{- template "proc-defaultvalue" . -}}
+{{ end }}
+{{ end }}

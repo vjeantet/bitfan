@@ -1,3 +1,4 @@
+//go:generate bitfanDoc -codec jsonlinesDecoder
 package jsonlinescodec
 
 import (
@@ -17,7 +18,7 @@ type jsonlinesDecoder struct {
 
 type options struct {
 	// Change the delimiter that separates lines
-	// @Default "\\n"
+	// @Default "\n"
 	Delimiter string
 }
 

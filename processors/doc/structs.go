@@ -9,6 +9,50 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+type Documentation struct {
+	Codec     *Codec
+	Processor *Processor
+}
+
+func (d *Documentation) Name() string {
+	if d.Codec != nil {
+		return d.Codec.Name
+	} else {
+		return d.Processor.Name
+	}
+}
+
+func (d *Documentation) Struct() interface{} {
+	if d.Codec != nil {
+		return d.Codec
+	} else {
+		return d.Processor
+	}
+}
+
+type Codec struct {
+	Name       string
+	ImportPath string
+	Doc        string
+	DocShort   string
+	Options    *CodecOptions
+}
+type CodecOptions struct {
+	Doc     string
+	Options []*CodecOption
+}
+type CodecOption struct {
+	Name           string
+	Alias          string
+	Doc            string
+	Required       bool
+	Type           string
+	DefaultValue   interface{}
+	PossibleValues []string
+	//LogstashExample
+	ExampleLS string
+}
+
 type Processor struct {
 	Name       string
 	ImportPath string
