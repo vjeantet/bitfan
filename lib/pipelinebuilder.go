@@ -98,13 +98,15 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 
 	// handle codec
 
-	if plugin.Codec.Name != "" {
-		pcodec := config.NewCodec(plugin.Codec.Name)
-		for _, setting := range plugin.Codec.Settings {
-			pcodec.Options[setting.K] = setting.V
-		}
+	if plugin.Codec != nil {
+		if plugin.Codec.Name != "" {
+			pcodec := config.NewCodec(plugin.Codec.Name)
+			for _, setting := range plugin.Codec.Settings {
+				pcodec.Options[setting.K] = setting.V
+			}
 
-		agent.Options["codec"] = pcodec
+			agent.Options["codec"] = pcodec
+		}
 	}
 
 	// If agent is a "use"
@@ -203,13 +205,16 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	}
 
 	// handle codec
-	if plugin.Codec.Name != "" {
-		pcodec := config.NewCodec(plugin.Codec.Name)
-		for _, setting := range plugin.Codec.Settings {
-			pcodec.Options[setting.K] = setting.V
-		}
 
-		agent.Options["codec"] = pcodec
+	if plugin.Codec != nil {
+		if plugin.Codec.Name != "" {
+			pcodec := config.NewCodec(plugin.Codec.Name)
+			for _, setting := range plugin.Codec.Settings {
+				pcodec.Options[setting.K] = setting.V
+			}
+
+			agent.Options["codec"] = pcodec
+		}
 	}
 
 	// if its a use plugin
@@ -326,13 +331,15 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 
 	// handle codec
 
-	if plugin.Codec.Name != "" {
-		pcodec := config.NewCodec(plugin.Codec.Name)
-		for _, setting := range plugin.Codec.Settings {
-			pcodec.Options[setting.K] = setting.V
-		}
+	if plugin.Codec != nil {
+		if plugin.Codec.Name != "" {
+			pcodec := config.NewCodec(plugin.Codec.Name)
+			for _, setting := range plugin.Codec.Settings {
+				pcodec.Options[setting.K] = setting.V
+			}
 
-		agent.Options["codec"] = pcodec
+			agent.Options["codec"] = pcodec
+		}
 	}
 
 	// handle use plugin
