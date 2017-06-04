@@ -29,7 +29,7 @@ type Locations struct {
 
 func NewLocation(ref string, cwl string) (*Location, error) {
 	loc := &Location{}
-	if v, _ := url.Parse(ref); v.Scheme == "http" || v.Scheme == "https" {
+	if v, err := url.Parse(ref); err == nil && (v.Scheme == "http" || v.Scheme == "https") {
 		loc.Kind = CONTENT_URL
 		loc.Path = ref
 	} else if _, err := os.Stat(ref); err == nil {
