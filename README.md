@@ -79,7 +79,7 @@ Use "bitfan [command] --help" for more information about a command.
 - [x] name all contributors, imported packages, similar projects
 - [x] use remote configuration file
 - [x] include local and remote files from configuration files
-- [ ] codec support
+- [x] codec support
 - [x] log to file
 - [x] plugins autodocumentation
 - [x] install bitfan as a system daemon / service
