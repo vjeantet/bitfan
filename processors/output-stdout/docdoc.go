@@ -14,10 +14,10 @@ func (p *processor) Doc() *doc.Processor {
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{
         Name:           "Codec",
-        Alias:          "",
+        Alias:          "codec",
         Doc:            "Codec can be one of  \"json\", \"line\", \"pp\" or \"rubydebug\"",
         Required:       false,
-        Type:           "string",
+        Type:           "codec",
         DefaultValue:   "\"line\"",
         PossibleValues: []string{
           "\"json\"",

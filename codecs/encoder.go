@@ -1,3 +1,5 @@
 package codecs
 
-// TODO
+type Encoder interface {
+	Encode(map[string]interface{}) error
+}

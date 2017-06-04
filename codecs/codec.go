@@ -12,6 +12,7 @@ import (
 	"github.com/vjeantet/bitfan/codecs/linecodec"
 	"github.com/vjeantet/bitfan/codecs/multilinecodec"
 	"github.com/vjeantet/bitfan/codecs/plaincodec"
+	"github.com/vjeantet/bitfan/codecs/rubydebugcodec"
 	"github.com/vjeantet/bitfan/core/config"
 )
 
@@ -46,6 +47,26 @@ func (c *Codec) String() string {
 	return c.Name
 }
 
+func (c *Codec) Encoder(w io.Writer) (Encoder, error) {
+	var enc Encoder
+
+	if w == nil {
+		return enc, fmt.Errorf("codecs.Codec.Encoder error : no writer !")
+	}
+
+	// charset ?
+	switch c.Name {
+	case "pp":
+		enc = rubydebugcodec.New(c.Options).Encoder(w)
+	case "rubydebug":
+		enc = rubydebugcodec.New(c.Options).Encoder(w)
+	case "line":
+		enc = linecodec.New(c.Options).Encoder(w)
+	}
+
+	return enc, nil
+}
+
 func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
 	var dec Decoder
 
@@ -62,7 +83,7 @@ func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
 
 	switch c.Name {
 	case "line":
-		dec = linecodec.New(cr, c.Options)
+		dec = linecodec.New(c.Options).Decoder(cr)
 	case "multiline":
 		dec = multilinecodec.New(cr, c.Options)
 	case "csv":

@@ -267,9 +267,9 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		agent.AgentSources = append(agent.AgentSources, inPort)
 	}
 
-	if plugin.Codec != nil {
-		agent.Options["codec"] = plugin.Codec.Name
-	}
+	// if plugin.Codec != nil {
+	// 	agent.Options["codec"] = plugin.Codec.Name
+	// }
 
 	// Is this Plugin has conditional expressions ?
 	if len(plugin.When) > 0 {

@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -64,12 +65,19 @@ type options struct {
 	// response. (usefull )
 	// @Default "stdout"
 	Target string `mapstructure:"target"`
+
+	// The codec used for input data. Input codecs are a convenient method for decoding
+	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
+	// @Type Codec
+	// @Default "plain"
+	Codec codecs.Codec `mapstructure:"codec"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
 	defaults := options{
 		Target: "stdout",
 		Stdin:  false,
+		Codec:  codecs.New("plain"),
 	}
 	p.opt = &defaults
 

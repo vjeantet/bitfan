@@ -10,7 +10,7 @@
 | Args      | array  | false    | []            |
 | Add_field | hash   | false    | {}            |
 | Interval  | string | false    | ""            |
-| Codec     | string | false    | ""            |
+| codec     | codec  | false    | "plain"       |
 | Tags      | array  | false    | []            |
 | Type      | string | false    | ""            |
 
@@ -41,11 +41,12 @@
 
 
 
-### Codec
-* Value type is string
-* Default value is `""`
+### codec
+* Value type is codec
+* Default value is `"plain"`
 
-
+The codec used for input data. Input codecs are a convenient method for decoding
+your data before it enters the input, without needing a separate filter in your bitfan pipeline
 
 ### Tags
 * Value type is array
@@ -69,7 +70,7 @@ execinput{
 	args => []
 	add_field => {}
 	interval => ""
-	codec => ""
+	codec => "plain"
 	tags => []
 	type => ""
 }

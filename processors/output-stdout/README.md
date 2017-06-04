@@ -26,15 +26,15 @@ output {
 ## Synopsys
 
 
-| SETTING |  TYPE  | REQUIRED | DEFAULT VALUE |
-|---------|--------|----------|---------------|
-| Codec   | string | false    | "line"        |
+| SETTING | TYPE  | REQUIRED | DEFAULT VALUE |
+|---------|-------|----------|---------------|
+| codec   | codec | false    | "line"        |
 
 
 ## Details
 
-### Codec
-* Value type is string
+### codec
+* Value type is codec
 * Default value is `"line"`
 
 Codec can be one of  "json", "line", "pp" or "rubydebug"

@@ -92,6 +92,16 @@ func (p *processor) Doc() *doc.Processor {
         PossibleValues: []string{},
         ExampleLS:      "",
       },
+      &doc.ProcessorOption{
+        Name:           "Codec",
+        Alias:          "codec",
+        Doc:            "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        Required:       false,
+        Type:           "codec",
+        DefaultValue:   "\"plain\"",
+        PossibleValues: []string{},
+        ExampleLS:      "",
+      },
     },
   },
   Ports: []*doc.ProcessorPort{

@@ -92,6 +92,7 @@ func init() {
 	initPlugin("filter", "sql", sqlprocessor.New)
 	initPlugin("filter", "ldap", ldapprocessor.New)
 	initPlugin("filter", "sleep", sleepprocessor.New)
+	initPlugin("filter", "stdout", stdout.New)
 
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)

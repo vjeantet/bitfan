@@ -8,7 +8,7 @@
 |------------------------|--------|----------|-----------------|
 | add_field              | hash   | false    | {}              |
 | close_older            | int    | false    |            3600 |
-| codec                  | codec  | false    | ?               |
+| codec                  | codec  | false    | "line"          |
 | delimiter              | string | false    | "\n"            |
 | discover_interval      | int    | false    |              15 |
 | exclude                | array  | false    | []              |
@@ -45,7 +45,7 @@ close_older seconds from when the last bytes were read.
 
 ### codec
 * Value type is codec
-* Default value is `?`
+* Default value is `"line"`
 
 The codec used for input data. Input codecs are a convenient method for decoding
 your data before it enters the input, without needing a separate filter in your bitfan pipeline
@@ -159,7 +159,7 @@ Types are used mainly for filter activation.
 tail{
 	add_field => {}
 	close_older => 3600
-	codec => codec
+	codec => "line"
 	delimiter => "\n"
 	discover_interval => 15
 	exclude => []

@@ -25,10 +25,9 @@
 package stdout
 
 import (
-	"fmt"
-	"time"
+	"os"
 
-	"github.com/k0kubun/pp"
+	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -50,7 +49,8 @@ type options struct {
 	// @ExampleLS codec => "pp"
 	// @Default "line"
 	// @Enum "json","line","pp","rubydebug"
-	Codec string
+	// @Type Codec
+	Codec codecs.Codec `mapstructure:"codec"`
 }
 
 // Prints events to the standard output
@@ -62,42 +62,51 @@ type processor struct {
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
+
+	defaults := options{
+		Codec: codecs.New("line"),
+	}
+
+	p.opt = &defaults
 	if err := p.ConfigureAndValidate(ctx, conf, p.opt); err != nil {
 		return err
-	}
-
-	if p.opt.Codec == CODEC_RUBYDEBUG {
-		p.opt.Codec = CODEC_PRETTYPRINT
-	}
-
-	if p.opt.Codec == "" {
-		p.opt.Codec = CODEC_LINE
 	}
 
 	return nil
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	switch p.opt.Codec {
-	case CODEC_LINE:
-		t, _ := e.Fields().ValueForPath("@timestamp")
-		fmt.Printf("%s %s %s\n",
-			t.(time.Time).Format(timeFormat),
-			e.Fields().ValueOrEmptyForPathString("host"),
-			e.Message(),
-		)
-	case CODEC_JSON:
-		json, _ := e.Fields().Json()
-		fmt.Printf("%s\n", json)
-		break
-	case CODEC_PRETTYPRINT:
-		pp.Printf("%s\n", e.Fields())
-		break
-	default:
-		p.Logger.Errorf("unknow codec %s", p.opt.Codec)
+	var enc codecs.Encoder
+	var err error
+
+	enc, err = p.opt.Codec.Encoder(os.Stdout)
+	if err != nil {
+		p.Logger.Errorln("encoder error : ", err.Error())
+		return err
 	}
 
+	enc.Encode(e.Fields().Old())
+
+	// switch p.opt.Codec.Name {
+	// case CODEC_LINE:
+	// 	buff := bytes.NewBufferString("")
+	// 	p.formatTmp.Execute(buff, e.Fields())
+	// 	fmt.Printf(buff.String())
+	// case CODEC_JSON:
+	// 	json, _ := e.Fields().Json()
+	// 	fmt.Printf("%s\n", json)
+	// 	break
+	// case CODEC_PRETTYPRINT:
+	// 	fallthrough
+	// case CODEC_RUBYDEBUG:
+	// 	pp.Printf("%s\n", e.Fields())
+	// 	break
+	// default:
+	// 	p.Logger.Errorf("unknow codec %s", p.opt.Codec)
+	// }
+
 	p.Memory.Set("last", e.Fields().StringIndentNoTypeInfo(2))
+	p.Send(e)
 	return nil
 }
 
