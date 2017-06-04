@@ -53,7 +53,6 @@ func New(r io.Reader, opt map[string]interface{}) *lineDecoder {
 		if atEOF {
 			return len(data), data, nil
 		}
-
 		// Request more data.
 		return 0, nil, nil
 	}
@@ -65,7 +64,6 @@ func New(r io.Reader, opt map[string]interface{}) *lineDecoder {
 
 func (c *lineDecoder) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
-
 	if true == c.r.Scan() {
 		c.more = true
 		data["message"] = c.r.Text()
@@ -79,35 +77,4 @@ func (c *lineDecoder) Decode() (map[string]interface{}, error) {
 
 func (c *lineDecoder) More() bool {
 	return c.more
-}
-
-func (c *lineDecoder) DecodeReader(r io.Reader) (map[string]interface{}, error) {
-	data := map[string]interface{}{}
-
-	// var cr io.Reader
-
-	// var err error
-	// cr, err = charset.NewReaderLabel(c.options.Charset, r)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// csvr := csv.NewReader(cr)
-	// csvr.Comma = c.comma
-
-	// record, err := csvr.Read()
-
-	// if err == io.EOF {
-	// 	return data, err
-	// }
-	// if c.columnnames == nil {
-	// 	c.columnnames = record
-	// 	return nil, nil
-	// }
-
-	// for i, v := range c.columnnames {
-	// 	data[v] = record[i]
-	// 	// data[fmt.Sprintf("col_%d", i)] = v
-	// }
-
-	return data, nil
 }

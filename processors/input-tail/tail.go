@@ -3,9 +3,9 @@ package tail
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -254,28 +254,38 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	}()
 
 	var dec codecs.Decoder
+	pr, pw := io.Pipe()
 
-	if dec, err = p.opt.Codec.Decoder(nil); err != nil {
+	if dec, err = p.opt.Codec.Decoder(pr); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
 		return err
 	}
 
-	for line := range t.Lines {
-		var e processors.IPacket
-
-		if record, err := dec.DecodeReader(strings.NewReader(line.Text)); err != nil {
-			p.Logger.Errorln("codec error : ", err.Error())
-		} else if record == nil {
-			p.Logger.Debugln("waiting for more content...")
-		} else {
-			e = p.NewPacket("", record)
-			processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
-			p.Send(e)
-
-			since.Offset, _ = t.Tell()
-			p.checkSaveSinceDBInfos()
+	go func() {
+		for {
+			if record, err := dec.Decode(); err != nil {
+				p.Logger.Errorln("codec error : ", err.Error())
+				return
+			} else {
+				if record == nil {
+					p.Logger.Debugln("waiting for more content...")
+				} else {
+					var e processors.IPacket
+					e = p.NewPacket("", record)
+					processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+					p.Send(e)
+					since.Offset, _ = t.Tell()
+					p.checkSaveSinceDBInfos()
+				}
+			}
 		}
+	}()
+
+	for line := range t.Lines {
+		fmt.Fprintf(pw, "%s\n", line.Text)
 	}
+	pr.Close()
+	pw.Close()
 
 	return nil
 }

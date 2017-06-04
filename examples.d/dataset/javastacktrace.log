@@ -10,4 +10,4 @@ Exception in thread "main" java.lang.NullPointerException
         at de.example.myproject.Book.getTitle(Book.java:16)
         at de.example.myproject.Author.getBookTitles(Author.java:25)
         at de.example.myproject.Bootstrap.main(Bootstrap.java:14)
-
+Exception in thread "main" java.lang.NullPointerException
