@@ -64,7 +64,8 @@ func (c *Codec) Encoder(w io.Writer) (Encoder, error) {
 		enc = linecodec.New(c.Options).Encoder(w)
 	case "json":
 		enc = jsoncodec.New(c.Options).Encoder(w)
-		//TODO default
+	default:
+		return enc, fmt.Errorf("no encoder defined")
 	}
 
 	return enc, nil
