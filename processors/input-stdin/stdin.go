@@ -4,10 +4,10 @@
 package stdin
 
 import (
-	"bufio"
 	"os"
 	"time"
 
+	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -29,43 +29,58 @@ type options struct {
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @default "line"
-	Codec string
+	Codec codecs.Codec
 }
 
 // Reads events from standard input
 type processor struct {
 	processors.Base
 
-	opt *options
-	q   chan bool
+	opt  *options
+	q    chan bool
+	host string
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
-	return p.ConfigureAndValidate(ctx, conf, p.opt)
+	defaults := options{
+		Codec: codecs.New("line"),
+	}
+	p.opt = &defaults
+	err := p.ConfigureAndValidate(ctx, conf, p.opt)
+
+	if p.host, err = os.Hostname(); err != nil {
+		p.Logger.Warnf("can not get hostname : %s", err.Error())
+	}
+
+	return err
 }
 func (p *processor) Start(e processors.IPacket) error {
 	p.q = make(chan bool)
 
+	var dec codecs.Decoder
+	var err error
+
+	if dec, err = p.opt.Codec.Decoder(os.Stdin); err != nil {
+		p.Logger.Errorln("decoder error : ", err.Error())
+		return err
+	}
+
 	stdinChan := make(chan string)
 	go func(p *processor, ch chan string) {
-		defer func() {
-			if err := recover(); err != nil {
-
-			}
-		}()
-		bio := bufio.NewReader(os.Stdin)
+		defer p.Logger.Errorln("XXXXXXXX")
 		for {
-			line, hasMoreInLine, err := bio.ReadLine()
-			if err == nil && hasMoreInLine == false {
-				ch <- string(line)
+			if record, err := dec.Decode(); err != nil {
+				p.Logger.Errorln("codec error : ", err.Error())
+				return
+			} else {
+				if record == nil {
+					p.Logger.Debugln("waiting for more content...")
+				} else {
+					ch <- record["message"].(string)
+				}
 			}
 		}
 	}(p, stdinChan)
-
-	host, err := os.Hostname()
-	if err != nil {
-		p.Logger.Warnf("can not get hostname : %s", err.Error())
-	}
 
 	go func(ch chan string) {
 		for {
@@ -73,7 +88,7 @@ func (p *processor) Start(e processors.IPacket) error {
 			case stdin, _ := <-ch:
 
 				ne := p.NewPacket(stdin, map[string]interface{}{
-					"host": host,
+					"host": p.host,
 				})
 
 				processors.ProcessCommonFields(ne.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
