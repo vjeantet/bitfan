@@ -7,7 +7,7 @@
     "Doc": "",
     "Options": [
       {
-        "Alias": "",
+        "Alias": "codec",
         "DefaultValue": "\"line\"",
         "Doc": "Codec can be one of  \"json\", \"line\", \"pp\" or \"rubydebug\"",
         "ExampleLS": "codec =\u003e \"pp\"",
@@ -19,7 +19,7 @@
           "\"rubydebug\""
         ],
         "Required": false,
-        "Type": "string"
+        "Type": "codec"
       }
     ]
   },
