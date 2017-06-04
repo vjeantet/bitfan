@@ -11,7 +11,18 @@ func (p *codec) Doc() *doc.Codec {
   DocShort:   "",
   Options:    &doc.CodecOptions{
     Doc:     "",
-    Options: []*doc.CodecOption{},
+    Options: []*doc.CodecOption{
+      &doc.CodecOption{
+        Name:           "Indent",
+        Alias:          "indent",
+        Doc:            "Set indentation",
+        Required:       false,
+        Type:           "string",
+        DefaultValue:   "\"\"",
+        PossibleValues: []string{},
+        ExampleLS:      "indent => \"    \"",
+      },
+    },
   },
 }
 }

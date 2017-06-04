@@ -62,6 +62,8 @@ func (c *Codec) Encoder(w io.Writer) (Encoder, error) {
 		enc = rubydebugcodec.New(c.Options).Encoder(w)
 	case "line":
 		enc = linecodec.New(c.Options).Encoder(w)
+	case "json":
+		enc = jsoncodec.New(c.Options).Encoder(w)
 		//TODO default
 	}
 

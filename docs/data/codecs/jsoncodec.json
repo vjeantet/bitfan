@@ -5,6 +5,17 @@
   "Name": "jsoncodec",
   "Options": {
     "Doc": "",
-    "Options": []
+    "Options": [
+      {
+        "Alias": "indent",
+        "DefaultValue": "\"\"",
+        "Doc": "Set indentation",
+        "ExampleLS": "indent =\u003e \"    \"",
+        "Name": "Indent",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      }
+    ]
   }
 }
