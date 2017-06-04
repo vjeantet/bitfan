@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec csvDecoder
+//go:generate bitfanDoc -codec codec
 // Parses comma-separated value data into individual fields
 package csvcodec
 
@@ -10,7 +10,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type csvDecoder struct {
+type codec struct {
 	more        bool
 	r           *csv.Reader
 	columnnames []string
@@ -46,10 +46,9 @@ type options struct {
 	Columns []string
 }
 
-func New(r io.Reader, opt map[string]interface{}) *csvDecoder {
+func New(opt map[string]interface{}) *codec {
 
-	d := &csvDecoder{
-		r:    csv.NewReader(r),
+	d := &codec{
 		more: true,
 		options: options{
 			Separator:               ",",
@@ -68,7 +67,12 @@ func New(r io.Reader, opt map[string]interface{}) *csvDecoder {
 	return d
 }
 
-func (c *csvDecoder) Decode() (map[string]interface{}, error) {
+func (c *codec) Decoder(r io.Reader) *codec {
+	c.r = csv.NewReader(r)
+	return c
+}
+
+func (c *codec) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 	record, err := c.r.Read()
 	if err == io.EOF {
@@ -92,6 +96,6 @@ func (c *csvDecoder) Decode() (map[string]interface{}, error) {
 	return data, nil
 }
 
-func (c *csvDecoder) More() bool {
+func (c *codec) More() bool {
 	return c.more
 }

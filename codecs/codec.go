@@ -62,6 +62,7 @@ func (c *Codec) Encoder(w io.Writer) (Encoder, error) {
 		enc = rubydebugcodec.New(c.Options).Encoder(w)
 	case "line":
 		enc = linecodec.New(c.Options).Encoder(w)
+		//TODO default
 	}
 
 	return enc, nil
@@ -85,15 +86,15 @@ func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
 	case "line":
 		dec = linecodec.New(c.Options).Decoder(cr)
 	case "multiline":
-		dec = multilinecodec.New(cr, c.Options)
+		dec = multilinecodec.New(c.Options).Decoder(cr)
 	case "csv":
-		dec = csvcodec.New(cr, c.Options)
+		dec = csvcodec.New(c.Options).Decoder(cr)
 	case "json":
-		dec = jsoncodec.New(cr, c.Options)
+		dec = jsoncodec.New(c.Options).Decoder(cr)
 	case "json_lines":
-		dec = jsonlinescodec.New(cr, c.Options)
+		dec = jsonlinescodec.New(c.Options).Decoder(cr)
 	default:
-		dec = plaincodec.New(cr, c.Options)
+		dec = plaincodec.New(c.Options).Decoder(cr)
 	}
 
 	return dec, nil

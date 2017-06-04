@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec multilineDecoder
+//go:generate bitfanDoc -codec codec
 // The multiline codec will collapse multiline messages and merge them into a single event.
 //
 // The original goal of this codec was to allow joining of multiline messages from files into a single event. For example, joining Java exception and stacktrace messages into a single event.
@@ -75,7 +75,7 @@ import (
 )
 
 // Merges multiline messages into a single event
-type multilineDecoder struct {
+type codec struct {
 	more    bool
 	r       *bufio.Scanner
 	options options
@@ -102,9 +102,8 @@ type options struct {
 	What string `mapstructure:"what"`
 }
 
-func New(r io.Reader, opt map[string]interface{}) *multilineDecoder {
-	d := &multilineDecoder{
-		r:    bufio.NewScanner(r),
+func New(opt map[string]interface{}) *codec {
+	d := &codec{
 		more: true,
 		options: options{
 			Delimiter: "\n",
@@ -118,6 +117,11 @@ func New(r io.Reader, opt map[string]interface{}) *multilineDecoder {
 		return nil
 	}
 
+	return d
+}
+
+func (c *codec) Decoder(r io.Reader) *codec {
+	c.r = bufio.NewScanner(r)
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		// Return nothing if at end of file and no data passed
 		if atEOF && len(data) == 0 {
@@ -126,7 +130,7 @@ func New(r io.Reader, opt map[string]interface{}) *multilineDecoder {
 
 		// Find the index of the input of a newline followed by a
 		// pound sign.
-		if i := strings.Index(string(data), d.options.Delimiter); i >= 0 {
+		if i := strings.Index(string(data), c.options.Delimiter); i >= 0 {
 			return i + 1, data[0:i], nil
 		}
 
@@ -139,12 +143,11 @@ func New(r io.Reader, opt map[string]interface{}) *multilineDecoder {
 		return 0, nil, nil
 	}
 
-	d.r.Split(split)
-
-	return d
+	c.r.Split(split)
+	return c
 }
 
-func (p *multilineDecoder) Decode() (map[string]interface{}, error) {
+func (p *codec) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 
 	for p.r.Scan() {
@@ -223,7 +226,7 @@ func (p *multilineDecoder) Decode() (map[string]interface{}, error) {
 	return data, nil
 }
 
-func (p *multilineDecoder) DecodeReader(r io.Reader) (map[string]interface{}, error) {
+func (p *codec) DecodeReader(r io.Reader) (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 
 	// var cr io.Reader
@@ -273,6 +276,6 @@ func (p *multilineDecoder) DecodeReader(r io.Reader) (map[string]interface{}, er
 	return data, nil
 }
 
-func (p *multilineDecoder) More() bool {
+func (p *codec) More() bool {
 	return p.more
 }

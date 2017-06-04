@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec jsonlinesDecoder
+//go:generate bitfanDoc -codec codec
 package jsonlinescodec
 
 import (
@@ -10,7 +10,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type jsonlinesDecoder struct {
+type codec struct {
 	more    bool
 	r       *bufio.Scanner
 	options options
@@ -22,19 +22,20 @@ type options struct {
 	Delimiter string
 }
 
-func New(r io.Reader, opt map[string]interface{}) *jsonlinesDecoder {
-
-	d := &jsonlinesDecoder{
-		r:    bufio.NewScanner(r),
+func New(opt map[string]interface{}) *codec {
+	d := &codec{
 		more: true,
 		options: options{
 			Delimiter: "\n",
 		},
 	}
-
 	if err := mapstructure.Decode(opt, &d.options); err != nil {
 		return nil
 	}
+	return d
+}
+func (c *codec) Decoder(r io.Reader) *codec {
+	c.r = bufio.NewScanner(r)
 
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		// Return nothing if at end of file and no data passed
@@ -44,7 +45,7 @@ func New(r io.Reader, opt map[string]interface{}) *jsonlinesDecoder {
 
 		// Find the index of the input of a newline followed by a
 		// pound sign.
-		if i := strings.Index(string(data), d.options.Delimiter); i >= 0 {
+		if i := strings.Index(string(data), c.options.Delimiter); i >= 0 {
 			return i + 1, data[0:i], nil
 		}
 
@@ -57,12 +58,10 @@ func New(r io.Reader, opt map[string]interface{}) *jsonlinesDecoder {
 		return 0, nil, nil
 	}
 
-	d.r.Split(split)
-
-	return d
+	c.r.Split(split)
+	return c
 }
-
-func (c *jsonlinesDecoder) Decode() (map[string]interface{}, error) {
+func (c *codec) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 
 	if true == c.r.Scan() {
@@ -77,6 +76,6 @@ func (c *jsonlinesDecoder) Decode() (map[string]interface{}, error) {
 	return data, nil
 }
 
-func (c *jsonlinesDecoder) More() bool {
+func (c *codec) More() bool {
 	return c.more
 }

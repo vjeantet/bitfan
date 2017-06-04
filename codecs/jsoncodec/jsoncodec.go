@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec jsonDecoder
+//go:generate bitfanDoc -codec codec
 package jsoncodec
 
 import (
@@ -8,7 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type jsonDecoder struct {
+type codec struct {
 	d       *json.Decoder
 	options options
 }
@@ -16,26 +16,27 @@ type jsonDecoder struct {
 type options struct {
 }
 
-func New(r io.Reader, opt map[string]interface{}) *jsonDecoder {
-	d := &jsonDecoder{
-		d:       json.NewDecoder(r),
+func New(opt map[string]interface{}) *codec {
+	d := &codec{
 		options: options{},
 	}
-
 	if err := mapstructure.Decode(opt, &d.options); err != nil {
 		return nil
 	}
-
 	return d
 }
+func (c *codec) Decoder(r io.Reader) *codec {
+	c.d = json.NewDecoder(r)
+	return c
+}
 
-func (p *jsonDecoder) Decode() (map[string]interface{}, error) {
+func (p *codec) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 
 	err := p.d.Decode(&data)
 
 	return data, err
 }
-func (p *jsonDecoder) More() bool {
+func (p *codec) More() bool {
 	return p.d.More()
 }
