@@ -53,6 +53,7 @@ type options struct {
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Type Codec
+	// @Default "line"
 	Codec codecs.Codec `mapstructure:"codec"`
 
 	// Set the new line delimiter. Default value is "\n"
@@ -133,7 +134,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		SincedbPath:          ".sincedb.json",
 		SincedbWriteInterval: 15,
 		StatInterval:         1,
-		Codec:                codecs.New("plain"),
+		Codec:                codecs.New("line"),
 	}
 	p.opt = &defaults
 	p.host = fqdn.Get()
@@ -165,12 +166,13 @@ func (p *processor) Start(e processors.IPacket) error {
 	var matches []string
 
 	for _, currentPath := range p.opt.Path {
-		p.Logger.Debugf("currentPath : %s", currentPath)
 		if currentMatches, err := zglob.Glob(currentPath); err == nil {
 			matches = append(matches, currentMatches...)
 			continue
+		} else {
+			p.Logger.Warningf("%s : %s", err.Error(), currentPath)
 		}
-		return fmt.Errorf("glob(%q) failed", currentPath)
+
 	}
 
 	if len(p.opt.Exclude) > 0 {
