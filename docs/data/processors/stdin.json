@@ -38,13 +38,13 @@
       },
       {
         "Alias": "",
-        "DefaultValue": null,
+        "DefaultValue": "\"line\"",
         "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
         "ExampleLS": "",
         "Name": "Codec",
         "PossibleValues": null,
         "Required": false,
-        "Type": "string"
+        "Type": "codec"
       }
     ]
   },

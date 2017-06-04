@@ -28,7 +28,8 @@ type options struct {
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
-	// @default "line"
+	// @Default "line"
+	// @Type codec
 	Codec codecs.Codec
 }
 
