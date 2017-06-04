@@ -91,7 +91,10 @@ func (p *multilineDecoder) Decode() (map[string]interface{}, error) {
 		}
 		if p.options.What == "next" {
 			if match == true { // stick to au previous
-				p.memory += "\n" + p.r.Text()
+				if p.memory != "" {
+					p.memory += "\n"
+				}
+				p.memory += p.r.Text()
 				continue
 			} else if p.memory == "" {
 				data["message"] = p.r.Text()

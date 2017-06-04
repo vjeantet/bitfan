@@ -16,8 +16,6 @@ type jsonlinesDecoder struct {
 }
 
 type options struct {
-	Charset string
-
 	// Change the delimiter that separates lines
 	// @Default "\\n"
 	Delimiter string
@@ -29,7 +27,6 @@ func New(r io.Reader, opt map[string]interface{}) *jsonlinesDecoder {
 		r:    bufio.NewScanner(r),
 		more: true,
 		options: options{
-			Charset:   "utf-8",
 			Delimiter: "\n",
 		},
 	}
@@ -81,35 +78,4 @@ func (c *jsonlinesDecoder) Decode() (map[string]interface{}, error) {
 
 func (c *jsonlinesDecoder) More() bool {
 	return c.more
-}
-
-func (c *jsonlinesDecoder) DecodeReader(r io.Reader) (map[string]interface{}, error) {
-	data := map[string]interface{}{}
-
-	// var cr io.Reader
-
-	// var err error
-	// cr, err = charset.NewReaderLabel(c.options.Charset, r)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// csvr := csv.NewReader(cr)
-	// csvr.Comma = c.comma
-
-	// record, err := csvr.Read()
-
-	// if err == io.EOF {
-	// 	return data, err
-	// }
-	// if c.columnnames == nil {
-	// 	c.columnnames = record
-	// 	return nil, nil
-	// }
-
-	// for i, v := range c.columnnames {
-	// 	data[v] = record[i]
-	// 	// data[fmt.Sprintf("col_%d", i)] = v
-	// }
-
-	return data, nil
 }

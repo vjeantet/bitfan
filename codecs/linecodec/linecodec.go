@@ -15,8 +15,6 @@ type lineDecoder struct {
 }
 
 type options struct {
-	Charset string
-
 	// Change the delimiter that separates lines
 	// @Default "\\n"
 	Delimiter string
@@ -28,7 +26,6 @@ func New(r io.Reader, opt map[string]interface{}) *lineDecoder {
 		r:    bufio.NewScanner(r),
 		more: true,
 		options: options{
-			Charset:   "utf-8",
 			Delimiter: "\n",
 		},
 	}

@@ -6,8 +6,6 @@ import (
 	"io"
 
 	"github.com/mitchellh/mapstructure"
-
-	"golang.org/x/net/html/charset"
 )
 
 type csvDecoder struct {
@@ -19,7 +17,6 @@ type csvDecoder struct {
 }
 
 type csvDecoderOptions struct {
-	Charset string
 
 	// Define the column separator value. If this is not specified, the default is a comma ,. Optional
 	// @Default ","
@@ -49,10 +46,9 @@ type csvDecoderOptions struct {
 func New(r io.Reader, opt map[string]interface{}) *csvDecoder {
 
 	d := &csvDecoder{
-		// r:    csv.NewReader(r),
+		r:    csv.NewReader(r),
 		more: true,
 		options: csvDecoderOptions{
-			Charset:                 "utf-8",
 			Separator:               ",",
 			AutogenerateColumnNames: true,
 			QuoteChar:               "\"",
@@ -64,48 +60,9 @@ func New(r io.Reader, opt map[string]interface{}) *csvDecoder {
 		return nil
 	}
 
-	var cr io.Reader
-	var err error
-	cr, err = charset.NewReaderLabel(d.options.Charset, r)
-	if err != nil {
-		return nil
-	}
-	d.r = csv.NewReader(cr)
-
 	d.r.Comma = []rune(d.options.Separator)[0]
 	d.comma = d.r.Comma
 	return d
-}
-
-func (c *csvDecoder) DecodeReader(r io.Reader) (map[string]interface{}, error) {
-	data := map[string]interface{}{}
-
-	var cr io.Reader
-
-	var err error
-	cr, err = charset.NewReaderLabel(c.options.Charset, r)
-	if err != nil {
-		return nil, err
-	}
-	csvr := csv.NewReader(cr)
-	csvr.Comma = c.comma
-
-	record, err := csvr.Read()
-
-	if err == io.EOF {
-		return data, err
-	}
-	if c.columnnames == nil {
-		c.columnnames = record
-		return nil, nil
-	}
-
-	for i, v := range c.columnnames {
-		data[v] = record[i]
-		// data[fmt.Sprintf("col_%d", i)] = v
-	}
-
-	return data, nil
 }
 
 func (c *csvDecoder) Decode() (map[string]interface{}, error) {

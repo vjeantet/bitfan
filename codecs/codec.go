@@ -1,7 +1,7 @@
 package codecs
 
 import (
-	"bytes"
+	"fmt"
 	"io"
 
 	"golang.org/x/net/html/charset"
@@ -50,7 +50,7 @@ func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
 	var dec Decoder
 
 	if r == nil {
-		r = bytes.NewReader(nil)
+		return dec, fmt.Errorf("codecs.Codec.Decoder error : no reader !")
 	}
 
 	var cr io.Reader
@@ -61,18 +61,19 @@ func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
 	}
 
 	switch c.Name {
-	case "line": // OK
+	case "line":
 		dec = linecodec.New(cr, c.Options)
-	case "multiline": // OK
+	case "multiline":
 		dec = multilinecodec.New(cr, c.Options)
-	case "csv": // OK
+	case "csv":
 		dec = csvcodec.New(cr, c.Options)
-	case "json": // OK
+	case "json":
 		dec = jsoncodec.New(cr, c.Options)
-	case "json_lines": // OK
+	case "json_lines":
 		dec = jsonlinescodec.New(cr, c.Options)
 	default:
 		dec = plaincodec.New(cr, c.Options)
 	}
+
 	return dec, nil
 }
