@@ -120,7 +120,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 			_, err = core.StartPipeline(&ppl, agt)
 			if err != nil {
-				log.Printf("error : %s\n", err.Error())
+				log.Errorf("error : %s\n", err.Error())
 				os.Exit(1)
 			}
 		}
