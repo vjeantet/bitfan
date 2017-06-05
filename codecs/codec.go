@@ -57,16 +57,17 @@ func (c *Codec) Encoder(w io.Writer) (Encoder, error) {
 	// charset ?
 	switch c.Name {
 	case "pp":
-		enc = rubydebugcodec.New(c.Options).Encoder(w)
+		enc = rubydebugcodec.NewEncoder(w)
 	case "rubydebug":
-		enc = rubydebugcodec.New(c.Options).Encoder(w)
+		enc = rubydebugcodec.NewEncoder(w)
 	case "line":
-		enc = linecodec.New(c.Options).Encoder(w)
+		enc = linecodec.NewEncoder(w)
 	case "json":
-		enc = jsoncodec.New(c.Options).Encoder(w)
+		enc = jsoncodec.NewEncoder(w)
 	default:
 		return enc, fmt.Errorf("no encoder defined")
 	}
+	enc.SetOptions(c.Options)
 
 	return enc, nil
 }
@@ -87,18 +88,19 @@ func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
 
 	switch c.Name {
 	case "line":
-		dec = linecodec.New(c.Options).Decoder(cr)
+		dec = linecodec.NewDecoder(cr)
 	case "multiline":
-		dec = multilinecodec.New(c.Options).Decoder(cr)
+		dec = multilinecodec.NewDecoder(cr)
 	case "csv":
-		dec = csvcodec.New(c.Options).Decoder(cr)
+		dec = csvcodec.NewDecoder(cr)
 	case "json":
-		dec = jsoncodec.New(c.Options).Decoder(cr)
+		dec = jsoncodec.NewDecoder(cr)
 	case "json_lines":
-		dec = jsonlinescodec.New(c.Options).Decoder(cr)
+		dec = jsonlinescodec.NewDecoder(cr)
 	default:
-		dec = plaincodec.New(c.Options).Decoder(cr)
+		dec = plaincodec.NewDecoder(cr)
 	}
+	dec.SetOptions(c.Options)
 
 	return dec, nil
 }

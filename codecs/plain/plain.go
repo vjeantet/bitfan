@@ -8,7 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type codec struct {
+type decoder struct {
 	more    bool
 	r       io.Reader
 	options options
@@ -17,25 +17,29 @@ type codec struct {
 type options struct {
 }
 
-func New(opt map[string]interface{}) *codec {
-	d := &codec{
+func NewDecoder(r io.Reader) *decoder {
+	d := &decoder{
+		r:       r,
 		more:    true,
 		options: options{},
 	}
-	if err := mapstructure.Decode(opt, &d.options); err != nil {
-		return nil
-	}
+
 	return d
 }
-func (c *codec) Decoder(r io.Reader) *codec {
-	c.r = r
-	return c
+
+func (d *decoder) SetOptions(conf map[string]interface{}) error {
+
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (p *codec) Decode() (map[string]interface{}, error) {
+func (d *decoder) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
-	p.more = false
-	bytes, err := ioutil.ReadAll(p.r)
+	d.more = false
+	bytes, err := ioutil.ReadAll(d.r)
 	if err != nil {
 		return data, err
 	}
@@ -43,6 +47,6 @@ func (p *codec) Decode() (map[string]interface{}, error) {
 	return data, nil
 }
 
-func (p *codec) More() bool {
-	return p.more
+func (d *decoder) More() bool {
+	return d.more
 }

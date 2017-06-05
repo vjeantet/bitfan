@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec codec
+//go:generate bitfanDoc -codec encoder,decoder
 package rubydebugcodec
 
 import (
@@ -8,7 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type codec struct {
+type encoder struct {
 	w       io.Writer
 	options options
 }
@@ -16,22 +16,21 @@ type codec struct {
 type options struct {
 }
 
-func New(opt map[string]interface{}) *codec {
-	d := &codec{
+func NewEncoder(w io.Writer) *encoder {
+	return &encoder{
+		w:       w,
 		options: options{},
 	}
-	if err := mapstructure.Decode(opt, &d.options); err != nil {
-		return nil
+}
+
+func (e *encoder) SetOptions(conf map[string]interface{}) error {
+	if err := mapstructure.Decode(conf, &e.options); err != nil {
+		return err
 	}
-	return d
+	return nil
 }
 
-func (r *codec) Encoder(w io.Writer) *codec {
-	r.w = w
-	return r
-}
-
-func (p *codec) Encode(data map[string]interface{}) error {
-	pp.Fprintln(p.w, data)
+func (e *encoder) Encode(data map[string]interface{}) error {
+	pp.Fprintln(e.w, data)
 	return nil
 }

@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec codec
+//go:generate bitfanDoc -codec csv
 // Parses comma-separated value data into individual fields
 package csvcodec
 
@@ -10,7 +10,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type codec struct {
+type decoder struct {
 	more        bool
 	r           *csv.Reader
 	columnnames []string
@@ -46,9 +46,9 @@ type options struct {
 	Columns []string
 }
 
-func New(opt map[string]interface{}) *codec {
-
-	d := &codec{
+func NewDecoder(r io.Reader) *decoder {
+	d := &decoder{
+		r:    csv.NewReader(r),
 		more: true,
 		options: options{
 			Separator:               ",",
@@ -58,35 +58,34 @@ func New(opt map[string]interface{}) *codec {
 		comma: ',',
 	}
 
-	if err := mapstructure.Decode(opt, &d.options); err != nil {
-		return nil
+	return d
+}
+func (d *decoder) SetOptions(conf map[string]interface{}) error {
+
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
 	}
 
 	d.r.Comma = []rune(d.options.Separator)[0]
 	d.comma = d.r.Comma
-	return d
+	return nil
 }
 
-func (c *codec) Decoder(r io.Reader) *codec {
-	c.r = csv.NewReader(r)
-	return c
-}
-
-func (c *codec) Decode() (map[string]interface{}, error) {
+func (d *decoder) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
-	record, err := c.r.Read()
+	record, err := d.r.Read()
 	if err == io.EOF {
-		c.more = false
+		d.more = false
 		return data, err
 	}
 
-	if c.columnnames == nil {
-		c.columnnames = record
+	if d.columnnames == nil {
+		d.columnnames = record
 		return nil, nil
 	}
 
-	for i, v := range c.columnnames {
-		if true == c.options.AutogenerateColumnNames {
+	for i, v := range d.columnnames {
+		if true == d.options.AutogenerateColumnNames {
 			data[v] = record[i]
 		} else {
 			data[fmt.Sprintf("col_%d", i)] = record[i]
@@ -96,6 +95,6 @@ func (c *codec) Decode() (map[string]interface{}, error) {
 	return data, nil
 }
 
-func (c *codec) More() bool {
-	return c.more
+func (d *decoder) More() bool {
+	return d.more
 }

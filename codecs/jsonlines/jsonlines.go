@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec codec
+//go:generate bitfanDoc -codec json_lines
 package jsonlinescodec
 
 import (
@@ -10,7 +10,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type codec struct {
+type decoder struct {
 	more    bool
 	r       *bufio.Scanner
 	options options
@@ -22,20 +22,14 @@ type options struct {
 	Delimiter string
 }
 
-func New(opt map[string]interface{}) *codec {
-	d := &codec{
+func NewDecoder(r io.Reader) *decoder {
+	d := &decoder{
+		r:    bufio.NewScanner(r),
 		more: true,
 		options: options{
 			Delimiter: "\n",
 		},
 	}
-	if err := mapstructure.Decode(opt, &d.options); err != nil {
-		return nil
-	}
-	return d
-}
-func (c *codec) Decoder(r io.Reader) *codec {
-	c.r = bufio.NewScanner(r)
 
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		// Return nothing if at end of file and no data passed
@@ -45,7 +39,7 @@ func (c *codec) Decoder(r io.Reader) *codec {
 
 		// Find the index of the input of a newline followed by a
 		// pound sign.
-		if i := strings.Index(string(data), c.options.Delimiter); i >= 0 {
+		if i := strings.Index(string(data), d.options.Delimiter); i >= 0 {
 			return i + 1, data[0:i], nil
 		}
 
@@ -58,24 +52,32 @@ func (c *codec) Decoder(r io.Reader) *codec {
 		return 0, nil, nil
 	}
 
-	c.r.Split(split)
-	return c
+	d.r.Split(split)
+	return d
 }
-func (c *codec) Decode() (map[string]interface{}, error) {
+
+func (d *decoder) SetOptions(conf map[string]interface{}) error {
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *decoder) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 
-	if true == c.r.Scan() {
-		c.more = true
+	if true == d.r.Scan() {
+		d.more = true
 
-		json.Unmarshal([]byte(c.r.Text()), &data)
+		json.Unmarshal([]byte(d.r.Text()), &data)
 	} else {
-		c.more = false
+		d.more = false
 		return data, io.EOF
 	}
 
 	return data, nil
 }
 
-func (c *codec) More() bool {
-	return c.more
+func (d *decoder) More() bool {
+	return d.more
 }

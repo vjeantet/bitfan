@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec codec
+//go:generate bitfanDoc -codec multiline
 // The multiline codec will collapse multiline messages and merge them into a single event.
 //
 // The original goal of this codec was to allow joining of multiline messages from files into a single event. For example, joining Java exception and stacktrace messages into a single event.
@@ -75,7 +75,7 @@ import (
 )
 
 // Merges multiline messages into a single event
-type codec struct {
+type decoder struct {
 	more    bool
 	r       *bufio.Scanner
 	options options
@@ -102,8 +102,9 @@ type options struct {
 	What string `mapstructure:"what"`
 }
 
-func New(opt map[string]interface{}) *codec {
-	d := &codec{
+func NewDecoder(r io.Reader) *decoder {
+	d := &decoder{
+		r:    bufio.NewScanner(r),
 		more: true,
 		options: options{
 			Delimiter: "\n",
@@ -113,15 +114,6 @@ func New(opt map[string]interface{}) *codec {
 		},
 	}
 
-	if err := mapstructure.Decode(opt, &d.options); err != nil {
-		return nil
-	}
-
-	return d
-}
-
-func (c *codec) Decoder(r io.Reader) *codec {
-	c.r = bufio.NewScanner(r)
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		// Return nothing if at end of file and no data passed
 		if atEOF && len(data) == 0 {
@@ -130,7 +122,7 @@ func (c *codec) Decoder(r io.Reader) *codec {
 
 		// Find the index of the input of a newline followed by a
 		// pound sign.
-		if i := strings.Index(string(data), c.options.Delimiter); i >= 0 {
+		if i := strings.Index(string(data), d.options.Delimiter); i >= 0 {
 			return i + 1, data[0:i], nil
 		}
 
@@ -143,139 +135,64 @@ func (c *codec) Decoder(r io.Reader) *codec {
 		return 0, nil, nil
 	}
 
-	c.r.Split(split)
-	return c
+	d.r.Split(split)
+	return d
+}
+func (d *decoder) SetOptions(conf map[string]interface{}) error {
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (p *codec) Decode() (map[string]interface{}, error) {
+func (d *decoder) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
 
-	for p.r.Scan() {
-		p.more = true
-		match, _ := regexp.MatchString(p.options.Pattern, p.r.Text())
+	for d.r.Scan() {
+		d.more = true
+		match, _ := regexp.MatchString(d.options.Pattern, d.r.Text())
 
-		if p.options.Negate {
+		if d.options.Negate {
 			match = !match
 		}
 
-		if p.options.What == "previous" {
+		if d.options.What == "previous" {
 			if match == true { // stick to previous
-				p.memory += p.options.Delimiter + p.r.Text()
+				d.memory += d.options.Delimiter + d.r.Text()
 				continue
-			} else if p.memory == "" {
-				p.memory = p.r.Text()
+			} else if d.memory == "" {
+				d.memory = d.r.Text()
 				continue
 			} else {
-				data["message"] = p.memory
-				p.memory = p.r.Text()
+				data["message"] = d.memory
+				d.memory = d.r.Text()
 				return data, nil
 			}
 		}
-		if p.options.What == "next" {
+		if d.options.What == "next" {
 			if match == true { // stick to au previous
-				if p.memory != "" {
-					p.memory += "\n"
+				if d.memory != "" {
+					d.memory += "\n"
 				}
-				p.memory += p.r.Text()
+				d.memory += d.r.Text()
 				continue
-			} else if p.memory == "" {
-				data["message"] = p.r.Text()
-				p.memory = ""
+			} else if d.memory == "" {
+				data["message"] = d.r.Text()
+				d.memory = ""
 				return data, nil
 			} else {
-				p.memory += "\n" + p.r.Text()
-				data["message"] = p.memory
-				p.memory = ""
+				d.memory += "\n" + d.r.Text()
+				data["message"] = d.memory
+				d.memory = ""
 				return data, nil
 			}
 		}
 	}
-	p.more = false
+	d.more = false
 	return data, io.EOF
-
-	// if p.options.What == "next" {
-	// 	if match == true { // coller au previous
-	// 		p.memory += "\n" + p.r.Text()
-	// 		return nil, nil
-	// 	} else if p.memory == "" {
-	// 		data["message"] = p.r.Text()
-	// 		p.memory = ""
-	// 		return data, nil
-	// 	} else {
-	// 		p.memory += "\n" + p.r.Text()
-	// 		data["message"] = p.memory
-	// 		p.memory = ""
-	// 		return data, nil
-	// 	}
-	// }
-
-	// if p.options.What == "previous" {
-	// 	if match == true { // coller au previous
-	// 		p.memory += "\n" + p.r.Text()
-	// 		return nil, nil
-	// 	} else if p.memory == "" {
-	// 		p.memory = p.r.Text()
-	// 		return nil, nil
-	// 	} else {
-	// 		data["message"] = p.memory
-	// 		p.memory = p.r.Text()
-	// 		return data, nil
-	// 	}
-	// }
-
-	return data, nil
 }
 
-func (p *codec) DecodeReader(r io.Reader) (map[string]interface{}, error) {
-	data := map[string]interface{}{}
-
-	// var cr io.Reader
-
-	// var err error
-	// cr, err = charset.NewReaderLabel(p.options.Charset, r)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// bytes, err := ioutil.ReadAll(cr)
-	// if err != nil {
-	// 	return data, err
-	// }
-
-	// match, _ := regexp.MatchString(p.options.Pattern, string(bytes))
-
-	// if p.options.What == "next" {
-	// 	if match == true { // coller au previous
-	// 		p.memory += "\n" + string(bytes)
-	// 		return nil, nil
-	// 	} else if p.memory == "" {
-	// 		data["message"] = string(bytes)
-	// 		p.memory = ""
-	// 		return data, nil
-	// 	} else {
-	// 		p.memory += "\n" + string(bytes)
-	// 		data["message"] = p.memory
-	// 		p.memory = ""
-	// 		return data, nil
-	// 	}
-	// }
-
-	// if p.options.What == "previous" {
-	// 	if match == true { // coller au previous
-	// 		p.memory += "\n" + (string(bytes))
-	// 		return nil, nil
-	// 	} else if p.memory == "" {
-	// 		p.memory = string(bytes)
-	// 		return nil, nil
-	// 	} else {
-	// 		data["message"] = p.memory
-	// 		p.memory = string(bytes)
-	// 		return data, nil
-	// 	}
-	// }
-
-	return data, nil
-}
-
-func (p *codec) More() bool {
-	return p.more
+func (d *decoder) More() bool {
+	return d.more
 }

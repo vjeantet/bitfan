@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec codec
+//go:generate bitfanDoc -codec line
 package linecodec
 
 import (
@@ -15,12 +15,15 @@ import (
 
 const timeFormat = "2006-01-02T15:04:05.999Z07:00"
 
-type codec struct {
+type decoder struct {
 	more    bool
 	r       *bufio.Scanner
-	w       io.Writer
 	options options
+}
 
+type encoder struct {
+	w         io.Writer
+	options   options
 	formatTmp *template.Template
 }
 
@@ -39,20 +42,25 @@ type options struct {
 	Var map[string]string `mapstructure:"var"`
 }
 
-func New(opt map[string]interface{}) *codec {
-	var err error
-	d := &codec{
-		more: true,
+func NewEncoder(w io.Writer) *encoder {
+	e := &encoder{
+		w: w,
 		options: options{
 			Delimiter: "\n",
 			Format:    "{{Timestamp .}} {{.host}} {{.message}}\n",
 		},
 	}
-	if err := mapstructure.Decode(opt, &d.options); err != nil {
-		return nil
+
+	return e
+}
+
+func (e *encoder) SetOptions(conf map[string]interface{}) error {
+	var err error
+	if err := mapstructure.Decode(conf, &e.options); err != nil {
+		return err
 	}
 
-	if d.options.Format != "" {
+	if e.options.Format != "" {
 
 		// TODO !
 		// loc, err := location.NewLocation(d.options.Format, d.ConfigWorkingLocation)
@@ -72,30 +80,32 @@ func New(opt map[string]interface{}) *codec {
 			},
 		}
 
-		d.formatTmp, err = template.New("format").Funcs(funcMap).Parse(d.options.Format)
+		e.formatTmp, err = template.New("format").Funcs(funcMap).Parse(e.options.Format)
 		if err != nil {
 			fmt.Errorf("stdout Format tpl error : %s", err)
-			return nil
+			return err
 		}
 	}
 
-	return d
-}
-
-func (c *codec) Encoder(w io.Writer) *codec {
-	c.w = w
-	return c
-}
-
-func (p *codec) Encode(data map[string]interface{}) error {
-	buff := bytes.NewBufferString("")
-	p.formatTmp.Execute(buff, data)
-	p.w.Write(buff.Bytes())
 	return nil
 }
 
-func (c *codec) Decoder(r io.Reader) *codec {
-	c.r = bufio.NewScanner(r)
+func (e *encoder) Encode(data map[string]interface{}) error {
+	buff := bytes.NewBufferString("")
+	e.formatTmp.Execute(buff, data)
+	e.w.Write(buff.Bytes())
+	return nil
+}
+
+func NewDecoder(r io.Reader) *decoder {
+	d := &decoder{
+		r:    bufio.NewScanner(r),
+		more: true,
+		options: options{
+			Delimiter: "\n",
+		},
+	}
+
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		// Return nothing if at end of file and no data passed
 		if atEOF && len(data) == 0 {
@@ -104,7 +114,7 @@ func (c *codec) Decoder(r io.Reader) *codec {
 
 		// Find the index of the input of a newline followed by a
 		// pound sign.
-		if i := strings.Index(string(data), c.options.Delimiter); i >= 0 {
+		if i := strings.Index(string(data), d.options.Delimiter); i >= 0 {
 			return i + 1, data[0:i], nil
 		}
 
@@ -116,24 +126,31 @@ func (c *codec) Decoder(r io.Reader) *codec {
 		return 0, nil, nil
 	}
 
-	c.r.Split(split)
+	d.r.Split(split)
 
-	return c
+	return d
 }
 
-func (c *codec) Decode() (map[string]interface{}, error) {
+func (d *decoder) SetOptions(conf map[string]interface{}) error {
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *decoder) Decode() (map[string]interface{}, error) {
 	data := map[string]interface{}{}
-	if true == c.r.Scan() {
-		c.more = true
-		data["message"] = c.r.Text()
+	if true == d.r.Scan() {
+		d.more = true
+		data["message"] = d.r.Text()
 	} else {
-		c.more = false
+		d.more = false
 		return data, io.EOF
 	}
 
 	return data, nil
 }
 
-func (c *codec) More() bool {
-	return c.more
+func (d *decoder) More() bool {
+	return d.more
 }

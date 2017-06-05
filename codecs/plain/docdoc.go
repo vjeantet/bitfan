@@ -3,10 +3,10 @@ package plaincodec
 
 import "github.com/vjeantet/bitfan/processors/doc"
 
-func (p *codec) Doc() *doc.Codec {
+func (p *processor) Doc() *doc.Processor {
 	return &doc.Codec{
   Name:       "plaincodec",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/plaincodec",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/plain",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.CodecOptions{
