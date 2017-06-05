@@ -6,13 +6,13 @@ import (
 
 	"golang.org/x/net/html/charset"
 
-	"github.com/vjeantet/bitfan/codecs/csvcodec"
-	"github.com/vjeantet/bitfan/codecs/jsoncodec"
-	"github.com/vjeantet/bitfan/codecs/jsonlinescodec"
-	"github.com/vjeantet/bitfan/codecs/linecodec"
-	"github.com/vjeantet/bitfan/codecs/multilinecodec"
-	"github.com/vjeantet/bitfan/codecs/plaincodec"
-	"github.com/vjeantet/bitfan/codecs/rubydebugcodec"
+	"github.com/vjeantet/bitfan/codecs/csv"
+	"github.com/vjeantet/bitfan/codecs/json"
+	"github.com/vjeantet/bitfan/codecs/jsonlines"
+	"github.com/vjeantet/bitfan/codecs/line"
+	"github.com/vjeantet/bitfan/codecs/multiline"
+	"github.com/vjeantet/bitfan/codecs/plain"
+	"github.com/vjeantet/bitfan/codecs/rubydebug"
 	"github.com/vjeantet/bitfan/core/config"
 )
 
