@@ -64,7 +64,7 @@ type processor struct {
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 
 	defaults := options{
-		Codec: codecs.New("line"),
+		Codec: codecs.New("line", nil),
 	}
 
 	p.opt = &defaults

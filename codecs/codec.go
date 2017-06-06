@@ -13,7 +13,6 @@ import (
 	"github.com/vjeantet/bitfan/codecs/multiline"
 	"github.com/vjeantet/bitfan/codecs/plain"
 	"github.com/vjeantet/bitfan/codecs/rubydebug"
-	"github.com/vjeantet/bitfan/core/config"
 )
 
 type Codec struct {
@@ -22,18 +21,13 @@ type Codec struct {
 	Options map[string]interface{}
 }
 
-func New(name string) Codec {
-	return Codec{
+func New(name string, conf map[string]interface{}) Codec {
+	c := Codec{
 		Name:    name,
 		Charset: "utf-8",
 		Options: map[string]interface{}{},
 	}
-}
-
-func NewFromConfig(conf *config.Codec) Codec {
-	name := conf.Name
-	c := New(name)
-	for i, k := range conf.Options {
+	for i, k := range conf {
 		if i == "charset" {
 			c.Charset = k.(string)
 			continue

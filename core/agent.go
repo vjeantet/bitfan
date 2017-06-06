@@ -76,9 +76,9 @@ func (a *agent) configure(conf *config.Agent) error {
 	}
 
 	if v, ok := conf.Options["codec"]; ok {
-		switch v.(type) {
+		switch vcodec := v.(type) {
 		case *config.Codec:
-			conf.Options["codec"] = codecs.NewFromConfig(v.(*config.Codec))
+			conf.Options["codec"] = codecs.New(vcodec.Name, vcodec.Options)
 		}
 	}
 

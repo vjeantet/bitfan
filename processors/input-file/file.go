@@ -93,7 +93,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		DiscoverInterval: 15,
 		ReadOlder:        5,
 		SincedbPath:      ".sincedb-readfile.json",
-		Codec:            codecs.New("plain"),
+		Codec:            codecs.New("plain", nil),
 	}
 
 	p.opt = &defaults

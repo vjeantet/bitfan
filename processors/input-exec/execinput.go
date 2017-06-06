@@ -42,7 +42,7 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec: codecs.New("plain"),
+		Codec: codecs.New("plain", nil),
 	}
 	p.opt = &defaults
 
