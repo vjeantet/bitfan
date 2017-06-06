@@ -74,7 +74,7 @@ func (p *processor) Tick(e processors.IPacket) error {
 	var dec codecs.Decoder
 	pr, pw := io.Pipe()
 
-	if dec, err = p.opt.Codec.Decoder(pr); err != nil {
+	if dec, err = p.opt.Codec.NewDecoder(pr); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
 		return err
 	}

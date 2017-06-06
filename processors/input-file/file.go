@@ -310,7 +310,7 @@ func (p *processor) readfile(pathfile string) error {
 
 	var dec Decoder
 
-	if dec, err = p.opt.Codec.Decoder(f); err != nil {
+	if dec, err = p.opt.Codec.NewDecoder(f); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
 		return err
 	}

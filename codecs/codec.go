@@ -41,7 +41,7 @@ func (c *Codec) String() string {
 	return c.Name
 }
 
-func (c *Codec) Encoder(w io.Writer) (Encoder, error) {
+func (c *Codec) NewEncoder(w io.Writer) (Encoder, error) {
 	var enc Encoder
 
 	if w == nil {
@@ -66,7 +66,7 @@ func (c *Codec) Encoder(w io.Writer) (Encoder, error) {
 	return enc, nil
 }
 
-func (c *Codec) Decoder(r io.Reader) (Decoder, error) {
+func (c *Codec) NewDecoder(r io.Reader) (Decoder, error) {
 	var dec Decoder
 
 	if r == nil {

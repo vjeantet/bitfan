@@ -79,7 +79,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	var enc codecs.Encoder
 	var err error
 
-	enc, err = p.opt.Codec.Encoder(os.Stdout)
+	enc, err = p.opt.Codec.NewEncoder(os.Stdout)
 	if err != nil {
 		p.Logger.Errorln("encoder error : ", err.Error())
 		return err

@@ -61,7 +61,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	var dec codecs.Decoder
 	var err error
 
-	if dec, err = p.opt.Codec.Decoder(os.Stdin); err != nil {
+	if dec, err = p.opt.Codec.NewDecoder(os.Stdin); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
 		return err
 	}
