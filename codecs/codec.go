@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"io"
 
-	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/ianaindex"
 
 	"github.com/vjeantet/bitfan/codecs/csv"
 	"github.com/vjeantet/bitfan/codecs/json"
@@ -48,16 +49,25 @@ func (c *Codec) NewEncoder(w io.Writer) (Encoder, error) {
 		return enc, fmt.Errorf("codecs.Codec.Encoder error : no writer !")
 	}
 
-	// charset ?
+	// Charset
+	var cw io.Writer
+	var err error
+	var encoding encoding.Encoding
+	encoding, err = ianaindex.IANA.Encoding(c.Charset)
+	cw = encoding.NewEncoder().Writer(w)
+	if err != nil {
+		return enc, err
+	}
+
 	switch c.Name {
 	case "pp":
-		enc = rubydebugcodec.NewEncoder(w)
+		enc = rubydebugcodec.NewEncoder(cw)
 	case "rubydebug":
-		enc = rubydebugcodec.NewEncoder(w)
+		enc = rubydebugcodec.NewEncoder(cw)
 	case "line":
-		enc = linecodec.NewEncoder(w)
+		enc = linecodec.NewEncoder(cw)
 	case "json":
-		enc = jsoncodec.NewEncoder(w)
+		enc = jsoncodec.NewEncoder(cw)
 	default:
 		return enc, fmt.Errorf("no encoder defined")
 	}
@@ -73,9 +83,12 @@ func (c *Codec) NewDecoder(r io.Reader) (Decoder, error) {
 		return dec, fmt.Errorf("codecs.Codec.Decoder error : no reader !")
 	}
 
+	// Charset
 	var cr io.Reader
 	var err error
-	cr, err = charset.NewReaderLabel(c.Charset, r)
+	var encoding encoding.Encoding
+	encoding, err = ianaindex.IANA.Encoding(c.Charset)
+	cr = encoding.NewDecoder().Reader(r)
 	if err != nil {
 		return dec, err
 	}
