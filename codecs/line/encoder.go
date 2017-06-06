@@ -25,6 +25,7 @@ type encoderOptions struct {
 	Delimiter string
 
 	// Format as a golang text/template
+	// @Default "{{Timestamp .}} {{.host}} {{.message}}"
 	Format string `mapstructure:"format"`
 
 	// You can set variable to be used in Statements by using ${var}.
@@ -39,7 +40,7 @@ func NewEncoder(w io.Writer) *encoder {
 		w: w,
 		options: encoderOptions{
 			Delimiter: "\n",
-			Format:    "{{Timestamp .}} {{.host}} {{.message}}\n",
+			Format:    "{{Timestamp .}} {{.host}} {{.message}}",
 		},
 	}
 
