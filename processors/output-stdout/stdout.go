@@ -59,12 +59,14 @@ type processor struct {
 
 	// WebHook *core.WebHook
 	opt *options
+
+	enc codecs.Encoder
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 
 	defaults := options{
-		Codec: codecs.New("line", nil),
+		Codec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 	}
 
 	p.opt = &defaults
@@ -72,39 +74,18 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
+	var err error
+	p.enc, err = p.opt.Codec.NewEncoder(os.Stdout)
+	if err != nil {
+		p.Logger.Errorln("codec error : ", err.Error())
+		return err
+	}
+
 	return nil
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	var enc codecs.Encoder
-	var err error
-
-	enc, err = p.opt.Codec.NewEncoder(os.Stdout)
-	if err != nil {
-		p.Logger.Errorln("encoder error : ", err.Error())
-		return err
-	}
-
-	enc.Encode(e.Fields().Old())
-
-	// switch p.opt.Codec.Name {
-	// case CODEC_LINE:
-	// 	buff := bytes.NewBufferString("")
-	// 	p.formatTmp.Execute(buff, e.Fields())
-	// 	fmt.Printf(buff.String())
-	// case CODEC_JSON:
-	// 	json, _ := e.Fields().Json()
-	// 	fmt.Printf("%s\n", json)
-	// 	break
-	// case CODEC_PRETTYPRINT:
-	// 	fallthrough
-	// case CODEC_RUBYDEBUG:
-	// 	pp.Printf("%s\n", e.Fields())
-	// 	break
-	// default:
-	// 	p.Logger.Errorf("unknow codec %s", p.opt.Codec)
-	// }
-
+	p.enc.Encode(e.Fields().Old())
 	p.Memory.Set("last", e.Fields().StringIndentNoTypeInfo(2))
 	p.Send(e)
 	return nil

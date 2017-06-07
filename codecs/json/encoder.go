@@ -1,48 +1,45 @@
-//go:generate bitfanDoc -codec encoder,decoder
-package rubydebugcodec
+package jsoncodec
 
 import (
+	"encoding/json"
 	"io"
 
-	"github.com/go-playground/validator"
-	"github.com/k0kubun/pp"
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/codecs/lib"
 )
 
 type encoder struct {
-	w       io.Writer
+	e       *json.Encoder
 	options encoderOptions
-
-	log lib.Logger
 }
 
 type encoderOptions struct {
+	// Set indentation
+	// @Default ""
+	// @ExampleLS indent => "    "
+	Indent string `mapstructure:"indent"`
 }
 
 func NewEncoder(w io.Writer) *encoder {
-	return &encoder{
-		w:       w,
-		options: encoderOptions{},
+	e := &encoder{
+		e: json.NewEncoder(w),
+		options: encoderOptions{
+			Indent: "",
+		},
 	}
+
+	return e
 }
 
 func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
-	e.log = logger
-
 	if err := mapstructure.Decode(conf, &e.options); err != nil {
 		return err
 	}
-
-	// validates codecs's user options
-	if err := validator.New(&validator.Config{TagName: "validate"}).Struct(&e.options); err != nil {
-		return err
-	}
-
+	e.e.SetIndent("", e.options.Indent)
 	return nil
 }
 
 func (e *encoder) Encode(data map[string]interface{}) error {
-	pp.Fprintln(e.w, data)
+	e.e.Encode(data)
 	return nil
 }

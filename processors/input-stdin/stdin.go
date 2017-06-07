@@ -44,7 +44,7 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec: codecs.New("line", nil),
+		Codec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 	}
 	p.opt = &defaults
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)

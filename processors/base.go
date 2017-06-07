@@ -2,6 +2,8 @@ package processors
 
 import (
 	"github.com/mitchellh/mapstructure"
+	"github.com/vjeantet/bitfan/codecs"
+	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/processors/doc"
 	"gopkg.in/go-playground/validator.v8"
 )
@@ -71,6 +73,14 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	}
 
 	b.DataLocation = ctx.DataLocation()
+
+	//Codecs
+	if v, ok := conf["codec"]; ok {
+		switch vcodec := v.(type) {
+		case *config.Codec:
+			conf["codec"] = codecs.New(vcodec.Name, vcodec.Options, ctx.Log(), ctx.ConfigWorkingLocation())
+		}
+	}
 
 	// Set processor's user options
 	if err := mapstructure.Decode(conf, rawVal); err != nil {

@@ -77,7 +77,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	defaults := options{
 		Target: "stdout",
 		Stdin:  false,
-		Codec:  codecs.New("plain", nil),
+		Codec:  codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 	}
 	p.opt = &defaults
 

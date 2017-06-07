@@ -4,29 +4,33 @@ import (
 	"fmt"
 	"io"
 
-	"golang.org/x/text/encoding"
-	"golang.org/x/text/encoding/ianaindex"
-
 	"github.com/vjeantet/bitfan/codecs/csv"
 	"github.com/vjeantet/bitfan/codecs/json"
 	"github.com/vjeantet/bitfan/codecs/jsonlines"
+	"github.com/vjeantet/bitfan/codecs/lib"
 	"github.com/vjeantet/bitfan/codecs/line"
 	"github.com/vjeantet/bitfan/codecs/multiline"
 	"github.com/vjeantet/bitfan/codecs/plain"
 	"github.com/vjeantet/bitfan/codecs/rubydebug"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/ianaindex"
 )
 
 type Codec struct {
-	Name    string
-	Charset string
-	Options map[string]interface{}
+	Name                  string
+	Charset               string
+	Options               map[string]interface{}
+	logger                lib.Logger
+	configWorkingLocation string
 }
 
-func New(name string, conf map[string]interface{}) Codec {
+func New(name string, conf map[string]interface{}, logger lib.Logger, cwl string) Codec {
 	c := Codec{
-		Name:    name,
-		Charset: "utf-8",
-		Options: map[string]interface{}{},
+		Name:                  name,
+		Charset:               "utf-8",
+		Options:               map[string]interface{}{},
+		logger:                logger,
+		configWorkingLocation: cwl,
 	}
 	for i, k := range conf {
 		if i == "charset" {
@@ -35,6 +39,7 @@ func New(name string, conf map[string]interface{}) Codec {
 		}
 		c.Options[i] = k
 	}
+
 	return c
 }
 
@@ -71,7 +76,10 @@ func (c *Codec) NewEncoder(w io.Writer) (Encoder, error) {
 	default:
 		return enc, fmt.Errorf("no encoder defined")
 	}
-	enc.SetOptions(c.Options)
+
+	if err := enc.SetOptions(c.Options, c.logger, c.configWorkingLocation); err != nil {
+		return enc, err
+	}
 
 	return enc, nil
 }

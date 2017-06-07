@@ -134,7 +134,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		SincedbPath:          ".sincedb.json",
 		SincedbWriteInterval: 15,
 		StatInterval:         1,
-		Codec:                codecs.New("line", nil),
+		Codec:                codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 	}
 	p.opt = &defaults
 	p.host = fqdn.Get()
