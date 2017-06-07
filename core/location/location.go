@@ -1,3 +1,4 @@
+//TODO : refactor ContentWithOptions to use golang template mechanic
 package location
 
 import (

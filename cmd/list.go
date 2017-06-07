@@ -41,7 +41,6 @@ var listCmd = &cobra.Command{
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 		cli := api.NewRestClient(viper.GetString("host"))
 		pipelines, err := cli.ListPipelines()
 		if err != nil {

@@ -1,3 +1,5 @@
+// TODO : in each encoder, initialize encoder on configure instead of receive
+// TODO : implement logger and cwl in decoders
 package codecs
 
 import (
