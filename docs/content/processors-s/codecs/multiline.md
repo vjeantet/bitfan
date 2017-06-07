@@ -8,4 +8,4 @@ identifier = "codec-multiline"
 weight = 10
 +++
 
-{{% codecdetails multilinecodec %}}
+{{% codecdetails multiline %}}

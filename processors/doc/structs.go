@@ -9,34 +9,25 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-type Documentation struct {
-	Codec     *Codec
-	Processor *Processor
-}
-
-func (d *Documentation) Name() string {
-	if d.Codec != nil {
-		return d.Codec.Name
-	} else {
-		return d.Processor.Name
-	}
-}
-
-func (d *Documentation) Struct() interface{} {
-	if d.Codec != nil {
-		return d.Codec
-	} else {
-		return d.Processor
-	}
-}
-
 type Codec struct {
 	Name       string
+	PkgName    string
 	ImportPath string
 	Doc        string
 	DocShort   string
-	Options    *CodecOptions
+	Decoder    *Decoder
+	Encoder    *Encoder
 }
+
+type Encoder struct {
+	Doc     string
+	Options *CodecOptions
+}
+type Decoder struct {
+	Doc     string
+	Options *CodecOptions
+}
+
 type CodecOptions struct {
 	Doc     string
 	Options []*CodecOption

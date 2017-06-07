@@ -1,0 +1,43 @@
+{
+  "Decoder": {
+    "Doc": "",
+    "Options": {
+      "Doc": "",
+      "Options": [
+        {
+          "Alias": "indent",
+          "DefaultValue": "\"\"",
+          "Doc": "Set indentation",
+          "ExampleLS": "indent =\u003e \"    \"",
+          "Name": "Indent",
+          "PossibleValues": null,
+          "Required": false,
+          "Type": "string"
+        }
+      ]
+    }
+  },
+  "Doc": "",
+  "DocShort": "",
+  "Encoder": {
+    "Doc": "",
+    "Options": {
+      "Doc": "",
+      "Options": [
+        {
+          "Alias": "indent",
+          "DefaultValue": "\"\"",
+          "Doc": "Set indentation",
+          "ExampleLS": "indent =\u003e \"    \"",
+          "Name": "Indent",
+          "PossibleValues": null,
+          "Required": false,
+          "Type": "string"
+        }
+      ]
+    }
+  },
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/json",
+  "Name": "json",
+  "PkgName": "jsoncodec"
+}

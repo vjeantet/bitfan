@@ -8,4 +8,4 @@ identifier = "codec-csv"
 weight = 10
 +++
 
-{{% codecdetails csvcodec %}}
+{{% codecdetails csv %}}

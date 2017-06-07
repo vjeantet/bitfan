@@ -8,4 +8,4 @@ identifier = "codec-jsonlines"
 weight = 10
 +++
 
-{{% codecdetails jsonlinescodec %}}
+{{% codecdetails json_lines %}}

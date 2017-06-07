@@ -1,0 +1,15 @@
+{
+  "Decoder": {
+    "Doc": "",
+    "Options": {
+      "Doc": "",
+      "Options": []
+    }
+  },
+  "Doc": "",
+  "DocShort": "",
+  "Encoder": null,
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/plain",
+  "Name": "plain",
+  "PkgName": "plaincodec"
+}

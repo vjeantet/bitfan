@@ -1,0 +1,26 @@
+{
+  "Decoder": {
+    "Doc": "",
+    "Options": {
+      "Doc": "",
+      "Options": [
+        {
+          "Alias": "",
+          "DefaultValue": "\"\\n\"",
+          "Doc": "Change the delimiter that separates lines",
+          "ExampleLS": "",
+          "Name": "Delimiter",
+          "PossibleValues": null,
+          "Required": false,
+          "Type": "string"
+        }
+      ]
+    }
+  },
+  "Doc": "",
+  "DocShort": "",
+  "Encoder": null,
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/jsonlines",
+  "Name": "json_lines",
+  "PkgName": "jsonlinescodec"
+}

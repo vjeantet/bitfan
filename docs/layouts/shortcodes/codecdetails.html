@@ -1,20 +1,29 @@
 {{with (index .Page.Site.Data.codecs (.Get 0))}}
 
 <p>{{markdownify .Doc}}</p>
+{{if and .Encoder .Decoder}}
+	<hr>
+	<center>
+	<a href="#encoder">[ Encoder usage ]</a>
+	<a href="#decoder">[ Decoder usage ]</a>
+	</center>
+	<hr>
+{{end}}
+{{if .Encoder }}
 
 
-{{if .Options}}
-<h2  id="synopsys">Synopsys</h2>
+<h2  id="encoder">Encoder usage</h2>
+<h3  id="synopsys">Synopsys</h2>
+
 
 <pre><code>codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title}}{{end}} {
-{{ range .Options.Options }}
+{{ range .Encoder.Options.Options }}
 {{- if .Required }}
 {{- template "proc-example-min" . }}
 {{ end -}}
 {{- end -}}
 }
 </code></pre>
-
 
 <p>Available settings</p>
 <table>
@@ -31,9 +40,9 @@
 		<td><a href="#charset">charset</a></td>
 		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></td>
 		<td></td>
-		<td>"utf-8"</td>
+		<td>"UTF-8"</td>
 	</tr>
-	{{ range .Options.Options }}
+	{{ range .Encoder.Options.Options }}
 	<tr>
 		<td>{{if .Required}}<strong>{{end}}
 		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
@@ -47,15 +56,12 @@
 	{{ end }}
 	</tbody>
 </table>
-{{else}}
-  No params for this Codec.
-{{ end }}
 
-{{if .Options}}
-<h2>Details</h2>
+
+<h3>Details</h3>
 <p>{{markdownify .Options.Doc}}</p>
 
-<h3 id="charset">charset</h3>
+<h4 id="charset">charset</h4>
 <li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></li>
 <li>Default value is <code>"UTF-8"</code> </li>
 <p>
@@ -79,8 +85,8 @@ One of
 </p>
 
 
-{{ range .Options.Options }}
-	<h3 id="{{.Name}}">{{ template "proc-identifier" . }}</h3>
+{{ range .Encoder.Options.Options }}
+	<h4 id="{{.Name}}">{{ template "proc-identifier" . }}</h4>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
 	<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
 
@@ -93,7 +99,7 @@ One of
 {{ end }}
 
 
-<h2>Full configuration blueprint</h2>
+<h3>Full configuration blueprint</h3>
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
     	<i style="font-size:x-small;" class="fa fa-chevron-right"></i>
@@ -104,17 +110,129 @@ One of
     <div class="expand-content" style="display: none;">
 <pre><code>
 codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title}}{{end}} {
-    charset => "utf-8"
+    charset => "UTF-8"
 
-{{ range .Options.Options }}
+{{ range .Encoder.Options.Options }}
 {{- template "proc-example" . }}
 {{end -}}
 }
 </code></pre>
     </div>
 </div>
+{{end}} <!-- END ENCODER -->
 
+
+
+{{if .Decoder }}
+<h2  id="decoder">Decoder usage</h2>
+
+
+<h3  id="synopsys">Synopsys</h2>
+
+<pre><code>codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title}}{{end}} {
+{{ range .Decoder.Options.Options }}
+{{- if .Required }}
+{{- template "proc-example-min" . }}
+{{ end -}}
+{{- end -}}
+}
+</code></pre>
+
+<p>Available settings</p>
+<table>
+	<thead>
+		<tr>
+			<th>Setting</th>
+			<th>Type</th>
+			<th>Info</th>
+			<th>Default value</th>
+		</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><a href="#charset">charset</a></td>
+		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></td>
+		<td></td>
+		<td>"UTF-8"</td>
+	</tr>
+	{{ range .Decoder.Options.Options }}
+	<tr>
+		<td>{{if .Required}}<strong>{{end}}
+		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
+		{{if .Required}}</strong>{{end}}</td>
+		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
+		<td>{{if .Required}}required{{end}}
+		{{if .PossibleValues}}{{delimit .PossibleValues ", " " or "}}{{end}}
+		</td>
+		<td><span>{{ template "proc-defaultvalue" . }}</span></td>
+	</tr>
+	{{ end }}
+	</tbody>
+</table>
+
+
+<h3>Details</h3>
+<p>{{markdownify .Options.Doc}}</p>
+
+<h4 id="charset">charset</h4>
+<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></li>
+<li>Default value is <code>"UTF-8"</code> </li>
+<p>
+One of 
+"US-ASCII"
+"ISO-8859-1"
+"latin1"
+"arabic"
+"hebrew"
+"Shift_JIS"
+"EUC-KR"
+"ISO-2022-JP"
+"ISO-8859-15"
+"IBM869"
+"windows-1252"
+...
+
+<p>See <a href="http://www.iana.org/assignments/character-sets/character-sets.xhtml">the IANA registry</a> for more details
+</p>
+
+</p>
+
+
+{{ range .Decoder.Options.Options }}
+	<h4 id="{{.Name}}">{{ template "proc-identifier" . }}</h4>
+	{{with .Required}}<li>This is a required setting</li>{{end}}
+	<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
+
+	{{if .PossibleValues}}
+	<li>Possible values : {{delimit .PossibleValues ", " " or "}}</li>
+	{{end}}
+
+	<li>Default value is <code>{{ template "proc-defaultvalue" . }}</code></li>
+	<p>{{markdownify .Doc }}</p>
 {{ end }}
+
+
+<h3>Full configuration blueprint</h3>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
+    	<i style="font-size:x-small;" class="fa fa-chevron-right"></i>
+    	<span>
+    		Expand me...
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+<pre><code>
+codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title}}{{end}} {
+    charset => "UTF-8"
+
+{{ range .Decoder.Options.Options }}
+{{- template "proc-example" . }}
+{{end -}}
+}
+</code></pre>
+    </div>
+</div>
+{{end}} <!-- END DECODER -->
 
 {{end}}
 

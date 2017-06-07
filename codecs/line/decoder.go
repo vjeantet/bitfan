@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec decoder
+//go:generate bitfanDoc -codec line
 package linecodec
 
 import (
@@ -9,12 +9,14 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// doc decoder
 type decoder struct {
 	more    bool
 	r       *bufio.Scanner
 	options decoderOptions
 }
 
+// doc decoderOptions
 type decoderOptions struct {
 	// Change the delimiter that separates lines
 	// @Default "\\n"

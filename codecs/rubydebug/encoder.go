@@ -1,4 +1,5 @@
-//go:generate bitfanDoc -codec encoder,decoder
+//go:generate bitfanDoc -codec rubydebug
+// This codec pretty prints event
 package rubydebugcodec
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/vjeantet/bitfan/codecs/lib"
 )
 
+// Prettyprint event
 type encoder struct {
 	w       io.Writer
 	options encoderOptions
@@ -17,6 +19,7 @@ type encoder struct {
 	log lib.Logger
 }
 
+// Encode options
 type encoderOptions struct {
 }
 

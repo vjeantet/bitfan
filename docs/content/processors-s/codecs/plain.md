@@ -8,4 +8,4 @@ identifier = "codec-plain"
 weight = 10
 +++
 
-{{% codecdetails plaincodec %}}
+{{% codecdetails plain %}}

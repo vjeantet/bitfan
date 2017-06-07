@@ -8,4 +8,4 @@ identifier = "codec-json"
 weight = 10
 +++
 
-{{% codecdetails jsoncodec %}}
+{{% codecdetails json %}}

@@ -8,4 +8,4 @@ identifier = "codec-line"
 weight = 10
 +++
 
-{{% codecdetails linecodec %}}
+{{% codecdetails line %}}

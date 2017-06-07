@@ -1,4 +1,5 @@
 //go:generate bitfanDoc -codec encoder
+// doc codec
 package linecodec
 
 import (
@@ -15,6 +16,7 @@ import (
 
 const timeFormat = "2006-01-02T15:04:05.999Z07:00"
 
+// doc encoder
 type encoder struct {
 	w         io.Writer
 	options   encoderOptions
@@ -23,6 +25,7 @@ type encoder struct {
 	log lib.Logger
 }
 
+// doc encoderOptions
 type encoderOptions struct {
 	// Change the delimiter that separates lines
 	// @Default "\\n"

@@ -1,0 +1,15 @@
+{
+  "Decoder": null,
+  "Doc": "This codec pretty prints event",
+  "DocShort": "",
+  "Encoder": {
+    "Doc": "Prettyprint event",
+    "Options": {
+      "Doc": "Encode options",
+      "Options": []
+    }
+  },
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/rubydebug",
+  "Name": "rubydebug",
+  "PkgName": "rubydebugcodec"
+}

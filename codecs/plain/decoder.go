@@ -1,4 +1,4 @@
-//go:generate bitfanDoc -codec codec
+//go:generate bitfanDoc -codec plain
 package plaincodec
 
 import (
