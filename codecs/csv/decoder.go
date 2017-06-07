@@ -14,12 +14,12 @@ type decoder struct {
 	more        bool
 	r           *csv.Reader
 	columnnames []string
-	options     options
+	options     decoderOptions
 	comma       rune
 }
 
 // Parses comma-separated value data into individual fields
-type options struct {
+type decoderOptions struct {
 
 	// Define the column separator value. If this is not specified, the default is a comma ,. Optional
 	// @Default ","
@@ -50,7 +50,7 @@ func NewDecoder(r io.Reader) *decoder {
 	d := &decoder{
 		r:    csv.NewReader(r),
 		more: true,
-		options: options{
+		options: decoderOptions{
 			Separator:               ",",
 			AutogenerateColumnNames: true,
 			QuoteChar:               "\"",

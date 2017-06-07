@@ -13,10 +13,10 @@ import (
 type decoder struct {
 	more    bool
 	r       *bufio.Scanner
-	options options
+	options decoderOptions
 }
 
-type options struct {
+type decoderOptions struct {
 	// Change the delimiter that separates lines
 	// @Default "\n"
 	Delimiter string
@@ -26,7 +26,7 @@ func NewDecoder(r io.Reader) *decoder {
 	d := &decoder{
 		r:    bufio.NewScanner(r),
 		more: true,
-		options: options{
+		options: decoderOptions{
 			Delimiter: "\n",
 		},
 	}

@@ -11,17 +11,17 @@ import (
 type decoder struct {
 	more    bool
 	r       io.Reader
-	options options
+	options decoderOptions
 }
 
-type options struct {
+type decoderOptions struct {
 }
 
 func NewDecoder(r io.Reader) *decoder {
 	d := &decoder{
 		r:       r,
 		more:    true,
-		options: options{},
+		options: decoderOptions{},
 	}
 
 	return d

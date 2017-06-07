@@ -10,16 +10,16 @@ import (
 
 type encoder struct {
 	w       io.Writer
-	options options
+	options encoderOptions
 }
 
-type options struct {
+type encoderOptions struct {
 }
 
 func NewEncoder(w io.Writer) *encoder {
 	return &encoder{
 		w:       w,
-		options: options{},
+		options: encoderOptions{},
 	}
 }
 
