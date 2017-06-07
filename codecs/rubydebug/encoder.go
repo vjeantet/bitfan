@@ -5,10 +5,10 @@ package rubydebugcodec
 import (
 	"io"
 
-	"github.com/go-playground/validator"
 	"github.com/k0kubun/pp"
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/codecs/lib"
+	"gopkg.in/go-playground/validator.v8"
 )
 
 // Prettyprint event
