@@ -127,6 +127,26 @@
         "Type": "string"
       },
       {
+        "Alias": "size_limit",
+        "DefaultValue": "0",
+        "Doc": "Maximum entries to return (leave empty to let the server decide)",
+        "ExampleLS": "",
+        "Name": "SizeLimit",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "paging_size",
+        "DefaultValue": "1000",
+        "Doc": "Desired page size in order to execute LDAP queries to fulfill the\nsearch request.\n\nSet 0 to not use Paging",
+        "ExampleLS": "",
+        "Name": "PagingSize",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
         "Alias": "event_by",
         "DefaultValue": "\"entry\"",
         "Doc": "Send an event row by row or one event with all results\npossible values \"entry\", \"result\"",

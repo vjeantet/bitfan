@@ -18,6 +18,8 @@ Performs a search for a specified filter on the directory and fire events with r
 | search_filter     | string | true     | "(objectClass=*)" |
 | search_attributes | array  | false    | []                |
 | search_scope      | string | false    | "subtree"         |
+| size_limit        | int    | false    |                 0 |
+| paging_size       | int    | false    |              1000 |
 | event_by          | string | false    | "entry"           |
 | interval          | string | false    | ""                |
 | var               | hash   | false    | {}                |
@@ -122,6 +124,21 @@ There are three options (values) that can be assigned to the SCOPE parameter:
 
 ![scope](../ldapscope.gif)
 
+### size_limit
+* Value type is int
+* Default value is `0`
+
+Maximum entries to return (leave empty to let the server decide)
+
+### paging_size
+* Value type is int
+* Default value is `1000`
+
+Desired page size in order to execute LDAP queries to fulfill the
+search request.
+
+Set 0 to not use Paging
+
 ### event_by
 * Value type is string
 * Default value is `"entry"`
@@ -169,6 +186,8 @@ ldapprocessor{
 	search_filter => "(objectClass=*)"
 	search_attributes => ["mail", "sn", "cn"]
 	search_scope => "subtree"
+	size_limit => 0
+	paging_size => 1000
 	event_by => "entry"
 	interval => "10"
 	var => {"hostname"=>"myhost","varname"=>"varvalue"}

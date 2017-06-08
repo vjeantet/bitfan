@@ -85,6 +85,17 @@ type options struct {
 	// @Default "subtree"
 	SearchScope string `mapstructure:"search_scope"`
 
+	// Maximum entries to return (leave empty to let the server decide)
+	// @Default 0
+	SizeLimit int `mapstructure:"size_limit"`
+
+	// Desired page size in order to execute LDAP queries to fulfill the
+	// search request.
+	//
+	// Set 0 to not use Paging
+	// @Default 1000
+	PagingSize int `mapstructure:"paging_size"`
+
 	// TODO : Optional controls affect how the search is processed
 
 	// Send an event row by row or one event with all results
@@ -125,6 +136,8 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		SearchScope:  "subtree",
 		Port:         389,
 		SearchFilter: "(objectClass=*)",
+		SizeLimit:    0,
+		PagingSize:   1000,
 	}
 
 	p.opt = &defaults
@@ -181,13 +194,20 @@ func (p *processor) Receive(e processors.IPacket) error {
 	// Search for the given username
 	searchRequest := ldap.NewSearchRequest(
 		p.opt.SearchBase,
-		p.searchScopeConst, ldap.NeverDerefAliases, 0, 0, false,
+		p.searchScopeConst, ldap.NeverDerefAliases, p.opt.SizeLimit, 0, false,
 		p.opt.SearchFilter,
 		p.opt.SearchAttributes,
 		nil,
 	)
 
-	sr, err := p.l.Search(searchRequest)
+	var sr *ldap.SearchResult
+	var err error
+	if p.opt.PagingSize > 0 {
+		sr, err = p.l.SearchWithPaging(searchRequest, uint32(p.opt.PagingSize))
+	} else {
+		sr, err = p.l.Search(searchRequest)
+	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
