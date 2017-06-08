@@ -85,6 +85,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
+	var countError int
 	for key, expressionString := range p.opt.Expressions {
 		expression, err := p.cacheExpression(key, expressionString.(string))
 
@@ -106,17 +107,22 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 		if err != nil {
 			p.Logger.Errorf("error while evaluating `%s` with values `%s` ", expressionString, e.Fields())
+			countError++
 		} else {
 			e.Fields().SetValueForPath(resultRaw, key)
-			processors.ProcessCommonFields2(e.Fields(),
-				p.opt.AddField,
-				p.opt.AddTag,
-				p.opt.RemoveField,
-				p.opt.RemoveTag,
-			)
 		}
-		p.Send(e)
 	}
+
+	if countError == 0 {
+		processors.ProcessCommonFields2(e.Fields(),
+			p.opt.AddField,
+			p.opt.AddTag,
+			p.opt.RemoveField,
+			p.opt.RemoveTag,
+		)
+	}
+
+	p.Send(e)
 	return nil
 }
 
