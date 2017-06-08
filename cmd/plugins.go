@@ -7,6 +7,7 @@ import (
 	date "github.com/vjeantet/bitfan/processors/filter-date"
 	digest "github.com/vjeantet/bitfan/processors/filter-digest"
 	drop "github.com/vjeantet/bitfan/processors/filter-drop"
+	evalprocessor "github.com/vjeantet/bitfan/processors/filter-eval"
 	exec "github.com/vjeantet/bitfan/processors/filter-exec"
 	geoip "github.com/vjeantet/bitfan/processors/filter-geoip"
 	grok "github.com/vjeantet/bitfan/processors/filter-grok"
@@ -73,6 +74,7 @@ func init() {
 	initPlugin("input", "ldap", ldapprocessor.New)
 	initPlugin("input", "stop", stopprocessor.New)
 
+	initPlugin("filter", "eval", evalprocessor.New)
 	initPlugin("filter", "readfile", file.New)
 	initPlugin("filter", "grok", grok.New)
 	initPlugin("filter", "mutate", mutate.New)

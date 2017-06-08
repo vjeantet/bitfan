@@ -1,0 +1,69 @@
+{
+  "Doc": "Modify or add event's field with the result of an expression (math or compare)\n\n**Operators and types supported in expression :**\n\n* Modifiers: `+` `-` `/` `*` `\u0026` `|` `^` `**` `%` `\u003e\u003e` `\u003c\u003c`\n* Comparators: `\u003e` `\u003e=` `\u003c` `\u003c=` `==` `!=` `=~` `!~`\n* Logical ops: `||` `\u0026\u0026`\n* Numeric constants, as 64-bit floating point (`12345.678`)\n* String constants (single quotes: `'foobar'`)\n* Date constants (single quotes, using any permutation of RFC3339, ISO8601, ruby date, or unix date; date parsing is automatically tried with any string constant)\n* Boolean constants: `true` `false`\n* Parenthesis to control order of evaluation `(` `)`\n* Arrays (anything separated by `,` within parenthesis: `(1, 2, 'foo')`)\n* Prefixes: `!` `-` `~`\n* Ternary conditional: `?` `:`\n* Null coalescence: `??`",
+  "DocShort": "Evaluate expression",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-eval",
+  "Name": "evalprocessor",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "add_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "AddField",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "add_tag",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "AddTag",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "remove_field",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n` kv {\n`   remove_field =\u003e [ \"foo_%{somefield}\" ]\n` }",
+        "ExampleLS": "",
+        "Name": "RemoveField",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "remove_tag",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\nExample:\n` kv {\n`   remove_tag =\u003e [ \"foo_%{somefield}\" ]\n` }\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
+        "ExampleLS": "",
+        "Name": "RemoveTag",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "expressions",
+        "DefaultValue": null,
+        "Doc": "list of field to set with expression's result",
+        "ExampleLS": "expressions =\u003e { \"usage\" =\u003e \"[usage] * 100\" }",
+        "Name": "Expressions",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "hash"
+      }
+    ]
+  },
+  "Ports": [
+    {
+      "Default": true,
+      "Doc": "",
+      "Name": "PORT_SUCCESS",
+      "Number": 0
+    }
+  ]
+}
