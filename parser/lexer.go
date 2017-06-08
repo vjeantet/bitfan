@@ -94,7 +94,12 @@ func readToken(stream *lexerStream) (Token, error) {
 
 			if err != nil {
 				errorMsg := fmt.Sprintf("Unable to parse numeric value '%v'\n", tokenString)
-				return Token{}, errors.New(errorMsg)
+				ret.Kind = kind
+				ret.Value = tokenValue
+				ret.Pos = stream.position
+				ret.Line = stream.line
+				ret.Col = stream.position - stream.lastEOLPos
+				return ret, errors.New(errorMsg)
 			}
 			kind = TokenNumber
 			break
@@ -163,13 +168,19 @@ func readToken(stream *lexerStream) (Token, error) {
 		}
 
 		errorMessage := fmt.Sprintf("Invalid token: '%s'", character)
+		ret.Kind = kind
 		ret.Value = string(character)
+		ret.Pos = stream.position
+		ret.Line = stream.line
+		ret.Col = stream.position - stream.lastEOLPos
 		return ret, errors.New(errorMessage)
 	}
 
 	ret.Kind = kind
 	ret.Value = tokenValue
-
+	ret.Pos = stream.position
+	ret.Line = stream.line
+	ret.Col = stream.position - stream.lastEOLPos
 	return ret, nil
 }
 
