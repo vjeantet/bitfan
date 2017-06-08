@@ -22,6 +22,7 @@ func readToken(stream *lexerStream) (Token, error) {
 	for stream.canRead() {
 		ret.Pos = stream.position
 		character = stream.readCharacter()
+
 		if unicode.IsSpace(character) {
 			continue
 		}
@@ -161,7 +162,8 @@ func readToken(stream *lexerStream) (Token, error) {
 			break
 		}
 
-		errorMessage := fmt.Sprintf("Invalid token: '%s'", tokenString)
+		errorMessage := fmt.Sprintf("Invalid token: '%s'", character)
+		ret.Value = string(character)
 		return ret, errors.New(errorMessage)
 	}
 

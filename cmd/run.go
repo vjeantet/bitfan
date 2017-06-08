@@ -103,7 +103,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			agt, err := loc.ConfigAgents()
 
 			if err != nil {
-				log.Printf("Error : %s %s", loc.Path, err)
+				log.Errorf("Error : %s %s", loc.Path, err)
 				os.Exit(2)
 			}
 			ppl := loc.ConfigPipeline()
