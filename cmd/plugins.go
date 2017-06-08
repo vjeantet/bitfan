@@ -25,6 +25,7 @@ import (
 	httppoller "github.com/vjeantet/bitfan/processors/input-httppoller"
 	rabbitmqinput "github.com/vjeantet/bitfan/processors/input-rabbitmq"
 	stdin "github.com/vjeantet/bitfan/processors/input-stdin"
+	inputstdout "github.com/vjeantet/bitfan/processors/input-stdout"
 	sysloginput "github.com/vjeantet/bitfan/processors/input-syslog"
 	tail "github.com/vjeantet/bitfan/processors/input-tail"
 	twitter "github.com/vjeantet/bitfan/processors/input-twitter"
@@ -53,6 +54,7 @@ import (
 )
 
 func init() {
+	initPlugin("input", "stdout", inputstdout.New)
 	initPlugin("input", "stdin", stdin.New)
 	initPlugin("input", "twitter", twitter.New)
 	initPlugin("input", "tail", tail.New) //

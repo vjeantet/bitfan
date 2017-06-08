@@ -1,0 +1,27 @@
+{
+  "Doc": "",
+  "DocShort": "Prints events to the standard output",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-stdout",
+  "Name": "inputstdout",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "codec",
+        "DefaultValue": "\"line\"",
+        "Doc": "Codec can be one of  \"json\", \"line\", \"pp\" or \"rubydebug\"",
+        "ExampleLS": "codec =\u003e \"pp\"",
+        "Name": "Codec",
+        "PossibleValues": [
+          "\"json\"",
+          "\"line\"",
+          "\"pp\"",
+          "\"rubydebug\""
+        ],
+        "Required": false,
+        "Type": "codec"
+      }
+    ]
+  },
+  "Ports": []
+}
