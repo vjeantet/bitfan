@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"text/template"
 )
 
 const (
@@ -17,6 +18,7 @@ const (
 	CONTENT_URL
 	CONTENT_INLINE
 )
+const timeFormat = "2006-01-02T15:04:05.999Z07:00"
 
 type Location struct {
 	Path        string
@@ -101,6 +103,32 @@ func (l *Locations) Add(ref string, cwl string) error {
 func (l *Location) Content() ([]byte, string, error) {
 	return l.ContentWithOptions(map[string]string{})
 }
+
+func (l *Location) TemplateWithOptions(options map[string]string) (*template.Template, string, error) {
+	content, cwl, err := l.ContentWithOptions(options)
+
+	funcMap := template.FuncMap{
+		"DateFormat": (*templateFunctions)(nil).dateFormat,
+		"Time":       (*templateFunctions)(nil).asTime,
+		"Now":        (*templateFunctions)(nil).now,
+
+		"NumFmt": (*templateFunctions)(nil).numFmt,
+
+		"HTMLUnescape": (*templateFunctions)(nil).htmlUnescape,
+		"HTMLEscape":   (*templateFunctions)(nil).htmlEscape,
+		"Lower":        (*templateFunctions)(nil).lower,
+		"Upper":        (*templateFunctions)(nil).upper,
+		"Trim":         (*templateFunctions)(nil).trim,
+	}
+
+	tpl, errTpl := template.New("").Funcs(funcMap).Parse(string(content))
+	if errTpl != nil {
+		fmt.Errorf("stdout Format tpl error : %s", err)
+		return tpl, cwl, errTpl
+	}
+	return tpl, cwl, errTpl
+}
+
 func (l *Location) ContentWithOptions(options map[string]string) ([]byte, string, error) {
 	var content []byte
 	var cwl string
@@ -169,7 +197,6 @@ func (l *Location) ContentWithOptions(options map[string]string) ([]byte, string
 	content = []byte(contentString)
 
 	return content, cwl, err
-
 }
 
 func expandFilePath(path string) ([]string, error) {

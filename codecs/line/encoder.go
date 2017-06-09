@@ -7,14 +7,11 @@ import (
 	"fmt"
 	"io"
 	"text/template"
-	"time"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/codecs/lib"
 	"github.com/vjeantet/bitfan/core/location"
 )
-
-const timeFormat = "2006-01-02T15:04:05.999Z07:00"
 
 // doc encoder
 type encoder struct {
@@ -47,7 +44,7 @@ func NewEncoder(w io.Writer) *encoder {
 		w: w,
 		options: encoderOptions{
 			Delimiter: "\n",
-			Format:    "{{Timestamp .}} {{.host}} {{.message}}",
+			Format:    `{{ DateFormat "dd/MM/yyyy:HH:mm:ss" (index . "@timestamp")}} {{.host}} {{.message}}`,
 		},
 	}
 
@@ -70,19 +67,7 @@ func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 			return err
 		}
 
-		content, _, err := loc.ContentWithOptions(e.options.Var)
-		if err != nil {
-			return err
-		}
-		e.options.Format = string(content)
-
-		funcMap := template.FuncMap{
-			"Timestamp": func(m map[string]interface{}) string {
-				return m["@timestamp"].(time.Time).Format(timeFormat)
-			},
-		}
-
-		e.formatTpl, err = template.New("format").Funcs(funcMap).Parse(e.options.Format)
+		e.formatTpl, _, err = loc.TemplateWithOptions(e.options.Var)
 		if err != nil {
 			fmt.Errorf("stdout Format tpl error : %s", err)
 			return err
