@@ -8,12 +8,15 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/vjeantet/bitfan/codecs/lib"
 )
 
 type decoder struct {
 	more    bool
 	r       *bufio.Scanner
 	options decoderOptions
+
+	log lib.Logger
 }
 
 type decoderOptions struct {
@@ -56,7 +59,9 @@ func NewDecoder(r io.Reader) *decoder {
 	return d
 }
 
-func (d *decoder) SetOptions(conf map[string]interface{}) error {
+func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+	d.log = logger
+
 	if err := mapstructure.Decode(conf, &d.options); err != nil {
 		return err
 	}

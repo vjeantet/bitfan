@@ -8,6 +8,7 @@ import (
 	"io"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/vjeantet/bitfan/codecs/lib"
 )
 
 type decoder struct {
@@ -16,6 +17,8 @@ type decoder struct {
 	columnnames []string
 	options     decoderOptions
 	comma       rune
+
+	log lib.Logger
 }
 
 // Parses comma-separated value data into individual fields
@@ -60,7 +63,8 @@ func NewDecoder(r io.Reader) *decoder {
 
 	return d
 }
-func (d *decoder) SetOptions(conf map[string]interface{}) error {
+func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+	d.log = logger
 
 	if err := mapstructure.Decode(conf, &d.options); err != nil {
 		return err

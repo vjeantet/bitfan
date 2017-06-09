@@ -1,5 +1,3 @@
-// TODO : in each encoder, initialize encoder on configure instead of receive
-// TODO : implement logger and cwl in decoders
 package codecs
 
 import (
@@ -117,7 +115,7 @@ func (c *Codec) NewDecoder(r io.Reader) (Decoder, error) {
 	default:
 		dec = plaincodec.NewDecoder(cr)
 	}
-	dec.SetOptions(c.Options)
+	dec.SetOptions(c.Options, c.logger, c.configWorkingLocation)
 
 	return dec, nil
 }

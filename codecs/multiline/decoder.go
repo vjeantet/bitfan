@@ -72,6 +72,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/vjeantet/bitfan/codecs/lib"
 )
 
 // Merges multiline messages into a single event
@@ -80,6 +81,8 @@ type decoder struct {
 	r       *bufio.Scanner
 	options decoderOptions
 	memory  string
+
+	log lib.Logger
 }
 
 //
@@ -138,7 +141,9 @@ func NewDecoder(r io.Reader) *decoder {
 	d.r.Split(split)
 	return d
 }
-func (d *decoder) SetOptions(conf map[string]interface{}) error {
+func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+	d.log = logger
+
 	if err := mapstructure.Decode(conf, &d.options); err != nil {
 		return err
 	}
