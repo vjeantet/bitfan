@@ -265,20 +265,26 @@ func (p *processor) tailFile(path string, q chan bool) error {
 
 	go func() {
 		for {
-			if record, err := dec.Decode(); err != nil {
+			var record interface{}
+			if err := dec.Decode(&record); err != nil {
 				p.Logger.Errorln("codec error : ", err.Error())
 				return
 			} else {
-				if record == nil {
-					p.Logger.Debugln("waiting for more content...")
-				} else {
-					var e processors.IPacket
-					e = p.NewPacket("", record)
-					processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
-					p.Send(e)
-					since.Offset, _ = t.Tell()
-					p.checkSaveSinceDBInfos()
+				var e processors.IPacket
+				switch v := record.(type) {
+				case string:
+					e = p.NewPacket(v, map[string]interface{}{
+						"host": p.host,
+					})
+				case map[string]interface{}:
+					e = p.NewPacket("", v)
+					e.Fields().SetValueForPath(p.host, "host")
 				}
+
+				processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+				p.Send(e)
+				since.Offset, _ = t.Tell()
+				p.checkSaveSinceDBInfos()
 			}
 		}
 	}()

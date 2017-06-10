@@ -69,17 +69,15 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 	return nil
 }
 
-func (d *decoder) Decode() (map[string]interface{}, error) {
-	data := map[string]interface{}{}
+func (d *decoder) Decode(v *interface{}) error {
 	if true == d.r.Scan() {
 		d.more = true
-		data["message"] = d.r.Text()
+		*v = d.r.Text()
 	} else {
 		d.more = false
-		return data, io.EOF
+		return io.EOF
 	}
-
-	return data, nil
+	return nil
 }
 
 func (d *decoder) More() bool {

@@ -308,7 +308,7 @@ func (p *processor) readfile(pathfile string) error {
 	}
 	defer f.Close()
 
-	var dec Decoder
+	var dec codecs.Decoder
 
 	if dec, err = p.opt.Codec.NewDecoder(f); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
@@ -316,20 +316,27 @@ func (p *processor) readfile(pathfile string) error {
 	}
 
 	for dec.More() {
-		if record, err := dec.Decode(); err != nil {
+		var record interface{}
+		if err := dec.Decode(&record); err != nil {
 			return err
 			break
-		} else if record == nil {
-			p.Logger.Debugln("waiting for more content...")
-			continue
 		} else {
+			var e processors.IPacket
+			switch v := record.(type) {
+			case string:
 
-			record["file"] = map[string]interface{}{
-				"basename": filepath.Base(pathfile),
-				"path":     pathfile,
+				e = p.NewPacket(v, map[string]interface{}{
+					"host":     p.host,
+					"basename": filepath.Base(pathfile),
+					"path":     pathfile,
+				})
+			case map[string]interface{}:
+				e = p.NewPacket("", v)
+				e.Fields().SetValueForPath(p.host, "host")
+				e.Fields().SetValueForPath(filepath.Base(pathfile), "basename")
+				e.Fields().SetValueForPath(pathfile, "path")
 			}
-			record["host"] = p.host
-			e := p.NewPacket("", record)
+
 			processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
 			p.Send(e)
 		}

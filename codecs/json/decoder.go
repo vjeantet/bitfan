@@ -38,12 +38,11 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 	return nil
 }
 
-func (d *decoder) Decode() (map[string]interface{}, error) {
-	data := map[string]interface{}{}
+func (d *decoder) Decode(v *interface{}) error {
 
-	err := d.d.Decode(&data)
+	err := d.d.Decode(v)
 
-	return data, err
+	return err
 }
 
 func (d *decoder) More() bool {

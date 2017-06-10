@@ -40,15 +40,14 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 	return nil
 }
 
-func (d *decoder) Decode() (map[string]interface{}, error) {
-	data := map[string]interface{}{}
+func (d *decoder) Decode(v *interface{}) error {
 	d.more = false
 	bytes, err := ioutil.ReadAll(d.r)
 	if err != nil {
-		return data, err
+		return err
 	}
-	data["message"] = string(bytes)
-	return data, nil
+	*v = string(bytes)
+	return nil
 }
 
 func (d *decoder) More() bool {

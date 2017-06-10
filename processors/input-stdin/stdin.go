@@ -66,30 +66,34 @@ func (p *processor) Start(e processors.IPacket) error {
 		return err
 	}
 
-	stdinChan := make(chan string)
-	go func(p *processor, ch chan string) {
+	stdinChan := make(chan interface{})
+	go func(p *processor, ch chan interface{}) {
 		for {
-			if record, err := dec.Decode(); err != nil {
+			var record interface{}
+			if err := dec.Decode(&record); err != nil {
 				p.Logger.Errorln("codec error : ", err.Error())
 				return
 			} else {
-				if record == nil {
-					p.Logger.Debugln("waiting for more content...")
-				} else {
-					ch <- record["message"].(string)
-				}
+				ch <- record
 			}
 		}
 	}(p, stdinChan)
 
-	go func(ch chan string) {
+	go func(ch chan interface{}) {
 		for {
 			select {
 			case msg, _ := <-ch:
+				var ne processors.IPacket
 
-				ne := p.NewPacket(msg, map[string]interface{}{
-					"host": p.host,
-				})
+				switch v := msg.(type) {
+				case string:
+					ne = p.NewPacket(v, map[string]interface{}{
+						"host": p.host,
+					})
+				case map[string]interface{}:
+					ne = p.NewPacket("", v)
+					ne.Fields().SetValueForPath(p.host, "host")
+				}
 
 				processors.ProcessCommonFields(ne.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
 				p.Send(ne)

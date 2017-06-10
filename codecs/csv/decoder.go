@@ -75,28 +75,29 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 	return nil
 }
 
-func (d *decoder) Decode() (map[string]interface{}, error) {
-	data := map[string]interface{}{}
+func (d *decoder) Decode(data *interface{}) error {
 	record, err := d.r.Read()
+
 	if err == io.EOF {
 		d.more = false
-		return data, err
+		return err
 	}
 
 	if d.columnnames == nil {
 		d.columnnames = record
-		return nil, nil
+		return d.Decode(data)
 	}
 
+	*data = map[string]interface{}{}
 	for i, v := range d.columnnames {
 		if true == d.options.AutogenerateColumnNames {
-			data[v] = record[i]
+			(*data).(map[string]interface{})[v] = record[i]
 		} else {
-			data[fmt.Sprintf("col_%d", i)] = record[i]
+			(*data).(map[string]interface{})[fmt.Sprintf("col_%d", i)] = record[i]
 		}
 	}
 
-	return data, nil
+	return nil
 }
 
 func (d *decoder) More() bool {

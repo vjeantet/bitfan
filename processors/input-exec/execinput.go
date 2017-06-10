@@ -86,12 +86,10 @@ func (p *processor) Tick(e processors.IPacket) error {
 	go func() error {
 		defer p.Logger.Debugln("exiting loop")
 		for dec.More() {
-			if record, err := dec.Decode(); err != nil {
+			var record interface{}
+			if err := dec.Decode(&record); err != nil {
 				return err
 				break
-			} else if record == nil {
-				p.Logger.Debugln("waiting for more content...")
-				continue
 			} else {
 				ne := p.NewPacket(data, map[string]interface{}{
 					"host": p.host,

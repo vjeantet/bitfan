@@ -151,9 +151,7 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 	return nil
 }
 
-func (d *decoder) Decode() (map[string]interface{}, error) {
-	data := map[string]interface{}{}
-
+func (d *decoder) Decode(v *interface{}) error {
 	for d.r.Scan() {
 		d.more = true
 		match, _ := regexp.MatchString(d.options.Pattern, d.r.Text())
@@ -170,9 +168,9 @@ func (d *decoder) Decode() (map[string]interface{}, error) {
 				d.memory = d.r.Text()
 				continue
 			} else {
-				data["message"] = d.memory
+				*v = d.memory
 				d.memory = d.r.Text()
-				return data, nil
+				return nil
 			}
 		}
 		if d.options.What == "next" {
@@ -183,19 +181,19 @@ func (d *decoder) Decode() (map[string]interface{}, error) {
 				d.memory += d.r.Text()
 				continue
 			} else if d.memory == "" {
-				data["message"] = d.r.Text()
+				*v = d.r.Text()
 				d.memory = ""
-				return data, nil
+				return nil
 			} else {
 				d.memory += "\n" + d.r.Text()
-				data["message"] = d.memory
+				*v = d.memory
 				d.memory = ""
-				return data, nil
+				return nil
 			}
 		}
 	}
 	d.more = false
-	return data, io.EOF
+	return io.EOF
 }
 
 func (d *decoder) More() bool {
