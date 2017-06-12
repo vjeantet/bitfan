@@ -4,6 +4,7 @@
 package stdin
 
 import (
+	"io"
 	"os"
 	"time"
 
@@ -71,7 +72,11 @@ func (p *processor) Start(e processors.IPacket) error {
 		for {
 			var record interface{}
 			if err := dec.Decode(&record); err != nil {
-				p.Logger.Errorln("codec error : ", err.Error())
+				if err == io.EOF {
+					p.Logger.Debugf("codec end of file", err.Error())
+				} else {
+					p.Logger.Errorln("codec error : ", err.Error())
+				}
 				return
 			} else {
 				ch <- record
