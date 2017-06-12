@@ -55,7 +55,11 @@ func NewDecoder(r io.Reader) *decoder {
 		return 0, nil, nil
 	}
 
-	d.r.Split(split)
+	if d.options.Delimiter == "\n" {
+		d.r.Split(bufio.ScanLines)
+	} else {
+		d.r.Split(split)
+	}
 
 	return d
 }

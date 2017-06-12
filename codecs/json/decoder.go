@@ -39,10 +39,7 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 }
 
 func (d *decoder) Decode(v *interface{}) error {
-
-	err := d.d.Decode(v)
-
-	return err
+	return d.d.Decode(v)
 }
 
 func (d *decoder) More() bool {
