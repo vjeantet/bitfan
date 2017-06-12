@@ -40,7 +40,7 @@ type `bitfan help` to display usage information
 - [x] name all contributors, imported packages, similar projects
 - [x] use remote configuration file
 - [x] include local and remote files from configuration files
-- [ ] codec support
+- [x] codec support
 - [x] log to file
 - [x] plugins autodocumentation
 - [x] install bitfan as a system daemon / service
