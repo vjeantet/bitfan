@@ -13,7 +13,11 @@ func parseConfigLocation(name string, path string, options map[string]interface{
 	var locs Locations
 
 	if path != "" {
-		loc, _ := NewLocation(path, pwd)
+		loc, err := NewLocation(path, pwd)
+		if err != nil {
+			return nil, err
+		}
+
 		locs.AddLocation(loc)
 	} else {
 		return []config.Agent{}, fmt.Errorf("no location provided to get content from ; options=%v ", options)
@@ -43,7 +47,10 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 		for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["input"].Plugins); pluginIndex++ {
 			plugin := LSConfiguration.Sections["input"].Plugins[pluginIndex]
 
-			agents, tmpOutPorts := buildInputAgents(plugin, pwd)
+			agents, tmpOutPorts, err := buildInputAgents(plugin, pwd)
+			if err != nil {
+				return nil, err
+			}
 
 			agentConfList = append(agents, agentConfList...)
 			outPorts = append(outPorts, tmpOutPorts...)
@@ -56,7 +63,11 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 				var agents []config.Agent
 				i++
 				plugin := LSConfiguration.Sections["filter"].Plugins[pluginIndex]
-				agents, outPorts = buildFilterAgents(plugin, outPorts, pwd)
+				agents, outPorts, err = buildFilterAgents(plugin, outPorts, pwd)
+				if err != nil {
+					return nil, err
+				}
+
 				agentConfList = append(agents, agentConfList...)
 			}
 		}
@@ -67,7 +78,11 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 			var agents []config.Agent
 			i++
 			plugin := LSConfiguration.Sections["output"].Plugins[pluginIndex]
-			agents = buildOutputAgents(plugin, outPorts, pwd)
+			agents, err = buildOutputAgents(plugin, outPorts, pwd)
+			if err != nil {
+				return nil, err
+			}
+
 			agentConfList = append(agents, agentConfList...)
 		}
 	}
@@ -76,7 +91,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 }
 
 // TODO : this should return ports to be able to use multiple path use
-func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []config.Port) {
+func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []config.Port, error) {
 
 	var agent config.Agent
 	agent = config.NewAgent()
@@ -117,7 +132,10 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 			switch v.(type) {
 			case string:
 				agent.Options["path"] = []string{v.(string)}
-				fileConfigAgents, _ := parseConfigLocation("", v.(string), agent.Options, pwd, "input", "filter")
+				fileConfigAgents, err := parseConfigLocation("", v.(string), agent.Options, pwd, "input", "filter")
+				if err != nil {
+					return nil, nil, err
+				}
 
 				// add agent "use" - set use agent Source as last From FileConfigAgents
 				inPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
@@ -125,13 +143,16 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 				fileConfigAgents = append([]config.Agent{agent}, fileConfigAgents...)
 
 				outPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
-				return fileConfigAgents, []config.Port{outPort}
+				return fileConfigAgents, []config.Port{outPort}, nil
 			case []interface{}:
 				CombinedFileConfigAgents := []config.Agent{}
 				newOutPorts := []config.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
-					fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "input", "filter")
+					fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "input", "filter")
+					if err != nil {
+						return nil, nil, err
+					}
 
 					// save pipeline a for later return
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
@@ -148,7 +169,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}
+				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}, nil
 			}
 		}
 	}
@@ -180,10 +201,10 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 	}
 
 	outPort := config.Port{AgentID: agent.ID, PortNumber: 0}
-	return []config.Agent{agent}, []config.Port{outPort}
+	return []config.Agent{agent}, []config.Port{outPort}, nil
 }
 
-func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd string) []config.Agent {
+func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, error) {
 	agent_list := []config.Agent{}
 
 	var agent config.Agent
@@ -231,7 +252,10 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			switch v.(type) {
 			case string:
 				agent.Options["path"] = []string{v.(string)}
-				fileConfigAgents, _ := parseConfigLocation("", v.(string), agent.Options, pwd, "filter", "output")
+				fileConfigAgents, err := parseConfigLocation("", v.(string), agent.Options, pwd, "filter", "output")
+				if err != nil {
+					return nil, err
+				}
 
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
@@ -240,12 +264,15 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				}
 
 				//specific to output
-				return fileConfigAgents
+				return fileConfigAgents, nil
 
 			case []interface{}:
 				CombinedFileConfigAgents := []config.Agent{}
 				for _, p := range v.([]interface{}) {
-					fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
+					fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
+					if err != nil {
+						return nil, err
+					}
 
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
@@ -255,7 +282,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
 				}
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents
+				return CombinedFileConfigAgents, nil
 			}
 		}
 	}
@@ -292,9 +319,13 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			for pi := 0; pi < len(when.Plugins); pi++ {
 				p := when.Plugins[pi]
 				var agents []config.Agent
-
+				var err error
 				// récupérer le dernier outport du plugin créé il devient expressionOutPorts
-				agents = buildOutputAgents(p, expressionOutPorts, pwd)
+				agents, err = buildOutputAgents(p, expressionOutPorts, pwd)
+				if err != nil {
+					return nil, err
+				}
+
 				// ajoute l'agent à la liste des agents construits
 				agent_list = append(agents, agent_list...)
 			}
@@ -303,10 +334,10 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 
 	// ajoute l'agent à la liste des agents construits
 	agent_list = append([]config.Agent{agent}, agent_list...)
-	return agent_list
+	return agent_list, nil
 }
 
-func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, []config.Port) {
+func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, []config.Port, error) {
 
 	agent_list := []config.Agent{}
 
@@ -352,7 +383,11 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			switch v.(type) {
 			case string:
 				agent.Options["path"] = []string{v.(string)}
-				fileConfigAgents, _ := parseConfigLocation("", v.(string), agent.Options, pwd, "filter")
+				fileConfigAgents, err := parseConfigLocation("", v.(string), agent.Options, pwd, "filter")
+				if err != nil {
+					return nil, nil, err
+				}
+
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
 					inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
@@ -362,14 +397,18 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				newOutPorts := []config.Port{
 					{AgentID: fileConfigAgents[0].ID, PortNumber: 0},
 				}
-				return fileConfigAgents, newOutPorts
+				return fileConfigAgents, newOutPorts, nil
 
 			case []interface{}:
 				CombinedFileConfigAgents := []config.Agent{}
 				newOutPorts := []config.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
-					fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "filter")
+					fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "filter")
+					if err != nil {
+						return nil, nil, err
+					}
+
 					// connect pipeline a first agent Xsource to lastOutPorts output
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
@@ -387,7 +426,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}
+				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}, nil
 			}
 		}
 	}
@@ -396,7 +435,10 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	if plugin.Name == "route" {
 		CombinedFileConfigAgents := []config.Agent{}
 		for _, p := range agent.Options["path"].([]interface{}) {
-			fileConfigAgents, _ := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
+			fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
+			if err != nil {
+				return nil, nil, err
+			}
 
 			// connect pipeline a last agent Xsource to lastOutPorts output
 			lastUsedAgent := &fileConfigAgents[0]
@@ -411,7 +453,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []config.Agent{agent}...)
 
 		// return untouched outputsPorts
-		return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 1}}
+		return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 1}}, nil
 	}
 
 	// interval can be a number, a string number or a cron string pattern
@@ -476,8 +518,13 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			for pi := 0; pi < len(when.Plugins); pi++ {
 				p := when.Plugins[pi]
 				var agents []config.Agent
+				var err error
 				// récupérer le dernier outport du plugin créé il devient outportA
-				agents, expressionOutPorts = buildFilterAgents(p, expressionOutPorts, pwd)
+				agents, expressionOutPorts, err = buildFilterAgents(p, expressionOutPorts, pwd)
+				if err != nil {
+					return nil, nil, err
+				}
+
 				// ajoute l'agent à la liste des agents construits
 				agent_list = append(agents, agent_list...)
 			}
@@ -498,7 +545,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 
 	// ajoute l'agent à la liste des agents construits
 	agent_list = append([]config.Agent{agent}, agent_list...)
-	return agent_list, newOutPorts
+	return agent_list, newOutPorts, nil
 }
 
 func isInSlice(needle string, candidates []string) bool {
