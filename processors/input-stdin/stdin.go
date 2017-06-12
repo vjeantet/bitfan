@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/vjeantet/bitfan/codecs"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -32,6 +33,10 @@ type options struct {
 	// @Default "line"
 	// @Type codec
 	Codec codecs.Codec
+
+	// Stop bitfan on stdin EOF ? (use it when you pipe data with |)
+	// @Default true
+	EofExit bool `mapstructure:"eof_exit"`
 }
 
 // Reads events from standard input
@@ -45,7 +50,8 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Codec:   codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		EofExit: true,
 	}
 	p.opt = &defaults
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -74,6 +80,12 @@ func (p *processor) Start(e processors.IPacket) error {
 			if err := dec.Decode(&record); err != nil {
 				if err == io.EOF {
 					p.Logger.Debugf("codec end of file", err.Error())
+					if p.opt.EofExit {
+						core.Stop()
+						p, _ := os.FindProcess(os.Getpid())
+						p.Signal(os.Interrupt)
+					}
+
 				} else {
 					p.Logger.Errorln("codec error : ", err.Error())
 				}
