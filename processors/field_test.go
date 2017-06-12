@@ -55,3 +55,28 @@ func TestDynamic(t *testing.T) {
 	assert.Equal(t, "It's 2012.11.01 !", str, "")
 
 }
+
+func BenchmarkDynamics(b *testing.B) {
+	fields := getTestFields()
+	str := ""
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		str = "Hello %{name} !"
+		Dynamic(&str, &fields)
+
+		str = "Hello I'm %{name} I come from %{location.city} !"
+		Dynamic(&str, &fields)
+
+		str = "Here nothing replaced %{unknow} sf!"
+		Dynamic(&str, &fields)
+
+		str = "Hello %{[name]} !"
+		Dynamic(&str, &fields)
+
+		str = "Hello %{[location][country]} !"
+		Dynamic(&str, &fields)
+
+		str = "It's %{+YYYY.MM.dd} !"
+		Dynamic(&str, &fields)
+	}
+}

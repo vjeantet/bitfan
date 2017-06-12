@@ -12,19 +12,16 @@ import (
 )
 
 const (
-	mark          = "%{"
-	mark_time     = "%{+"
-	mark_variable = "["
+	mark      = "%{"
+	mark_time = "%{+"
 )
 
 var maskPattern *regexp.Regexp
 var maskTimePattern *regexp.Regexp
-var maskPattern_variable *regexp.Regexp
 
 func init() {
-	maskPattern, _ = regexp.Compile(`%{([\w\.\@\]\[]+)?}`)
-	maskTimePattern, _ = regexp.Compile(`%{\+([\w\.]+)}`)
-	maskPattern_variable, _ = regexp.Compile(`\[([\w\.]+)\]`)
+	maskTimePattern, _ = regexp.Compile(`%\{\+([^\}]+)\}`)
+	maskPattern, _ = regexp.Compile(`%\{\[?([^\}]+[^\]])\]?\}`)
 }
 
 // Dynamic includes field value in place of %{key.path}
@@ -34,33 +31,21 @@ func Dynamic(str *string, fields *mxj.Map) {
 		// Search for all %{+word}
 		for _, values := range maskTimePattern.FindAllStringSubmatch(*str, -1) {
 			// Search matching value, when not found use ""
-			if fields.Exists("@timestamp") == false {
-				return
-			}
-
 			t, err := fields.ValueForPath("@timestamp")
 			if err != nil {
-				return
+				continue
 			}
-
-			replaceBy := jodaTime.Format(values[1], t.(time.Time))
-			*str = strings.Replace(*str, values[0], replaceBy, -1)
+			*str = strings.Replace(*str, values[0], jodaTime.Format(values[1], t.(time.Time)), -1)
 		}
 	}
-
 	if true == strings.Contains(*str, mark) {
-		// If %{ exists in value
 		// Search for all %{word}
 		for _, values := range maskPattern.FindAllStringSubmatch(*str, -1) {
 			values[1] = strings.Replace(values[1], `][`, `.`, -1)
-			values[1] = strings.Trim(values[1], `[]`)
-
 			// Search matching value, when not found use ""
-			replaceBy := fields.ValueOrEmptyForPathString(values[1])
-			*str = strings.Replace(*str, values[0], replaceBy, -1)
+			*str = strings.Replace(*str, values[0], fields.ValueOrEmptyForPathString(values[1]), -1)
 		}
 	}
-
 }
 
 func ProcessCommonFields(data *mxj.Map, add_fields map[string]interface{}, tags []string, typevalue string) {
