@@ -45,12 +45,16 @@ func NewLocation(ref string, cwl string) (*Location, error) {
 		loc.Kind = CONTENT_FS
 		loc.Path = filepath.Join(cwl, ref)
 	} else if v, _ := url.Parse(cwl); v.Scheme == "http" || v.Scheme == "https" {
-		loc.Kind = CONTENT_URL
-		loc.Path = cwl + ref
+		if strings.HasPrefix(ref, "./") {
+			loc.Kind = CONTENT_URL
+			loc.Path = cwl + ref
+		} else {
+			loc.Kind = CONTENT_INLINE
+			loc.Path = ref
+		}
 	} else {
 		loc.Kind = CONTENT_INLINE
 		loc.Path = ref
-
 		// return fmt.Errorf("unknow location %s -- current working location is %s", ref, cwl)
 	}
 
