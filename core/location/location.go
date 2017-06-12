@@ -107,6 +107,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 	content, cwl, err := l.ContentWithOptions(options)
 
 	funcMap := template.FuncMap{
+		"TS":         (*templateFunctions)(nil).timeStampFormat,
 		"DateFormat": (*templateFunctions)(nil).dateFormat,
 		"Time":       (*templateFunctions)(nil).asTime,
 		"Now":        (*templateFunctions)(nil).now,

@@ -44,7 +44,7 @@ func NewEncoder(w io.Writer) *encoder {
 		w: w,
 		options: encoderOptions{
 			Delimiter: "\n",
-			Format:    `{{ DateFormat "dd/MM/yyyy:HH:mm:ss" (index . "@timestamp")}} {{.host}} {{.message}}`,
+			Format:    `{{ TS "dd/MM/yyyy:HH:mm:ss" . }} {{.host}} {{.message}}`,
 		},
 	}
 

@@ -85,6 +85,15 @@ func (t *templateFunctions) dateFormat(layout string, v interface{}) string {
 	return jodaTime.Format(layout, ti)
 }
 
+func (t *templateFunctions) timeStampFormat(layout string, v map[string]interface{}) string {
+	ts := v["@timestamp"]
+	ti, err := cast.ToTimeE(ts)
+	if err != nil {
+		return ""
+	}
+	return jodaTime.Format(layout, ti)
+}
+
 // AsTime converts the textual representation of the datetime string into
 // a time.Time interface.
 func (t *templateFunctions) asTime(v interface{}) interface{} {
