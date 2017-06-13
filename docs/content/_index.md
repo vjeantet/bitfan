@@ -28,27 +28,17 @@ type `bitfan help` to display usage information
   
 ## TODO
 
-- [x] parse logstash config file
-- [x] support command line flags "à la logstash"
-- [x] generic input support
-- [x] generic filter support
-- [x] generic output support
-- [x] configuration condition (if else) support
-- [x] dynamic %{field.key} support in config file
-- [x] gracefully stop
-- [x] gracefully start
-- [x] name all contributors, imported packages, similar projects
-- [x] use remote configuration file
-- [x] include local and remote files from configuration files
-- [x] codec support
-- [x] log to file
-- [x] plugins autodocumentation
+- [x] configuration file compatible with logstash config file format.
+- [x] support conditionals, env, sprintf variables in configuration  : %{[field][key]} ${ENVVAR}
+- [x] supports input, filters, output and codecs
+- [x] consume local and remote (http) configuration files
+- [x] build complex pipelines with the `use` keyword to import, connect, fork to other pipelines/configuration files
+- [x] gracefully stop and start each pipelines
 - [x] install bitfan as a system daemon / service
-- [x] list currently runnnung pipelines
-- [x] start new pipelines in a running instance
-- [x] stop a pipeline without stopping other
-- [x] import external configuration from configuration (use)
-- [x] dispatch message to another configuration from configuration (fork)
+- [x] manage running pipelines (list / stop / start a pipeline in a running bitfan)
+- [x] monitor pipeline processors and events with prometheus
+- [ ] REST API to manage Bitfan (WIP)
+
 
 
 # Supported inputs, filters and outputs in config file
