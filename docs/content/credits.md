@@ -1,12 +1,7 @@
 +++
 title = "Credits"
 description = "contributors and packages used by bitfan"
-
-[menu.main]
-parent = ""
-identifier = ""	
 weight = 20
-
 +++
 
 

@@ -38,7 +38,7 @@
 	<tbody>
 	<tr>
 		<td><a href="#charset">charset</a></td>
-		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#string">string</a></td>
 		<td></td>
 		<td>"UTF-8"</td>
 	</tr>
@@ -47,7 +47,7 @@
 		<td>{{if .Required}}<strong>{{end}}
 		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
 		{{if .Required}}</strong>{{end}}</td>
-		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
 		<td>{{if .Required}}required{{end}}
 		{{if .PossibleValues}}{{delimit .PossibleValues ", " " or "}}{{end}}
 		</td>
@@ -62,7 +62,7 @@
 <p>{{markdownify .Options.Doc}}</p>
 
 <h4 id="charset">charset</h4>
-<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></li>
+<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#string">string</a></li>
 <li>Default value is <code>"UTF-8"</code> </li>
 <p>
 One of 
@@ -88,7 +88,7 @@ One of
 {{ range .Encoder.Options.Options }}
 	<h4 id="{{.Name}}">{{ template "proc-identifier" . }}</h4>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
-	<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
+	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
 
 	{{if .PossibleValues}}
 	<li>Possible values : {{delimit .PossibleValues ", " " or "}}</li>
@@ -151,7 +151,7 @@ codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title
 	<tbody>
 	<tr>
 		<td><a href="#charset">charset</a></td>
-		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#string">string</a></td>
 		<td></td>
 		<td>"UTF-8"</td>
 	</tr>
@@ -160,7 +160,7 @@ codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title
 		<td>{{if .Required}}<strong>{{end}}
 		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
 		{{if .Required}}</strong>{{end}}</td>
-		<td><a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
 		<td>{{if .Required}}required{{end}}
 		{{if .PossibleValues}}{{delimit .PossibleValues ", " " or "}}{{end}}
 		</td>
@@ -175,7 +175,7 @@ codec => {{if $.Page.Params.Codec}}{{$.Page.Params.Codec}}{{else}}{{$.Page.Title
 <p>{{markdownify .Options.Doc}}</p>
 
 <h4 id="charset">charset</h4>
-<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#string">string</a></li>
+<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#string">string</a></li>
 <li>Default value is <code>"UTF-8"</code> </li>
 <p>
 One of 
@@ -201,7 +201,7 @@ One of
 {{ range .Decoder.Options.Options }}
 	<h4 id="{{.Name}}">{{ template "proc-identifier" . }}</h4>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
-	<li>Value type is <a href="{{ relref $.Page "pipelines-s/pipeline-config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
+	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
 
 	{{if .PossibleValues}}
 	<li>Possible values : {{delimit .PossibleValues ", " " or "}}</li>

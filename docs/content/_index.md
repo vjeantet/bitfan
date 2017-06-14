@@ -45,4 +45,4 @@ type `bitfan help` to display usage information
 
 type `bitfan doc` to list all available plugins
 
-* [More on processors]({{< relref "processors.md" >}})
+* [More on processors]({{< relref "processors/_index.md" >}})
