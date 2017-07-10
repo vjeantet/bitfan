@@ -13,6 +13,7 @@ package date
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/vjeantet/bitfan/processors"
@@ -93,20 +94,36 @@ func (p *processor) Receive(e processors.IPacket) error {
 	if err == nil {
 		for _, layout := range p.matchPatterns {
 			var t time.Time
-
+			location := time.Local
 			if p.opt.Timezone != "" {
-				t, err = jodaTime.ParseInLocation(layout, value, p.opt.Timezone)
-			} else {
-				if layout == "UNIX" {
-					var i int64
-					i, err = strconv.ParseInt(value, 10, 64)
-					if err == nil {
-						t = time.Unix(i, 0)
-					}
+				location, _ = time.LoadLocation(p.opt.Timezone)
+			}
+			switch layout {
+			case "UNIX":
+				var sec, msec int64
+				if i := strings.Index(value, "."); i > 0 {
+					sec, err = strconv.ParseInt(value[:i], 10, 64)
+					msec, _ = strconv.ParseInt(value[i+1:], 10, 64)
+				} else {
+					sec, err = strconv.ParseInt(value, 10, 64)
+				}
+				if err == nil {
+					t = time.Unix(sec, msec).In(location)
+				}
+			case "UNIX_MS":
+				var sec, msec int64
+				sec, err = strconv.ParseInt(value[:len(value)-3], 10, 64)
+				msec, _ = strconv.ParseInt(value[len(value)-3:], 10, 64)
+				if err == nil {
+					t = time.Unix(sec, msec).In(location)
+				}
+			// TODO: case "ISO8601":
+			default:
+				if p.opt.Timezone != "" {
+					t, err = jodaTime.ParseInLocation(layout, value, p.opt.Timezone)
 				} else {
 					t, err = jodaTime.Parse(layout, value)
 				}
-
 			}
 
 			if err != nil {
