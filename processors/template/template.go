@@ -3,7 +3,7 @@ package templateprocessor
 
 import (
 	"bytes"
-	"html/template"
+	"text/template"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vjeantet/bitfan/core/location"
@@ -75,18 +75,12 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
-	content, _, err := loc.ContentWithOptions(p.opt.Var)
+	tpl, _, err := loc.TemplateWithOptions(p.opt.Var)
 	if err != nil {
 		return err
 	}
-	p.opt.Location = string(content)
 
-	p.Tpl, err = template.New("name").Parse(p.opt.Location)
-	if err != nil {
-		p.Logger.Errorf("sql location tpl error : %s", err)
-		return err
-	}
-
+	p.Tpl = tpl
 	return nil
 }
 

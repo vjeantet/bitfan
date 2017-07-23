@@ -4,10 +4,10 @@ package email
 
 import (
 	"bytes"
-	"html/template"
 	"path/filepath"
 	"strings"
 
+	"github.com/vjeantet/bitfan/core/location"
 	"github.com/vjeantet/bitfan/processors"
 	gomail "gopkg.in/gomail.v2"
 )
@@ -156,7 +156,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 	// pp.Println("subject-->", subject)
 
 	if p.opt.Subject != "" {
-		tmpl, err := template.New("email").Parse(p.opt.Subject)
+		loc, err := location.NewLocation(p.opt.Subject, p.ConfigWorkingLocation)
+		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email subject template error : %s", err)
 			return err
@@ -167,18 +168,21 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if p.opt.Htmlbody != "" {
-		tmpl, err := template.New("email").Parse(p.opt.Htmlbody)
+		loc, err := location.NewLocation(p.opt.Htmlbody, p.ConfigWorkingLocation)
+		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email template error : %s", err)
 			return err
 		}
+
 		buff := bytes.NewBufferString("")
 		tmpl.Execute(buff, e.Fields())
 		m.SetBody("text/html", buff.String())
 	}
 
 	if p.opt.Htmlbodyfile != "" {
-		tmpl, err := template.ParseGlob(p.opt.Htmlbodyfile)
+		loc, err := location.NewLocation(p.opt.Htmlbodyfile, p.ConfigWorkingLocation)
+		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email template error : %s", err)
 			return err
@@ -191,7 +195,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if p.opt.Body != "" {
-		tmpl, err := template.New("email").Parse(p.opt.Body)
+		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
+		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email template error : %s", err)
 			return err
