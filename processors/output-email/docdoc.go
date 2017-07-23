@@ -135,7 +135,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "Htmlbodyfile",
         Alias:          "htmlbodyfile",
-        Doc:            "Local path to HTML Body template file for the email, which may contain HTML markup\ncan be relative to the configuration file",
+        Doc:            "Local path to HTML Body template file for the email, which may contain HTML markup\ncan be relative to the configuration file\nTODO : use a Location Type like sql processor",
         Required:       false,
         Type:           "string",
         DefaultValue:   nil,

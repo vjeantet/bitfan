@@ -11,6 +11,7 @@ By default, each event is assumed to be one line. If you want to join lines, you
 | Tags      | array  | false    | []            |
 | Type      | string | false    | ""            |
 | Codec     | codec  | false    | "line"        |
+| eof_exit  | bool   | false    | true          |
 
 
 ## Details
@@ -41,6 +42,12 @@ Add a type field to all events handled by this input
 The codec used for input data. Input codecs are a convenient method for decoding
 your data before it enters the input, without needing a separate filter in your bitfan pipeline
 
+### eof_exit
+* Value type is bool
+* Default value is `true`
+
+Stop bitfan on stdin EOF ? (use it when you pipe data with |)
+
 
 
 ## Configuration blueprint
@@ -51,5 +58,6 @@ stdin{
 	tags => []
 	type => ""
 	codec => "line"
+	eof_exit => true
 }
 ```

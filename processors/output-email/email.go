@@ -81,6 +81,7 @@ type options struct {
 
 	// Local path to HTML Body template file for the email, which may contain HTML markup
 	// can be relative to the configuration file
+	// TODO : use a Location Type like sql processor
 	Htmlbodyfile string `mapstructure:"htmlbodyfile"`
 
 	// Body for the email - plain text only.

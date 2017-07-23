@@ -28,7 +28,7 @@
       },
       {
         "Alias": "condition",
-        "DefaultValue": "true",
+        "DefaultValue": null,
         "Doc": "set a condition to fork and route message\nwhen false, message is routed to trunk\nBy default condition is evaluated to true",
         "ExampleLS": "",
         "Name": "Condition",

@@ -115,6 +115,7 @@ HTML Body for the email, which may contain HTML markup
 
 Local path to HTML Body template file for the email, which may contain HTML markup
 can be relative to the configuration file
+TODO : use a Location Type like sql processor
 
 ### body
 * Value type is string
