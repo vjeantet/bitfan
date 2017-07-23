@@ -52,6 +52,7 @@ import (
 	sleepprocessor "github.com/vjeantet/bitfan/processors/sleep"
 	sqlprocessor "github.com/vjeantet/bitfan/processors/sql"
 	stopprocessor "github.com/vjeantet/bitfan/processors/stop"
+	templateprocessor "github.com/vjeantet/bitfan/processors/template"
 )
 
 func init() {
@@ -94,6 +95,7 @@ func init() {
 	initPlugin("filter", "newterm", newterm.New)
 	initPlugin("filter", "exec", exec.New)
 	initPlugin("filter", "sql", sqlprocessor.New)
+	initPlugin("filter", "template", templateprocessor.New)
 	initPlugin("filter", "ldap", ldapprocessor.New)
 	initPlugin("filter", "sleep", sleepprocessor.New)
 	initPlugin("filter", "stdout", stdout.New)
@@ -113,6 +115,7 @@ func init() {
 	initPlugin("output", "email", email.New)
 	initPlugin("output", "http", httpoutput.New)
 	initPlugin("output", "sql", sqlprocessor.New)
+	initPlugin("output", "template", templateprocessor.New)
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)

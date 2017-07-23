@@ -1,0 +1,72 @@
+{
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/template",
+  "Name": "templateprocessor",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "location",
+        "DefaultValue": null,
+        "Doc": "Go Template content\n\nset inline content, a path or an url to the template content\n\nGo template : https://golang.org/pkg/html/template/",
+        "ExampleLS": "location =\u003e \"test.tpl\"",
+        "Name": "Location",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "location"
+      },
+      {
+        "Alias": "var",
+        "DefaultValue": null,
+        "Doc": "You can set variable to be used in template by using ${var}.\neach reference will be replaced by the value of the variable found in Template's content\nThe replacement is case-sensitive.",
+        "ExampleLS": "var =\u003e {\"hostname\"=\u003e\"myhost\",\"varname\"=\u003e\"varvalue\"}",
+        "Name": "Var",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "target",
+        "DefaultValue": "\"generated\"",
+        "Doc": "Define the target field for placing the template execution result. If this setting is omitted,\nthe data will be stored in the \"data\" field",
+        "ExampleLS": "target =\u003e \"mydata\"",
+        "Name": "Target",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}
