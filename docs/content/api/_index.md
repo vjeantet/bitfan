@@ -2,7 +2,8 @@
 date = "2017-05-16T20:50:53+02:00"
 description = ""
 title = "API"
-weigth= 70
+weight = 400
+draft=true
 +++
 
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod

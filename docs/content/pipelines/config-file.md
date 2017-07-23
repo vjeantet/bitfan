@@ -44,12 +44,12 @@ input {
 
 In this example, two settings are configured for each of the file inputs: path and type.
 
-The settings you can configure vary according to the processor type. For information about each processor, see [Input processors]({{%relref "processors/inputs/_index.md"%}}), [Output processors]({{%relref "processors/outputs/_index.md"%}}) and [Filter]({{%relref "processors/filters/_index.md"%}}) processors.
+The settings you can configure vary according to the processor type. For information about each processor, see [Input processors]({{%relref "inputs/_index.md"%}}), [Output processors]({{%relref "outputs/_index.md"%}}) and [Filter]({{%relref "filters/_index.md"%}}) processors.
 
 two specials processors exists to extends your pipeline configuration : 
 
-* [**use** processor]({{% relref "processors/use-processor.md" %}}) which allows you to include another configuration from another one
-* [**route** processor]({{% relref "processors/route-processors.md" %}}) which allows you to route or fork events to other configuration files.
+* [**use** processor]({{% relref "routers/use-processor.md" %}}) which allows you to include another configuration from another one
+* [**route** processor]({{% relref "routers/route-processors.md" %}}) which allows you to route or fork events to other configuration files.
 
 ## Named processor
 You can insert a name between the processor type and its configuration section, it can be usefull for debugging or when used with API.

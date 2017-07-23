@@ -1,7 +1,8 @@
 +++
-title = "Processors"
+title = "Outputs"
 description = ""
-weight = 60
+name = "Outputs"
+weight = 63
 +++
 
 {{%children style="h2" description="true"%}}

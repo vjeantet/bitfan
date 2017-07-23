@@ -6,13 +6,14 @@ weight = 30
 
 +++
 
-## Download
-linux, windows, osx available here : https://github.com/vjeantet/bitfan/releases
+## Download binary
+Linux, windows and osx binaries availables.
 
+https://github.com/vjeantet/bitfan/releases
 
-## Sources
+## From Source (golang)
 ```
-$ go get -u github.com/vjeantet/bitfan
+go get -u github.com/vjeantet/bitfan
 ```
 
 ## Docker

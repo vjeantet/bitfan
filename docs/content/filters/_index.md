@@ -1,8 +1,8 @@
 +++
-title = "Inputs processors"
+title = "Filters"
 description = ""
-name="Inputs"
-weight = 10
+name = "Filters"
+weight = 62
 +++
 
 {{%children style="h2" description="true"%}}

@@ -1,8 +1,8 @@
 +++
-title = "Filters processors"
+title = "Inputs"
 description = ""
-name = "Filters"
-weight = 20
+weight = 61
+head = "<label>Processors</label>"
 +++
 
 {{%children style="h2" description="true"%}}
