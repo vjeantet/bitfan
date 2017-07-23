@@ -118,6 +118,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 
 		"NumFmt": (*templateFunctions)(nil).numFmt,
 
+		"SafeHTML":     (*templateFunctions)(nil).safeHtml,
 		"HTMLUnescape": (*templateFunctions)(nil).htmlUnescape,
 		"HTMLEscape":   (*templateFunctions)(nil).htmlEscape,
 		"Lower":        (*templateFunctions)(nil).lower,

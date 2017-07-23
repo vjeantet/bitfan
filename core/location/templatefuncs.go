@@ -4,6 +4,7 @@ package location
 
 import (
 	"html"
+	"html/template"
 	"math"
 	"strconv"
 	"strings"
@@ -14,6 +15,12 @@ import (
 )
 
 type templateFunctions struct{}
+
+func (t *templateFunctions) safeHtml(s interface{}) (template.HTML, error) {
+	ss, err := cast.ToStringE(s)
+	q := template.HTML(ss)
+	return q, err
+}
 
 // HTMLUnescape returns a copy of with HTML escape requences converted to plain
 // text.
