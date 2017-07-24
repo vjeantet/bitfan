@@ -13,6 +13,7 @@ type Base struct {
 	NewPacket             PacketBuilder
 	Logger                Logger
 	Memory                Memory
+	WebHook               WebHook
 	ConfigWorkingLocation string
 	DataLocation          string
 	PipelineID            int
@@ -69,7 +70,14 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	if ctx.Memory() != nil {
 		b.Memory = ctx.Memory()
 	} else {
-		// TODO set a dummy PacketBuilder
+		// TODO set a dummy Memory
+	}
+
+	// WebHook
+	if ctx.WebHook() != nil {
+		b.WebHook = ctx.WebHook()
+	} else {
+		// TODO set a dummy WebHook
 	}
 
 	b.DataLocation = ctx.DataLocation()

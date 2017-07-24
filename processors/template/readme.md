@@ -11,7 +11,7 @@
 | Type      | string   | false    | ""            |
 | location  | location | true     | ?             |
 | var       | hash     | false    | {}            |
-| target    | string   | false    | "generated"   |
+| target    | string   | false    | "output"      |
 
 
 ## Details
@@ -56,10 +56,10 @@ The replacement is case-sensitive.
 
 ### target
 * Value type is string
-* Default value is `"generated"`
+* Default value is `"output"`
 
 Define the target field for placing the template execution result. If this setting is omitted,
-the data will be stored in the "data" field
+the data will be stored in the "output" field
 
 
 

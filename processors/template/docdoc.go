@@ -65,10 +65,10 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "Target",
         Alias:          "target",
-        Doc:            "Define the target field for placing the template execution result. If this setting is omitted,\nthe data will be stored in the \"data\" field",
+        Doc:            "Define the target field for placing the template execution result. If this setting is omitted,\nthe data will be stored in the \"output\" field",
         Required:       false,
         Type:           "string",
-        DefaultValue:   "\"generated\"",
+        DefaultValue:   "\"output\"",
         PossibleValues: []string{},
         ExampleLS:      "target => \"mydata\"",
       },

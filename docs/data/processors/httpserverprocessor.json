@@ -1,0 +1,62 @@
+{
+  "Doc": "Read data from a received HTTP request\n\nProcessor respond with a HTTP code as\n\n* `202` when request has been accepted, in body : the total number of event created\n* `500` when an error occurs, in body : an error description\n\nUse codecs to process body content as json / csv / lines / json lines / ....\n\nURL is available as http://webhookhost/pluginLabel/URI\n\n* webhookhost is defined by bitfan at startup\n* pluginLabel is defined in pipeline configuration, it's the named processor if you put one, or `input_httpserver` by default\n* URI is defined in plugin configuration (see below)",
+  "DocShort": "Reads events from standard input",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/httpserver",
+  "Name": "httpserverprocessor",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a field to an event",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add any number of arbitrary tags to your event.\nThis can help with processing later.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": "\"plain\"",
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "codec"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": "\"events\"",
+        "Doc": "URI path",
+        "ExampleLS": "",
+        "Name": "Uri",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

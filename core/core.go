@@ -44,6 +44,8 @@ func Start(addr string) {
 	Log().Debugln("bitfan started")
 	//Init Store
 	myStore = NewMemory(dataLocation)
+	//Init Webhooks
+	listenAndServeWebHook("127.0.0.1:9090")
 }
 
 // StartPipeline load all agents form a configPipeline and returns pipeline's ID

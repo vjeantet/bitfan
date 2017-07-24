@@ -18,6 +18,7 @@ type ProcessorContext interface {
 	PacketSender() PacketSender
 	PacketBuilder() PacketBuilder
 	Memory() Memory
+	WebHook() WebHook
 	ConfigWorkingLocation() string
 	DataLocation() string
 }

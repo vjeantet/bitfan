@@ -58,8 +58,8 @@
       },
       {
         "Alias": "target",
-        "DefaultValue": "\"generated\"",
-        "Doc": "Define the target field for placing the template execution result. If this setting is omitted,\nthe data will be stored in the \"data\" field",
+        "DefaultValue": "\"output\"",
+        "Doc": "Define the target field for placing the template execution result. If this setting is omitted,\nthe data will be stored in the \"output\" field",
         "ExampleLS": "target =\u003e \"mydata\"",
         "Name": "Target",
         "PossibleValues": null,

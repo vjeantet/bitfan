@@ -48,6 +48,7 @@ import (
 	use "github.com/vjeantet/bitfan/processors/use"
 	when "github.com/vjeantet/bitfan/processors/when"
 
+	httpserverprocessor "github.com/vjeantet/bitfan/processors/httpserver"
 	ldapprocessor "github.com/vjeantet/bitfan/processors/ldap"
 	sleepprocessor "github.com/vjeantet/bitfan/processors/sleep"
 	sqlprocessor "github.com/vjeantet/bitfan/processors/sql"
@@ -74,6 +75,7 @@ func init() {
 	initPlugin("input", "gennumbers", gennumbers.New)
 	initPlugin("input", "ldap", ldapprocessor.New)
 	initPlugin("input", "stop", stopprocessor.New)
+	initPlugin("input", "httpserver", httpserverprocessor.New)
 
 	initPlugin("filter", "eval", evalprocessor.New)
 	initPlugin("filter", "readfile", file.New)

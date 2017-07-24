@@ -66,6 +66,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	ctx.dataLocation = filepath.Join(dataLocation, conf.Type)
 	ctx.configWorkingLocation = conf.Wd
 	ctx.memory = myStore.Space(conf.Type)
+	ctx.webHook = newWebHook(conf.Label)
 
 	Log().Debugf("data location : %s", ctx.dataLocation)
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
@@ -106,6 +107,7 @@ type processorContext struct {
 	packetBuilder         processors.PacketBuilder
 	logger                processors.Logger
 	memory                processors.Memory
+	webHook               processors.WebHook
 	dataLocation          string
 	configWorkingLocation string
 }
@@ -115,6 +117,10 @@ func (p processorContext) Log() processors.Logger {
 }
 func (p processorContext) Memory() processors.Memory {
 	return p.memory
+}
+
+func (p processorContext) WebHook() processors.WebHook {
+	return p.webHook
 }
 func (p processorContext) PacketSender() processors.PacketSender {
 	return p.packetSender
