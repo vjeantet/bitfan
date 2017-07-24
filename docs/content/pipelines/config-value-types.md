@@ -109,6 +109,16 @@ Example:
 
 ## Location
 
+Location is a "smart string", when its value is a :
+
+* string --> well.. it will be used as a string
+* system path --> the file's content will be used
+* web url --> the url's raw body will be used
+
+{{%info%}}**system path and web url** can be relative to their configuration file, even if the configuration file was used from a remote URL{{%/info%}}
+
+Value will be parsed as a go template.
+
 ## Path
 
 A path is a string that represents a valid operating system path.
