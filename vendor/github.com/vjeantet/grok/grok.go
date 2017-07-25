@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	defn   = regexp.MustCompile(`%{(\w+):?(\w+)?:?(\w+)?}`)
-	normal = regexp.MustCompile(`%{(\w+:?\w+:?\w+)}`)
+	normal = regexp.MustCompile(`%{(\w+(?::\w+(?::\w+)?)?)}`)
 )
 
 // A Config structure is used to configure a Grok parser.
@@ -34,7 +33,8 @@ type Grok struct {
 	config           *Config
 	compiledPatterns map[string]*gRegexp
 	patterns         map[string]*gPattern
-	serviceMu        sync.Mutex
+	patternsGuard    *sync.RWMutex
+	compiledGuard    *sync.RWMutex
 }
 
 type gPattern struct {
@@ -62,6 +62,8 @@ func NewWithConfig(config *Config) (*Grok, error) {
 		compiledPatterns: map[string]*gRegexp{},
 		patterns:         map[string]*gPattern{},
 		rawPattern:       map[string]string{},
+		patternsGuard:    new(sync.RWMutex),
+		compiledGuard:    new(sync.RWMutex),
 	}
 
 	if !config.SkipDefaultPatterns {
@@ -98,17 +100,18 @@ func (g *Grok) addPattern(name, pattern string) error {
 
 // AddPattern adds a named pattern to grok
 func (g *Grok) AddPattern(name, pattern string) error {
-	g.serviceMu.Lock()
+	g.patternsGuard.Lock()
+	defer g.patternsGuard.Unlock()
+
 	g.rawPattern[name] = pattern
 	g.buildPatterns()
-	g.serviceMu.Unlock()
 	return nil
 }
 
 // AddPatternsFromMap loads a map of named patterns
 func (g *Grok) AddPatternsFromMap(m map[string]string) error {
-	g.serviceMu.Lock()
-	defer g.serviceMu.Unlock()
+	g.patternsGuard.Lock()
+	defer g.patternsGuard.Unlock()
 
 	for name, pattern := range m {
 		g.rawPattern[name] = pattern
@@ -122,13 +125,15 @@ func (g *Grok) addPatternsFromMap(m map[string]string) error {
 	patternDeps := graph{}
 	for k, v := range m {
 		keys := []string{}
-		for _, key := range defn.FindAllStringSubmatch(v, -1) {
-			if g.patterns[key[1]] == nil {
-				if _, ok := m[key[1]]; !ok {
-					return fmt.Errorf("no pattern found for %%{%s}", key[1])
+		for _, key := range normal.FindAllStringSubmatch(v, -1) {
+			names := strings.Split(key[1], ":")
+			syntax := names[0]
+			if g.patterns[syntax] == nil {
+				if _, ok := m[syntax]; !ok {
+					return fmt.Errorf("no pattern found for %%{%s}", syntax)
 				}
 			}
-			keys = append(keys, key[1])
+			keys = append(keys, syntax)
 		}
 		patternDeps[k] = keys
 	}
@@ -195,7 +200,6 @@ func (g *Grok) Match(pattern, text string) (bool, error) {
 // compiledParse parses the specified text and returns a map with the results.
 func (g *Grok) compiledParse(gr *gRegexp, text string) (map[string]string, error) {
 	captures := make(map[string]string)
-	g.serviceMu.Lock()
 	if match := gr.regexp.FindStringSubmatch(text); len(match) > 0 {
 		for i, name := range gr.regexp.SubexpNames() {
 			if name != "" {
@@ -203,11 +207,9 @@ func (g *Grok) compiledParse(gr *gRegexp, text string) (map[string]string, error
 					continue
 				}
 				captures[name] = match[i]
-
 			}
 		}
 	}
-	g.serviceMu.Unlock()
 
 	return captures, nil
 }
@@ -286,15 +288,17 @@ func (g *Grok) buildPatterns() error {
 }
 
 func (g *Grok) compile(pattern string) (*gRegexp, error) {
-	g.serviceMu.Lock()
-	defer g.serviceMu.Unlock()
-	if g.compiledPatterns == nil {
-		g.compiledPatterns = map[string]*gRegexp{}
-	}
-	if gr, ok := g.compiledPatterns[pattern]; ok {
+	g.compiledGuard.RLock()
+	gr, ok := g.compiledPatterns[pattern]
+	g.compiledGuard.RUnlock()
+
+	if ok {
 		return gr, nil
 	}
+
+	g.patternsGuard.RLock()
 	newPattern, ti, err := g.denormalizePattern(pattern, g.patterns)
+	g.patternsGuard.RUnlock()
 	if err != nil {
 		return nil, err
 	}
@@ -303,8 +307,12 @@ func (g *Grok) compile(pattern string) (*gRegexp, error) {
 	if err != nil {
 		return nil, err
 	}
-	gr := &gRegexp{regexp: compiledRegex, typeInfo: ti}
+	gr = &gRegexp{regexp: compiledRegex, typeInfo: ti}
+
+	g.compiledGuard.Lock()
 	g.compiledPatterns[pattern] = gr
+	g.compiledGuard.Unlock()
+
 	return gr, nil
 }
 
