@@ -45,7 +45,7 @@ func Start(addr string) {
 	//Init Store
 	myStore = NewMemory(dataLocation)
 	//Init Webhooks
-	listenAndServeWebHook("127.0.0.1:9090")
+	listenAndServeWebHook(addr)
 }
 
 // StartPipeline load all agents form a configPipeline and returns pipeline's ID

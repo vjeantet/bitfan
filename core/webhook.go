@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"golang.org/x/sync/syncmap"
 
@@ -17,23 +18,28 @@ type webHook struct {
 }
 
 var webHookMap = syncmap.Map{}
+var webHookAddr = ""
 var httpHookServerMux *http.ServeMux
 
 func newWebHook(pipelineLabel, nameSpace string) *webHook {
 	return &webHook{pipelineLabel: pipelineLabel, namespace: nameSpace, Hooks: []string{}}
 }
 
+func (w *webHook) buildURL(hookName string) string {
+	return strings.ToLower("/" + slug.Make(w.pipelineLabel) + "/" + slug.Make(w.namespace) + "/" + slug.Make(hookName))
+}
+
 // Add a new route to a given http.HandlerFunc
 func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
-	hUrl := "/" + slug.Make(w.pipelineLabel) + "/" + slug.Make(w.namespace) + "/" + slug.Make(hookName)
+	hUrl := w.buildURL(hookName)
 	w.Hooks = append(w.Hooks, hookName)
 	webHookMap.Store(hUrl, hf)
-	Log().Infof("Hook %s => %s", hookName, hUrl)
+	Log().Infof("Hook added [%s/%s] => %s", w.pipelineLabel, w.namespace, "http://"+webHookAddr+hUrl)
 }
 
 // Delete a route
 func (w *webHook) Delete(hookName string) {
-	hUrl := "/" + slug.Make(w.pipelineLabel) + "/" + slug.Make(w.namespace) + "/" + slug.Make(hookName)
+	hUrl := w.buildURL(hookName)
 	webHookMap.Delete(hUrl)
 	Log().Debugf("WebHook unregisted [%s]", hUrl)
 }
@@ -46,11 +52,12 @@ func (w *webHook) Unregister() {
 }
 
 func routerHandler(w http.ResponseWriter, r *http.Request) {
-	if hfi, ok := webHookMap.Load(r.URL.Path); ok {
-		Log().Debugf("Webhook found for %s", r.URL.Path)
+	hUrl := strings.ToLower(r.URL.Path)
+	if hfi, ok := webHookMap.Load(hUrl); ok {
+		Log().Debugf("Webhook found for %s", hUrl)
 		hfi.(http.HandlerFunc)(w, r)
 	} else {
-		Log().Warnf("Webhook not found for %s", r.URL.Path)
+		Log().Warnf("Webhook not found for %s", hUrl)
 		w.WriteHeader(404)
 		fmt.Fprint(w, "Not Found !")
 	}
@@ -60,6 +67,7 @@ func listenAndServeWebHook(addr string) {
 	httpHookServerMux = http.NewServeMux()
 	commonHandlers := alice.New(loggingHandler, recoverHandler)
 	httpHookServerMux.Handle("/", commonHandlers.ThenFunc(routerHandler))
+	webHookAddr = addr
 	go http.ListenAndServe(addr, httpHookServerMux)
 
 	Log().Infof("Agents webHook listening on %s", addr)
