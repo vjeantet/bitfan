@@ -1,7 +1,7 @@
 # HTTPSERVERPROCESSOR
-Read data from a received HTTP request
+Listen and read a http request to build events with it.
 
-Processor respond with a HTTP code as
+Processor respond with a HTTP code as :
 
 * `202` when request has been accepted, in body : the total number of event created
 * `500` when an error occurs, in body : an error description
