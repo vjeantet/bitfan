@@ -66,7 +66,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	ctx.dataLocation = filepath.Join(dataLocation, conf.Type)
 	ctx.configWorkingLocation = conf.Wd
 	ctx.memory = myStore.Space(conf.Type)
-	ctx.webHook = newWebHook(conf.Label)
+	ctx.webHook = newWebHook(conf.PipelineName, conf.Label)
 
 	Log().Debugf("data location : %s", ctx.dataLocation)
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
@@ -207,6 +207,10 @@ func (a *agent) listen(wg *sync.WaitGroup) {
 func (a *agent) stop() {
 	myScheduler.Remove(a.Label)
 	Log().Debugf("agent %d schedule job removed", a.ID)
+
+	// unregister processor's webhooks URLs
+	a.processor.B().WebHook.Unregister()
+	Log().Debugf("agent %d webhook routes unregistered", a.ID)
 
 	Log().Debugf("Processor '%s' stopping... - %d in pipe ", a.Label, len(a.packetChan))
 	close(a.packetChan)

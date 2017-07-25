@@ -3,6 +3,7 @@ package processors
 import "github.com/vjeantet/bitfan/processors/doc"
 
 type Processor interface {
+	B() *Base
 	Configure(ProcessorContext, map[string]interface{}) error
 	Start(IPacket) error
 	Tick(IPacket) error

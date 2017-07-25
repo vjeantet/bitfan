@@ -339,6 +339,12 @@
 			"revisionTime": "2015-07-17T04:28:40Z"
 		},
 		{
+			"checksumSHA1": "Lc5CWD5nzSttJNateoWlPgFE3Vw=",
+			"path": "github.com/justinas/alice",
+			"revision": "052b8b6c18edb9db317af86806d8e00ebaa94160",
+			"revisionTime": "2016-05-12T13:42:31Z"
+		},
+		{
 			"checksumSHA1": "QVALLtQ7n6pt+YJiFrnng1O86PI=",
 			"path": "github.com/k0kubun/pp",
 			"revision": "36d5366f4ec038f9a76dd85c7b29074089bb9b9e",
@@ -597,6 +603,12 @@
 			"revisionTime": "2016-05-14T07:49:06Z"
 		},
 		{
+			"checksumSHA1": "yfYAIowXr2aRtR/LawlJiA/Ghtg=",
+			"path": "github.com/vjeantet/go.enmime",
+			"revision": "278de7067204c8910b01e8bce043ed8d530de0dd",
+			"revisionTime": "2016-05-16T09:47:39Z"
+		},
+		{
 			"checksumSHA1": "yGLJPcNKlm3yPLp4d8x1E5iMiVI=",
 			"path": "github.com/vjeantet/grok",
 			"revision": "83bfdfdfd1a8146795b28e547a8e3c8b28a466c2",
@@ -649,6 +661,12 @@
 			"path": "golang.org/x/net/websocket",
 			"revision": "f2499483f923065a842d38eb4c7f1927e6fc6e6d",
 			"revisionTime": "2017-01-14T04:22:49Z"
+		},
+		{
+			"checksumSHA1": "4TEYFKrAUuwBMqExjQBsnf/CgjQ=",
+			"path": "golang.org/x/sync/syncmap",
+			"revision": "f52d1811a62927559de87708c8913c1650ce4f26",
+			"revisionTime": "2017-05-17T20:25:26Z"
 		},
 		{
 			"checksumSHA1": "aVgPDgwY3/t4J/JOw9H3FVMHqh0=",

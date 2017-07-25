@@ -19,6 +19,11 @@ type Base struct {
 	PipelineID            int
 }
 
+// B returns the Base Processor
+func (b *Base) B() *Base {
+	return b
+}
+
 func (b *Base) Doc() *doc.Processor {
 	return &doc.Processor{}
 }
