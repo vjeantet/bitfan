@@ -3,46 +3,62 @@ title = "Home"
 description = ""
 +++
 
-<span id="sidebar-toggle-span">
-<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fa fa-bars"></i></a>
-</span>
+# BitFan
+
+Bitfan is an open source data processing software system compatible with logstash configuration format.
+
+> Ingest or query data, detect event, transform and enrich them to finally take any actions on them.
 
 
-> Bitfan is an open source data processing pipeline.
+I use it as a “Swiss Army Knife” to complete a wide variety of different tasks, such as:
 
 
-## Run 
-Example with a remote configuration file which ingest data from stdin and output a tranformation to stdout.
+* Loading and **parsing** log files from a file system.
+* Performing real time **anomaly detection** on any data flowing through a pipeline.
+* **Shipping data** from one location to another with transformation.
+* Sending weekly **email reports** computed from multiples sources datastores.
+* Launching external processes to gather operational data from the local system.
+
+## Processors / Plugins availables
+
+<table>
+	<thead>
+		<tr>
+			<th><a href="/inputs/">INPUTS</a></th>
+			<th><a href="/filters/">FILTERS</a></th>
+			<th><a href="/outputs/">OUTPUTS</a></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td style="vertical-align: top">{{%children page="inputs"%}}</td>
+			<td style="vertical-align: top">{{%children page="filters"%}}</td>
+			<td style="vertical-align: top">{{%children page="outputs"%}}</td>
+		</tr>
+	</tbody>
+</table>
+
+{{%info%}}Type `$ bitfan doc` to list all available plugins and get usage doc about them.{{%/info%}}
+
+## Very QuickStart
+start a pipeline from a configuration file hosted on github.com.
+
+> this pipeline configuration ingests data from stdin and output a tranformation to stdout. have a look here : [see configuration file](https://raw.githubusercontent.com/vjeantet/bitfan/master/examples.d/simple.conf)
+
 ```
 $ bitfan run https://raw.githubusercontent.com/vjeantet/bitfan/master/examples.d/simple.conf
 ```
-copy/paste this in your console
+
+Feed the pipeline with a copy/paste of following lines in your console :
 
 ```
 127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"
 ```
-
-## Other commands
-type `bitfan help` to display usage information
-
-  
-## TODO
-
-- [x] configuration file compatible with logstash config file format.
-- [x] support conditionals, env, sprintf variables in configuration  : %{[field][key]} ${ENVVAR}
-- [x] supports input, filters, output and codecs
-- [x] consume local and remote (http) configuration files
-- [x] build complex pipelines with the `use` keyword to import, connect, fork to other pipelines/configuration files
-- [x] gracefully stop and start each pipelines
-- [x] install bitfan as a system daemon / service
-- [x] manage running pipelines (list / stop / start a pipeline in a running bitfan)
-- [x] monitor pipeline processors and events with prometheus
-- [ ] REST API to manage Bitfan (WIP)
+{{%info%}}Type `bitfan help` to bitfan display usage information.{{%/info%}}
 
 
+## More on bitfan
 
-# Supported inputs, filters and outputs in config file
 
-type `bitfan doc` to list all available plugins
+{{%children style="h2" description="true" page="home"%}}
 
-* [More on processors]({{< relref "processors/_index.md" >}})
