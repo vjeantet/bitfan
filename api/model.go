@@ -48,13 +48,25 @@ type Pipeline struct {
 	Label string `json:"label"`
 	// the location
 	ConfigLocation string `json:"config_location"`
+
 	// the location's host
 	ConfigHostLocation string `json:"config_host_location"`
 
 	Content string `json:"config_content"`
+
+	// Assets
+	Assets []Asset `json:"assets"`
 }
 
-// Error represents a error
+type Asset struct {
+	// relative path of asset
+	Path string `json:"path"`
+
+	// Base64 encoded content
+	Content string `json:"content"`
+}
+
+// Error represents an error
 //
 // A Error is ....
 //

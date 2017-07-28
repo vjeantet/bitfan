@@ -39,6 +39,11 @@ func SetDataLocation(location string) {
 	Log().Debugf("data location : %s", location)
 }
 
+// DataLocation returns the bitfan's data filepath
+func DataLocation() string {
+	return dataLocation
+}
+
 // Start runtime
 func Start(addr string) {
 	Log().Debugln("bitfan started")

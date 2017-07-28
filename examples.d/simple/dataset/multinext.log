@@ -1,0 +1,8 @@
+HEADER 9200
+LINE 1 2016-10-05 08:39:00 Some log data
+LINE 2 2016-10-05 08:40:00 Some other log data
+FOOTER
+HEADER 9300
+LINE 4 2016-11-05 08:39:00 Some log data in another log
+LINE 5 2016-11-05 08:40:00 Some other log data in another log
+FOOTER

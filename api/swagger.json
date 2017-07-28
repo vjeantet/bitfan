@@ -195,10 +195,26 @@
     }
   },
   "definitions": {
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "Base64 encoded content",
+          "type": "string",
+          "x-go-name": "Content"
+        },
+        "path": {
+          "description": "relative path of asset",
+          "type": "string",
+          "x-go-name": "Path"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/api"
+    },
     "Error": {
       "description": "A Error is ....\n\nA Error can have.....",
       "type": "object",
-      "title": "Error represents a error",
+      "title": "Error represents an error",
       "properties": {
         "error": {
           "type": "string",
@@ -212,6 +228,14 @@
       "type": "object",
       "title": "Pipeline represents a pipeline",
       "properties": {
+        "assets": {
+          "description": "Assets",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Asset"
+          },
+          "x-go-name": "Assets"
+        },
         "config_content": {
           "type": "string",
           "x-go-name": "Content"

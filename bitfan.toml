@@ -12,9 +12,10 @@
 # log = "/tmp/bitfan.log"
 
 # Set log verbosity on core and/or processors
-verbose = ["core"]
+# verbose = ["core"]
 # verbose = ["core","processors"]
-debug = ["processors"]
+ debug = ["core"]
+# debug = ["processors"]
 
 # Default number of concurent packet processing for processor ?
 # Can be overided in pipeline configuration

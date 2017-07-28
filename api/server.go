@@ -28,12 +28,16 @@
 package api
 
 import (
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/lib"
 )
@@ -257,7 +261,18 @@ func getPipeline(c *gin.Context) {
 	c.JSON(404, gin.H{"error": "no pipelines(s) running"})
 
 }
+func b64Decode(code string, dest string) error {
+	buff, err := base64.StdEncoding.DecodeString(code)
+	if err != nil {
+		return err
+	}
 
+	if err := ioutil.WriteFile(dest, buff, 07440); err != nil {
+		return err
+	}
+
+	return nil
+}
 func addPipeline(c *gin.Context) {
 
 	// ID, err := core.StartPipeline(&starter.Pipeline, starter.Agents)
@@ -276,8 +291,25 @@ func addPipeline(c *gin.Context) {
 		return
 	}
 
+	// save Assets
+	// directory = $data / remote / UUID /
+	uid, _ := uuid.NewV4()
+	cwd := filepath.Join(core.DataLocation(), "_pipelines", uid.String())
+	core.Log().Debugf("configuration %s stored to %s", uid.String(), cwd)
+	os.MkdirAll(cwd, os.ModePerm)
+
+	//Save assets to cwd
+	for _, asset := range pipeline.Assets {
+		dest := filepath.Join(cwd, asset.Path)
+		dir := filepath.Dir(dest)
+		os.MkdirAll(dir, os.ModePerm)
+		b64Decode(asset.Content, dest)
+		core.Log().Debugf("configuration %s asset %s stored", uid.String(), asset.Path)
+	}
+	pipeline.ConfigLocation = filepath.Join(cwd, pipeline.ConfigLocation)
+	core.Log().Debugf("configuration %s pipeline %s ready to be loaded", uid.String(), pipeline.ConfigLocation)
+
 	var loc *lib.Location
-	cwd, _ := os.Getwd()
 
 	if pipeline.Content != "" {
 		loc, err = lib.NewLocationContent(pipeline.Content, cwd)

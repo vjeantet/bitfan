@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -124,6 +125,56 @@ func (l *Location) configAgentsWithOptions(options map[string]interface{}, pickS
 
 	agents, err = buildAgents(content, cwd, pickSections...)
 	return agents, err
+}
+
+// AssetsContent return a map of all files in folder named like the configuration file
+// simple.conf -> simple/
+func (l *Location) AssetsContent() map[string]string {
+	assets := map[string]string{}
+
+	if l.Kind != CONTENT_FS {
+		return assets
+	}
+
+	b64c, err := b64EncodeFilePath(l.Path)
+	if err != nil {
+		fmt.Printf("location Asset Error %s", err)
+		return nil
+	}
+	relativePath, _ := filepath.Rel(filepath.Dir(l.Path), l.Path)
+	assets[relativePath] = b64c
+
+	filename := filepath.Base(l.Path)
+	extension := filepath.Ext(filename)
+	confName := filename[0 : len(filename)-len(extension)]
+	confDir := filepath.Join(filepath.Dir(l.Path), confName)
+
+	err = filepath.Walk(confDir, func(path string, f os.FileInfo, err error) error {
+		if path != confDir && filepath.Base(path) != ".DS_Store" && !IsDirectory(path) {
+			b64c, err := b64EncodeFilePath(path)
+			if err != nil {
+				fmt.Printf("location Asset Error %s", err)
+				return nil
+			}
+			relativePath, _ := filepath.Rel(filepath.Dir(l.Path), path)
+			assets[relativePath] = b64c
+		}
+		return nil
+	})
+
+	return assets
+}
+func IsDirectory(path string) bool {
+	fileInfo, _ := os.Stat(path)
+	return fileInfo.IsDir()
+}
+func b64EncodeFilePath(path string) (string, error) {
+	buff, err := ioutil.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(buff), nil
 }
 
 func (l *Location) content(options map[string]interface{}) ([]byte, string, error) {

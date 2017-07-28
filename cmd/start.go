@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,12 +41,6 @@ var startCmd = &cobra.Command{
 		for _, loc := range locations.Items {
 
 			nPipeline := &api.Pipeline{}
-			if loc.Kind == lib.CONTENT_INLINE {
-				nPipeline.Content = loc.Content
-			} else {
-				nPipeline.ConfigLocation = loc.Path
-			}
-
 			// Allow pipeline customisation only when only one location was provided by user
 			if len(locations.Items) == 1 {
 				if cmd.Flags().Changed("name") {
@@ -54,6 +49,17 @@ var startCmd = &cobra.Command{
 				if cmd.Flags().Changed("id") {
 					nPipeline.ID, _ = cmd.Flags().GetInt("id")
 				}
+			}
+
+			if loc.Kind == lib.CONTENT_INLINE {
+				nPipeline.Content = loc.Content
+			} else if loc.Kind == lib.CONTENT_FS {
+				nPipeline.ConfigLocation = filepath.Base(loc.Path)
+				for path, b64Content := range loc.AssetsContent() {
+					nPipeline.Assets = append(nPipeline.Assets, api.Asset{Path: path, Content: b64Content})
+				}
+			} else {
+				nPipeline.ConfigLocation = loc.Path
 			}
 
 			pipeline, err := cli.AddPipeline(nPipeline)
