@@ -192,6 +192,45 @@
           }
         }
       }
+    },
+    "/pipelines/{id}/assets": {
+      "get": {
+        "description": "This will show configuration assets from a running pipeline.",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "pipeline"
+        ],
+        "summary": "Get pipeline's assets",
+        "operationId": "getPipeline",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Pipeline ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "assets response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Asset"
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

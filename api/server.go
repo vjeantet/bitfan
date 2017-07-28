@@ -39,6 +39,7 @@ import (
 	"github.com/gin-gonic/gin"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
+
 	"github.com/vjeantet/bitfan/lib"
 )
 
@@ -172,6 +173,38 @@ func ServeREST(hostport string, plugs map[string]map[string]core.ProcessorFactor
 		//       "$ref": "#/definitions/Error"
 		v1.GET("/pipelines/:id", getPipeline)
 
+		// swagger:operation GET /pipelines/{id}/assets pipeline getPipeline
+		//
+		// Get pipeline's assets
+		//
+		// This will show configuration assets from a running pipeline.
+		//
+		// ---
+		//
+		// produces:
+		// - application/json
+		//
+		//
+		// parameters:
+		//   - name: "id"
+		//     in: "path"
+		//     description: "Pipeline ID"
+		//     required: true
+		//     type: integer
+		//
+		// responses:
+		//   200:
+		//     description: assets response
+		//     schema:
+		//       type: array
+		//       items:
+		//         "$ref": "#/definitions/Asset"
+		//   default:
+		//     description: unexpected error
+		//     schema:
+		//       "$ref": "#/definitions/Error"
+		v1.GET("/pipelines/:id/assets", getPipelineAssets)
+
 		// swagger:operation GET /docs doc listDocs
 		//
 		// Lists plugins.
@@ -206,6 +239,37 @@ func ServeREST(hostport string, plugs map[string]map[string]core.ProcessorFactor
 		hostport = "127.0.0.1:8080"
 	}
 	go r.Run(hostport)
+}
+
+func getPipelineAssets(c *gin.Context) {
+	var assets []Asset
+	var err error
+	var id int
+
+	id, err = strconv.Atoi(c.Params.ByName("id"))
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	assets = []Asset{}
+	ppls := core.Pipelines()
+	for _, p := range ppls {
+		if p.ID == id {
+
+			loc, _ := lib.NewLocation(p.ConfigLocation, core.DataLocation())
+			for path, b64Content := range loc.AssetsContent() {
+				assets = append(assets, Asset{Path: path, Content: b64Content})
+			}
+			//build assets
+			c.JSON(200, assets)
+			return
+		}
+	}
+
+	c.JSON(404, gin.H{"error": "no pipelines(s) running"})
+
+	// curl -i http://localhost:8080/api/v1/pipelines/xxx/assets
 }
 
 func getPipelines(c *gin.Context) {

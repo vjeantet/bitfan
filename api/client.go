@@ -62,6 +62,35 @@ func (r *RestClient) AddPipeline(pipeline *Pipeline) (*Pipeline, error) {
 	return newPipeline, err
 }
 
+func (r *RestClient) Pipeline(ID string, full bool) (*Pipeline, error) {
+	pipeline := &Pipeline{}
+	apierror := new(Error)
+
+	resp, err := r.client().Get("pipelines/"+ID).Receive(pipeline, apierror)
+
+	if err != nil {
+		return pipeline, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+		return pipeline, err
+	}
+
+	if full {
+		assets := new([]Asset)
+		resp, err = r.client().Get("pipelines/"+ID+"/assets").Receive(assets, apierror)
+		if err != nil {
+			return pipeline, err
+		} else if resp.StatusCode > 400 {
+			err = fmt.Errorf(apierror.Message)
+			return pipeline, err
+		}
+
+		pipeline.Assets = *assets
+	}
+
+	return pipeline, err
+}
+
 func (r *RestClient) ListDoc() error {
 	docs := make(map[string]map[string]*doc.Processor)
 
