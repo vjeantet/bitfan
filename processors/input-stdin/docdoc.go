@@ -58,7 +58,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:            "Stop bitfan on stdin EOF ? (use it when you pipe data with |)",
         Required:       false,
         Type:           "bool",
-        DefaultValue:   "true",
+        DefaultValue:   "false",
         PossibleValues: []string{},
         ExampleLS:      "",
       },

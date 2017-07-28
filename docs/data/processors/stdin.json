@@ -48,7 +48,7 @@
       },
       {
         "Alias": "eof_exit",
-        "DefaultValue": "true",
+        "DefaultValue": "false",
         "Doc": "Stop bitfan on stdin EOF ? (use it when you pipe data with |)",
         "ExampleLS": "",
         "Name": "EofExit",

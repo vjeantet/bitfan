@@ -35,7 +35,7 @@ type options struct {
 	Codec codecs.Codec
 
 	// Stop bitfan on stdin EOF ? (use it when you pipe data with |)
-	// @Default true
+	// @Default false
 	EofExit bool `mapstructure:"eof_exit"`
 }
 
@@ -51,7 +51,7 @@ type processor struct {
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
 		Codec:   codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
-		EofExit: true,
+		EofExit: false,
 	}
 	p.opt = &defaults
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)

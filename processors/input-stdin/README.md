@@ -11,7 +11,7 @@ By default, each event is assumed to be one line. If you want to join lines, you
 | Tags      | array  | false    | []            |
 | Type      | string | false    | ""            |
 | Codec     | codec  | false    | "line"        |
-| eof_exit  | bool   | false    | true          |
+| eof_exit  | bool   | false    | false         |
 
 
 ## Details
@@ -44,7 +44,7 @@ your data before it enters the input, without needing a separate filter in your 
 
 ### eof_exit
 * Value type is bool
-* Default value is `true`
+* Default value is `false`
 
 Stop bitfan on stdin EOF ? (use it when you pipe data with |)
 
@@ -58,6 +58,6 @@ stdin{
 	tags => []
 	type => ""
 	codec => "line"
-	eof_exit => true
+	eof_exit => false
 }
 ```
