@@ -75,6 +75,13 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	stdinChan := make(chan interface{})
 	go func(p *processor, ch chan interface{}) {
+		defer func() {
+			if r := recover(); r != nil {
+				err := r.(error)
+				p.Logger.Errorf("Panic ! stdin - %s", err.Error())
+			}
+		}()
+
 		for {
 			var record interface{}
 			if err := dec.Decode(&record); err != nil {
