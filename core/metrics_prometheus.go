@@ -1,7 +1,6 @@
 package core
 
 import (
-	"net/http"
 	"runtime"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -16,7 +15,7 @@ type metricsPrometheus struct {
 	goroutines                prometheus.GaugeFunc
 }
 
-func NewPrometheus(address string, path string) Metrics {
+func NewPrometheus() Metrics {
 	stats := &metricsPrometheus{
 		goroutines: prometheus.NewGaugeFunc(
 			prometheus.GaugeOpts{
@@ -60,9 +59,6 @@ func NewPrometheus(address string, path string) Metrics {
 	prometheus.MustRegister(stats.agent_packet_out)
 	prometheus.MustRegister(stats.connection_packet_transit)
 	prometheus.MustRegister(stats.goroutines)
-
-	http.Handle(path, prometheus.Handler())
-	go http.ListenAndServe(address, nil)
 
 	return stats
 }

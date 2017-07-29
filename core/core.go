@@ -2,7 +2,12 @@ package core
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
 
+	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/justinas/alice"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vjeantet/bitfan/core/config"
 )
 
@@ -17,10 +22,14 @@ var (
 	pipelines map[int]*Pipeline = map[int]*Pipeline{}
 )
 
+type FnMux func(sm *http.ServeMux)
+
 func init() {
 	metrics = &MetricsVoid{}
 	myScheduler = newScheduler()
 	myScheduler.Start()
+	//Init Store
+	myStore = NewMemory(dataLocation)
 }
 
 // RegisterProcessor is called by the processor loader when the program starts
@@ -44,13 +53,45 @@ func DataLocation() string {
 	return dataLocation
 }
 
-// Start runtime
-func Start(addr string) {
-	Log().Debugln("bitfan started")
-	//Init Store
-	myStore = NewMemory(dataLocation)
-	//Init Webhooks
-	listenAndServeWebHook(addr)
+func WebHookServer() FnMux {
+	whPrefixURL = "/"
+	return func(sm *http.ServeMux) {
+		commonHandlers := alice.New(loggingHandler, recoverHandler)
+		sm.Handle(whPrefixURL, commonHandlers.ThenFunc(routerHandler))
+		Log().Infof("serving %s to webHooks", whPrefixURL)
+	}
+}
+
+func ApiServer(s http.Handler) FnMux {
+	return func(sm *http.ServeMux) {
+		sm.Handle("/api/v1/", s)
+		Log().Infof("serving /api/v1/ to api")
+	}
+}
+
+func PrometheusServer(path string) FnMux {
+	SetMetrics(NewPrometheus())
+	return func(sm *http.ServeMux) {
+		sm.Handle(path, prometheus.Handler())
+		Log().Infof("serving %s to prometheus", path)
+	}
+}
+
+func ListenAndServe(addr string, hs ...FnMux) {
+	httpServerMux := http.NewServeMux()
+	for _, h := range hs {
+		h(httpServerMux)
+	}
+	go http.ListenAndServe(addr, httpServerMux)
+
+	addrSpit := strings.Split(addr, ":")
+	if addrSpit[0] == "0.0.0.0" {
+		addrSpit[0] = fqdn.Get()
+	}
+
+	baseURL = fmt.Sprintf("http://%s:%s", addrSpit[0], addrSpit[1])
+
+	Log().Infof("Server available on  %s", baseURL)
 }
 
 // StartPipeline load all agents form a configPipeline and returns pipeline's ID
