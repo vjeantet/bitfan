@@ -58,14 +58,14 @@ func WebHookServer() FnMux {
 	return func(sm *http.ServeMux) {
 		commonHandlers := alice.New(loggingHandler, recoverHandler)
 		sm.Handle(whPrefixURL, commonHandlers.ThenFunc(routerHandler))
-		Log().Infof("serving %s to webHooks", whPrefixURL)
+		Log().Debugf("serving %s to webHooks", whPrefixURL)
 	}
 }
 
 func ApiServer(s http.Handler) FnMux {
 	return func(sm *http.ServeMux) {
 		sm.Handle("/api/v1/", s)
-		Log().Infof("serving /api/v1/ to api")
+		Log().Debugf("serving /api/v1/ to api")
 	}
 }
 
@@ -73,7 +73,7 @@ func PrometheusServer(path string) FnMux {
 	SetMetrics(NewPrometheus())
 	return func(sm *http.ServeMux) {
 		sm.Handle(path, prometheus.Handler())
-		Log().Infof("serving %s to prometheus", path)
+		Log().Debugf("serving %s to prometheus", path)
 	}
 }
 
@@ -91,7 +91,7 @@ func ListenAndServe(addr string, hs ...FnMux) {
 
 	baseURL = fmt.Sprintf("http://%s:%s", addrSpit[0], addrSpit[1])
 
-	Log().Infof("Server available on  %s", baseURL)
+	Log().Infof("Ready to serve on %s", baseURL)
 }
 
 // StartPipeline load all agents form a configPipeline and returns pipeline's ID

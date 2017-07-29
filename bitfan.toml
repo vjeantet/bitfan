@@ -1,20 +1,20 @@
 # This is a TOML document.
 
-#host = "127.0.0.1:1234"
+# host = "127.0.0.1:1234"
 
 # path to pipelines configuration to load on start
-#config = [ "./examples.d/simple.conf"]
+# config = [ "./examples.d/simple.conf"]
 
 # Where to store tmp data, sincedb, etc...
-#data = "/tmp/bitfan"
+# data = "/tmp/bitfan"
 
 # Where to save logs ?
 # log = "/tmp/bitfan.log"
 
 # Set log verbosity on core and/or processors
-# verbose = ["core"]
+ verbose = ["core"]
 # verbose = ["core","processors"]
- debug = ["core"]
+# debug = ["core"]
 # debug = ["processors"]
 
 # Default number of concurent packet processing for processor ?
@@ -26,5 +26,4 @@ workers = 2
 # Expose metrics to prometheus
 # metrics names start with "bitfan_"
 [prometheus]
-listen = "127.0.0.1:1421"
 path ="/metrics"

@@ -33,7 +33,7 @@ func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
 	hUrl := w.buildURL(hookName)
 	w.Hooks = append(w.Hooks, hookName)
 	webHookMap.Store(hUrl, hf)
-	Log().Infof("Hook added [%s/%s] => %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
+	Log().Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }
 
 // Delete a route
