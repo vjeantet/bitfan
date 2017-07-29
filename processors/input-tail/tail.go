@@ -279,6 +279,13 @@ func (p *processor) tailFile(path string, q chan bool) error {
 				case map[string]interface{}:
 					e = p.NewPacket("", v)
 					e.Fields().SetValueForPath(p.host, "host")
+				case []interface{}:
+					e = p.NewPacket("", map[string]interface{}{
+						"host": p.host,
+						"data": v,
+					})
+				default:
+					p.Logger.Errorf("Unknow structure %#v", v)
 				}
 
 				processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)

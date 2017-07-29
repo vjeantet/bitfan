@@ -151,7 +151,7 @@ func (p *processor) Start(e processors.IPacket) error {
 				close(p.q)
 				return
 			case filepath := <-p.filestoWatch:
-				p.Logger.Debugf("reading %s", filepath)
+				p.Logger.Debugf("found file %s", filepath)
 				p.readfile(filepath)
 			}
 		}
@@ -316,6 +316,7 @@ func (p *processor) readfile(pathfile string) error {
 	}
 
 	for dec.More() {
+
 		var record interface{}
 		if err := dec.Decode(&record); err != nil {
 			return err
@@ -324,7 +325,6 @@ func (p *processor) readfile(pathfile string) error {
 			var e processors.IPacket
 			switch v := record.(type) {
 			case string:
-
 				e = p.NewPacket(v, map[string]interface{}{
 					"host":     p.host,
 					"basename": filepath.Base(pathfile),
@@ -335,6 +335,15 @@ func (p *processor) readfile(pathfile string) error {
 				e.Fields().SetValueForPath(p.host, "host")
 				e.Fields().SetValueForPath(filepath.Base(pathfile), "basename")
 				e.Fields().SetValueForPath(pathfile, "path")
+			case []interface{}:
+				e = p.NewPacket("", map[string]interface{}{
+					"host":     p.host,
+					"basename": filepath.Base(pathfile),
+					"path":     pathfile,
+					"data":     v,
+				})
+			default:
+				p.Logger.Errorf("Unknow structure %#v", v)
 			}
 
 			processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)

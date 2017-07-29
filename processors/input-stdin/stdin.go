@@ -117,6 +117,13 @@ func (p *processor) Start(e processors.IPacket) error {
 				case map[string]interface{}:
 					ne = p.NewPacket("", v)
 					ne.Fields().SetValueForPath(p.host, "host")
+				case []interface{}:
+					e = p.NewPacket("", map[string]interface{}{
+						"host": p.host,
+						"data": v,
+					})
+				default:
+					p.Logger.Errorf("Unknow structure %#v", v)
 				}
 
 				processors.ProcessCommonFields(ne.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)

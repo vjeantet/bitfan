@@ -136,6 +136,13 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		case map[string]interface{}:
 			e = p.NewPacket("", v)
 			e.Fields().SetValueForPath(req, "request")
+		case []interface{}:
+			e = p.NewPacket("", map[string]interface{}{
+				"request": req,
+				"data":    v,
+			})
+		default:
+			p.Logger.Errorf("Unknow structure %#v", v)
 		}
 
 		processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
