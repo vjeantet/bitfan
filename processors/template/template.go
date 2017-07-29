@@ -60,7 +60,7 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Target: "data",
+		Target: "output",
 	}
 
 	p.opt = &defaults
@@ -91,7 +91,11 @@ func (p *processor) Tick(e processors.IPacket) error {
 func (p *processor) Receive(e processors.IPacket) error {
 
 	buff := bytes.NewBufferString("")
-	p.Tpl.Execute(buff, e.Fields())
+	err := p.Tpl.Execute(buff, e.Fields())
+	if err != nil {
+		p.Logger.Errorf("template error : %s", err)
+		return err
+	}
 
 	if len(p.opt.Var) > 0 {
 		e.Fields().SetValueForPath(p.opt.Var, "var")
