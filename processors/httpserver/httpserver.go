@@ -107,6 +107,10 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		"requestPath": r.URL.Path,
 		"querystring": r.URL.Query(),
 	}
+	if r.Method == "POST" {
+		r.ParseForm()
+		req["formvalues"] = r.PostForm
+	}
 
 	var nbEvents int
 	p.Logger.Debug("request = ", req)

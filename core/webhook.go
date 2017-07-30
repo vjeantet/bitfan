@@ -8,7 +8,6 @@ import (
 	"golang.org/x/sync/syncmap"
 
 	"github.com/gosimple/slug"
-	"github.com/justinas/alice"
 )
 
 type webHook struct {
@@ -18,15 +17,15 @@ type webHook struct {
 }
 
 var webHookMap = syncmap.Map{}
-var webHookAddr = ""
-var httpHookServerMux *http.ServeMux
+var baseURL = ""
+var whPrefixURL = ""
 
 func newWebHook(pipelineLabel, nameSpace string) *webHook {
 	return &webHook{pipelineLabel: pipelineLabel, namespace: nameSpace, Hooks: []string{}}
 }
 
 func (w *webHook) buildURL(hookName string) string {
-	return strings.ToLower("/" + slug.Make(w.pipelineLabel) + "/" + slug.Make(w.namespace) + "/" + slug.Make(hookName))
+	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(w.namespace) + "/" + slug.Make(hookName))
 }
 
 // Add a new route to a given http.HandlerFunc
@@ -34,7 +33,7 @@ func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
 	hUrl := w.buildURL(hookName)
 	w.Hooks = append(w.Hooks, hookName)
 	webHookMap.Store(hUrl, hf)
-	Log().Infof("Hook added [%s/%s] => %s", w.pipelineLabel, w.namespace, "http://"+webHookAddr+hUrl)
+	Log().Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }
 
 // Delete a route
@@ -61,16 +60,6 @@ func routerHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		fmt.Fprint(w, "Not Found !")
 	}
-}
-
-func listenAndServeWebHook(addr string) {
-	httpHookServerMux = http.NewServeMux()
-	commonHandlers := alice.New(loggingHandler, recoverHandler)
-	httpHookServerMux.Handle("/", commonHandlers.ThenFunc(routerHandler))
-	webHookAddr = addr
-	go http.ListenAndServe(addr, httpHookServerMux)
-
-	Log().Infof("Agents webHook listening on %s", addr)
 }
 
 func loggingHandler(next http.Handler) http.Handler {

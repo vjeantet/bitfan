@@ -82,22 +82,26 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			}
 		}
 
-		if true == viper.IsSet("prometheus") {
-			metrics := core.NewPrometheus(viper.GetString("prometheus.listen"), viper.GetString("prometheus.path"))
-			core.SetMetrics(metrics)
-		}
-
 		if true == viper.IsSet("data") {
 			core.SetDataLocation(viper.GetString("data"))
 		} else {
 			core.SetDataLocation(filepath.Join(cwd, "data"))
 		}
 
-		if viper.GetBool("no-network") {
-			core.Start("")
-		} else {
-			core.Start(viper.GetString("webhook.listen"))
+		if false == viper.GetBool("no-network") {
+
+			handlers := []core.FnMux{}
+			handlers = append(handlers, core.WebHookServer())
+			handlers = append(handlers, core.ApiServer(api.Handler(plugins)))
+
+			if true == viper.IsSet("prometheus") {
+				handlers = append(handlers, core.PrometheusServer(viper.GetString("prometheus.path")))
+			}
+
+			core.ListenAndServe(viper.GetString("host"), handlers...)
 		}
+
+		core.Log().Debugln("bitfan started")
 
 		for _, loc := range locations.Items {
 			agt, err := loc.ConfigAgents()
@@ -125,14 +129,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			}
 		}
 
-		if viper.GetBool("no-network") {
-			log.Println("BitFan API disabled")
-		} else {
-			api.ServeREST(viper.GetString("host"), plugins)
-			log.Println("BitFan API listening on", viper.GetString("host"))
-		}
-
-		log.Println("bitfan ready")
+		core.Log().Infoln("bitfan ready")
 
 		if service.Interactive() {
 			// Wait for signal CTRL+C for send a stop event to all AgentProcessor
@@ -153,6 +150,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 }
 
 func initRunConfig(cmd *cobra.Command) {
+	viper.BindPFlag("api", cmd.Flags().Lookup("api"))
 	viper.BindPFlag("prometheus", cmd.Flags().Lookup("prometheus"))
 	viper.BindPFlag("prometheus.listen", cmd.Flags().Lookup("prometheus.listen"))
 	viper.BindPFlag("prometheus.path", cmd.Flags().Lookup("prometheus.path"))
@@ -163,13 +161,14 @@ func initRunConfig(cmd *cobra.Command) {
 }
 
 func initRunFlags(cmd *cobra.Command) {
-	cmd.Flags().Bool("prometheus", false, "Export stats using prometheus output")
-	cmd.Flags().String("prometheus.listen", "0.0.0.0:24232", "Address and port to bind Prometheus metrics")
-	cmd.Flags().String("prometheus.path", "/metrics", "Expose Prometheus metrics at specified path.")
-	cmd.Flags().String("webhook.listen", "127.0.0.1:19090", "Address and port to bind webhooks")
 	cmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
+
 	cmd.Flags().Bool("no-network", false, "Disable network (api and webhook)")
 	cmd.Flags().String("name", "", "set pipeline's name")
 	cmd.Flags().String("id", "", "set pipeline's id")
 	cmd.Flags().String("data", "", "Path to data dir")
+
+	cmd.Flags().Bool("api", true, "Expose REST Api")
+	cmd.Flags().Bool("prometheus", false, "Export stats using prometheus output")
+	cmd.Flags().String("prometheus.path", "/metrics", "Expose Prometheus metrics at specified path.")
 }

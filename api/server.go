@@ -49,7 +49,7 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-func ServeREST(hostport string, plugs map[string]map[string]core.ProcessorFactory) {
+func Handler(plugs map[string]map[string]core.ProcessorFactory) http.Handler {
 	plugins = plugs
 
 	r := gin.New()
@@ -235,10 +235,8 @@ func ServeREST(hostport string, plugs map[string]map[string]core.ProcessorFactor
 		v1.GET("/docs/outputs", getDocsOutputs)
 		v1.GET("/docs/outputs/:name", getDocsOutputsByName)
 	}
-	if hostport == "" {
-		hostport = "127.0.0.1:8080"
-	}
-	go r.Run(hostport)
+
+	return r
 }
 
 func getPipelineAssets(c *gin.Context) {
