@@ -1,7 +1,7 @@
 {
   "Doc": "HTTPPoller allows you to call an HTTP Endpoint, decode the output of it into an event",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-httppoller",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/httppoller",
   "Name": "httppoller",
   "Options": {
     "Doc": "",
@@ -9,7 +9,57 @@
       {
         "Alias": "",
         "DefaultValue": null,
-        "Doc": "",
+        "Doc": "Add a field to an event",
+        "ExampleLS": "",
+        "Name": "Add_field",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add any number of arbitrary tags to your event.\nThis can help with processing later.",
+        "ExampleLS": "",
+        "Name": "Tags",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "Add a type field to all events handled by this input",
+        "ExampleLS": "",
+        "Name": "Type",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "codec",
+        "DefaultValue": "\"plain\"",
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "codec"
+      },
+      {
+        "Alias": "interval",
+        "DefaultValue": null,
+        "Doc": "Use CRON or BITFAN notation",
+        "ExampleLS": "interval =\u003e \"every_10s\"",
+        "Name": "Interval",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "method",
+        "DefaultValue": "\"GET\"",
+        "Doc": "Http Method",
         "ExampleLS": "",
         "Name": "Method",
         "PossibleValues": null,
@@ -17,11 +67,21 @@
         "Type": "string"
       },
       {
-        "Alias": "",
+        "Alias": "url",
         "DefaultValue": null,
-        "Doc": "",
-        "ExampleLS": "",
+        "Doc": "URL",
+        "ExampleLS": "url=\u003e \"http://google.fr\"",
         "Name": "Url",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "target",
+        "DefaultValue": null,
+        "Doc": "When data is an array it stores the resulting data into the given target field.",
+        "ExampleLS": "",
+        "Name": "Target",
         "PossibleValues": null,
         "Required": false,
         "Type": "string"

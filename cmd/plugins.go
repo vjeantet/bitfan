@@ -19,11 +19,11 @@ import (
 	split "github.com/vjeantet/bitfan/processors/filter-split"
 	uuid "github.com/vjeantet/bitfan/processors/filter-uuid"
 	whitelist "github.com/vjeantet/bitfan/processors/filter-whitelist"
+	httppoller "github.com/vjeantet/bitfan/processors/httppoller"
 	beatsinput "github.com/vjeantet/bitfan/processors/input-beats"
 	execinput "github.com/vjeantet/bitfan/processors/input-exec"
 	file "github.com/vjeantet/bitfan/processors/input-file"
 	gennumbers "github.com/vjeantet/bitfan/processors/input-gennumbers"
-	httppoller "github.com/vjeantet/bitfan/processors/input-httppoller"
 	rabbitmqinput "github.com/vjeantet/bitfan/processors/input-rabbitmq"
 	stdin "github.com/vjeantet/bitfan/processors/input-stdin"
 	inputstdout "github.com/vjeantet/bitfan/processors/input-stdout"
@@ -101,6 +101,7 @@ func init() {
 	initPlugin("filter", "ldap", ldapprocessor.New)
 	initPlugin("filter", "sleep", sleepprocessor.New)
 	initPlugin("filter", "stdout", stdout.New)
+	initPlugin("filter", "http", httppoller.New)
 
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)
