@@ -5,7 +5,6 @@
 // * when new file discovered
 //
 // this processor remember last files used, it stores references in sincedb, set it to "/dev/null" to not remember used files
-
 package file
 
 import (
@@ -49,6 +48,7 @@ type options struct {
 	// How often (in seconds) we expand the filename patterns in the path option
 	// to discover new files to watch. Default value is 15
 	// When value is 0, processor will read file, one time, on start.
+	// @Default 15
 	DiscoverInterval int `mapstructure:"discover_interval"`
 
 	// Exclusions (matched against the filename, not full path).

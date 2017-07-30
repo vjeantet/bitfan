@@ -60,7 +60,7 @@ func (p *processor) Doc() *doc.Processor {
         Type:           "string",
         DefaultValue:   nil,
         PossibleValues: []string{},
-        ExampleLS:      "interval => \"every_10s\"",
+        ExampleLS:      "interval => \"@every 10s\"",
       },
     },
   },

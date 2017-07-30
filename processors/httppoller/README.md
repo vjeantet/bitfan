@@ -1,5 +1,5 @@
 # HTTPPOLLER
-HTTPPoller allows you to call an HTTP Endpoint, decode the output of it into an event
+HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event
 
 ## Synopsys
 

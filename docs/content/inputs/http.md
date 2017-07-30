@@ -1,6 +1,6 @@
 +++
 title = "http"
-description = "HTTPPoller allows you to call an HTTP Endpoint, decode the output of it into an event"
+description = "HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event"
 weight = 10
 +++
 

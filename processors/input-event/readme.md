@@ -57,6 +57,6 @@ inputeventprocessor{
 	tags => []
 	type => ""
 	message => ""
-	interval => "every_10s"
+	interval => "@every 10s"
 }
 ```

@@ -35,10 +35,10 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "Condition",
         Alias:          "condition",
-        Doc:            "set a condition to fork and route message\nwhen false, message is routed to trunk\nBy default condition is evaluated to true",
+        Doc:            "set a condition to fork and route message\nwhen false, message is routed to trunk\nBy default condition is evaluated to true and always pass",
         Required:       false,
         Type:           "string",
-        DefaultValue:   nil,
+        DefaultValue:   "true",
         PossibleValues: []string{},
         ExampleLS:      "",
       },

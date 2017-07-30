@@ -105,6 +105,7 @@ func init() {
 	initPlugin("filter", "sleep", sleepprocessor.New)
 	initPlugin("filter", "stdout", stdout.New)
 	initPlugin("filter", "http", httppoller.New)
+	initPlugin("filter", "httpout", httpoutprocessor.New)
 
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)

@@ -1,5 +1,10 @@
 # FILE
+Read file on
 
+* received event
+* when new file discovered
+
+this processor remember last files used, it stores references in sincedb, set it to "/dev/null" to not remember used files
 
 ## Synopsys
 
@@ -11,7 +16,7 @@
 | Type              | string | false    | ""                                     |
 | codec             | codec  | false    | "plain"                                |
 | read_older        | int    | false    |                                      0 |
-| discover_interval | int    | false    |                                      0 |
+| discover_interval | int    | false    |                                     15 |
 | exclude           | array  | false    | []                                     |
 | ignore_older      | int    | false    |                                      0 |
 | max_open_files    | int    | false    |                                      0 |
@@ -58,7 +63,7 @@ use this to prevent reading a file while another process is writing into.
 
 ### discover_interval
 * Value type is int
-* Default value is `0`
+* Default value is `15`
 
 How often (in seconds) we expand the filename patterns in the path option
 to discover new files to watch. Default value is 15
@@ -126,7 +131,7 @@ file{
 	type => ""
 	codec => "plain"
 	read_older => 123
-	discover_interval => 123
+	discover_interval => 15
 	exclude => []
 	ignore_older => 123
 	max_open_files => 123

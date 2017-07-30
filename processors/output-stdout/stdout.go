@@ -57,7 +57,6 @@ type options struct {
 type processor struct {
 	processors.Base
 
-	// WebHook *core.WebHook
 	opt *options
 
 	enc codecs.Encoder
@@ -99,13 +98,3 @@ func (p *processor) Start(e processors.IPacket) error {
 func (p *processor) Stop(e processors.IPacket) error {
 	return nil
 }
-
-// Handle Request received by bitfan for this agent (url hook should be registered during p.Start)
-// func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "text/html")
-// 	o := p.Memory.Items()
-// 	for i, v := range o {
-// 		// log.Printf("debug %s = %s", i, v)
-// 		w.Write([]byte("<h3>" + i + "</h3><pre>" + v.(string) + "</pre>"))
-// 	}
-// }

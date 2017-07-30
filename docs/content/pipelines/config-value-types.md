@@ -49,6 +49,77 @@ Example:
   port => 33
 ```
 
+## String
+
+A string must be a single character sequence. Note that string values are
+enclosed in quotes, either double or single. 
+
+Literal quotes in the string
+need to be escaped with a backslash if they are of the same kind as the string delimiter, i.e. single quotes within a single-quoted string need to be escaped as well as double quotes within a double-quoted string.
+
+Example:
+```
+  name => "Hello world"
+  name => 'It\'s a beautiful day'
+```
+
+## Codec
+
+Codecs are essentially stream decoder or encoder depending on where it operates, as part of an input or output.
+They have their own options to handle charset, formating, etc...
+
+[list of available codecs]({{%relref "codecs/_index.md"%}})
+
+This example codec, used in stdout or http or file or .... will encode your event into a utf-8 json with "   " as indentation
+```
+codec => json {
+    charset => "UTF-8"
+    indent => "    "
+}
+
+```
+
+
+## Path
+
+A path is a string that represents a valid operating system path.
+
+Example:
+```
+  my_path => "/tmp/logstash"
+```
+
+## Location
+
+Location is a "smart string", when its value is a :
+
+* string --> well.. it will be used as a string
+* system path --> the file's content will be used
+* web url --> the url's raw body will be used
+
+{{%info%}}**system path and web url** can be relative to their configuration file, even if the configuration file was used from a remote URL{{%/info%}}
+
+Value will be parsed as a go template.
+
+Theses functions are available to go templates
+
+
+| name | description | params | examples |
+| ----------   | ---------- | --------------  | -------------------------- |
+| TS | format event's @timestamp with [jodaTime layout](http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html) | params | examples |
+| DateFormat | format a time.Time with jodaTime layout | params | examples |
+| Time | converts the textual representation of the datetime string into a time.Time | params | examples |
+| Now | returns the current local time. | params | examples |
+| NumFmt | format a number | params | examples |
+| SafeHTML | use string as HTML | params | examples |
+| HTMLUnescape | unescape a html string | params | examples |
+| HTMLEscape | escape a html string | params | examples |
+| Lower | lowercase a string | params | examples |
+| Upper | uppercase a string | params | examples |
+| Trim | trim a string | params | examples |
+
+
+
 ## Interval
 
 Express interval and schedule processor run with a **cron spec** a **predefined schedule** or a **every <duration>** format.
@@ -107,56 +178,5 @@ Example:
   #interval => "@every 10s" # Every 10 seconds
 ```
 
-## Location
 
-Location is a "smart string", when its value is a :
-
-* string --> well.. it will be used as a string
-* system path --> the file's content will be used
-* web url --> the url's raw body will be used
-
-{{%info%}}**system path and web url** can be relative to their configuration file, even if the configuration file was used from a remote URL{{%/info%}}
-
-Value will be parsed as a go template.
-
-Theses functions are available to go templates
-
-
-| name | description | params | examples |
-| ----------   | ---------- | --------------  | -------------------------- |
-| TS | format event's @timestamp with jodaTime layout | params | examples |
-| DateFormat | format a time.Time with jodaTime layout | params | examples |
-| Time | converts the textual representation of the datetime string into a time.Time | params | examples |
-| Now | returns the current local time. | params | examples |
-| NumFmt | format a number | params | examples |
-| SafeHTML | use string as HTML | params | examples |
-| HTMLUnescape | unescape a html string | params | examples |
-| HTMLEscape | escape a html string | params | examples |
-| Lower | lowercase a string | params | examples |
-| Upper | uppercase a string | params | examples |
-| Trim | trim a string | params | examples |
-
-
-## Path
-
-A path is a string that represents a valid operating system path.
-
-Example:
-```
-  my_path => "/tmp/logstash"
-```
-
-## String
-
-A string must be a single character sequence. Note that string values are
-enclosed in quotes, either double or single. 
-
-Literal quotes in the string
-need to be escaped with a backslash if they are of the same kind as the string delimiter, i.e. single quotes within a single-quoted string need to be escaped as well as double quotes within a double-quoted string.
-
-Example:
-```
-  name => "Hello world"
-  name => 'It\'s a beautiful day'
-```
 

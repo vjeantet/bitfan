@@ -50,7 +50,7 @@
         "Alias": "interval",
         "DefaultValue": null,
         "Doc": "Use CRON or BITFAN notation",
-        "ExampleLS": "interval =\u003e \"every_10s\"",
+        "ExampleLS": "interval =\u003e \"@every 10s\"",
         "Name": "Interval",
         "PossibleValues": null,
         "Required": true,

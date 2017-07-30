@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "file",
   ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-file",
-  Doc:        "",
+  Doc:        "Read file on\n\n* received event\n* when new file discovered\n\nthis processor remember last files used, it stores references in sincedb, set it to \"/dev/null\" to not remember used files",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{
     Doc:     "",
@@ -68,7 +68,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:            "How often (in seconds) we expand the filename patterns in the path option\nto discover new files to watch. Default value is 15\nWhen value is 0, processor will read file, one time, on start.",
         Required:       false,
         Type:           "int",
-        DefaultValue:   nil,
+        DefaultValue:   "15",
         PossibleValues: []string{},
         ExampleLS:      "",
       },

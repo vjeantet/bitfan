@@ -15,7 +15,7 @@ Behavior :
 |--------------|--------|----------|---------------|
 | Add_field    | hash   | false    | {}            |
 | Add_tag      | array  | false    | []            |
-| condition    | string | false    | ""            |
+| condition    | string | false    | true          |
 | fork         | bool   | false    | false         |
 | Remove_field | array  | false    | []            |
 | Remove_tag   | array  | false    | []            |
@@ -41,11 +41,11 @@ Tags can be dynamic and include parts of the event using the %{field} syntax.
 
 ### condition
 * Value type is string
-* Default value is `""`
+* Default value is `true`
 
 set a condition to fork and route message
 when false, message is routed to trunk
-By default condition is evaluated to true
+By default condition is evaluated to true and always pass
 
 ### fork
 * Value type is bool
@@ -96,7 +96,7 @@ The replacement is case-sensitive.
 route{
 	add_field => {}
 	add_tag => []
-	condition => ""
+	condition => true
 	fork => false
 	remove_field => []
 	remove_tag => []

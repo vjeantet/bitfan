@@ -34,7 +34,7 @@ type options struct {
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
-	// @Default "plain"
+	// @Default "json"
 	// @Type codec
 	Codec codecs.Codec
 
@@ -43,7 +43,7 @@ type options struct {
 	Uri string
 
 	// Add headers to output
-	// @default {"Content-Type" => "text/plain"}
+	// @default {"Content-Type" => "application/json"}
 	Headers map[string]string
 }
 
@@ -58,10 +58,10 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec: codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Codec: codecs.New("json", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 		Uri:   "out",
 		Headers: map[string]string{
-			"Content-Type": "text/plain",
+			"Content-Type": "application/json",
 		},
 	}
 	p.opt = &defaults

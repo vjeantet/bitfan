@@ -37,7 +37,8 @@ type options struct {
 
 	// set a condition to fork and route message
 	// when false, message is routed to trunk
-	// By default condition is evaluated to true
+	// By default condition is evaluated to true and always pass
+	// @Default true
 	Condition string `mapstructure:"condition"`
 
 	// Fork mode disabled by default

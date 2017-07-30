@@ -15,7 +15,7 @@ URL is available as http://webhookhost/pluginLabel/URI
 | Add_field | hash   | false    | {}            |
 | Tags      | array  | false    | []            |
 | Type      | string | false    | ""            |
-| Codec     | codec  | false    | "plain"       |
+| Codec     | codec  | false    | "json"        |
 | Uri       | string | false    | "out"         |
 | Headers   | hash   | false    | {}            |
 
@@ -43,7 +43,7 @@ Add a type field to all events handled by this input
 
 ### Codec
 * Value type is codec
-* Default value is `"plain"`
+* Default value is `"json"`
 
 The codec used for input data. Input codecs are a convenient method for decoding
 your data before it enters the input, without needing a separate filter in your bitfan pipeline
@@ -69,7 +69,7 @@ httpoutprocessor{
 	add_field => {}
 	tags => []
 	type => ""
-	codec => "plain"
+	codec => "json"
 	uri => "out"
 	headers => {}
 }

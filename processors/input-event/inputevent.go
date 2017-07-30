@@ -22,7 +22,7 @@ type options struct {
 	Message string
 
 	// Use CRON or BITFAN notation
-	// @ExampleLS interval => "every_10s"
+	// @ExampleLS interval => "@every 10s"
 	Interval string `mapstructure:"interval" validate:"required"`
 }
 

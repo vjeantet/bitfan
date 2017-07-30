@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "httppoller",
   ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/httppoller",
-  Doc:        "HTTPPoller allows you to call an HTTP Endpoint, decode the output of it into an event",
+  Doc:        "HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{
     Doc:     "",
