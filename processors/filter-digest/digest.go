@@ -2,6 +2,7 @@
 package digest
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/vjeantet/bitfan/processors"
@@ -55,16 +56,25 @@ type options struct {
 	// When should Digest send a digested event ?
 	// Use CRON or BITFAN notation
 	// @ExampleLS interval => "every_10s"
-	Interval string `mapstructure:"interval" validate:"required"`
+	Interval string `mapstructure:"interval"`
+
+	// With min > 0, digest will not fire an event if less than min events were digested
+	Count int `mapstructure:"count"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
-	defaults := options{}
+	defaults := options{
+		Count: 0,
+	}
 	p.opt = &defaults
 	if err = p.ConfigureAndValidate(ctx, conf, p.opt); err != nil {
 		return err
 	}
 	p.values = map[string]interface{}{}
+
+	if p.opt.Interval == "" && p.opt.Count == 0 {
+		return fmt.Errorf("no interval and no Count settings set")
+	}
 
 	return nil
 }
@@ -83,10 +93,26 @@ func (p *processor) Receive(e processors.IPacket) error {
 		p.values[k] = e.Fields()
 	}
 
+	// When no interval, flush event when Count events where digested
+	if p.opt.Interval == "" {
+		if len(p.values) >= p.opt.Count {
+			p.Logger.Debugf("Flush digester ! %d/%d events digested", len(p.values), p.opt.Count)
+			return p.Tick(e)
+		}
+	}
+
 	return nil
 }
 
 func (p *processor) Tick(e processors.IPacket) error {
+	// When Interval is set, and total digested events < Count : ignore
+	if p.opt.Interval != "" {
+		if len(p.values) < p.opt.Count {
+			p.Logger.Debugf("Ignore tick interval, %d/%s events digested", len(p.values), p.opt.Count)
+			return nil
+		}
+	}
+
 	ne := p.NewPacket("", p.values)
 	processors.ProcessCommonFields2(ne.Fields(),
 		p.opt.AddField,
