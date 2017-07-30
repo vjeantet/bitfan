@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/parnurzeal/gorequest"
+	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -14,8 +15,33 @@ func New() processors.Processor {
 }
 
 type options struct {
-	Method string
-	Url    string
+	// Add a field to an event
+	Add_field map[string]interface{}
+
+	// Add any number of arbitrary tags to your event.
+	// This can help with processing later.
+	Tags []string
+
+	// Add a type field to all events handled by this input
+	Type string
+
+	// The codec used for input data. Input codecs are a convenient method for decoding
+	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
+	// @Default "plain"
+	// @Type codec
+	Codec codecs.Codec `mapstructure:"codec"`
+
+	// Use CRON or BITFAN notation
+	// @ExampleLS interval => "every_10s"
+	Interval string `mapstructure:"interval"`
+
+	// Http Method
+	// @Default : "GET"
+	Method string `mapstructure:"method"`
+
+	// URL
+	// @ExampleLS : url=> "http://google.fr"
+	Url string `mapstructure:"url" validate:"required"`
 }
 
 type processor struct {
@@ -35,6 +61,10 @@ func (p *processor) Start(e processors.IPacket) error {
 }
 
 func (p *processor) Tick(e processors.IPacket) error {
+	return p.Receive(e)
+}
+
+func (p *processor) Receive(e processors.IPacket) error {
 	var (
 		errs []error
 		resp gorequest.Response
