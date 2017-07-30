@@ -105,7 +105,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	if false == filepath.IsAbs(p.opt.SincedbPath) {
 		p.opt.SincedbPath = filepath.Join(p.DataLocation, p.opt.SincedbPath)
 	}
-	p.Logger.Debugf("sincedb=", p.opt.SincedbPath)
+	p.Logger.Debugf("sincedb=%s", p.opt.SincedbPath)
 
 	// Fix relative paths
 	fixedPaths := []string{}
