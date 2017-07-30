@@ -18,6 +18,7 @@
 | path              | array  | true     | []                                     |
 | sincedb_path      | string | false    | :                                      |
 |                   |        |          | "$dataLocation/readfile/.sincedb.json" |
+| target            | string | false    | ""                                     |
 
 
 ## Details
@@ -108,6 +109,12 @@ The sincedb database keeps track of the current position of monitored
 log files that will be written to disk.
 Set it to "/dev/null" to not use sincedb features
 
+### target
+* Value type is string
+* Default value is `""`
+
+When decoded data is an array it stores the resulting data into the given target field.
+
 
 
 ## Configuration blueprint
@@ -125,5 +132,6 @@ file{
 	max_open_files => 123
 	path => []
 	: sincedb_path => "/dev/null"
+	target => ""
 }
 ```

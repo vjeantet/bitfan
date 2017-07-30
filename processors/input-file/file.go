@@ -81,6 +81,9 @@ type options struct {
 	// @Default : "$dataLocation/readfile/.sincedb.json"
 	// @ExampleLS : sincedb_path => "/dev/null"
 	SincedbPath string `mapstructure:"sincedb_path"`
+
+	// When decoded data is an array it stores the resulting data into the given target field.
+	Target string `mapstructure:"target"`
 }
 
 type processor struct {
@@ -105,6 +108,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		ReadOlder:        5,
 		SincedbPath:      ".sincedb.json",
 		Codec:            codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Target:           "data",
 	}
 
 	p.opt = &defaults
@@ -303,10 +307,10 @@ func (p *processor) readfile(pathfile string) error {
 				e.Fields().SetValueForPath(pathfile, "path")
 			case []interface{}:
 				e = p.NewPacket("", map[string]interface{}{
-					"host":     p.host,
-					"basename": filepath.Base(pathfile),
-					"path":     pathfile,
-					"data":     v,
+					"host":       p.host,
+					"basename":   filepath.Base(pathfile),
+					"path":       pathfile,
+					p.opt.Target: v,
 				})
 			default:
 				p.Logger.Errorf("Unknow structure %#v", v)

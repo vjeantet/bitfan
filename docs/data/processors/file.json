@@ -115,6 +115,16 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "string"
+      },
+      {
+        "Alias": "target",
+        "DefaultValue": null,
+        "Doc": "When decoded data is an array it stores the resulting data into the given target field.",
+        "ExampleLS": "",
+        "Name": "Target",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
       }
     ]
   },
