@@ -63,8 +63,18 @@
         "ExampleLS": "interval =\u003e \"every_10s\"",
         "Name": "Interval",
         "PossibleValues": null,
-        "Required": true,
+        "Required": false,
         "Type": "string"
+      },
+      {
+        "Alias": "count",
+        "DefaultValue": null,
+        "Doc": "With min \u003e 0, digest will not fire an event if less than min events were digested",
+        "ExampleLS": "",
+        "Name": "Count",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
       }
     ]
   },
