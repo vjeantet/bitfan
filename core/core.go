@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	fqdn "github.com/ShowMax/go-fqdn"
@@ -43,9 +44,23 @@ func SetMetrics(s Metrics) {
 	metrics = s
 }
 
-func SetDataLocation(location string) {
+func SetDataLocation(location string) error {
 	dataLocation = location
+	fileInfo, err := os.Stat(dataLocation)
+	if err != nil {
+		err = os.MkdirAll(dataLocation, os.ModePerm)
+		if err != nil {
+			Log().Errorf("%s - %s", dataLocation, err)
+		} else {
+			Log().Debugf("created folder %s", dataLocation)
+		}
+	} else {
+		if false == fileInfo.IsDir() {
+			Log().Errorf("data path %s is not a directory", dataLocation)
+		}
+	}
 	Log().Debugf("data location : %s", location)
+	return err
 }
 
 // DataLocation returns the bitfan's data filepath

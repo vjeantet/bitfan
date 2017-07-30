@@ -82,10 +82,8 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			}
 		}
 
-		if true == viper.IsSet("data") {
-			core.SetDataLocation(viper.GetString("data"))
-		} else {
-			core.SetDataLocation(filepath.Join(cwd, "data"))
+		if err := core.SetDataLocation(viper.GetString("data")); err != nil {
+			core.Log().Errorf("error with data location - %s", err)
 		}
 
 		if false == viper.GetBool("no-network") {
@@ -166,7 +164,8 @@ func initRunFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("no-network", false, "Disable network (api and webhook)")
 	cmd.Flags().String("name", "", "set pipeline's name")
 	cmd.Flags().String("id", "", "set pipeline's id")
-	cmd.Flags().String("data", "", "Path to data dir")
+	cwd, _ := os.Getwd()
+	cmd.Flags().String("data", filepath.Join(cwd, ".bitfan"), "Path to data dir")
 
 	cmd.Flags().Bool("api", true, "Expose REST Api")
 	cmd.Flags().Bool("prometheus", false, "Export stats using prometheus output")
