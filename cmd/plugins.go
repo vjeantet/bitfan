@@ -21,6 +21,7 @@ import (
 	whitelist "github.com/vjeantet/bitfan/processors/filter-whitelist"
 	httppoller "github.com/vjeantet/bitfan/processors/httppoller"
 	beatsinput "github.com/vjeantet/bitfan/processors/input-beats"
+	inputeventprocessor "github.com/vjeantet/bitfan/processors/input-event"
 	execinput "github.com/vjeantet/bitfan/processors/input-exec"
 	file "github.com/vjeantet/bitfan/processors/input-file"
 	gennumbers "github.com/vjeantet/bitfan/processors/input-gennumbers"
@@ -76,6 +77,7 @@ func init() {
 	initPlugin("input", "ldap", ldapprocessor.New)
 	initPlugin("input", "stop", stopprocessor.New)
 	initPlugin("input", "httpserver", httpserverprocessor.New)
+	initPlugin("input", "event", inputeventprocessor.New)
 
 	initPlugin("filter", "eval", evalprocessor.New)
 	initPlugin("filter", "readfile", file.New)
