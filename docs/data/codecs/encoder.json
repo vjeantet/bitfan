@@ -1,20 +1,9 @@
 {
   "Decoder": {
-    "Doc": "doc decoder",
+    "Doc": "",
     "Options": {
-      "Doc": "doc decoderOptions",
-      "Options": [
-        {
-          "Alias": "",
-          "DefaultValue": "\"\\\\n\"",
-          "Doc": "Change the delimiter that separates lines",
-          "ExampleLS": "",
-          "Name": "Delimiter",
-          "PossibleValues": null,
-          "Required": false,
-          "Type": "string"
-        }
-      ]
+      "Doc": "",
+      "Options": []
     }
   },
   "Doc": "doc codec",
@@ -25,24 +14,14 @@
       "Doc": "doc encoderOptions",
       "Options": [
         {
-          "Alias": "",
-          "DefaultValue": "\"\\\\n\"",
-          "Doc": "Change the delimiter that separates lines",
-          "ExampleLS": "",
-          "Name": "Delimiter",
-          "PossibleValues": null,
-          "Required": false,
-          "Type": "string"
-        },
-        {
           "Alias": "format",
-          "DefaultValue": "\"{{Timestamp .}} {{.host}} {{.message}}\"",
+          "DefaultValue": "\"{{.message}}\"",
           "Doc": "Format as a golang text/template",
           "ExampleLS": "",
           "Name": "Format",
           "PossibleValues": null,
           "Required": false,
-          "Type": "string"
+          "Type": "location"
         },
         {
           "Alias": "var",
@@ -57,7 +36,7 @@
       ]
     }
   },
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/line",
+  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/plain",
   "Name": "encoder",
-  "PkgName": "linecodec"
+  "PkgName": "plaincodec"
 }

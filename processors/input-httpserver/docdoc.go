@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "httpserverprocessor",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/httpserver",
+  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-httpserver",
   Doc:        "Listen and read a http request to build events with it.\n\nProcessor respond with a HTTP code as :\n\n* `202` when request has been accepted, in body : the total number of event created\n* `500` when an error occurs, in body : an error description\n\nUse codecs to process body content as json / csv / lines / json lines / ....\n\nURL is available as http://webhookhost/pluginLabel/URI\n\n* webhookhost is defined by bitfan at startup\n* pluginLabel is defined in pipeline configuration, it's the named processor if you put one, or `input_httpserver` by default\n* URI is defined in plugin configuration (see below)",
   DocShort:   "Reads events from standard input",
   Options:    &doc.ProcessorOptions{

@@ -49,7 +49,8 @@ import (
 	use "github.com/vjeantet/bitfan/processors/use"
 	when "github.com/vjeantet/bitfan/processors/when"
 
-	httpserverprocessor "github.com/vjeantet/bitfan/processors/httpserver"
+	httpoutprocessor "github.com/vjeantet/bitfan/processors/httpout"
+	inputhttpserverprocessor "github.com/vjeantet/bitfan/processors/input-httpserver"
 	ldapprocessor "github.com/vjeantet/bitfan/processors/ldap"
 	sleepprocessor "github.com/vjeantet/bitfan/processors/sleep"
 	sqlprocessor "github.com/vjeantet/bitfan/processors/sql"
@@ -76,7 +77,7 @@ func init() {
 	initPlugin("input", "gennumbers", gennumbers.New)
 	initPlugin("input", "ldap", ldapprocessor.New)
 	initPlugin("input", "stop", stopprocessor.New)
-	initPlugin("input", "httpserver", httpserverprocessor.New)
+	initPlugin("input", "httpserver", inputhttpserverprocessor.New)
 	initPlugin("input", "event", inputeventprocessor.New)
 
 	initPlugin("filter", "eval", evalprocessor.New)
@@ -121,6 +122,7 @@ func init() {
 	initPlugin("output", "http", httpoutput.New)
 	initPlugin("output", "sql", sqlprocessor.New)
 	initPlugin("output", "template", templateprocessor.New)
+	initPlugin("output", "httpout", httpoutprocessor.New)
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)
