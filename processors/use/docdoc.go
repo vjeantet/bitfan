@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "use",
   ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/use",
-  Doc:        "",
+  Doc:        "When used in input (input->filter->o) the processor will receive events from the last filter from the pipeline used in configuration file.\n\nWhen used in filter (i->filter->o) the processor will\n\n* pass the event to the first filter plugin found in the used configuration file\n* receive events from the last filter plugin found in the used configuration file\n\nWhen used in output (i->filter->output->o) the processor will\n\n* pass the event to the first filter plugin found in the used configuration file",
   DocShort:   "Include a config file",
   Options:    &doc.ProcessorOptions{
     Doc:     "",

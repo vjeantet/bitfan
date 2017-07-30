@@ -1,5 +1,14 @@
 # USE
+When used in input (input->filter->o) the processor will receive events from the last filter from the pipeline used in configuration file.
 
+When used in filter (i->filter->o) the processor will
+
+* pass the event to the first filter plugin found in the used configuration file
+* receive events from the last filter plugin found in the used configuration file
+
+When used in output (i->filter->output->o) the processor will
+
+* pass the event to the first filter plugin found in the used configuration file
 
 ## Synopsys
 
