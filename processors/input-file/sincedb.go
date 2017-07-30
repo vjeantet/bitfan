@@ -22,6 +22,9 @@ func (s *sinceDBInfo) has(str string) bool {
 }
 
 func (p *processor) markFileReaded(filepath string) {
+	if p.opt.SincedbPath == "" || p.opt.SincedbPath == "/dev/null" {
+		return
+	}
 	p.sinceDBInfos.Files = append(p.sinceDBInfos.Files, filepath)
 }
 

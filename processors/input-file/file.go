@@ -1,4 +1,11 @@
 //go:generate bitfanDoc
+// Read file on
+//
+// * received event
+// * when new file discovered
+//
+// this processor remember last files used, it stores references in sincedb, set it to "/dev/null" to not remember used files
+
 package file
 
 import (
@@ -41,6 +48,7 @@ type options struct {
 
 	// How often (in seconds) we expand the filename patterns in the path option
 	// to discover new files to watch. Default value is 15
+	// When value is 0, processor will read file, one time, on start.
 	DiscoverInterval int `mapstructure:"discover_interval"`
 
 	// Exclusions (matched against the filename, not full path).
@@ -69,6 +77,9 @@ type options struct {
 	// Path of the sincedb database file
 	// The sincedb database keeps track of the current position of monitored
 	// log files that will be written to disk.
+	// Set it to "/dev/null" to not use sincedb features
+	// @Default : "$dataLocation/readfile/.sincedb.json"
+	// @ExampleLS : sincedb_path => "/dev/null"
 	SincedbPath string `mapstructure:"sincedb_path"`
 }
 
@@ -92,7 +103,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		MaxOpenFiles:     5,
 		DiscoverInterval: 15,
 		ReadOlder:        5,
-		SincedbPath:      ".sincedb-readfile.json",
+		SincedbPath:      ".sincedb.json",
 		Codec:            codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 	}
 
@@ -124,7 +135,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 func (p *processor) MaxConcurent() int { return 1 }
 
 func (p *processor) Start(e processors.IPacket) error {
-
 	p.loadSinceDBInfos()
 	p.q2 = make(chan bool)
 	p.q = make(chan bool)
@@ -144,7 +154,6 @@ func (p *processor) Start(e processors.IPacket) error {
 	p.Logger.Debug("Start file reader <- towatch")
 	// Start file reader <- towatch
 	go func() {
-
 		for {
 			select {
 			case <-p.q2:
@@ -163,19 +172,47 @@ func (p *processor) Start(e processors.IPacket) error {
 
 func (p *processor) Receive(e processors.IPacket) error {
 	// read files
-	var matches []string
+	matches, err := p.filesToRead()
+	if err != nil {
+		return err
+	}
 
+	// send to watchChan
+	for _, name := range matches {
+		p.filestoWatch <- name
+	}
+
+	return nil
+}
+
+func (p *processor) discoverFilesToRead() error {
+	for {
+
+		p.Receive(nil)
+
+		select {
+		case <-time.NewTicker(time.Second * time.Duration(p.opt.DiscoverInterval)).C:
+			p.saveSinceDBInfos()
+			continue
+		case <-p.q2:
+			return nil
+		}
+	}
+	return nil
+}
+
+func (p *processor) filesToRead() ([]string, error) {
+	var matches []string
 	// find files
-	p.Logger.Debugln("p.opt.Path = ", p.opt.Path)
 	for _, currentPath := range p.opt.Path {
 		if currentMatches, err := zglob.Glob(currentPath); err == nil {
 			// if currentMatches, err := filepath.Glob(currentPath); err == nil {
+			p.Logger.Debugf("scan naive %s", currentMatches)
 			matches = append(matches, currentMatches...)
 			continue
 		}
-		return fmt.Errorf("glob(%q) failed", currentPath)
+		return matches, fmt.Errorf("glob(%q) failed", currentPath)
 	}
-	p.Logger.Debugln("files = ", matches)
 
 	// ignore excluded
 	if len(p.opt.Exclude) > 0 {
@@ -184,6 +221,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 			for _, name := range matches {
 				if match, _ := filepath.Match(pattern, name); match == false {
 					matches_tmp = append(matches_tmp, name)
+				} else {
+					p.Logger.Debugf("scan ignore (exlude) %s", name)
 				}
 			}
 		}
@@ -195,6 +234,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 	for _, name := range matches {
 		if !p.sinceDBInfos.has(name) {
 			matches_tmp = append(matches_tmp, name)
+		} else {
+			p.Logger.Debugf("scan ignore (sincedb) %s", name)
 		}
 	}
 	matches = matches_tmp
@@ -211,89 +252,14 @@ func (p *processor) Receive(e processors.IPacket) error {
 		if duration > float64(p.opt.ReadOlder) {
 			// ignore  too old file
 			if p.opt.IgnoreOlder > 0 && duration < float64(p.opt.IgnoreOlder) {
+				p.Logger.Debugf("scan ignore (too old) %s", name)
 			} else {
 				matches_tmp = append(matches_tmp, name)
 			}
 		}
 	}
 	matches = matches_tmp
-	// send to watchChan
-	for _, name := range matches {
-		p.readfile(name)
-	}
-
-	return nil
-}
-
-func (p *processor) discoverFilesToRead() error {
-	for {
-		var matches []string
-
-		// find files
-		for _, currentPath := range p.opt.Path {
-			if currentMatches, err := zglob.Glob(currentPath); err == nil {
-				// if currentMatches, err := filepath.Glob(currentPath); err == nil {
-				matches = append(matches, currentMatches...)
-				continue
-			}
-			return fmt.Errorf("glob(%q) failed", currentPath)
-		}
-
-		// ignore excluded
-		if len(p.opt.Exclude) > 0 {
-			var matches_tmp []string
-			for _, pattern := range p.opt.Exclude {
-				for _, name := range matches {
-					if match, _ := filepath.Match(pattern, name); match == false {
-						matches_tmp = append(matches_tmp, name)
-					}
-				}
-			}
-			matches = matches_tmp
-		}
-
-		// ignore already seen files
-		var matches_tmp []string
-		for _, name := range matches {
-			if !p.sinceDBInfos.has(name) {
-				matches_tmp = append(matches_tmp, name)
-			}
-		}
-		matches = matches_tmp
-
-		matches_tmp = []string{}
-		for _, name := range matches {
-			info, err := os.Stat(name)
-			if err != nil {
-				p.Logger.Warnf("Error while stating " + name)
-				break
-			}
-			duration := time.Since(info.ModTime()).Seconds()
-			// ignore modified to soon
-			if duration > float64(p.opt.ReadOlder) {
-				// ignore  too old file
-				if p.opt.IgnoreOlder > 0 && duration < float64(p.opt.IgnoreOlder) {
-				} else {
-					matches_tmp = append(matches_tmp, name)
-				}
-			}
-		}
-		matches = matches_tmp
-
-		// send to watchChan
-		for _, name := range matches {
-			p.filestoWatch <- name
-		}
-
-		select {
-		case <-time.NewTicker(time.Second * time.Duration(p.opt.DiscoverInterval)).C:
-			p.saveSinceDBInfos()
-			continue
-		case <-p.q2:
-			return nil
-		}
-	}
-	return nil
+	return matches, nil
 }
 
 func (p *processor) readfile(pathfile string) error {
@@ -365,6 +331,8 @@ func (p *processor) readfile(pathfile string) error {
 func (p *processor) Stop(e processors.IPacket) error {
 	close(p.q2)
 	<-p.q
-	p.saveSinceDBInfos()
+	if p.opt.DiscoverInterval > 0 {
+		p.saveSinceDBInfos()
+	}
 	return nil
 }

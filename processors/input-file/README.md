@@ -4,19 +4,20 @@
 ## Synopsys
 
 
-|      SETTING      |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-------------------|--------|----------|---------------|
-| Add_field         | hash   | false    | {}            |
-| Tags              | array  | false    | []            |
-| Type              | string | false    | ""            |
-| codec             | codec  | false    | "plain"       |
-| read_older        | int    | false    |             0 |
-| discover_interval | int    | false    |             0 |
-| exclude           | array  | false    | []            |
-| ignore_older      | int    | false    |             0 |
-| max_open_files    | int    | false    |             0 |
-| path              | array  | true     | []            |
-| sincedb_path      | string | false    | ""            |
+|      SETTING      |  TYPE  | REQUIRED |             DEFAULT VALUE              |
+|-------------------|--------|----------|----------------------------------------|
+| Add_field         | hash   | false    | {}                                     |
+| Tags              | array  | false    | []                                     |
+| Type              | string | false    | ""                                     |
+| codec             | codec  | false    | "plain"                                |
+| read_older        | int    | false    |                                      0 |
+| discover_interval | int    | false    |                                      0 |
+| exclude           | array  | false    | []                                     |
+| ignore_older      | int    | false    |                                      0 |
+| max_open_files    | int    | false    |                                      0 |
+| path              | array  | true     | []                                     |
+| sincedb_path      | string | false    | :                                      |
+|                   |        |          | "$dataLocation/readfile/.sincedb.json" |
 
 
 ## Details
@@ -60,6 +61,7 @@ use this to prevent reading a file while another process is writing into.
 
 How often (in seconds) we expand the filename patterns in the path option
 to discover new files to watch. Default value is 15
+When value is 0, processor will read file, one time, on start.
 
 ### exclude
 * Value type is array
@@ -99,11 +101,12 @@ You may also configure multiple paths.
 
 ### sincedb_path
 * Value type is string
-* Default value is `""`
+* Default value is `: "$dataLocation/readfile/.sincedb.json"`
 
 Path of the sincedb database file
 The sincedb database keeps track of the current position of monitored
 log files that will be written to disk.
+Set it to "/dev/null" to not use sincedb features
 
 
 
@@ -121,6 +124,6 @@ file{
 	ignore_older => 123
 	max_open_files => 123
 	path => []
-	sincedb_path => ""
+	: sincedb_path => "/dev/null"
 }
 ```

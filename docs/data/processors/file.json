@@ -59,7 +59,7 @@
       {
         "Alias": "discover_interval",
         "DefaultValue": null,
-        "Doc": "How often (in seconds) we expand the filename patterns in the path option\nto discover new files to watch. Default value is 15",
+        "Doc": "How often (in seconds) we expand the filename patterns in the path option\nto discover new files to watch. Default value is 15\nWhen value is 0, processor will read file, one time, on start.",
         "ExampleLS": "",
         "Name": "DiscoverInterval",
         "PossibleValues": null,
@@ -108,9 +108,9 @@
       },
       {
         "Alias": "sincedb_path",
-        "DefaultValue": null,
-        "Doc": "Path of the sincedb database file\nThe sincedb database keeps track of the current position of monitored\nlog files that will be written to disk.",
-        "ExampleLS": "",
+        "DefaultValue": ": \"$dataLocation/readfile/.sincedb.json\"",
+        "Doc": "Path of the sincedb database file\nThe sincedb database keeps track of the current position of monitored\nlog files that will be written to disk.\nSet it to \"/dev/null\" to not use sincedb features",
+        "ExampleLS": ": sincedb_path =\u003e \"/dev/null\"",
         "Name": "SincedbPath",
         "PossibleValues": null,
         "Required": false,
