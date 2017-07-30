@@ -124,6 +124,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 		"Lower":        (*templateFunctions)(nil).lower,
 		"Upper":        (*templateFunctions)(nil).upper,
 		"Trim":         (*templateFunctions)(nil).trim,
+		"TrimPrefix":   (*templateFunctions)(nil).trimPrefix,
 	}
 
 	tpl, errTpl := template.New("").Funcs(funcMap).Parse(string(content))

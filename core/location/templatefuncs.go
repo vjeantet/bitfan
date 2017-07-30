@@ -81,6 +81,22 @@ func (t *templateFunctions) trim(s, cutset interface{}) (string, error) {
 	return strings.Trim(ss, sc), nil
 }
 
+// TrimPrefix returns s without the provided leading prefix string.
+// If s doesn't start with prefix, s is returned unchanged.
+func (t *templateFunctions) trimPrefix(s, cutset interface{}) (string, error) {
+	ss, err := cast.ToStringE(s)
+	if err != nil {
+		return "", err
+	}
+
+	sc, err := cast.ToStringE(cutset)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimPrefix(ss, sc), nil
+}
+
 // Format converts the textual representation of the datetime string into
 // the other form or returns it of the time.Time value. These are formatted
 // with the layout string
