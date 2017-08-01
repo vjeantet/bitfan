@@ -133,9 +133,9 @@ func init() {
 
 func initPluginsMap() map[string]map[string]core.ProcessorFactory {
 	return map[string]map[string]core.ProcessorFactory{
-		"input":  map[string]core.ProcessorFactory{},
-		"filter": map[string]core.ProcessorFactory{},
-		"output": map[string]core.ProcessorFactory{},
+		"input":  {},
+		"filter": {},
+		"output": {},
 	}
 }
 

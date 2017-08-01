@@ -163,7 +163,7 @@ func (l *Location) AssetsContent() map[string]string {
 	})
 
 	if err != nil {
-		fmt.Printf("AssetsContent error - ", err)
+		fmt.Printf("AssetsContent error - %s", err)
 	}
 
 	return assets

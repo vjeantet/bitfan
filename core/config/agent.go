@@ -65,7 +65,7 @@ func Sort(agentConflist []Agent, sortOrder int) []Agent {
 }
 
 func Normalize(agentConf []Agent) []Agent {
-	for k, _ := range agentConf {
+	for k := range agentConf {
 		agentConf[k].AgentRecipients = whoWaitForThisAgentID(agentConf[k].ID, agentConf)
 	}
 	return agentConf

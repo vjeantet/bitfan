@@ -169,7 +169,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}, nil
+				return CombinedFileConfigAgents, []config.Port{{AgentID: agent.ID, PortNumber: 0}}, nil
 			}
 		}
 	}
@@ -426,7 +426,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 0}}, nil
+				return CombinedFileConfigAgents, []config.Port{{AgentID: agent.ID, PortNumber: 0}}, nil
 			}
 		}
 	}
@@ -453,7 +453,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []config.Agent{agent}...)
 
 		// return untouched outputsPorts
-		return CombinedFileConfigAgents, []config.Port{config.Port{AgentID: agent.ID, PortNumber: 1}}, nil
+		return CombinedFileConfigAgents, []config.Port{{AgentID: agent.ID, PortNumber: 1}}, nil
 	}
 
 	// interval can be a number, a string number or a cron string pattern

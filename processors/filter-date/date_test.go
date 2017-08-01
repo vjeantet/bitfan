@@ -51,7 +51,6 @@ func TestMatchUnixWithMS(t *testing.T) {
 	assert.Equal(t, "2017-07-05T11:36:41.000000343Z", m.Timestamp)
 }
 
-
 func TestMatchUnixMS(t *testing.T) {
 	p := New().(*processor)
 	ctx := testutils.NewProcessorContext()

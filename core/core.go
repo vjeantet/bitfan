@@ -141,7 +141,7 @@ func StopPipeline(ID int) error {
 // Stop each pipeline
 func Stop() error {
 	var IDS = []int{}
-	for ID, _ := range pipelines {
+	for ID := range pipelines {
 		IDS = append(IDS, ID)
 	}
 	for _, ID := range IDS {
