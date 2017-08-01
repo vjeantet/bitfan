@@ -1,5 +1,6 @@
 package config
 
+// Sorting order
 const (
 	SortInputsFirst = iota + 1
 	SortOutputsFirst

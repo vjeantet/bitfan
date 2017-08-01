@@ -62,7 +62,7 @@ type options struct {
 
 	// Where do the output should be stored
 	// Set "." when output is json formated and want to replace current event fields with output
-	// response. (usefull )
+	// response. (useful)
 	// @Default "stdout"
 	Target string `mapstructure:"target"`
 

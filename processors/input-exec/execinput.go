@@ -89,7 +89,6 @@ func (p *processor) Tick(e processors.IPacket) error {
 			var record interface{}
 			if err := dec.Decode(&record); err != nil {
 				return err
-				break
 			} else {
 				ne := p.NewPacket(data, map[string]interface{}{
 					"host": p.host,

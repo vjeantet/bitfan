@@ -49,42 +49,24 @@ func (b *Base) MaxConcurent() int {
 func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interface{}, rawVal interface{}) error {
 
 	// Logger
-	if ctx.Log != nil {
-		b.Logger = ctx.Log()
-	} else {
-		// TODO set a dummy logger
-	}
+	b.Logger = ctx.Log()
 
+	// Configuration location dir
 	b.ConfigWorkingLocation = ctx.ConfigWorkingLocation()
 
 	// Packet Sender func
-	if ctx.PacketSender != nil {
-		b.Send = ctx.PacketSender()
-	} else {
-		// TODO set a dummy packetSender
-	}
+	b.Send = ctx.PacketSender()
 
 	// Packet Builder func
-	if ctx.PacketBuilder != nil {
-		b.NewPacket = ctx.PacketBuilder()
-	} else {
-		// TODO set a dummy PacketBuilder
-	}
+	b.NewPacket = ctx.PacketBuilder()
 
 	// StoreSpace
-	if ctx.Memory() != nil {
-		b.Memory = ctx.Memory()
-	} else {
-		// TODO set a dummy Memory
-	}
+	b.Memory = ctx.Memory()
 
 	// WebHook
-	if ctx.WebHook() != nil {
-		b.WebHook = ctx.WebHook()
-	} else {
-		// TODO set a dummy WebHook
-	}
+	b.WebHook = ctx.WebHook()
 
+	// Datalocation
 	b.DataLocation = ctx.DataLocation()
 
 	//Codecs

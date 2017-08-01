@@ -71,7 +71,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	Log().Debugf("data location : %s", ctx.dataLocation)
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
 		if err = os.MkdirAll(ctx.dataLocation, 0777); err != nil {
-			Log().Errorf("data location creation error : ", err)
+			Log().Errorf("data location creation error : %s", err)
 		}
 	}
 
@@ -181,7 +181,7 @@ func (a *agent) start() error {
 			go a.processor.Tick(NewPacket("", nil))
 		})
 		if err != nil {
-			Log().Errorf("schedule start failed - %s %s : %s", a.Label, err.Error())
+			Log().Errorf("schedule start failed - %s : %s", a.Label, err.Error())
 		} else {
 			Log().Debugf("agent %s(%s) scheduled with %s", a.Label, a.ID, a.conf.Schedule)
 		}

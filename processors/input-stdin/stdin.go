@@ -118,7 +118,7 @@ func (p *processor) Start(e processors.IPacket) error {
 					ne = p.NewPacket("", v)
 					ne.Fields().SetValueForPath(p.host, "host")
 				case []interface{}:
-					e = p.NewPacket("", map[string]interface{}{
+					ne = p.NewPacket("", map[string]interface{}{
 						"host": p.host,
 						"data": v,
 					})

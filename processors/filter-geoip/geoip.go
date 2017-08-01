@@ -307,7 +307,7 @@ func (p *processor) refresh() error {
 		}
 
 		p.database, err = geoip2.FromBytes(db)
-		p.Logger.Infof("Geoip filter: %s database successfuly downloaded.\n", p.opt.DatabaseType)
+		p.Logger.Infof("Geoip filter: %s database successfully downloaded.\n", p.opt.DatabaseType)
 		return err
 	}
 

@@ -109,7 +109,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 			return nil
 		}
 
-		// Change occured !
+		// Change occurred !
 
 		if p.opt.Timeframe > 0 {
 			if p.hop == nil { // Initiate timer
@@ -121,7 +121,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 					p.hop = nil
 					p.mu.Unlock()
 				})
-			} else { // Change occured before timeout -> reset timeframe
+			} else { // Change occurred before timeout -> reset timeframe
 				p.Logger.Debugf("change before timeout")
 				if !p.hop.Stop() {
 					<-p.hop.C

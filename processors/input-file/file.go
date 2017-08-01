@@ -191,7 +191,6 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 func (p *processor) discoverFilesToRead() error {
 	for {
-
 		p.Receive(nil)
 
 		select {
@@ -202,7 +201,6 @@ func (p *processor) discoverFilesToRead() error {
 			return nil
 		}
 	}
-	return nil
 }
 
 func (p *processor) filesToRead() ([]string, error) {
@@ -290,7 +288,6 @@ func (p *processor) readfile(pathfile string) error {
 		var record interface{}
 		if err := dec.Decode(&record); err != nil {
 			return err
-			break
 		} else {
 			var e processors.IPacket
 			switch v := record.(type) {

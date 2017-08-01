@@ -11,6 +11,7 @@ import (
 	"github.com/vjeantet/bitfan/processors"
 )
 
+// New returns a rabbimq processor
 func New() processors.Processor {
 	return &processor{opt: &options{}}
 }

@@ -43,8 +43,8 @@ import (
 	null "github.com/vjeantet/bitfan/processors/output-null"
 	rabbitmqoutput "github.com/vjeantet/bitfan/processors/output-rabbitmq"
 	statsd "github.com/vjeantet/bitfan/processors/output-statsd"
-	stdout "github.com/vjeantet/bitfan/processors/output-stdout"
 	route "github.com/vjeantet/bitfan/processors/route"
+	stdout "github.com/vjeantet/bitfan/processors/stdout"
 
 	use "github.com/vjeantet/bitfan/processors/use"
 	when "github.com/vjeantet/bitfan/processors/when"

@@ -4,7 +4,6 @@ package plaincodec
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"text/template"
 
@@ -65,7 +64,6 @@ func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 
 		e.formatTpl, _, err = loc.TemplateWithOptions(e.options.Var)
 		if err != nil {
-			fmt.Errorf("stdout Format tpl error : %s", err)
 			return err
 		}
 	}

@@ -326,13 +326,13 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 					return nil, err
 				}
 
-				// ajoute l'agent à la liste des agents construits
+				// ajoute l'agent à la liste des agents
 				agent_list = append(agents, agent_list...)
 			}
 		}
 	}
 
-	// ajoute l'agent à la liste des agents construits
+	// ajoute l'agent à la liste des agents
 	agent_list = append([]config.Agent{agent}, agent_list...)
 	return agent_list, nil
 }
@@ -525,7 +525,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 					return nil, nil, err
 				}
 
-				// ajoute l'agent à la liste des agents construits
+				// ajoute l'agent à la liste des agents
 				agent_list = append(agents, agent_list...)
 			}
 			// ajouter le dernier outportA de l'expression au outport final du when
@@ -543,7 +543,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		}
 	}
 
-	// ajoute l'agent à la liste des agents construits
+	// ajoute l'agent à la liste des agents
 	agent_list = append([]config.Agent{agent}, agent_list...)
 	return agent_list, newOutPorts, nil
 }

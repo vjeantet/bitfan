@@ -162,6 +162,10 @@ func (l *Location) AssetsContent() map[string]string {
 		return nil
 	})
 
+	if err != nil {
+		fmt.Printf("AssetsContent error - ", err)
+	}
+
 	return assets
 }
 func IsDirectory(path string) bool {

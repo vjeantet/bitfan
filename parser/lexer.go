@@ -167,7 +167,7 @@ func readToken(stream *lexerStream) (Token, error) {
 			break
 		}
 
-		errorMessage := fmt.Sprintf("Invalid token: '%s'", character)
+		errorMessage := fmt.Sprintf("Invalid token: '%v'", character)
 		ret.Kind = kind
 		ret.Value = string(character)
 		ret.Pos = stream.position

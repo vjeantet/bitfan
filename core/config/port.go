@@ -12,7 +12,7 @@ func (a *PortList) String() string {
 	s := ""
 	sep := ""
 	for _, v := range *a {
-		s = s + fmt.Sprintf("%s[%d]%s", sep, v.PortNumber, v.AgentID)
+		s = s + fmt.Sprintf("%s[%d]%d", sep, v.PortNumber, v.AgentID)
 		sep = ", "
 	}
 
@@ -23,7 +23,7 @@ func (a *PortList) StringReversePort() string {
 	s := ""
 	sep := ""
 	for _, v := range *a {
-		s = s + fmt.Sprintf("%s%s[%d]", sep, v.AgentID, v.PortNumber)
+		s = s + fmt.Sprintf("%s%d[%d]", sep, v.AgentID, v.PortNumber)
 		sep = ", "
 	}
 

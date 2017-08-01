@@ -15,7 +15,7 @@ import (
 // stopCmd represents the stop command
 var confCmd = &cobra.Command{
 	Use:   "conf [pipelineID]",
-	Short: "Retreive configuration file and its related files of a running pipeline",
+	Short: "Retrieve configuration file and its related files of a running pipeline",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},

@@ -52,7 +52,7 @@ type options struct {
 	//
 	// You can also use dynamic fields from the event with the %{fieldname} syntax
 	// @ExampleLS to => "me@host.com, you@host.com"
-	To string `mapstructure:"to", validate:"required"`
+	To string `mapstructure:"to" validate:"required"`
 
 	// The fully-qualified email address(es) to include as cc: address(es).
 	//

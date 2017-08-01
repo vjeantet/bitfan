@@ -428,7 +428,7 @@ func (p *Parser) parseSetting(tok *Token) (*Setting, error) {
 		setting.V, err = p.parseHash()
 	}
 
-	return setting, nil
+	return setting, err
 
 }
 

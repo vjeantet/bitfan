@@ -129,7 +129,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 
 	tpl, errTpl := template.New("").Funcs(funcMap).Parse(string(content))
 	if errTpl != nil {
-		fmt.Errorf("stdout Format tpl error : %s", err)
+		fmt.Printf("stdout Format tpl error : %s", err)
 		return tpl, cwl, errTpl
 	}
 	return tpl, cwl, errTpl

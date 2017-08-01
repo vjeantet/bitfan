@@ -75,7 +75,7 @@ func (p *processor) Start(e processors.IPacket) error {
 		for {
 			buflen, saddr, err := conn.ReadFromUDP(buf)
 			if err != nil {
-				p.Logger.Errorf("ReadFromUDP:", err, " input-udp goroutine exiting")
+				p.Logger.Errorf("ReadFromUDP: %s input-udp goroutine exiting", err)
 				return
 			}
 			ne := p.NewPacket(string(buf[:buflen]), map[string]interface{}{

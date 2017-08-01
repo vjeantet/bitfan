@@ -87,7 +87,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	} else {
 		k, err := e.Fields().ValueForPathString(p.opt.KeyMap)
 		if err != nil {
-			p.Logger.Errorf("can not find value for key", p.opt.KeyMap)
+			p.Logger.Errorf("can not find value for key %s", p.opt.KeyMap)
 			return err
 		}
 		p.values[k] = e.Fields()

@@ -89,12 +89,3 @@ func (p *processor) Receive(e processors.IPacket) error {
 	p.Send(e)
 	return nil
 }
-
-func (p *processor) Start(e processors.IPacket) error {
-	// p.WebHook.Add("events", p.HttpHandler)
-	return nil
-}
-
-func (p *processor) Stop(e processors.IPacket) error {
-	return nil
-}

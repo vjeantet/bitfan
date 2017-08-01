@@ -100,5 +100,4 @@ func (p *processor) checkSaveSinceDBInfosLoop() (err error) {
 			return
 		}
 	}
-	return
 }
