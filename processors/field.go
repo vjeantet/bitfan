@@ -361,10 +361,7 @@ func Merge(fields map[string]string, data *mxj.Map) {
 		// newValue := append(value_dst, value_src...)
 		switch value_src.(type) {
 		case []string:
-
-			for _, s := range value_src.([]string) {
-				a = append(a, s)
-			}
+			a = append(a, value_src.([]string)...)
 		default:
 			continue
 		}
@@ -372,10 +369,7 @@ func Merge(fields map[string]string, data *mxj.Map) {
 		// newValue := append(value_dst, value_src...)
 		switch value_dst.(type) {
 		case []string:
-
-			for _, s := range value_dst.([]string) {
-				b = append(b, s)
-			}
+			b = append(b, value_dst.([]string)...)
 		default:
 			continue
 		}

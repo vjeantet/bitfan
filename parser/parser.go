@@ -99,7 +99,7 @@ func (p *Parser) parseSection(tok *Token) (*Section, error) {
 	}
 
 	section.Name = tok.Value.(string)
-	section.Plugins = make(map[int]*Plugin, 0)
+	section.Plugins = make(map[int]*Plugin)
 
 	var err error
 	*tok, err = p.getToken(TokenLCurlyBrace)
@@ -164,7 +164,7 @@ func (p *Parser) parseSection(tok *Token) (*Section, error) {
 func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 	pluginWhen := &Plugin{}
 	pluginWhen.Name = "when"
-	pluginWhen.When = make(map[int]*When, 0)
+	pluginWhen.When = make(map[int]*When)
 
 	var err error
 	var expression string
@@ -313,7 +313,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 
 func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
 	var err error
-	settings := make(map[int]*Setting, 0)
+	settings := make(map[int]*Setting)
 
 	i := 0
 	for {

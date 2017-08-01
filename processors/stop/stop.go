@@ -42,12 +42,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		ExitBitfan: true,
 	}
 	p.opt = &defaults
-	err := p.ConfigureAndValidate(ctx, conf, p.opt)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return p.ConfigureAndValidate(ctx, conf, p.opt)
 }
 
 func (p *processor) Tick(e processors.IPacket) error {

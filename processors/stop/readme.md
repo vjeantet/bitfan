@@ -1,5 +1,5 @@
 # STOPPROCESSOR
-Stop after emiting a blank event on start
+Stop after emitting a blank event on start
 Allow you to put first event and then stop processors as soon as they finish their job.
 
 Permit to launch bitfan with a pipeline and quit when work is done.

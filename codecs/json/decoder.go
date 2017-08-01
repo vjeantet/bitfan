@@ -32,10 +32,7 @@ func NewDecoder(r io.Reader) *decoder {
 func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
 	d.log = logger
 
-	if err := mapstructure.Decode(conf, &d.options); err != nil {
-		return err
-	}
-	return nil
+	return mapstructure.Decode(conf, &d.options)
 }
 
 func (d *decoder) Decode(v *interface{}) error {

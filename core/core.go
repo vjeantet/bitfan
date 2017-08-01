@@ -55,7 +55,7 @@ func SetDataLocation(location string) error {
 			Log().Debugf("created folder %s", dataLocation)
 		}
 	} else {
-		if false == fileInfo.IsDir() {
+		if !fileInfo.IsDir() {
 			Log().Errorf("data path %s is not a directory", dataLocation)
 		}
 	}

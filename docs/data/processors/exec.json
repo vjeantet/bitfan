@@ -79,7 +79,7 @@
       {
         "Alias": "target",
         "DefaultValue": "\"stdout\"",
-        "Doc": "Where do the output should be stored\nSet \".\" when output is json formated and want to replace current event fields with output\nresponse. (usefull )",
+        "Doc": "Where do the output should be stored\nSet \".\" when output is json formated and want to replace current event fields with output\nresponse. (useful)",
         "ExampleLS": "",
         "Name": "Target",
         "PossibleValues": null,

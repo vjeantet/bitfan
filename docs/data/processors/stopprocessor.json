@@ -1,5 +1,5 @@
 {
-  "Doc": "Stop after emiting a blank event on start\nAllow you to put first event and then stop processors as soon as they finish their job.\n\nPermit to launch bitfan with a pipeline and quit when work is done.",
+  "Doc": "Stop after emitting a blank event on start\nAllow you to put first event and then stop processors as soon as they finish their job.\n\nPermit to launch bitfan with a pipeline and quit when work is done.",
   "DocShort": "",
   "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/stop",
   "Name": "stopprocessor",

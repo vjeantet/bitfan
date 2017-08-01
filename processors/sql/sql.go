@@ -121,12 +121,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
-	err = p.db.Ping()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return p.db.Ping()
 }
 
 func (p *processor) Tick(e processors.IPacket) error {
@@ -196,8 +191,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 
 		if p.opt.EventBy == "row" {
-			var e2 processors.IPacket
-			e2 = e.Clone()
+			var e2 processors.IPacket = e.Clone()
 			e2.Fields().SetValueForPath(p.host, "host")
 			if len(p.opt.Var) > 0 {
 				e2.Fields().SetValueForPath(p.opt.Var, "var")

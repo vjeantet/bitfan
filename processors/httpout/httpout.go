@@ -66,6 +66,9 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	}
 	p.opt = &defaults
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
+	if err != nil {
+		return err
+	}
 
 	if p.host, err = os.Hostname(); err != nil {
 		p.Logger.Warnf("can not get hostname : %s", err.Error())
@@ -115,6 +118,4 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(ctn, ctv)
 	}
 	enc.Encode(last.(processors.IPacket).Fields().Old())
-
-	return
 }

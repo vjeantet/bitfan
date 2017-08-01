@@ -171,7 +171,6 @@ func (a *agent) start() error {
 		}
 		close(a.Done)
 		Log().Debugf("processor (%d) - stopped", a.ID)
-		return
 	}(maxConcurentPackets)
 
 	// Register scheduler if needed

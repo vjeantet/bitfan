@@ -85,7 +85,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "Target",
         Alias:          "target",
-        Doc:            "Where do the output should be stored\nSet \".\" when output is json formated and want to replace current event fields with output\nresponse. (usefull )",
+        Doc:            "Where do the output should be stored\nSet \".\" when output is json formated and want to replace current event fields with output\nresponse. (useful)",
         Required:       false,
         Type:           "string",
         DefaultValue:   "\"stdout\"",

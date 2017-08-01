@@ -86,7 +86,7 @@ func (p *processor) checkSaveSinceDBInfos() (err error) {
 			p.Logger.Warnf("Marshal sincedb failed: %s", err)
 			return
 		}
-		if bytes.Compare(raw, p.sinceDBLastInfosRaw) != 0 {
+		if !bytes.Equal(raw, p.sinceDBLastInfosRaw) {
 			err = p.saveSinceDBInfos()
 		}
 	}

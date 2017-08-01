@@ -79,11 +79,9 @@ func (c *Codec) NewEncoder(w io.Writer) (Encoder, error) {
 		return enc, fmt.Errorf("no encoder defined")
 	}
 
-	if err := enc.SetOptions(c.Options, c.logger, c.configWorkingLocation); err != nil {
-		return enc, err
-	}
+	err = enc.SetOptions(c.Options, c.logger, c.configWorkingLocation)
 
-	return enc, nil
+	return enc, err
 }
 
 func (c *Codec) NewDecoder(r io.Reader) (Decoder, error) {

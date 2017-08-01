@@ -163,7 +163,7 @@ func (l *Location) ContentWithOptions(options map[string]string) ([]byte, string
 	case CONTENT_FS:
 
 		// si location est relatif
-		if false == filepath.IsAbs(l.Path) {
+		if !filepath.IsAbs(l.Path) {
 			l.Path = filepath.Join(l.Workingpath, l.Path)
 		}
 
@@ -209,7 +209,7 @@ func expandFilePath(path string) ([]string, error) {
 	locs := []string{}
 	if fi, err := os.Stat(path); err == nil {
 
-		if false == fi.IsDir() {
+		if !fi.IsDir() {
 			locs = append(locs, path)
 			return locs, nil
 		}

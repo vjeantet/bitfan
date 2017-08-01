@@ -157,6 +157,10 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	if p.opt.Subject != "" {
 		loc, err := location.NewLocation(p.opt.Subject, p.ConfigWorkingLocation)
+		if err != nil {
+			p.Logger.Errorf("email subject template error : %s", err)
+			return err
+		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email subject template error : %s", err)
@@ -169,6 +173,10 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	if p.opt.Htmlbody != "" {
 		loc, err := location.NewLocation(p.opt.Htmlbody, p.ConfigWorkingLocation)
+		if err != nil {
+			p.Logger.Errorf("email subject template error : %s", err)
+			return err
+		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email template error : %s", err)
@@ -182,6 +190,10 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	if p.opt.Htmlbodyfile != "" {
 		loc, err := location.NewLocation(p.opt.Htmlbodyfile, p.ConfigWorkingLocation)
+		if err != nil {
+			p.Logger.Errorf("email subject template error : %s", err)
+			return err
+		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email template error : %s", err)
@@ -196,6 +208,10 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	if p.opt.Body != "" {
 		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
+		if err != nil {
+			p.Logger.Errorf("email subject template error : %s", err)
+			return err
+		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
 			p.Logger.Errorf("email template error : %s", err)

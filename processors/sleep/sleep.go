@@ -39,12 +39,7 @@ type processor struct {
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{}
 	p.opt = &defaults
-	err := p.ConfigureAndValidate(ctx, conf, p.opt)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return p.ConfigureAndValidate(ctx, conf, p.opt)
 }
 
 func (p *processor) Receive(e processors.IPacket) error {

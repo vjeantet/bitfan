@@ -86,13 +86,13 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			core.Log().Errorf("error with data location - %s", err)
 		}
 
-		if false == viper.GetBool("no-network") {
+		if !viper.GetBool("no-network") {
 
 			handlers := []core.FnMux{}
 			handlers = append(handlers, core.WebHookServer())
 			handlers = append(handlers, core.ApiServer(api.Handler(plugins)))
 
-			if true == viper.IsSet("prometheus") {
+			if viper.IsSet("prometheus") {
 				handlers = append(handlers, core.PrometheusServer(viper.GetString("prometheus.path")))
 			}
 
