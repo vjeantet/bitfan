@@ -71,7 +71,7 @@ func SetLogVerboseMode(components []string) {
 func SetLogOutputFile(fileLocation string) {
 	Log().Out = ioutil.Discard
 	Log().Formatter = &logrus.TextFormatter{DisableColors: true}
-	f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0755)
+	f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
 	if err != nil {
 		Log().Errorf("Error while opening log file %s", err)
 	}
