@@ -36,6 +36,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
@@ -353,23 +354,27 @@ func addPipeline(c *gin.Context) {
 		return
 	}
 
-	// save Assets
-	// directory = $data / remote / UUID /
-	uid, _ := uuid.NewV4()
-	cwd := filepath.Join(core.DataLocation(), "_pipelines", uid.String())
-	core.Log().Debugf("configuration %s stored to %s", uid.String(), cwd)
-	os.MkdirAll(cwd, os.ModePerm)
+	var cwd string
+	if fqdn.Get() != pipeline.ConfigHostLocation { // Copy Assets
+		// save Assets
+		// directory = $data / remote / UUID /
+		uid, _ := uuid.NewV4()
+		cwd = filepath.Join(core.DataLocation(), "_pipelines", uid.String())
+		core.Log().Debugf("configuration %s stored to %s", uid.String(), cwd)
+		os.MkdirAll(cwd, os.ModePerm)
 
-	//Save assets to cwd
-	for _, asset := range pipeline.Assets {
-		dest := filepath.Join(cwd, asset.Path)
-		dir := filepath.Dir(dest)
-		os.MkdirAll(dir, os.ModePerm)
-		b64Decode(asset.Content, dest)
-		core.Log().Debugf("configuration %s asset %s stored", uid.String(), asset.Path)
+		//Save assets to cwd
+		for _, asset := range pipeline.Assets {
+			dest := filepath.Join(cwd, asset.Path)
+			dir := filepath.Dir(dest)
+			os.MkdirAll(dir, os.ModePerm)
+			b64Decode(asset.Content, dest)
+			core.Log().Debugf("configuration %s asset %s stored", uid.String(), asset.Path)
+		}
+
+		pipeline.ConfigLocation = filepath.Join(cwd, pipeline.ConfigLocation)
+		core.Log().Debugf("configuration %s pipeline %s ready to be loaded", uid.String(), pipeline.ConfigLocation)
 	}
-	pipeline.ConfigLocation = filepath.Join(cwd, pipeline.ConfigLocation)
-	core.Log().Debugf("configuration %s pipeline %s ready to be loaded", uid.String(), pipeline.ConfigLocation)
 
 	var loc *lib.Location
 
@@ -400,7 +405,7 @@ func addPipeline(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	core.Log().Debugf("Pipeline %s started", pipeline.Label)
 	c.Redirect(http.StatusFound, fmt.Sprintf("/api/v1/pipelines/%d", ID))
 	return
 
@@ -424,6 +429,8 @@ func deletePipeline(c *gin.Context) {
 	} else {
 		c.JSON(404, gin.H{"error": err.Error()})
 	}
+
+	core.Log().Debugf("Pipeline %s stopped", id)
 
 	// curl -i -X DELETE http://localhost:8080/api/v1/pipelines/1
 }
