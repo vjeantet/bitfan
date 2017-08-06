@@ -16,6 +16,32 @@ import (
 
 type templateFunctions struct{}
 
+// Replace returns a copy of the string s with all occurrences of old replaced
+// with new.
+func (t *templateFunctions) replace(s, old, new interface{}) (string, error) {
+	ss, err := cast.ToStringE(s)
+	if err != nil {
+		return "", err
+	}
+
+	so, err := cast.ToStringE(old)
+	if err != nil {
+		return "", err
+	}
+
+	sn, err := cast.ToStringE(new)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.Replace(ss, so, sn, -1), nil
+}
+
+// ToString converts the given value to a string.
+func (t *templateFunctions) toString(v interface{}) (string, error) {
+	return cast.ToStringE(v)
+}
+
 func (t *templateFunctions) safeHtml(s interface{}) (template.HTML, error) {
 	ss, err := cast.ToStringE(s)
 	q := template.HTML(ss)
