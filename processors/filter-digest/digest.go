@@ -90,7 +90,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 			p.Logger.Errorf("can not find value for key %s", p.opt.KeyMap)
 			return err
 		}
-		p.values[k] = e.Fields()
+		p.values[k] = e.Fields().Old()
 	}
 
 	// When no interval, flush event when Count events where digested
