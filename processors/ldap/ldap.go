@@ -179,6 +179,10 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	return nil
 }
 
+func (b *processor) MaxConcurent() int {
+	return 1
+}
+
 func (p *processor) Tick(e processors.IPacket) error {
 	return p.Receive(e)
 }
@@ -226,7 +230,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 
 		if p.opt.EventBy == "row" {
-			e2 := e.Clone()
+			e2 := p.NewPacket("", nil)
 			e2.Fields().SetValueForPath(p.opt.Host, "host")
 			if len(p.opt.Var) > 0 {
 				e2.Fields().SetValueForPath(p.opt.Var, "var")
