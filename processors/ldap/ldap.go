@@ -4,7 +4,6 @@ package ldapprocessor
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/vjeantet/bitfan/processors"
@@ -151,17 +150,10 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.Logger.Warningln("No interval set")
 	}
 
-	p.l, err = ldap.Dial("tcp", fmt.Sprintf("%s:%d", p.opt.Host, p.opt.Port))
-	if err != nil {
+	if err := p.initConn(); err != nil {
 		return err
 	}
-
-	if p.opt.BindDn != "" {
-		err = p.l.Bind(p.opt.BindDn, p.opt.BindPassword)
-		if err != nil {
-			return err
-		}
-	}
+	p.l.Close()
 
 	if p.opt.SearchBase == "" {
 		p.opt.SearchBase = p.opt.BaseDn
@@ -174,6 +166,23 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.searchScopeConst = ldap.ScopeBaseObject
 	case "one":
 		p.searchScopeConst = ldap.ScopeSingleLevel
+	}
+
+	return nil
+}
+
+func (p *processor) initConn() error {
+	var err error
+	p.l, err = ldap.Dial("tcp", fmt.Sprintf("%s:%d", p.opt.Host, p.opt.Port))
+	if err != nil {
+		return err
+	}
+
+	if p.opt.BindDn != "" {
+		err = p.l.Bind(p.opt.BindDn, p.opt.BindPassword)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -206,6 +215,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	var sr *ldap.SearchResult
 	var err error
+	p.initConn()
+	defer p.l.Close()
 	if p.opt.PagingSize > 0 {
 		sr, err = p.l.SearchWithPaging(searchRequest, uint32(p.opt.PagingSize))
 	} else {
@@ -213,7 +224,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if err != nil {
-		log.Fatal(err)
+		p.Logger.Errorf("while searching.. %s", err)
 	}
 
 	var records []map[string]interface{}
