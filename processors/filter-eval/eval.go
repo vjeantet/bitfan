@@ -93,6 +93,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		for _, v := range expression.Tokens() {
 			if v.Kind == govaluate.VARIABLE {
 				paramValue, err := e.Fields().ValueForPath(v.Value.(string))
+				p.Logger.Debugf("paramValue-->%s", paramValue)
 				if err != nil {
 					continue
 				}
