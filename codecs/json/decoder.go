@@ -21,6 +21,10 @@ type decoderOptions struct {
 	// @Default ""
 	// @ExampleLS indent => "    "
 	Indent string `mapstructure:"indent"`
+
+	// Json is an array, decode each element as a distinct dataframe
+	// @Default false
+	StreamArray bool `mapstructure:"stream_array"`
 }
 
 func NewDecoder(r io.Reader) *decoder {
@@ -32,7 +36,14 @@ func NewDecoder(r io.Reader) *decoder {
 func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
 	d.log = logger
 
-	return mapstructure.Decode(conf, &d.options)
+	err := mapstructure.Decode(conf, &d.options)
+
+	if d.options.StreamArray == true {
+		// read open bracket
+		d.d.Token()
+	}
+
+	return err
 }
 
 func (d *decoder) Decode(v *interface{}) error {

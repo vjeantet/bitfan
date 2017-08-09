@@ -13,6 +13,16 @@
           "PossibleValues": null,
           "Required": false,
           "Type": "string"
+        },
+        {
+          "Alias": "stream_array",
+          "DefaultValue": "false",
+          "Doc": "Json is an array, decode each element as a distinct dataframe",
+          "ExampleLS": "",
+          "Name": "StreamArray",
+          "PossibleValues": null,
+          "Required": false,
+          "Type": "bool"
         }
       ]
     }
