@@ -33,7 +33,7 @@ env GOOS=$os GOARCH=$arch go build -ldflags="-s -w -X main.version=${1} -X main.
 cd releases
 tar czfv $product.tgz $product
 rm $product
-cd.. 
+cd .. 
 
 arch=amd64
 os=linux
