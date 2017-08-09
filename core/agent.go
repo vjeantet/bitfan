@@ -208,7 +208,10 @@ func (a *agent) stop() {
 	Log().Debugf("agent %d schedule job removed", a.ID)
 
 	// unregister processor's webhooks URLs
-	a.processor.B().WebHook.Unregister()
+	if wh := a.processor.B().WebHook; wh != nil {
+		wh.Unregister()
+	}
+
 	Log().Debugf("agent %d webhook routes unregistered", a.ID)
 
 	Log().Debugf("Processor '%s' stopping... - %d in pipe ", a.Label, len(a.packetChan))
