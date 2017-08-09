@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strconv"
 
+	"golang.org/x/sync/syncmap"
+
 	"github.com/Knetic/govaluate"
 	"github.com/vjeantet/bitfan/processors"
 )
@@ -14,7 +16,7 @@ type processor struct {
 	processors.Base
 
 	opt                 *options
-	compiledExpressions map[int]*govaluate.EvaluableExpression
+	compiledExpressions *syncmap.Map
 }
 
 type options struct {
@@ -25,7 +27,7 @@ type EvaluatedParameters map[string]interface{}
 
 func New() processors.Processor {
 	return &processor{
-		compiledExpressions: map[int]*govaluate.EvaluableExpression{},
+		compiledExpressions: &syncmap.Map{},
 		opt:                 &options{},
 	}
 }
@@ -61,10 +63,9 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 func (p *processor) Receive(e processors.IPacket) error {
 	for order := 0; order < len(p.opt.Expressions); order++ {
 		expressionValue := p.opt.Expressions[order]
-
 		result, err := p.assertExpressionWithFields(order, expressionValue, e)
 		if err != nil {
-			p.Logger.Warnf("When processor evaluation error : %s\n", err.Error())
+			p.Logger.Warnf("When processor evaluation '%s' error : %s\n", expressionValue, err.Error())
 			continue
 		}
 
@@ -105,8 +106,9 @@ func (p *processor) assertExpressionWithFields(index int, expressionValue string
 }
 
 func (p *processor) cacheExpression(index int, expressionValue string) (*govaluate.EvaluableExpression, error) {
-	if e, ok := p.compiledExpressions[index]; ok {
-		return e, nil
+
+	if e, ok := p.compiledExpressions.Load(index); ok {
+		return e.(*govaluate.EvaluableExpression), nil
 	}
 
 	functions := map[string]govaluate.ExpressionFunction{
@@ -141,7 +143,7 @@ func (p *processor) cacheExpression(index int, expressionValue string) (*govalua
 	if err != nil {
 		return nil, err
 	}
-	p.compiledExpressions[index] = expression
+	p.compiledExpressions.Store(index, expression)
 
 	return expression, nil
 }
