@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	"golang.org/x/sync/syncmap"
+
 	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/justinas/alice"
 	"github.com/prometheus/client_golang/prometheus"
@@ -20,7 +22,7 @@ var (
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
 	dataLocation               string                      = "data"
 
-	pipelines map[int]*Pipeline = map[int]*Pipeline{}
+	pipelines syncmap.Map = syncmap.Map{}
 )
 
 type FnMux func(sm *http.ServeMux)
@@ -115,7 +117,7 @@ func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent)
 	if err != nil {
 		return 0, err
 	}
-	pipelines[p.ID] = p
+	pipelines.Store(p.ID, p)
 
 	err = p.start()
 
@@ -124,8 +126,8 @@ func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent)
 
 func StopPipeline(ID int) error {
 	var err error
-	if p, ok := pipelines[ID]; ok {
-		err = p.stop()
+	if p, ok := pipelines.Load(ID); ok {
+		err = p.(*Pipeline).stop()
 	} else {
 		err = fmt.Errorf("Pipeline %d not found", ID)
 	}
@@ -134,16 +136,18 @@ func StopPipeline(ID int) error {
 		return err
 	}
 
-	delete(pipelines, ID)
+	pipelines.Delete(ID)
 	return nil
 }
 
 // Stop each pipeline
 func Stop() error {
 	var IDS = []int{}
-	for ID := range pipelines {
-		IDS = append(IDS, ID)
-	}
+	pipelines.Range(func(key, value interface{}) bool {
+		IDS = append(IDS, key.(int))
+		return true
+	})
+
 	for _, ID := range IDS {
 		err := StopPipeline(ID)
 		if err != nil {
@@ -157,5 +161,10 @@ func Stop() error {
 }
 
 func Pipelines() map[int]*Pipeline {
-	return pipelines
+	pps := map[int]*Pipeline{}
+	pipelines.Range(func(key, value interface{}) bool {
+		pps[key.(int)] = value.(*Pipeline)
+		return true
+	})
+	return pps
 }
