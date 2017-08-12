@@ -6,11 +6,11 @@ import (
 
 type CommonOptions struct {
 	// If this filter is successful, add any arbitrary fields to this event.
-	Add_field map[string]interface{} `mapstructure:"add_field"`
+	AddField map[string]interface{} `mapstructure:"add_field"`
 
 	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
 	// and include parts of the event using the %{field} syntax.
-	Tags []string `mapstructure:"add_tag"` //tags
+	AddTag []string `mapstructure:"add_tag"`
 
 	// Add a type field to all events handled by this input
 	Type string `mapstructure:"type"`
@@ -31,5 +31,5 @@ type CommonOptions struct {
 }
 
 func (c *CommonOptions) ProcessCommonOptions(data *mxj.Map) {
-	processCommonFields(data, c.Add_field, c.Tags, c.Type, c.RemoveField, c.RemoveTag)
+	processCommonFields(data, c.AddField, c.AddTag, c.Type, c.RemoveField, c.RemoveTag)
 }
