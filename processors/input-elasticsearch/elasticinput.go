@@ -18,15 +18,7 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	Add_field map[string]interface{}
-
-	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-	// and include parts of the event using the %{field} syntax.
-	Tags []string
-
-	// Add a type field to all events handled by this input
-	Type string
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
@@ -114,7 +106,7 @@ func (p *processor) Start(e processors.IPacket) error {
 
 				// // Work with tweet
 				// fmt.Printf("Tweet by %s: %s\n", t.User, t.Message)
-				processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
+				p.opt.ProcessCommonOptions(e.Fields())
 				p.Send(e)
 			}
 

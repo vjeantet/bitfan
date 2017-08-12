@@ -34,13 +34,7 @@ type processor struct {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	// Field names can be dynamic and include parts of the event using the %{field}.
-	AddField map[string]interface{} `mapstructure:"add_field"`
-
-	// If this filter is successful, add arbitrary tags to the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax.
-	AddTag []string `mapstructure:"add_tag"`
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// Path or URL to the MaxMind GeoIP2 database.
 	// Default value is "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
@@ -62,13 +56,6 @@ type options struct {
 
 	// Cache size. Default value is 1000
 	LruCacheSize int64 `mapstructure:"lru_cache_size"`
-
-	// If this filter is successful, remove arbitrary fields from this event.
-	RemoveField []string `mapstructure:"remove_field"`
-
-	// If this filter is successful, remove arbitrary tags from the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax
-	RemoveTag []string `mapstructure:"remove_tag"`
 
 	// The field containing the IP address or hostname to map via geoip.
 	Source string `mapstructure:"source" validate:"required"`
@@ -220,12 +207,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 	}
 
-	processors.ProcessCommonFields2(e.Fields(),
-		p.opt.AddField,
-		p.opt.AddTag,
-		p.opt.RemoveField,
-		p.opt.RemoveTag,
-	)
+	p.opt.ProcessCommonOptions(e.Fields())
 
 	p.Send(e, 0)
 	return nil

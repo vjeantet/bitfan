@@ -2,23 +2,18 @@
 // Generate a blank event on interval
 package inputeventprocessor
 
-import "github.com/vjeantet/bitfan/processors"
+import (
+	"github.com/vjeantet/bitfan/processors"
+)
 
 func New() processors.Processor {
 	return &processor{opt: &options{}}
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	Add_field map[string]interface{}
+	processors.CommonOptions `mapstructure:",squash"`
 
-	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-	// and include parts of the event using the %{field} syntax.
-	Tags []string
-
-	// Add a type field to all events handled by this input
-	Type string
-
+	// string value to put in event
 	Message string
 
 	// Use CRON or BITFAN notation
@@ -38,7 +33,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Tick(e processors.IPacket) error {
-	processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
+	p.opt.ProcessCommonOptions(e.Fields())
 	p.Send(e)
 	return nil
 }

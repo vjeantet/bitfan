@@ -17,19 +17,17 @@ func New() processors.Processor {
 }
 
 type options struct {
-	Command   string
-	Args      []string
-	Add_field map[string]interface{}
-	Interval  string
+	processors.CommonOptions `mapstructure:",squash"`
+
+	Command  string
+	Args     []string
+	Interval string
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Type Codec
 	// @Default "plain"
 	Codec codecs.Codec `mapstructure:"codec"`
-
-	Tags []string
-	Type string
 }
 
 type processor struct {
@@ -97,7 +95,7 @@ func (p *processor) Tick(e processors.IPacket) error {
 				ne.Fields().SetValueForPath(p.opt.Command, "command")
 				ne.Fields().SetValueForPath(strings.Join(p.opt.Args, ", "), "args")
 
-				processors.ProcessCommonFields(ne.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
+				p.opt.ProcessCommonOptions(ne.Fields())
 				p.Send(ne)
 			}
 

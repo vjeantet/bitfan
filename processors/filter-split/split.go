@@ -32,20 +32,7 @@ type options struct {
 	// Default value is "\n"
 	Terminator string
 
-	// If this filter is successful, add any arbitrary fields to this event.
-	// Field names can be dynamic and include parts of the event using the %{field}.
-	Add_field map[string]interface{}
-
-	// If this filter is successful, add arbitrary tags to the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax.
-	Add_tag []string
-
-	// If this filter is successful, remove arbitrary fields from this event.
-	Remove_field []string
-
-	// If this filter is successful, remove arbitrary tags from the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax
-	Remove_Tag []string
+	processors.CommonOptions `mapstructure:",squash"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -69,12 +56,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		// set target value with split
 		cp, _ := e.Fields().Copy()
 		cp.SetValueForPath(split, p.opt.Target)
-		processors.ProcessCommonFields2(&cp,
-			p.opt.Add_field,
-			p.opt.Add_tag,
-			p.opt.Remove_field,
-			p.opt.Remove_Tag,
-		)
+		p.opt.ProcessCommonOptions(&cp)
 
 		// e := processors.NewEvent(e.ToAgentName(), e.Message(), cp)
 		e2 := p.NewPacket(e.Message(), cp)

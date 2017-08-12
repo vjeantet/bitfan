@@ -18,8 +18,7 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	AddField map[string]interface{} `mapstructure:"add_field"`
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// The read timeout in seconds. If a particular connection is idle for more than this timeout period, we will assume it is dead and close it.
 	// If you never want to timeout, use 0.
@@ -37,13 +36,6 @@ type options struct {
 
 	// When mode is server, the path to listen on. When mode is client, the path to connect to.
 	Path string `mapstructure:"path" validate:"required"`
-
-	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-	// and include parts of the event using the %{field} syntax.
-	Tags []string `mapstructure:"tags"`
-
-	// Add a type field to all events handled by this input
-	Type string `mapstructure:"type"`
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
@@ -155,7 +147,7 @@ func (p *processor) parse(conn net.Conn) {
 		}
 		message := strings.TrimSpace(string(buf[:buflen]))
 		event := p.NewPacket(message, mxj.Map{})
-		processors.ProcessCommonFields(event.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+		p.opt.ProcessCommonOptions(event.Fields())
 		p.Send(event)
 
 	case "json":
@@ -166,7 +158,7 @@ func (p *processor) parse(conn net.Conn) {
 		} else {
 			event = p.NewPacket("", json)
 		}
-		processors.ProcessCommonFields(event.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+		p.opt.ProcessCommonOptions(event.Fields())
 		p.Send(event)
 
 	case "xml":
@@ -177,7 +169,7 @@ func (p *processor) parse(conn net.Conn) {
 		} else {
 			event = p.NewPacket("", xml)
 		}
-		processors.ProcessCommonFields(event.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+		p.opt.ProcessCommonOptions(event.Fields())
 		p.Send(event)
 	}
 }

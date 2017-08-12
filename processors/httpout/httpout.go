@@ -22,15 +22,6 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// Add a field to an event
-	Add_field map[string]interface{}
-
-	// Add any number of arbitrary tags to your event.
-	// This can help with processing later.
-	Tags []string
-
-	// Add a type field to all events handled by this input
-	Type string
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline

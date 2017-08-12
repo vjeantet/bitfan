@@ -31,15 +31,7 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// Add a field to an event
-	Add_field map[string]interface{}
-
-	// Add any number of arbitrary tags to your event.
-	// This can help with processing later.
-	Tags []string
-
-	// Add a type field to all events handled by this input
-	Type string
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
@@ -152,7 +144,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 			p.Logger.Errorf("Unknow structure %#v", v)
 		}
 
-		processors.ProcessCommonFields(e.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
+		p.opt.ProcessCommonOptions(e.Fields())
 		p.Send(e)
 		nbEvents++
 		select {

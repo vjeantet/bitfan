@@ -22,22 +22,7 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// If this processor is successful, add any arbitrary fields to this event.
-	Add_field map[string]interface{}
-
-	// If this processor is successful, add arbitrary tags to the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax.
-	Add_tag []string
-
-	// If this processor is successful, remove arbitrary fields from this event.
-	Remove_field []string
-
-	// If this processor is successful, remove arbitrary tags from the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax
-	Remove_tag []string
-
-	// Add a type field to all events handled by this processor
-	Type string
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// Path to configuration to import in this pipeline, it could be a local file or an url
 	// can be relative path to the current configuration.
@@ -67,12 +52,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	processors.ProcessCommonFields2(e.Fields(),
-		p.opt.Add_field,
-		p.opt.Add_tag,
-		p.opt.Remove_field,
-		p.opt.Remove_tag,
-	)
+	p.opt.ProcessCommonOptions(e.Fields())
 
 	p.Send(e, PORT_SUCCESS)
 	return nil

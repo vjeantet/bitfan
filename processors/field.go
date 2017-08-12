@@ -48,19 +48,10 @@ func Dynamic(str *string, fields *mxj.Map) {
 	}
 }
 
-func ProcessCommonFields(data *mxj.Map, add_fields map[string]interface{}, tags []string, typevalue string) {
-	AddFields(add_fields, data)
-	if typevalue != "" {
-		SetType(typevalue, data)
-	}
-	if len(tags) > 0 {
-		AddTags(tags, data)
-	}
-}
-
-func ProcessCommonFields2(data *mxj.Map,
+func processCommonFields(data *mxj.Map,
 	add_fields map[string]interface{},
 	tags []string,
+	typevalue string,
 	remove_field []string,
 	remove_tag []string) {
 
@@ -69,6 +60,9 @@ func ProcessCommonFields2(data *mxj.Map,
 	}
 	if len(tags) > 0 {
 		AddTags(tags, data)
+	}
+	if typevalue != "" {
+		SetType(typevalue, data)
 	}
 	if len(remove_field) > 0 {
 		RemoveFields(remove_field, data)

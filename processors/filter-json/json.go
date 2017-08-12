@@ -20,20 +20,7 @@ type processor struct {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	// Field names can be dynamic and include parts of the event using the %{field}.
-	Add_field map[string]interface{}
-
-	// If this filter is successful, add arbitrary tags to the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax.
-	Add_tag []string
-
-	// If this filter is successful, remove arbitrary fields from this event.
-	Remove_field []string
-
-	// If this filter is successful, remove arbitrary tags from the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax
-	Remove_tag []string
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// The configuration for the JSON filter
 	Source string
@@ -68,12 +55,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 	}
 
-	processors.ProcessCommonFields2(e.Fields(),
-		p.opt.Add_field,
-		p.opt.Add_tag,
-		p.opt.Remove_field,
-		p.opt.Remove_tag,
-	)
+	p.opt.ProcessCommonOptions(e.Fields())
 
 	p.Send(e, 0)
 	return nil

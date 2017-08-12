@@ -37,8 +37,7 @@ type processor struct {
 }
 
 type options struct {
-	// Add a field to an event. Default value is {}
-	AddField map[string]interface{} `mapstructure:"add_field"`
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// Closes any files that were last read the specified timespan in seconds ago.
 	// Default value is 3600 (i.e. 1 hour)
@@ -118,14 +117,6 @@ type options struct {
 	// Default value is 1
 	// @Default 1
 	StatInterval int `mapstructure:"stat_interval"`
-
-	// Add any number of arbitrary tags to your event. There is no default value for this setting.
-	// This can help with processing later. Tags can be dynamic and include parts of the event using the %{field} syntax.
-	Tags []string `mapstructure:"tags"`
-
-	// Add a type field to all events handled by this input.
-	// Types are used mainly for filter activation.
-	Type string `mapstructure:"type"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -288,7 +279,7 @@ func (p *processor) tailFile(path string, q chan bool) error {
 					p.Logger.Errorf("Unknow structure %#v", v)
 				}
 
-				processors.ProcessCommonFields(e.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+				p.opt.ProcessCommonOptions(e.Fields())
 				p.Send(e)
 				since.Offset, _ = t.Tell()
 				p.checkSaveSinceDBInfos()

@@ -26,15 +26,7 @@ type processor struct {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event. Field names can
-	// be dynamic and include parts of the event using the %{field}.
-	// @default : {}
-	AddField map[string]interface{} `mapstructure:"add_field"`
-
-	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-	// and include parts of the event using the %{field} syntax.
-	// @default : []
-	AddTag []string `mapstructure:"add_tag"`
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// Break on first match. The first successful match by grok will result in the filter being
 	// finished. If you want grok to try all patterns (maybe you are parsing different things),
@@ -72,15 +64,6 @@ type options struct {
 	// in the directory and assume its a pattern file (including any tilde backup files)
 	// @default : []
 	PatternsDir []string `mapstructure:"patterns_dir"`
-
-	// If this filter is successful, remove arbitrary fields from this event
-	// @default : []
-	RemoveField []string `mapstructure:"remove_field"`
-
-	// If this filter is successful, remove arbitrary tags from the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax
-	// @default : []
-	RemoveTag []string `mapstructure:"remove_tag"`
 
 	// Append values to the tags field when there has been no successful match
 	// @default : ["_grokparsefailure"]
@@ -161,12 +144,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if groked {
-		processors.ProcessCommonFields2(e.Fields(),
-			p.opt.AddField,
-			p.opt.AddTag,
-			p.opt.RemoveField,
-			p.opt.RemoveTag,
-		)
+		p.opt.ProcessCommonOptions(e.Fields())
+
 	}
 
 	if !groked {

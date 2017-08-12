@@ -13,18 +13,10 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	AddField map[string]interface{} `mapstructure:"add_field"`
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// UDP port number to listen on
 	Port int `mapstructure:"port"`
-
-	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-	// and include parts of the event using the %{field} syntax.
-	Tags []string `mapstructure:"tags"`
-
-	// Add a type field to all events handled by this input
-	Type string `mapstructure:"type"`
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
@@ -82,7 +74,7 @@ func (p *processor) Start(e processors.IPacket) error {
 				"host": saddr.IP.String(),
 			})
 
-			processors.ProcessCommonFields(ne.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+			p.opt.ProcessCommonOptions(ne.Fields())
 			p.Send(ne)
 		}
 	}(p, p.uc)

@@ -31,20 +31,7 @@ type processor struct {
 }
 
 type options struct {
-	// If this event survice to drop, add any arbitrary fields to this event.
-	// Field names can be dynamic and include parts of the event using the %{field}.
-	Add_field map[string]interface{}
-
-	// If this event survice to drop, add arbitrary tags to the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax.
-	Add_tag []string
-
-	// If this event survice to drop, remove arbitrary fields from this event.
-	Remove_field []string
-
-	// If this event survice to drop, remove arbitrary tags from the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax
-	Remove_Tag []string
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// Drop all the events within a pre-configured percentage.
 	// This is useful if you just need a percentage but not the whole.
@@ -62,12 +49,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		return nil
 	}
 
-	processors.ProcessCommonFields2(e.Fields(),
-		p.opt.Add_field,
-		p.opt.Add_tag,
-		p.opt.Remove_field,
-		p.opt.Remove_Tag,
-	)
+	p.opt.ProcessCommonOptions(e.Fields())
 	p.Send(e, 0)
 	return nil
 }

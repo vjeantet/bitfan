@@ -28,12 +28,7 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// If this processor is successful, add any arbitrary fields to this event.
-	Add_field map[string]interface{}
-
-	// If this processor is successful, add arbitrary tags to the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax.
-	Add_tag []string
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// set a condition to fork and route message
 	// when false, message is routed to trunk
@@ -45,16 +40,6 @@ type options struct {
 	// @Default false
 	// @ExampleLS fork => false
 	Fork bool `mapstructure:"fork"`
-
-	// If this processor is successful, remove arbitrary fields from this event.
-	Remove_field []string
-
-	// If this processor is successful, remove arbitrary tags from the event.
-	// Tags can be dynamic and include parts of the event using the %{field} syntax
-	Remove_tag []string
-
-	// Add a type field to all events handled by this processor
-	Type string
 
 	// Path to configuration to send the incomming message, it could be a local file or an url
 	// can be relative path to the current configuration.
@@ -95,12 +80,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 	}
 
-	processors.ProcessCommonFields2(e.Fields(),
-		p.opt.Add_field,
-		p.opt.Add_tag,
-		p.opt.Remove_field,
-		p.opt.Remove_tag,
-	)
+	p.opt.ProcessCommonOptions(e.Fields())
 
 	if result == true && p.opt.Fork == true {
 		p.Send(e.Clone(), PORT_TRUNK)

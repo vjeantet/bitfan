@@ -34,22 +34,12 @@ type processor struct {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	AddField map[string]interface{} `mapstructure:"add_field"`
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// The date formats allowed are anything allowed by Joda time format.
 	// You can see the docs for this format http://www.joda.org/joda-time/key_format.html
 	// An array with field name first, and format patterns following, [ field, formats... ]
 	Match []string `mapstructure:"match"`
-
-	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-	// and include parts of the event using the %{field} syntax.
-	AddTag []string `mapstructure:"add_tag"`
-
-	// If this filter is successful, remove arbitrary fields from this event.
-	RemoveField []string `mapstructure:"remove_field"`
-
-	RemoveTag []string `mapstructure:"remove_tag"`
 
 	// Append values to the tags field when there has been no successful match
 	// Default value is ["_dateparsefailure"]
@@ -132,12 +122,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 			dated = true
 			e.Fields().SetValueForPath(t, p.opt.Target)
-			processors.ProcessCommonFields2(e.Fields(),
-				p.opt.AddField,
-				p.opt.AddTag,
-				p.opt.RemoveField,
-				p.opt.RemoveTag,
-			)
+			p.opt.ProcessCommonOptions(e.Fields())
 			break
 		}
 	}

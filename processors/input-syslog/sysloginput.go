@@ -16,8 +16,7 @@ func New() processors.Processor {
 }
 
 type options struct {
-	// If this filter is successful, add any arbitrary fields to this event.
-	AddField map[string]interface{} `mapstructure:"add_field"`
+	processors.CommonOptions `mapstructure:",squash"`
 
 	// Which format to use to decode syslog messages. Default value is "automatic"
 	// Value can be "automatic","rfc3164", "rfc5424" or "rfc6587"
@@ -36,13 +35,6 @@ type options struct {
 	// Protocol to use to listen to syslog messages
 	// Value can be either "tcp" or "udp"
 	Protocol string `mapstructure:"protocol"`
-
-	// If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-	// and include parts of the event using the %{field} syntax.
-	Tags []string `mapstructure:"tags"`
-
-	// Add a type field to all events handled by this input
-	Type string `mapstructure:"type"`
 }
 
 type processor struct {
@@ -103,7 +95,7 @@ func (p *processor) Start(e processors.IPacket) error {
 			delete(message, "timestamp")
 
 			ne := p.NewPacket("", message)
-			processors.ProcessCommonFields(ne.Fields(), p.opt.AddField, p.opt.Tags, p.opt.Type)
+			p.opt.ProcessCommonOptions(ne.Fields())
 			p.Send(ne)
 		}
 	}(p.ch)

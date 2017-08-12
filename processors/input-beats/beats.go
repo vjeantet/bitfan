@@ -27,8 +27,9 @@ type processor struct {
 }
 
 type options struct {
-	Add_field map[string]interface{}
-	Codec     string
+	processors.CommonOptions `mapstructure:",squash"`
+
+	Codec string
 
 	// The number of seconds before we raise a timeout,
 	// this option is useful to control how much time to wait if something is blocking
@@ -72,12 +73,6 @@ type options struct {
 	// This option need to be used with ssl_certificate_authorities and a defined list of CA.
 	// Value can be any of: none, peer, force_peer
 	Ssl_verify_mode string
-
-	// Add any number of arbitrary tags to your event
-	Tags []string
-
-	// Add a type field to all events handled by this input
-	Type string
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -152,7 +147,7 @@ func (p *processor) Start(e processors.IPacket) error {
 				}
 
 				ev := p.NewPacket("", fields)
-				processors.ProcessCommonFields(ev.Fields(), p.opt.Add_field, p.opt.Tags, p.opt.Type)
+				p.opt.ProcessCommonOptions(ev.Fields())
 				p.Send(ev, 0)
 			}
 		}
