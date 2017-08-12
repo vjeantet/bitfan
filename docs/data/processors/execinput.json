@@ -7,6 +7,16 @@
     "Doc": "",
     "Options": [
       {
+        "Alias": ",squash",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "processors.CommonOptions",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "processors.CommonOptions"
+      },
+      {
         "Alias": "",
         "DefaultValue": null,
         "Doc": "",
@@ -31,16 +41,6 @@
         "DefaultValue": null,
         "Doc": "",
         "ExampleLS": "",
-        "Name": "Add_field",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "hash"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "",
-        "ExampleLS": "",
         "Name": "Interval",
         "PossibleValues": null,
         "Required": false,
@@ -55,26 +55,6 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "codec"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "",
-        "ExampleLS": "",
-        "Name": "Tags",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "",
-        "ExampleLS": "",
-        "Name": "Type",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
       }
     ]
   },

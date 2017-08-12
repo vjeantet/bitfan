@@ -4,23 +4,14 @@
 ## Synopsys
 
 
-|  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-----------|--------|----------|---------------|
-| add_field | hash   | false    | {}            |
-| format    | string | false    | ""            |
-| port      | int    | false    |             0 |
-| protocol  | string | false    | ""            |
-| tags      | array  | false    | []            |
-| type      | string | false    | ""            |
+| SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
+|----------|--------|----------|---------------|
+| format   | string | false    | ""            |
+| port     | int    | false    |             0 |
+| protocol | string | false    | ""            |
 
 
 ## Details
-
-### add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
 
 ### format
 * Value type is string
@@ -49,30 +40,14 @@ Port number to listen on
 Protocol to use to listen to syslog messages
 Value can be either "tcp" or "udp"
 
-### tags
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
-
-### type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
-
 
 
 ## Configuration blueprint
 
 ```
 sysloginput{
-	add_field => {}
 	format => ""
 	port => 123
 	protocol => ""
-	tags => []
-	type => ""
 }
 ```

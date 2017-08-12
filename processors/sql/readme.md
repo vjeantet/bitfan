@@ -6,10 +6,6 @@
 
 |      SETTING      |   TYPE   | REQUIRED | DEFAULT VALUE |
 |-------------------|----------|----------|---------------|
-| Add_field         | hash     | false    | {}            |
-| Tags              | array    | false    | []            |
-| Type              | string   | false    | ""            |
-| Codec             | string   | false    | ""            |
 | driver            | string   | true     | ""            |
 | event_by          | string   | false    | "row"         |
 | statement         | location | true     | ?             |
@@ -20,32 +16,6 @@
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
-
-### Tags
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
-
-### Codec
-* Value type is string
-* Default value is `""`
-
-The codec used for input data. Input codecs are a convenient method for decoding
-your data before it enters the input, without needing a separate filter in your bitfan pipeline
 
 ### driver
 * This is a required setting.
@@ -105,10 +75,6 @@ Set the value to "." to store value to the root (top level) of the event
 
 ```
 sqlprocessor{
-	add_field => {}
-	tags => []
-	type => ""
-	codec => ""
 	driver => "mysql"
 	event_by => "row"
 	statement => "SELECT * FROM mytable"

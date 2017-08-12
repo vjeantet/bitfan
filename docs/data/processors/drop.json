@@ -7,44 +7,14 @@
     "Doc": "",
     "Options": [
       {
-        "Alias": "",
+        "Alias": ",squash",
         "DefaultValue": null,
-        "Doc": "If this event survice to drop, add any arbitrary fields to this event.\nField names can be dynamic and include parts of the event using the %{field}.",
+        "Doc": "",
         "ExampleLS": "",
-        "Name": "Add_field",
+        "Name": "processors.CommonOptions",
         "PossibleValues": null,
         "Required": false,
-        "Type": "hash"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "If this event survice to drop, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
-        "ExampleLS": "",
-        "Name": "Add_tag",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "If this event survice to drop, remove arbitrary fields from this event.",
-        "ExampleLS": "",
-        "Name": "Remove_field",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "If this event survice to drop, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
-        "ExampleLS": "",
-        "Name": "Remove_Tag",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
+        "Type": "processors.CommonOptions"
       },
       {
         "Alias": "",

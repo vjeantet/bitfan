@@ -15,23 +15,13 @@ In the absence of this filter, logstash will choose a timestamp based on the fir
 
 |    SETTING     |  TYPE  | REQUIRED | DEFAULT VALUE |
 |----------------|--------|----------|---------------|
-| add_field      | hash   | false    | {}            |
 | match          | array  | false    | []            |
-| add_tag        | array  | false    | []            |
-| remove_field   | array  | false    | []            |
-| remove_tag     | array  | false    | []            |
 | tag_on_failure | array  | false    | []            |
 | target         | string | false    | ""            |
 | timezone       | string | false    | ""            |
 
 
 ## Details
-
-### add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
 
 ### match
 * Value type is array
@@ -40,25 +30,6 @@ If this filter is successful, add any arbitrary fields to this event.
 The date formats allowed are anything allowed by Joda time format.
 You can see the docs for this format http://www.joda.org/joda-time/key_format.html
 An array with field name first, and format patterns following, [ field, formats... ]
-
-### add_tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
-
-### remove_field
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary fields from this event.
-
-### remove_tag
-* Value type is array
-* Default value is `[]`
-
-
 
 ### tag_on_failure
 * Value type is array
@@ -95,11 +66,7 @@ This field can be dynamic and include parts of the event using the %{field} synt
 
 ```
 date{
-	add_field => {}
 	match => []
-	add_tag => []
-	remove_field => []
-	remove_tag => []
 	tag_on_failure => []
 	target => ""
 	timezone => ""

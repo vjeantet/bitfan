@@ -7,24 +7,14 @@
     "Doc": "",
     "Options": [
       {
-        "Alias": "",
+        "Alias": ",squash",
         "DefaultValue": null,
         "Doc": "",
         "ExampleLS": "",
-        "Name": "Add_field",
+        "Name": "processors.CommonOptions",
         "PossibleValues": null,
         "Required": false,
-        "Type": "hash"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "",
-        "ExampleLS": "",
-        "Name": "Codec",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
+        "Type": "processors.CommonOptions"
       },
       {
         "Alias": "",
@@ -112,26 +102,6 @@
         "Doc": "By default the server dont do any client verification,\npeer will make the server ask the client to provide a certificate,\n  if the client provide the certificate it will be validated.\nforce_peer will make the server ask the client for their certificate,\n  if the clients doesn’t provide it the connection will be closed.\nThis option need to be used with ssl_certificate_authorities and a defined list of CA.\nValue can be any of: none, peer, force_peer",
         "ExampleLS": "",
         "Name": "Ssl_verify_mode",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add any number of arbitrary tags to your event",
-        "ExampleLS": "",
-        "Name": "Tags",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add a type field to all events handled by this input",
-        "ExampleLS": "",
-        "Name": "Type",
         "PossibleValues": null,
         "Required": false,
         "Type": "string"

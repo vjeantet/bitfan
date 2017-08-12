@@ -8,36 +8,6 @@
     "Options": [
       {
         "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add a field to an event",
-        "ExampleLS": "",
-        "Name": "Add_field",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "hash"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add any number of arbitrary tags to your event.\nThis can help with processing later.",
-        "ExampleLS": "",
-        "Name": "Tags",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add a type field to all events handled by this input",
-        "ExampleLS": "",
-        "Name": "Type",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
-      },
-      {
-        "Alias": "",
         "DefaultValue": "\"json\"",
         "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
         "ExampleLS": "",

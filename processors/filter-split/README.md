@@ -8,15 +8,11 @@ The end result of each split is a complete copy of the event with only the curre
 ## Synopsys
 
 
-|   SETTING    |  TYPE  | REQUIRED | DEFAULT VALUE |
-|--------------|--------|----------|---------------|
-| Field        | string | false    | ""            |
-| Target       | string | false    | ""            |
-| Terminator   | string | false    | ""            |
-| Add_field    | hash   | false    | {}            |
-| Add_tag      | array  | false    | []            |
-| Remove_field | array  | false    | []            |
-| Remove_Tag   | array  | false    | []            |
+|  SETTING   |  TYPE  | REQUIRED | DEFAULT VALUE |
+|------------|--------|----------|---------------|
+| Field      | string | false    | ""            |
+| Target     | string | false    | ""            |
+| Terminator | string | false    | ""            |
 
 
 ## Details
@@ -40,33 +36,6 @@ The field within the new event which the value is split into. If not set, target
 The string to split on. This is usually a line terminator, but can be any string
 Default value is "\n"
 
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
-Field names can be dynamic and include parts of the event using the %{field}.
-
-### Add_tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event.
-Tags can be dynamic and include parts of the event using the %{field} syntax.
-
-### Remove_field
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary fields from this event.
-
-### Remove_Tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary tags from the event.
-Tags can be dynamic and include parts of the event using the %{field} syntax
-
 
 
 ## Configuration blueprint
@@ -76,9 +45,5 @@ split{
 	field => ""
 	target => ""
 	terminator => ""
-	add_field => {}
-	add_tag => []
-	remove_field => []
-	remove_tag => []
 }
 ```

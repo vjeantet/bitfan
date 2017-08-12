@@ -9,16 +9,6 @@
       {
         "Alias": "",
         "DefaultValue": null,
-        "Doc": "The codec used for output data. Output codecs are a convenient method\nfor encoding your data before it leaves the output, without needing a\nseparate filter in your bitfan pipeline",
-        "ExampleLS": "",
-        "Name": "Codec",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
         "Doc": "The collection to use. This value can use %{foo} values to dynamically\nselect a collection based on data in the event",
         "ExampleLS": "",
         "Name": "Collection",

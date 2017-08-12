@@ -11,33 +11,15 @@ Behavior :
 ## Synopsys
 
 
-|   SETTING    |  TYPE  | REQUIRED | DEFAULT VALUE |
-|--------------|--------|----------|---------------|
-| Add_field    | hash   | false    | {}            |
-| Add_tag      | array  | false    | []            |
-| condition    | string | false    | true          |
-| fork         | bool   | false    | false         |
-| Remove_field | array  | false    | []            |
-| Remove_tag   | array  | false    | []            |
-| Type         | string | false    | ""            |
-| path         | array  | true     | []            |
-| var          | hash   | false    | {}            |
+|  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
+|-----------|--------|----------|---------------|
+| condition | string | false    | true          |
+| fork      | bool   | false    | false         |
+| path      | array  | true     | []            |
+| var       | hash   | false    | {}            |
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-If this processor is successful, add any arbitrary fields to this event.
-
-### Add_tag
-* Value type is array
-* Default value is `[]`
-
-If this processor is successful, add arbitrary tags to the event.
-Tags can be dynamic and include parts of the event using the %{field} syntax.
 
 ### condition
 * Value type is string
@@ -52,25 +34,6 @@ By default condition is evaluated to true and always pass
 * Default value is `false`
 
 Fork mode disabled by default
-
-### Remove_field
-* Value type is array
-* Default value is `[]`
-
-If this processor is successful, remove arbitrary fields from this event.
-
-### Remove_tag
-* Value type is array
-* Default value is `[]`
-
-If this processor is successful, remove arbitrary tags from the event.
-Tags can be dynamic and include parts of the event using the %{field} syntax
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this processor
 
 ### path
 * This is a required setting.
@@ -94,13 +57,8 @@ The replacement is case-sensitive.
 
 ```
 route{
-	add_field => {}
-	add_tag => []
 	condition => true
 	fork => false
-	remove_field => []
-	remove_tag => []
-	type => ""
 	path=> ["error.conf"]
 	var => {"hostname"=>"myhost","varname"=>"varvalue"}
 }

@@ -4,38 +4,16 @@ HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event
 ## Synopsys
 
 
-|  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-----------|--------|----------|---------------|
-| Add_field | hash   | false    | {}            |
-| Tags      | array  | false    | []            |
-| Type      | string | false    | ""            |
-| codec     | codec  | false    | "plain"       |
-| interval  | string | false    | ""            |
-| method    | string | false    | "GET"         |
-| url       | string | true     | ""            |
-| target    | string | false    | ""            |
+| SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
+|----------|--------|----------|---------------|
+| codec    | codec  | false    | "plain"       |
+| interval | string | false    | ""            |
+| method   | string | false    | "GET"         |
+| url      | string | true     | ""            |
+| target   | string | false    | ""            |
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-Add a field to an event
-
-### Tags
-* Value type is array
-* Default value is `[]`
-
-Add any number of arbitrary tags to your event.
-This can help with processing later.
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
 
 ### codec
 * Value type is codec
@@ -75,9 +53,6 @@ When data is an array it stores the resulting data into the given target field.
 
 ```
 httppoller{
-	add_field => {}
-	tags => []
-	type => ""
 	codec => "plain"
 	interval => "every_10s"
 	method => "GET"

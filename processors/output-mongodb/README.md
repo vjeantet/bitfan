@@ -6,7 +6,6 @@
 
 |   SETTING   |  TYPE  | REQUIRED | DEFAULT VALUE |
 |-------------|--------|----------|---------------|
-| Codec       | string | false    | ""            |
 | Collection  | string | false    | ""            |
 | Database    | string | false    | ""            |
 | GenerateId  | bool   | false    | ?             |
@@ -16,14 +15,6 @@
 
 
 ## Details
-
-### Codec
-* Value type is string
-* Default value is `""`
-
-The codec used for output data. Output codecs are a convenient method
-for encoding your data before it leaves the output, without needing a
-separate filter in your bitfan pipeline
 
 ### Collection
 * Value type is string
@@ -72,7 +63,6 @@ a MongoDB URI to connect to See http://docs.mongodb.org/manual/reference/connect
 
 ```
 mongodb{
-	codec => ""
 	collection => ""
 	database => ""
 	generateid => bool

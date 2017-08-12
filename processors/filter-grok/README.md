@@ -6,33 +6,15 @@
 
 |       SETTING       | TYPE  | REQUIRED | DEFAULT VALUE |
 |---------------------|-------|----------|---------------|
-| add_field           | hash  | false    | {}            |
-| add_tag             | array | false    | []            |
 | break_on_match      | bool  | false    | ?             |
 | keep_empty_captures | bool  | false    | ?             |
 | match               | hash  | true     | {}            |
 | named_capture_only  | bool  | false    | ?             |
 | patterns_dir        | array | false    | []            |
-| remove_field        | array | false    | []            |
-| remove_tag          | array | false    | []            |
 | tag_on_failure      | array | false    | []            |
 
 
 ## Details
-
-### add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event. Field names can
-be dynamic and include parts of the event using the %{field}.
-
-### add_tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
 
 ### break_on_match
 * Value type is bool
@@ -84,19 +66,6 @@ define this yourself unless you are adding additional patterns. You can point to
 multiple pattern directories using this setting Note that Grok will read all files
 in the directory and assume its a pattern file (including any tilde backup files)
 
-### remove_field
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary fields from this event
-
-### remove_tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary tags from the event.
-Tags can be dynamic and include parts of the event using the %{field} syntax
-
 ### tag_on_failure
 * Value type is array
 * Default value is `[]`
@@ -109,15 +78,11 @@ Append values to the tags field when there has been no successful match
 
 ```
 grok{
-	add_field => {}
-	add_tag => []
 	break_on_match => bool
 	keep_empty_captures => bool
 	match => {}
 	named_capture_only => bool
 	patterns_dir => []
-	remove_field => []
-	remove_tag => []
 	tag_on_failure => []
 }
 ```

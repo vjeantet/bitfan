@@ -28,6 +28,7 @@
 	</thead>
 	<tbody>
 	{{ range .Options.Options }}
+	{{if ne .Type "processors.CommonOptions" }}
 	<tr>
 		<td>{{if .Required}}<strong>{{end}}
 		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
@@ -39,6 +40,7 @@
 		<td><span>{{ template "proc-defaultvalue" . }}</span></td>
 	</tr>
 	{{ end }}
+	{{ end }}
 	</tbody>
 </table>
 {{else}}
@@ -49,6 +51,8 @@
 <h2>Details</h2>
 <p>{{markdownify .Options.Doc}}</p>
 {{ range .Options.Options }}
+{{if ne .Type "processors.CommonOptions" }}
+
 	<h3 id="{{.Name}}">{{ template "proc-identifier" . }}</h3>
 	{{with .Required}}<li>This is a required setting</li>{{end}}
 	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#{{.Type}}">{{.Type}}</a></li>
@@ -59,6 +63,7 @@
 
 	<li>Default value is <code>{{ template "proc-defaultvalue" . }}</code></li>
 	<p>{{markdownify .Doc }}</p>
+{{ end }}
 {{ end }}
 
 
@@ -74,7 +79,9 @@
 <pre><code>
 {{if $.Page.Params.Processor}}{{$.Page.Params.Processor}}{{else}}{{$.Page.Title}}{{end}} {
 {{ range .Options.Options }}
+{{- if ne .Type "processors.CommonOptions" -}}
 {{- template "proc-example" . }}
+{{- end }}
 {{end -}}
 }
 </code></pre>

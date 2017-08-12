@@ -6,8 +6,6 @@
 
 |           SETTING           |  TYPE  | REQUIRED | DEFAULT VALUE |
 |-----------------------------|--------|----------|---------------|
-| Add_field                   | hash   | false    | {}            |
-| Codec                       | string | false    | ""            |
 | Congestion_threshold        | int    | false    |             0 |
 | Host                        | string | false    | ""            |
 | Port                        | int    | false    |             0 |
@@ -17,23 +15,9 @@
 | Ssl_key                     | string | false    | ""            |
 | Ssl_key_passphrase          | string | false    | ""            |
 | Ssl_verify_mode             | string | false    | ""            |
-| Tags                        | array  | false    | []            |
-| Type                        | string | false    | ""            |
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-
-
-### Codec
-* Value type is string
-* Default value is `""`
-
-
 
 ### Congestion_threshold
 * Value type is int
@@ -105,26 +89,12 @@ force_peer will make the server ask the client for their certificate,
 This option need to be used with ssl_certificate_authorities and a defined list of CA.
 Value can be any of: none, peer, force_peer
 
-### Tags
-* Value type is array
-* Default value is `[]`
-
-Add any number of arbitrary tags to your event
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
-
 
 
 ## Configuration blueprint
 
 ```
 beatsinput{
-	add_field => {}
-	codec => ""
 	congestion_threshold => 123
 	host => ""
 	port => 123
@@ -134,7 +104,5 @@ beatsinput{
 	ssl_key => ""
 	ssl_key_passphrase => ""
 	ssl_verify_mode => ""
-	tags => []
-	type => ""
 }
 ```

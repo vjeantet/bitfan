@@ -13,16 +13,6 @@ func (p *processor) Doc() *doc.Processor {
     Doc:     "",
     Options: []*doc.ProcessorOption{
       &doc.ProcessorOption{
-        Name:           "Codec",
-        Alias:          "",
-        Doc:            "The codec used for output data. Output codecs are a convenient method\nfor encoding your data before it leaves the output, without needing a\nseparate filter in your bitfan pipeline",
-        Required:       false,
-        Type:           "string",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
         Name:           "Collection",
         Alias:          "",
         Doc:            "The collection to use. This value can use %{foo} values to dynamically\nselect a collection based on data in the event",

@@ -7,24 +7,14 @@
     "Doc": "",
     "Options": [
       {
-        "Alias": "add_field",
+        "Alias": ",squash",
         "DefaultValue": null,
-        "Doc": "If this filter is successful, add any arbitrary fields to this event.",
+        "Doc": "",
         "ExampleLS": "",
-        "Name": "AddField",
+        "Name": "processors.CommonOptions",
         "PossibleValues": null,
         "Required": false,
-        "Type": "hash"
-      },
-      {
-        "Alias": "add_tag",
-        "DefaultValue": null,
-        "Doc": "If this filter is successful, add arbitrary tags to the event. Tags can be dynamic\nand include parts of the event using the %{field} syntax.",
-        "ExampleLS": "",
-        "Name": "AddTag",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
+        "Type": "processors.CommonOptions"
       },
       {
         "Alias": "allow_duplicate_values",
@@ -105,26 +95,6 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "bool"
-      },
-      {
-        "Alias": "remove_field",
-        "DefaultValue": null,
-        "Doc": "If this filter is successful, remove arbitrary fields from this event. Example:\n```\nkv {\n  remove_field =\u003e [ \"foo_%{somefield}\" ]\n}\n```",
-        "ExampleLS": "",
-        "Name": "RemoveField",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "remove_tag",
-        "DefaultValue": null,
-        "Doc": "If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.\n\nExample:\n```\nkv {\n  remove_tag =\u003e [ \"foo_%{somefield}\" ]\n}\n```\nIf the event has field \"somefield\" == \"hello\" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.",
-        "ExampleLS": "",
-        "Name": "RemoveTag",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
       },
       {
         "Alias": "",

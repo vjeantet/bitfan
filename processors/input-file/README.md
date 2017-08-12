@@ -11,9 +11,6 @@ this processor remember last files used, it stores references in sincedb, set it
 
 |      SETTING      |  TYPE  | REQUIRED |             DEFAULT VALUE              |
 |-------------------|--------|----------|----------------------------------------|
-| Add_field         | hash   | false    | {}                                     |
-| Tags              | array  | false    | []                                     |
-| Type              | string | false    | ""                                     |
 | codec             | codec  | false    | "plain"                                |
 | read_older        | int    | false    |                                      0 |
 | discover_interval | int    | false    |                                     15 |
@@ -27,25 +24,6 @@ this processor remember last files used, it stores references in sincedb, set it
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
-
-### Tags
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
 
 ### codec
 * Value type is codec
@@ -126,9 +104,6 @@ When decoded data is an array it stores the resulting data into the given target
 
 ```
 file{
-	add_field => {}
-	tags => []
-	type => ""
 	codec => "plain"
 	read_older => 123
 	discover_interval => 15

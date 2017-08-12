@@ -7,14 +7,14 @@
     "Doc": "",
     "Options": [
       {
-        "Alias": "add_field",
+        "Alias": ",squash",
         "DefaultValue": null,
-        "Doc": "Add a field to an event. Default value is {}",
+        "Doc": "",
         "ExampleLS": "",
-        "Name": "AddField",
+        "Name": "processors.CommonOptions",
         "PossibleValues": null,
         "Required": false,
-        "Type": "hash"
+        "Type": "processors.CommonOptions"
       },
       {
         "Alias": "close_older",
@@ -135,26 +135,6 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "int"
-      },
-      {
-        "Alias": "tags",
-        "DefaultValue": null,
-        "Doc": "Add any number of arbitrary tags to your event. There is no default value for this setting.\nThis can help with processing later. Tags can be dynamic and include parts of the event using the %{field} syntax.",
-        "ExampleLS": "",
-        "Name": "Tags",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "type",
-        "DefaultValue": null,
-        "Doc": "Add a type field to all events handled by this input.\nTypes are used mainly for filter activation.",
-        "ExampleLS": "",
-        "Name": "Type",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
       }
     ]
   },

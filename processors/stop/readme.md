@@ -7,34 +7,12 @@ Permit to launch bitfan with a pipeline and quit when work is done.
 ## Synopsys
 
 
-|   SETTING   |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-------------|--------|----------|---------------|
-| Add_field   | hash   | false    | {}            |
-| Tags        | array  | false    | []            |
-| Type        | string | false    | ""            |
-| exit_bitfan | bool   | false    | true          |
+|   SETTING   | TYPE | REQUIRED | DEFAULT VALUE |
+|-------------|------|----------|---------------|
+| exit_bitfan | bool | false    | true          |
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
-
-### Tags
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
 
 ### exit_bitfan
 * Value type is bool
@@ -48,9 +26,6 @@ Stop bitfan after stopping the pipeline ?
 
 ```
 stopprocessor{
-	add_field => {}
-	tags => []
-	type => ""
 	exit_bitfan => true
 }
 ```

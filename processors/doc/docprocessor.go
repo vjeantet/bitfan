@@ -145,9 +145,6 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 					}
 				}
 
-				dpo.Doc = removeSpecialComment(field.Doc.Text())
-				dpo.Name = field.Names[0].String()
-
 				switch t := field.Type.(type) {
 				case *ast.MapType:
 					fieldType = "map"
@@ -168,6 +165,14 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 					fieldType = "unknow"
 					pp.Println("field-->", field.Type)
 				}
+
+				dpo.Doc = removeSpecialComment(field.Doc.Text())
+				if len(field.Names) == 0 {
+					dpo.Name = fieldType
+				} else {
+					dpo.Name = field.Names[0].String()
+				}
+
 				if field.Tag != nil {
 					if field.Tag.Value != "" {
 						r, _ := regexp.Compile(`([a-z]*):"([a-z_0-9,]*)"`)

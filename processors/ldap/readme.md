@@ -6,9 +6,6 @@ Performs a search for a specified filter on the directory and fire events with r
 
 |      SETTING      |  TYPE  | REQUIRED |   DEFAULT VALUE   |
 |-------------------|--------|----------|-------------------|
-| Add_field         | hash   | false    | {}                |
-| Tags              | array  | false    | []                |
-| Type              | string | false    | ""                |
 | host              | string | true     | ""                |
 | port              | int    | true     |               389 |
 | bind_dn           | string | false    | ""                |
@@ -27,25 +24,6 @@ Performs a search for a specified filter on the directory and fire events with r
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
-
-### Tags
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
 
 ### host
 * This is a required setting.
@@ -174,9 +152,6 @@ Set the value to "." to store value to the root (top level) of the event
 
 ```
 ldapprocessor{
-	add_field => {}
-	tags => []
-	type => ""
 	host => "ldap.forumsys.com"
 	port => 389
 	bind_dn => "cn=read-only-admin,dc=example,dc=com"

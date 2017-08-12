@@ -10,36 +10,14 @@ URL is available as http://webhookhost/pluginLabel/URI
 ## Synopsys
 
 
-|  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-----------|--------|----------|---------------|
-| Add_field | hash   | false    | {}            |
-| Tags      | array  | false    | []            |
-| Type      | string | false    | ""            |
-| Codec     | codec  | false    | "json"        |
-| Uri       | string | false    | "out"         |
-| Headers   | hash   | false    | {}            |
+| SETTING |  TYPE  | REQUIRED | DEFAULT VALUE |
+|---------|--------|----------|---------------|
+| Codec   | codec  | false    | "json"        |
+| Uri     | string | false    | "out"         |
+| Headers | hash   | false    | {}            |
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-Add a field to an event
-
-### Tags
-* Value type is array
-* Default value is `[]`
-
-Add any number of arbitrary tags to your event.
-This can help with processing later.
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
 
 ### Codec
 * Value type is codec
@@ -66,9 +44,6 @@ Add headers to output
 
 ```
 httpoutprocessor{
-	add_field => {}
-	tags => []
-	type => ""
 	codec => "json"
 	uri => "out"
 	headers => {}

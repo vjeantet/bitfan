@@ -8,44 +8,13 @@ The generated UUIDs follow the version 4 definition in RFC 4122).
 ## Synopsys
 
 
-|   SETTING    |  TYPE  | REQUIRED | DEFAULT VALUE |
-|--------------|--------|----------|---------------|
-| Add_field    | hash   | false    | {}            |
-| Add_tag      | array  | false    | []            |
-| Remove_field | array  | false    | []            |
-| Remove_Tag   | array  | false    | []            |
-| Overwrite    | bool   | false    | ?             |
-| Target       | string | false    | ""            |
+|  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
+|-----------|--------|----------|---------------|
+| Overwrite | bool   | false    | ?             |
+| Target    | string | false    | ""            |
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
-Field names can be dynamic and include parts of the event using the %{field}.
-
-### Add_tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event.
-Tags can be dynamic and include parts of the event using the %{field} syntax.
-
-### Remove_field
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary fields from this event.
-
-### Remove_Tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary tags from the event.
-Tags can be dynamic and include parts of the event using the %{field} syntax
 
 ### Overwrite
 * Value type is bool
@@ -66,10 +35,6 @@ Add a UUID to a field
 
 ```
 uuid{
-	add_field => {}
-	add_tag => []
-	remove_field => []
-	remove_tag => []
 	overwrite => bool
 	target => ""
 }

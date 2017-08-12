@@ -7,34 +7,14 @@
     "Doc": "",
     "Options": [
       {
-        "Alias": "",
+        "Alias": ",squash",
         "DefaultValue": null,
-        "Doc": "Add a field to an event",
+        "Doc": "",
         "ExampleLS": "",
-        "Name": "Add_field",
+        "Name": "processors.CommonOptions",
         "PossibleValues": null,
         "Required": false,
-        "Type": "hash"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add any number of arbitrary tags to your event.\nThis can help with processing later.",
-        "ExampleLS": "",
-        "Name": "Tags",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add a type field to all events handled by this input",
-        "ExampleLS": "",
-        "Name": "Type",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
+        "Type": "processors.CommonOptions"
       },
       {
         "Alias": "codec",

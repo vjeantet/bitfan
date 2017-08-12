@@ -7,8 +7,6 @@ which are of the foo=bar variety.
 
 |        SETTING         |  TYPE  | REQUIRED | DEFAULT VALUE |
 |------------------------|--------|----------|---------------|
-| add_field              | hash   | false    | {}            |
-| add_tag                | array  | false    | []            |
 | allow_duplicate_values | bool   | false    | ?             |
 | default_keys           | hash   | false    | {}            |
 | exclude_keys           | array  | false    | []            |
@@ -17,8 +15,6 @@ which are of the foo=bar variety.
 | include_keys           | array  | false    | []            |
 | Prefix                 | string | false    | ""            |
 | Recursive              | bool   | false    | ?             |
-| remove_field           | array  | false    | []            |
-| remove_tag             | array  | false    | []            |
 | Source                 | string | false    | ""            |
 | Target                 | string | false    | ""            |
 | Trim                   | string | false    | ""            |
@@ -27,19 +23,6 @@ which are of the foo=bar variety.
 
 
 ## Details
-
-### add_field
-* Value type is hash
-* Default value is `{}`
-
-If this filter is successful, add any arbitrary fields to this event.
-
-### add_tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, add arbitrary tags to the event. Tags can be dynamic
-and include parts of the event using the %{field} syntax.
 
 ### allow_duplicate_values
 * Value type is bool
@@ -170,31 +153,6 @@ kv {
 }
 ```
 
-### remove_field
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary fields from this event. Example:
-```
-kv {
-  remove_field => [ "foo_%{somefield}" ]
-}
-```
-
-### remove_tag
-* Value type is array
-* Default value is `[]`
-
-If this filter is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.
-
-Example:
-```
-kv {
-  remove_tag => [ "foo_%{somefield}" ]
-}
-```
-If the event has field "somefield" == "hello" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.
-
 ### Source
 * Value type is string
 * Default value is `""`
@@ -264,8 +222,6 @@ For example, to identify key-values such as key1:value1 key2:value2:
 
 ```
 kv{
-	add_field => {}
-	add_tag => []
 	allow_duplicate_values => bool
 	default_keys => {}
 	exclude_keys => []
@@ -274,8 +230,6 @@ kv{
 	include_keys => []
 	prefix => ""
 	recursive => bool
-	remove_field => []
-	remove_tag => []
 	source => ""
 	target => ""
 	trim => ""

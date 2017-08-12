@@ -7,24 +7,14 @@
     "Doc": "",
     "Options": [
       {
-        "Alias": "",
+        "Alias": ",squash",
         "DefaultValue": null,
-        "Doc": "If this processor is successful, add any arbitrary fields to this event.",
+        "Doc": "",
         "ExampleLS": "",
-        "Name": "Add_field",
+        "Name": "processors.CommonOptions",
         "PossibleValues": null,
         "Required": false,
-        "Type": "hash"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "If this processor is successful, add arbitrary tags to the event.\nTags can be dynamic and include parts of the event using the %{field} syntax.",
-        "ExampleLS": "",
-        "Name": "Add_tag",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
+        "Type": "processors.CommonOptions"
       },
       {
         "Alias": "condition",
@@ -45,36 +35,6 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "bool"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "If this processor is successful, remove arbitrary fields from this event.",
-        "ExampleLS": "",
-        "Name": "Remove_field",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "If this processor is successful, remove arbitrary tags from the event.\nTags can be dynamic and include parts of the event using the %{field} syntax",
-        "ExampleLS": "",
-        "Name": "Remove_tag",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
-      },
-      {
-        "Alias": "",
-        "DefaultValue": null,
-        "Doc": "Add a type field to all events handled by this processor",
-        "ExampleLS": "",
-        "Name": "Type",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
       },
       {
         "Alias": "path",

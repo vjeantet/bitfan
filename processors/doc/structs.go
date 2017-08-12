@@ -107,6 +107,9 @@ func (p *Processor) GenMarkdown(kind string) []byte {
 	table.SetHeader([]string{"Setting", "Type", "Required", "Default value"})
 
 	for _, o := range p.Options.Options {
+		if o.Type == "processors.CommonOptions" {
+			continue
+		}
 		required := "false"
 		if o.Required {
 			required = "true"
@@ -125,7 +128,9 @@ func (p *Processor) GenMarkdown(kind string) []byte {
 
 	g.Printf("## Details\n\n")
 	for _, o := range p.Options.Options {
-
+		if o.Type == "processors.CommonOptions" {
+			continue
+		}
 		g.Printf("### %s\n", o.getIdentifier())
 		if o.Required {
 			g.Printf("* This is a required setting.\n")
@@ -140,6 +145,9 @@ func (p *Processor) GenMarkdown(kind string) []byte {
 
 	g.Printf("```\n%s{\n", p.Name)
 	for _, o := range p.Options.Options {
+		if o.Type == "processors.CommonOptions" {
+			continue
+		}
 		g.Printf("\t%s\n", o.GenExample("logstash"))
 	}
 	g.Printf("}\n```\n")

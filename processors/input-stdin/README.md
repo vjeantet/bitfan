@@ -5,35 +5,13 @@ By default, each event is assumed to be one line. If you want to join lines, you
 ## Synopsys
 
 
-|  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
-|-----------|--------|----------|---------------|
-| Add_field | hash   | false    | {}            |
-| Tags      | array  | false    | []            |
-| Type      | string | false    | ""            |
-| Codec     | codec  | false    | "line"        |
-| eof_exit  | bool   | false    | false         |
+| SETTING  | TYPE  | REQUIRED | DEFAULT VALUE |
+|----------|-------|----------|---------------|
+| Codec    | codec | false    | "line"        |
+| eof_exit | bool  | false    | false         |
 
 
 ## Details
-
-### Add_field
-* Value type is hash
-* Default value is `{}`
-
-Add a field to an event
-
-### Tags
-* Value type is array
-* Default value is `[]`
-
-Add any number of arbitrary tags to your event.
-This can help with processing later.
-
-### Type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input
 
 ### Codec
 * Value type is codec
@@ -54,9 +32,6 @@ Stop bitfan on stdin EOF ? (use it when you pipe data with |)
 
 ```
 stdin{
-	add_field => {}
-	tags => []
-	type => ""
 	codec => "line"
 	eof_exit => false
 }

@@ -6,7 +6,6 @@
 
 |        SETTING         |  TYPE  | REQUIRED |  DEFAULT VALUE  |
 |------------------------|--------|----------|-----------------|
-| add_field              | hash   | false    | {}              |
 | close_older            | int    | false    |            3600 |
 | codec                  | codec  | false    | "line"          |
 | delimiter              | string | false    | "\n"            |
@@ -19,17 +18,9 @@
 | sincedb_write_interval | int    | false    |              15 |
 | start_position         | string | false    | "end"           |
 | stat_interval          | int    | false    |               1 |
-| tags                   | array  | false    | []              |
-| type                   | string | false    | ""              |
 
 
 ## Details
-
-### add_field
-* Value type is hash
-* Default value is `{}`
-
-Add a field to an event. Default value is {}
 
 ### close_older
 * Value type is int
@@ -137,27 +128,12 @@ Increasing this interval will decrease the number of system calls we make,
 but increase the time to detect new log lines.
 Default value is 1
 
-### tags
-* Value type is array
-* Default value is `[]`
-
-Add any number of arbitrary tags to your event. There is no default value for this setting.
-This can help with processing later. Tags can be dynamic and include parts of the event using the %{field} syntax.
-
-### type
-* Value type is string
-* Default value is `""`
-
-Add a type field to all events handled by this input.
-Types are used mainly for filter activation.
-
 
 
 ## Configuration blueprint
 
 ```
 tail{
-	add_field => {}
 	close_older => 3600
 	codec => "line"
 	delimiter => "\n"
@@ -170,7 +146,5 @@ tail{
 	sincedb_write_interval => 15
 	start_position => "end"
 	stat_interval => 1
-	tags => []
-	type => ""
 }
 ```
