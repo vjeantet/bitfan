@@ -17,10 +17,6 @@ type options struct {
 
 	// UDP port number to listen on
 	Port int `mapstructure:"port"`
-
-	// The codec used for input data. Input codecs are a convenient method for decoding
-	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
-	Codec string `mapstructure:"codec"`
 }
 
 type processor struct {

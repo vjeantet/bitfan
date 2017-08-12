@@ -17,10 +17,6 @@ func New() processors.Processor {
 type options struct {
 	processors.CommonOptions `mapstructure:",squash"`
 
-	// The codec used for input data. Input codecs are a convenient method for decoding
-	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
-	// Codec string
-
 	// ldap hostname
 	// @ExampleLS host => "ldap.forumsys.com"
 	Host string `mapstructure:"host" validate:"required"`

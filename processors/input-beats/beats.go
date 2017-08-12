@@ -29,8 +29,6 @@ type processor struct {
 type options struct {
 	processors.CommonOptions `mapstructure:",squash"`
 
-	Codec string
-
 	// The number of seconds before we raise a timeout,
 	// this option is useful to control how much time to wait if something is blocking
 	// the pipeline

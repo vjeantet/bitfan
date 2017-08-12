@@ -23,10 +23,6 @@ type processor struct {
 }
 
 type options struct {
-	// The codec used for output data. Output codecs are a convenient method
-	// for encoding your data before it leaves the output, without needing a
-	// separate filter in your bitfan pipeline
-	Codec string
 
 	// The collection to use. This value can use %{foo} values to dynamically
 	// select a collection based on data in the event
