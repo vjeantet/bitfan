@@ -78,7 +78,7 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	}
 
 	// Set processor's user options
-	if err := mapstructure.Decode(conf, rawVal); err != nil {
+	if err := mapstructure.WeakDecode(conf, rawVal); err != nil {
 		return err
 	}
 
