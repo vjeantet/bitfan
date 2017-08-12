@@ -7,7 +7,7 @@ func Doc() *doc.Codec {
 	return &doc.Codec{
   Name:       "json_lines",
   PkgName:    "jsonlinescodec",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/jsonlines",
+  ImportPath: "github.com/vjeantet/bitfan/codecs/jsonlines",
   Doc:        "",
   DocShort:   "",
   Decoder:    &doc.Decoder{

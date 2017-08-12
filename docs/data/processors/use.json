@@ -1,7 +1,7 @@
 {
   "Doc": "When used in input (input-\u003efilter-\u003eo) the processor will receive events from the last filter from the pipeline used in configuration file.\n\nWhen used in filter (i-\u003efilter-\u003eo) the processor will\n\n* pass the event to the first filter plugin found in the used configuration file\n* receive events from the last filter plugin found in the used configuration file\n\nWhen used in output (i-\u003efilter-\u003eoutput-\u003eo) the processor will\n\n* pass the event to the first filter plugin found in the used configuration file",
   "DocShort": "Include a config file",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/use",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/use",
   "Name": "use",
   "Options": {
     "Doc": "",

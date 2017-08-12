@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "whitelist",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-whitelist",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-whitelist",
   Doc:        "Similar to blacklist, this processor will compare a certain field to a whitelist, and match\nif the list does not contain the term",
   DocShort:   "drop event when term is in a given list",
   Options:    &doc.ProcessorOptions{

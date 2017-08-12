@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "generate a number of event",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-gennumbers",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/input-gennumbers",
   "Name": "gennumbers",
   "Options": {
     "Doc": "",

@@ -1,6 +1,6 @@
 +++
 title = "exec"
-description = ""
+description = "Execute a command and use its stdout as event data"
 weight = 10
 +++
 

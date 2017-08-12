@@ -7,7 +7,7 @@ func Doc() *doc.Codec {
 	return &doc.Codec{
   Name:       "encoder",
   PkgName:    "linecodec",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/line",
+  ImportPath: "github.com/vjeantet/bitfan/codecs/line",
   Doc:        "doc codec",
   DocShort:   "",
   Decoder:    &doc.Decoder{

@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-udp",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/input-udp",
   "Name": "udpinput",
   "Options": {
     "Doc": "",

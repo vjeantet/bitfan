@@ -1,6 +1,6 @@
 +++
 title = "exec"
-description = ""
+description = "Generate an event from a command process stdout"
 weight = 10
 +++
 

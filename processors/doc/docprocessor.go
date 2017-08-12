@@ -2,6 +2,7 @@ package doc
 
 import (
 	"go/ast"
+	"go/build"
 	"go/doc"
 	"go/parser"
 	"go/token"
@@ -68,7 +69,7 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 
 	docPkg := doc.New(astPkg, pkgPath, doc.AllDecls)
 	dp.Name = docPkg.Name
-	dp.ImportPath = docPkg.ImportPath
+	dp.ImportPath = strings.TrimPrefix(docPkg.ImportPath, build.Default.GOPATH+"/src/")
 
 	dp.Doc = removeSpecialComment(docPkg.Doc)
 

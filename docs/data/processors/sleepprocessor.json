@@ -1,7 +1,7 @@
 {
   "Doc": "Sleep a given amount of time.\n\nThis will cause bitfan to stall for the given amount of time.\n\nThis is useful for rate limiting, etc.",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/sleep",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/sleep",
   "Name": "sleepprocessor",
   "Options": {
     "Doc": "",

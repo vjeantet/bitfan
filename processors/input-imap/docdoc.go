@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "imap_input",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-imap",
+  ImportPath: "github.com/vjeantet/bitfan/processors/input-imap",
   Doc:        "",
   DocShort:   "",
   Options:    (*doc.ProcessorOptions)(nil),

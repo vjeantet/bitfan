@@ -6,8 +6,8 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "exec",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-exec",
-  Doc:        "",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-exec",
+  Doc:        "Execute a command and use its stdout as event data",
   DocShort:   "drop event when field value is the same in the last event",
   Options:    &doc.ProcessorOptions{
     Doc:     "",

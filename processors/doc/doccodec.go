@@ -2,6 +2,7 @@ package doc
 
 import (
 	"go/ast"
+	"go/build"
 	"go/doc"
 	"go/parser"
 	"go/token"
@@ -39,7 +40,7 @@ func NewCodec(pkgPath string) (*Codec, error) {
 	docPkg := doc.New(astPkg, pkgPath, doc.AllDecls)
 	dp.PkgName = docPkg.Name
 
-	dp.ImportPath = docPkg.ImportPath
+	dp.ImportPath = strings.TrimPrefix(docPkg.ImportPath, build.Default.GOPATH+"/src/")
 
 	dp.Doc = removeSpecialComment(docPkg.Doc)
 

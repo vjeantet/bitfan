@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "route",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/route",
+  ImportPath: "github.com/vjeantet/bitfan/processors/route",
   Doc:        "This processor, depending on the condition evaluation, will route message to\none or more different pipelines and/or pass the message through the processor to the next one.\nBehavior :\n\n* WHEN Condition is evaluated to true THEN the message go to the pipelines set in Path\n* WHEN Condition is evaluated to true AND Fork set to true THEN the message go to the pipeline set in Path AND pass through.\n* WHEN Condition is evaluated to false THEN the message pass through.\n* WHEN Condition is evaluated to false AND Fork set to true THEN the message  pass through.",
   DocShort:   "route message to other pipelines",
   Options:    &doc.ProcessorOptions{

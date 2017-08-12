@@ -50,7 +50,7 @@
   "Doc": "Parses comma-separated value data into individual fields",
   "DocShort": "",
   "Encoder": null,
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/csv",
+  "ImportPath": "github.com/vjeantet/bitfan/codecs/csv",
   "Name": "csv",
   "PkgName": "csvcodec"
 }

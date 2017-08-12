@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "elasticinput",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-elasticsearch",
+  ImportPath: "github.com/vjeantet/bitfan/processors/input-elasticsearch",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

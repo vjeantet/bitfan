@@ -36,7 +36,7 @@
       ]
     }
   },
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/plain",
+  "ImportPath": "github.com/vjeantet/bitfan/codecs/plain",
   "Name": "plain",
   "PkgName": "plaincodec"
 }

@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "change",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-change",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-change",
   Doc:        "This rule will monitor a certain field and match if that field changes. The field must change with respect to the last event",
   DocShort:   "drop event when field value is the same in the last event",
   Options:    &doc.ProcessorOptions{

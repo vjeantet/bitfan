@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-elasticsearch2",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/output-elasticsearch2",
   "Name": "elasticsearch2",
   "Options": {
     "Doc": "",

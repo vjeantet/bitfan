@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "ldapprocessor",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/ldap",
+  ImportPath: "github.com/vjeantet/bitfan/processors/ldap",
   Doc:        "Performs a search for a specified filter on the directory and fire events with results",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-file",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/output-file",
   "Name": "fileoutput",
   "Options": {
     "Doc": "",

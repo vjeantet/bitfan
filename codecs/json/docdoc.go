@@ -7,7 +7,7 @@ func Doc() *doc.Codec {
 	return &doc.Codec{
   Name:       "json",
   PkgName:    "jsoncodec",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/json",
+  ImportPath: "github.com/vjeantet/bitfan/codecs/json",
   Doc:        "",
   DocShort:   "",
   Decoder:    &doc.Decoder{

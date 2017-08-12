@@ -7,7 +7,7 @@ func Doc() *doc.Codec {
 	return &doc.Codec{
   Name:       "csv",
   PkgName:    "csvcodec",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/csv",
+  ImportPath: "github.com/vjeantet/bitfan/codecs/csv",
   Doc:        "Parses comma-separated value data into individual fields",
   DocShort:   "",
   Decoder:    &doc.Decoder{

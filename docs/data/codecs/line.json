@@ -57,7 +57,7 @@
       ]
     }
   },
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/line",
+  "ImportPath": "github.com/vjeantet/bitfan/codecs/line",
   "Name": "line",
   "PkgName": "linecodec"
 }

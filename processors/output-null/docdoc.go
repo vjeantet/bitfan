@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "null",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-null",
+  ImportPath: "github.com/vjeantet/bitfan/processors/output-null",
   Doc:        "Drops everything received",
   DocShort:   "Drops everything received",
   Options:    (*doc.ProcessorOptions)(nil),

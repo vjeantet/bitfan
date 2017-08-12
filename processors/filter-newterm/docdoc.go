@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "newterm",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-newterm",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-newterm",
   Doc:        "This processor matches when a new value appears in a field that has never been seen before.",
   DocShort:   "drop event when term was already seen before",
   Options:    &doc.ProcessorOptions{

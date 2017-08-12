@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "html",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-html",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-html",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

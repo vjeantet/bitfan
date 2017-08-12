@@ -1,7 +1,7 @@
 {
   "Doc": "The blacklist rule will check a certain field against a blacklist, and match if it is in the blacklist.",
   "DocShort": "drop event when term not in a given list",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-blacklist",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/filter-blacklist",
   "Name": "blacklist",
   "Options": {
     "Doc": "",

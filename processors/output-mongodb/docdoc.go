@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "mongodb",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-mongodb",
+  ImportPath: "github.com/vjeantet/bitfan/processors/output-mongodb",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

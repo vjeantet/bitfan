@@ -1,7 +1,7 @@
 {
   "Doc": "HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/httppoller",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/httppoller",
   "Name": "httppoller",
   "Options": {
     "Doc": "",

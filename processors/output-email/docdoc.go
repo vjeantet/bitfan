@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "email",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-email",
+  ImportPath: "github.com/vjeantet/bitfan/processors/output-email",
   Doc:        "Send email when an output is received. Alternatively, you may include or exclude the email output execution using conditionals.",
   DocShort:   "Sends email to a specified address when output is received",
   Options:    &doc.ProcessorOptions{

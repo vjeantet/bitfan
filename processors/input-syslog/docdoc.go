@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "sysloginput",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-syslog",
+  ImportPath: "github.com/vjeantet/bitfan/processors/input-syslog",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

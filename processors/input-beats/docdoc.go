@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "beatsinput",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-beats",
+  ImportPath: "github.com/vjeantet/bitfan/processors/input-beats",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

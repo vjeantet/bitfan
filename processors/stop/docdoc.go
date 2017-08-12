@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "stopprocessor",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/stop",
+  ImportPath: "github.com/vjeantet/bitfan/processors/stop",
   Doc:        "Stop after emitting a blank event on start\nAllow you to put first event and then stop processors as soon as they finish their job.\n\nPermit to launch bitfan with a pipeline and quit when work is done.",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

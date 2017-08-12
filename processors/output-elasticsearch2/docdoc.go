@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "elasticsearch2",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-elasticsearch2",
+  ImportPath: "github.com/vjeantet/bitfan/processors/output-elasticsearch2",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

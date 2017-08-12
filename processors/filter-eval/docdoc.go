@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "evalprocessor",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-eval",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-eval",
   Doc:        "Modify or add event's field with the result of an expression (math or compare)\n\n**Operators and types supported in expression :**\n\n* Modifiers: `+` `-` `/` `*` `&` `|` `^` `**` `%` `>>` `<<`\n* Comparators: `>` `>=` `<` `<=` `==` `!=` `=~` `!~`\n* Logical ops: `||` `&&`\n* Numeric constants, as 64-bit floating point (`12345.678`)\n* String constants (single quotes: `'foobar'`)\n* Date constants (single quotes, using any permutation of RFC3339, ISO8601, ruby date, or unix date; date parsing is automatically tried with any string constant)\n* Boolean constants: `true` `false`\n* Parenthesis to control order of evaluation `(` `)`\n* Arrays (anything separated by `,` within parenthesis: `(1, 2, 'foo')`)\n* Prefixes: `!` `-` `~`\n* Ternary conditional: `?` `:`\n* Null coalescence: `??`",
   DocShort:   "Evaluate expression",
   Options:    &doc.ProcessorOptions{

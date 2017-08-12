@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "inputstdout",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-stdout",
+  ImportPath: "github.com/vjeantet/bitfan/processors/input-stdout",
   Doc:        "",
   DocShort:   "Prints events to the standard output",
   Options:    &doc.ProcessorOptions{

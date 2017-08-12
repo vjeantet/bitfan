@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "file",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/input-file",
+  ImportPath: "github.com/vjeantet/bitfan/processors/input-file",
   Doc:        "Read file on\n\n* received event\n* when new file discovered\n\nthis processor remember last files used, it stores references in sincedb, set it to \"/dev/null\" to not remember used files",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

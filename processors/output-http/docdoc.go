@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "httpoutput",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/output-http",
+  ImportPath: "github.com/vjeantet/bitfan/processors/output-http",
   Doc:        "",
   DocShort:   "",
   Options:    &doc.ProcessorOptions{

@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "digest",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-digest",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-digest",
   Doc:        "",
   DocShort:   "Digest events every x",
   Options:    &doc.ProcessorOptions{

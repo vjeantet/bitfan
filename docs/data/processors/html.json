@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-html",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/filter-html",
   "Name": "html",
   "Options": {
     "Doc": "",

@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "Digest events every x",
-  "ImportPath": "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-digest",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/filter-digest",
   "Name": "digest",
   "Options": {
     "Doc": "",

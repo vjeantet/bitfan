@@ -6,7 +6,7 @@ import "github.com/vjeantet/bitfan/processors/doc"
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "date",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/processors/filter-date",
+  ImportPath: "github.com/vjeantet/bitfan/processors/filter-date",
   Doc:        "The date filter is used for parsing dates from fields, and then using that date or timestamp as the logstash timestamp for the event.\n\nFor example, syslog events usually have timestamps like this:\n`\"Apr 17 09:32:01\"`\n\nYou would use the date format MMM dd HH:mm:ss to parse this.\n\nThe date filter is especially important for sorting events and for backfilling old data. If you don’t get the date correct in your event, then searching for them later will likely sort out of order.\n\nIn the absence of this filter, logstash will choose a timestamp based on the first time it sees the event (at input time), if the timestamp is not already set in the event. For example, with file input, the timestamp is set to the time of each read.",
   DocShort:   "Parses dates from fields to use as the BitFan timestamp for an event",
   Options:    &doc.ProcessorOptions{

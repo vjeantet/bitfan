@@ -1,4 +1,5 @@
 //go:generate bitfanDoc
+//Execute a command and use its stdout as event data
 package exec
 
 import (

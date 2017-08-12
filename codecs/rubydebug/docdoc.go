@@ -7,7 +7,7 @@ func Doc() *doc.Codec {
 	return &doc.Codec{
   Name:       "rubydebug",
   PkgName:    "rubydebugcodec",
-  ImportPath: "/Users/sodadi/go/src/github.com/vjeantet/bitfan/codecs/rubydebug",
+  ImportPath: "github.com/vjeantet/bitfan/codecs/rubydebug",
   Doc:        "This codec pretty prints event",
   DocShort:   "",
   Decoder:    (*doc.Decoder)(nil),
