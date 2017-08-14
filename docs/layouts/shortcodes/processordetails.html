@@ -33,7 +33,13 @@
 		<td>{{if .Required}}<strong>{{end}}
 		<a href="#{{.Name}}">{{ template "proc-identifier" . }}</a>
 		{{if .Required}}</strong>{{end}}</td>
-		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#{{.Type}}">{{.Type}}</a></td>
+		<td>
+		{{if eq .Type "codec" }}
+			<a href="/codecs/">codec</a>
+		{{else}}
+			<a href="{{ relref $.Page "pipelines/config-value-types.md" }}#{{.Type}}">{{.Type}}</a>
+		{{end}}
+		</td>
 		<td>{{if .Required}}required{{end}}
 		{{if .PossibleValues}}{{delimit .PossibleValues ", " " or "}}{{end}}
 		</td>
@@ -49,6 +55,8 @@
 
 {{if .Options}}
 
+{{ range .Options.Options }}
+{{if eq .Type "processors.CommonOptions" }}
 <p></p>
 <div class="expand">
     <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
@@ -223,7 +231,8 @@ filter {
 
     </div>
 </div>
-
+{{ end }}
+{{ end }}
 
 <h2>Details</h2>
 <p>{{markdownify .Options.Doc}}</p>
