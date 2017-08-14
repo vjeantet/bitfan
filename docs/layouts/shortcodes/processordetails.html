@@ -48,6 +48,183 @@
 {{ end }}
 
 {{if .Options}}
+
+<p></p>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
+    	<i style="font-size:x-small;" class="fa fa-chevron-right"></i>
+    	<span>
+    		Common Options
+    	</span>
+    </div>
+    <div class="expand-content" style="display: none;">
+<table>
+	<thead>
+		<tr>
+			<th>Setting</th>
+			<th>Type</th>
+			<th>Short Description.</th>
+		</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td>
+		<a href="#add_field">add_field</a>
+		</td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#hash">hash</a></td>
+		<td>Add any arbitrary fields with values to event</td>
+	</tr>
+	<tr>
+		<td>
+		<a href="#add_tag">add_tag</a>
+		</td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#array">array</a></td>
+		<td>Add arbitrary tags to the event</td>
+	</tr>
+	<tr>
+		<td>
+		<a href="#type">type</a>
+		</td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#string">string</a></td>
+		<td>Add a type field</td>
+	</tr>
+	<tr>
+		<td>
+		<a href="#remove_field">remove_field</a>
+		</td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#array">array</a></td>
+		<td>Remove arbitrary fields from this event</td>
+	</tr>
+	<tr>
+		<td>
+		<a href="#remove_tag">remove_tag</a>
+		</td>
+		<td><a href="{{ relref $.Page "pipelines/config-value-types.md" }}#array">array</a></td>
+		<td>Remove arbitrary fields from this event</td>
+	</tr>
+	</tbody>
+</table>
+
+
+<h2>Common Options Details</h2>
+<p>The following configuration options are supported by all processors</p>
+	<h3 id="add_field">add_field</h3>
+	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#hash">hash</a></li>
+	<p>
+		
+<p>If this processor is successful, add any arbitrary fields to event. Field names can be dynamic and include parts of the event using the %{field} notation.</p>
+
+<p>Example:</p>
+
+<pre><code>
+input {
+  PROCESSOR_NAME {
+    add_field => { "foo_%{somefield}" => "Hello world, from %{host}" }
+  }
+}
+# You can also add multiple fields at once:
+filter {
+  PROCESSOR_NAME {
+    add_field => {
+      "foo_%{somefield}" => "Hello world, from %{host}"
+      "new_field" => "new_static_value"
+    }
+  }
+}
+</code></pre>
+
+<p>If the event has field "somefield" == "hello", this processor, on success, would add field foo_hello if it is present, with the value above and the %{host} piece replaced with that value from the event. The second example would also add a hardcoded field.</p>
+
+	</p>
+	
+	<h3 id="add_tag">add_tag</h3>
+	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#array">array</a></li>
+	<p>
+<p>		
+If this processor is successful, add arbitrary tags to the event. Tags can be dynamic and include parts of the event using the %{field} syntax.
+</p>
+<p>Example:</p>
+<pre><code>
+filter {
+  PROCESSOR_NAME {
+    add_tag => [ "foo_%{somefield}" ]
+  }
+}
+# You can also add multiple tags at once:
+input {
+  PROCESSOR_NAME {
+    add_tag => [ "foo_%{somefield}", "taggedy_tag"]
+  }
+}
+</code></pre>
+
+<p>If the event has field "somefield" == "hello" this processor, on success, would add a tag foo_hello (and the second example would of course add a taggedy_tag tag).</p>
+
+	</p>
+	
+	<h3 id="type">type</h3>
+	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#string">string</a></li>
+	<p>
+
+<p>Add a type field to all events handled by this processor.</p>
+
+<p>The type is stored as part of the event itself</p>
+
+	</p>
+	
+	<h3 id="remove_tag">remove_tag</h3>
+	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#array">array</a></li>
+	<p>
+
+<p>If this processor is successful, remove arbitrary tags from the event. Tags can be dynamic and include parts of the event using the %{field} syntax.</p>
+
+<p>Example:</p>
+<pre><code>
+filter {
+  PROCESSOR_NAME {
+    remove_tag => [ "foo_%{somefield}" ]
+  }
+}
+# You can also remove multiple tags at once:
+input {
+  PROCESSOR_NAME {
+    remove_tag => [ "foo_%{somefield}", "sad_unwanted_tag"]
+  }
+}
+</code></pre>
+<p>If the event has field "somefield" == "hello" this processor, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.</p>
+
+
+
+	</p>
+
+	<h3 id="remove_field">remove_field</h3>
+	<li>Value type is <a href="{{ relref $.Page "pipelines/config-value-types.md" }}#array">array</a></li>
+	<p>
+
+<p>If this processor is successful, remove arbitrary fields from this event.</p> 
+<p>Example:</p>
+<pre><code>
+input {
+  PROCESSOR_NAME {
+    remove_field => [ "foo_%{somefield}" ]
+  }
+}
+# You can also remove multiple fields at once:
+filter {
+  PROCESSOR_NAME {
+    remove_field => [ "foo_%{somefield}", "my_extraneous_field" ]
+  }
+}
+</code></pre>
+<p>If the event has field "somefield" == "hello" this processor, on success, would remove the field with name foo_hello if it is present. The second example would remove an additional, non-dynamic field.</p>
+
+	</p>
+
+    </div>
+</div>
+
+
 <h2>Details</h2>
 <p>{{markdownify .Options.Doc}}</p>
 {{ range .Options.Options }}
