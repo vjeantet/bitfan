@@ -113,7 +113,9 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 	funcMap := template.FuncMap{
 		"TS":         (*templateFunctions)(nil).timeStampFormat,
 		"DateFormat": (*templateFunctions)(nil).dateFormat,
+		"ago":        (*templateFunctions)(nil).dateAgo,
 		"String":     (*templateFunctions)(nil).toString,
+		"int":        (*templateFunctions)(nil).toInt,
 		"Time":       (*templateFunctions)(nil).asTime,
 		"Now":        (*templateFunctions)(nil).now,
 
@@ -127,6 +129,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 		"Trim":         (*templateFunctions)(nil).trim,
 		"TrimPrefix":   (*templateFunctions)(nil).trimPrefix,
 		"Replace":      (*templateFunctions)(nil).replace,
+		"markdown":     (*templateFunctions)(nil).toMarkdown,
 	}
 
 	tpl, errTpl := template.New("").Funcs(funcMap).Parse(string(content))

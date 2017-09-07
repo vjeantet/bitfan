@@ -81,6 +81,12 @@
 			"revisionTime": "2015-03-31T20:55:04Z"
 		},
 		{
+			"checksumSHA1": "/iOcx+e9ndd7fCNf/dLtIOpt8r0=",
+			"path": "github.com/davidscholberg/go-durationfmt",
+			"revision": "64843a2083d31a1c3b4adf5d1e3a7651eefdad56",
+			"revisionTime": "2017-01-22T14:46:59Z"
+		},
+		{
 			"checksumSHA1": "vnjESUOdA2zf3IsxUnGUibHbEvk=",
 			"path": "github.com/dghubble/sling",
 			"revision": "3db1177a9ec00dae4266e45abb504e2e13d7dc04",
@@ -429,6 +435,12 @@
 			"revisionTime": "2016-04-24T11:30:07Z"
 		},
 		{
+			"checksumSHA1": "LveYDnKndgX1jERpELLVTrb5UlU=",
+			"path": "github.com/microcosm-cc/bluemonday",
+			"revision": "4ac6f27528d0a3f2a59e0b0a6f6b3ff0bb89fe20",
+			"revisionTime": "2015-11-02T18:20:00Z"
+		},
+		{
 			"checksumSHA1": "UuXgD2dDojfS8AViUEe15gLIWZE=",
 			"path": "github.com/mitchellh/mapstructure",
 			"revision": "f3009df150dadf309fdee4a54ed65c124afad715",
@@ -535,6 +547,12 @@
 			"path": "github.com/rsms/gotalk",
 			"revision": "7fcc13b9d816a4f210371c58ed8c8d468787eb6c",
 			"revisionTime": "2015-01-23T04:15:48Z"
+		},
+		{
+			"checksumSHA1": "K79H77/Wj89RB1no+o+G8ePeRDE=",
+			"path": "github.com/russross/blackfriday",
+			"revision": "b253417e1cb644d645a0a3bb1fa5034c8030127c",
+			"revisionTime": "2017-04-13T17:36:32Z"
 		},
 		{
 			"checksumSHA1": "Sq0QP4JywTr7UM4hTK1cjCi7jec=",

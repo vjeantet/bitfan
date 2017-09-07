@@ -10,6 +10,9 @@ import (
 	"strings"
 	"time"
 
+	durationfmt "github.com/davidscholberg/go-durationfmt"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
 	"github.com/spf13/cast"
 	"github.com/vjeantet/jodaTime"
 )
@@ -40,6 +43,15 @@ func (t *templateFunctions) replace(s, old, new interface{}) (string, error) {
 // ToString converts the given value to a string.
 func (t *templateFunctions) toString(v interface{}) (string, error) {
 	return cast.ToStringE(v)
+}
+func (t *templateFunctions) toMarkdown(v interface{}) (string, error) {
+	unsafe := blackfriday.MarkdownCommon([]byte(cast.ToString(v)))
+	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+	return string(html), nil
+}
+
+func (t *templateFunctions) toInt(v interface{}) (int, error) {
+	return cast.ToIntE(v)
 }
 
 func (t *templateFunctions) safeHtml(s interface{}) (template.HTML, error) {
@@ -132,6 +144,26 @@ func (t *templateFunctions) dateFormat(layout string, v interface{}) string {
 		return ""
 	}
 	return jodaTime.Format(layout, ti)
+}
+
+func (tt *templateFunctions) dateAgo(layout string, date interface{}) string {
+	var t time.Time
+
+	switch date := date.(type) {
+	default:
+		t = time.Now()
+	case time.Time:
+		t = date
+	case int64:
+		t = time.Unix(date, 0)
+	case int:
+		t = time.Unix(int64(date), 0)
+	}
+	if layout == "" {
+		layout = "%d days, %h hours"
+	}
+	durStr, _ := durationfmt.Format(time.Since(t), layout)
+	return durStr
 }
 
 func (t *templateFunctions) timeStampFormat(layout string, v map[string]interface{}) string {
