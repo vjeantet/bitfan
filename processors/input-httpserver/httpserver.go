@@ -98,13 +98,37 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		"requestURI":  r.RequestURI,
 		"proto":       r.Proto,
 		"host":        r.Host,
-		"headers":     r.Header,
 		"requestPath": r.URL.Path,
-		"querystring": r.URL.Query(),
 	}
+
+	req["querystring"] = map[string]interface{}{}
+	for i, v := range r.URL.Query() {
+		if len(v) == 1 {
+			req["querystring"].(map[string]interface{})[i] = v[0]
+		} else {
+			req["querystring"].(map[string]interface{})[i] = v
+		}
+	}
+
+	req["headers"] = map[string]interface{}{}
+	for i, v := range r.Header {
+		if len(v) == 1 {
+			req["headers"].(map[string]interface{})[i] = v[0]
+		} else {
+			req["headers"].(map[string]interface{})[i] = v
+		}
+	}
+
 	if r.Method == "POST" {
 		r.ParseForm()
-		req["formvalues"] = r.PostForm
+		req["formvalues"] = map[string]interface{}{}
+		for i, v := range r.PostForm {
+			if len(v) == 1 {
+				req["formvalues"].(map[string]interface{})[i] = v[0]
+			} else {
+				req["formvalues"].(map[string]interface{})[i] = v
+			}
+		}
 	}
 
 	var nbEvents int
