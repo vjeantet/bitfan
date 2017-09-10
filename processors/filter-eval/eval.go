@@ -21,6 +21,8 @@ package evalprocessor
 import (
 	"fmt"
 	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/Knetic/govaluate"
 	"github.com/vjeantet/bitfan/processors"
@@ -73,7 +75,28 @@ func (p *processor) Receive(e processors.IPacket) error {
 		parameters := EvaluatedParameters{}
 		for _, v := range expression.Tokens() {
 			if v.Kind == govaluate.VARIABLE {
-				paramValue, err := e.Fields().ValueForPath(v.Value.(string))
+				path := v.Value.(string)
+				splits := strings.Split(path, ".")
+				arrIndex := 0
+				if len(splits) > 1 {
+					arrIndex, err = strconv.Atoi(splits[len(splits)-1])
+					if err == nil {
+						// array index ! rebuild path
+						path = strings.Join(splits[0:len(splits)-1], ".")
+					}
+				}
+
+				paramValue, err := e.Fields().ValueForPath(path)
+
+				if len(splits) > 1 {
+					switch v := paramValue.(type) {
+					case []interface{}:
+						paramValue = v[arrIndex]
+					case []string:
+						paramValue = v[arrIndex]
+					}
+				}
+
 				p.Logger.Debugf("paramValue-->%s", paramValue)
 				if err != nil {
 					continue
