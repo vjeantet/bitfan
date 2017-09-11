@@ -4,24 +4,23 @@ Send email when an output is received. Alternatively, you may include or exclude
 ## Synopsys
 
 
-|   SETTING    |  TYPE  | REQUIRED |    DEFAULT VALUE     |
-|--------------|--------|----------|----------------------|
-| address      | string | false    | "localhost"          |
-| port         | int    | false    |                   25 |
-| username     | string | false    | ""                   |
-| password     | string | false    | ""                   |
-| from         | string | false    | "bitfan@nowhere.com" |
-| replyto      | string | false    | ""                   |
-| to           | string | true     | ""                   |
-| cc           | string | false    | ""                   |
-| bcc          | string | false    | ""                   |
-| subject      | string | false    | ""                   |
-| subjectfile  | string | false    | ""                   |
-| htmlbody     | string | false    | ""                   |
-| htmlbodyfile | string | false    | ""                   |
-| body         | string | false    | ""                   |
-| bodyfile     | string | false    | ""                   |
-| attachments  | array  | false    | []                   |
+|   SETTING   |   TYPE   | REQUIRED |    DEFAULT VALUE     |
+|-------------|----------|----------|----------------------|
+| address     | string   | false    | "localhost"          |
+| port        | int      | false    |                   25 |
+| username    | string   | false    | ""                   |
+| password    | string   | false    | ""                   |
+| from        | string   | false    | "bitfan@nowhere.com" |
+| replyto     | string   | false    | ""                   |
+| to          | string   | true     | ""                   |
+| cc          | string   | false    | ""                   |
+| bcc         | string   | false    | ""                   |
+| subject     | string   | false    | ""                   |
+| subjectfile | string   | false    | ""                   |
+| HTMLBody    | location | false    | ?                    |
+| body        | location | false    | ?                    |
+| attachments | array    | false    | []                   |
+| images      | array    | false    | []                   |
 
 
 ## Details
@@ -103,37 +102,29 @@ You can use template
 
 Path to Subject template file for the email
 
-### htmlbody
-* Value type is string
-* Default value is `""`
+### HTMLBody
+* Value type is location
+* Default value is `?`
 
 HTML Body for the email, which may contain HTML markup
 
-### htmlbodyfile
-* Value type is string
-* Default value is `""`
-
-Local path to HTML Body template file for the email, which may contain HTML markup
-can be relative to the configuration file
-TODO : use a Location Type like sql processor
-
 ### body
-* Value type is string
-* Default value is `""`
+* Value type is location
+* Default value is `?`
 
 Body for the email - plain text only.
-
-### bodyfile
-* Value type is string
-* Default value is `""`
-
-Path to Body template file for the email.
 
 ### attachments
 * Value type is array
 * Default value is `[]`
 
 Attachments - specify the name(s) and location(s) of the files
+
+### images
+* Value type is array
+* Default value is `[]`
+
+Images - specify the name(s) and location(s) of the images
 
 
 
@@ -152,10 +143,9 @@ email{
 	bcc => "me@host.com, you@host.com"
 	subject => "message from {{.host}}"
 	subjectfile => ""
-	htmlbody => "<h1>Hello</h1> message received : {{.message}}"
-	htmlbodyfile => ""
+	htmlBody => "<h1>Hello</h1> message received : {{.message}}"
 	body => "message : {{.message}}. from {{.host}}."
-	bodyfile => ""
 	attachments => []
+	images => []
 }
 ```

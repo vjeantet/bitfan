@@ -117,24 +117,14 @@
         "Type": "string"
       },
       {
-        "Alias": "htmlbody",
+        "Alias": "",
         "DefaultValue": null,
         "Doc": "HTML Body for the email, which may contain HTML markup",
-        "ExampleLS": "htmlbody =\u003e \"\u003ch1\u003eHello\u003c/h1\u003e message received : {{.message}}\"",
-        "Name": "Htmlbody",
+        "ExampleLS": "htmlBody =\u003e \"\u003ch1\u003eHello\u003c/h1\u003e message received : {{.message}}\"",
+        "Name": "HTMLBody",
         "PossibleValues": null,
         "Required": false,
-        "Type": "string"
-      },
-      {
-        "Alias": "htmlbodyfile",
-        "DefaultValue": null,
-        "Doc": "Local path to HTML Body template file for the email, which may contain HTML markup\ncan be relative to the configuration file\nTODO : use a Location Type like sql processor",
-        "ExampleLS": "",
-        "Name": "Htmlbodyfile",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
+        "Type": "location"
       },
       {
         "Alias": "body",
@@ -144,17 +134,7 @@
         "Name": "Body",
         "PossibleValues": null,
         "Required": false,
-        "Type": "string"
-      },
-      {
-        "Alias": "bodyfile",
-        "DefaultValue": null,
-        "Doc": "Path to Body template file for the email.",
-        "ExampleLS": "",
-        "Name": "Bodyfile",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
+        "Type": "location"
       },
       {
         "Alias": "attachments",
@@ -162,6 +142,16 @@
         "Doc": "Attachments - specify the name(s) and location(s) of the files",
         "ExampleLS": "",
         "Name": "Attachments",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "images",
+        "DefaultValue": null,
+        "Doc": "Images - specify the name(s) and location(s) of the images",
+        "ExampleLS": "",
+        "Name": "Images",
         "PossibleValues": null,
         "Required": false,
         "Type": "array"
