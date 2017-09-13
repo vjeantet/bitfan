@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/clbanning/mxj"
+	"github.com/fatih/structs"
 	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/processors/doc"
 )
@@ -32,7 +33,7 @@ func buildProcessorDoc() {
 	dp, _ := doc.NewProcessor(cwd)
 
 	JsonFilePath := filepath.Join(dataJsonDocsPath, strings.ToLower(dp.Name)+".json")
-	dataMap, _ := mxj.NewMapStruct(dp)
+	dataMap := mxj.Map(structs.Map(dp))
 	jsonBytes, _ := dataMap.JsonIndent("", "  ", true)
 	if err := ioutil.WriteFile(filepath.Clean(JsonFilePath), jsonBytes, 0644); err != nil {
 		log.Printf("writing output: %s\n", err)
@@ -82,7 +83,7 @@ func buildCodecDoc(name string) {
 	dc.Name = name
 
 	JsonFilePath := filepath.Join(dataJsonDocsPath, strings.ToLower(dc.Name+".json"))
-	dataMap, _ := mxj.NewMapStruct(dc)
+	dataMap := mxj.Map(structs.Map(dc))
 	jsonBytes, _ := dataMap.JsonIndent("", "  ", true)
 	if err := ioutil.WriteFile(filepath.Clean(JsonFilePath), jsonBytes, 0644); err != nil {
 		log.Printf("writing output: %s\n", err)
