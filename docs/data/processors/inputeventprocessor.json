@@ -27,13 +27,23 @@
         "Type": "string"
       },
       {
+        "Alias": "count",
+        "DefaultValue": "1",
+        "Doc": "How many events to generate",
+        "ExampleLS": "count =\u003e 1000000",
+        "Name": "Count",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
         "Alias": "interval",
         "DefaultValue": null,
-        "Doc": "Use CRON or BITFAN notation",
+        "Doc": "Use CRON or BITFAN notation\nWhen omited, event will be generated on start",
         "ExampleLS": "interval =\u003e \"@every 10s\"",
         "Name": "Interval",
         "PossibleValues": null,
-        "Required": true,
+        "Required": false,
         "Type": "string"
       }
     ]

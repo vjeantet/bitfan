@@ -7,7 +7,8 @@ Generate a blank event on interval
 | SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
 |----------|--------|----------|---------------|
 | Message  | string | false    | ""            |
-| interval | string | true     | ""            |
+| count    | int    | false    |             1 |
+| interval | string | false    | ""            |
 
 
 ## Details
@@ -18,12 +19,18 @@ Generate a blank event on interval
 
 string value to put in event
 
+### count
+* Value type is int
+* Default value is `1`
+
+How many events to generate
+
 ### interval
-* This is a required setting.
 * Value type is string
 * Default value is `""`
 
 Use CRON or BITFAN notation
+When omited, event will be generated on start
 
 
 
@@ -32,6 +39,7 @@ Use CRON or BITFAN notation
 ```
 inputeventprocessor{
 	message => ""
+	count => 1000000
 	interval => "@every 10s"
 }
 ```

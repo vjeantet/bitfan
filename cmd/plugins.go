@@ -24,7 +24,6 @@ import (
 	inputeventprocessor "github.com/vjeantet/bitfan/processors/input-event"
 	execinput "github.com/vjeantet/bitfan/processors/input-exec"
 	file "github.com/vjeantet/bitfan/processors/input-file"
-	gennumbers "github.com/vjeantet/bitfan/processors/input-gennumbers"
 	rabbitmqinput "github.com/vjeantet/bitfan/processors/input-rabbitmq"
 	stdin "github.com/vjeantet/bitfan/processors/input-stdin"
 	inputstdout "github.com/vjeantet/bitfan/processors/input-stdout"
@@ -74,7 +73,6 @@ func init() {
 	initPlugin("input", "sql", sqlprocessor.New)
 	initPlugin("input", "http", httppoller.New)
 	initPlugin("input", "use", use.New)
-	initPlugin("input", "gennumbers", gennumbers.New)
 	initPlugin("input", "ldap", ldapprocessor.New)
 	initPlugin("input", "stop", stopprocessor.New)
 	initPlugin("input", "httpserver", inputhttpserverprocessor.New)
