@@ -113,7 +113,6 @@ func (p *processor) Receive(e processors.IPacket) error {
 	res["proto"] = resp.Proto
 	res["ContentLength"] = resp.ContentLength
 
-	var nbEvents = 0
 	for dec.More() {
 		var record interface{}
 		if err = dec.Decode(&record); err != nil {
@@ -125,31 +124,11 @@ func (p *processor) Receive(e processors.IPacket) error {
 			}
 		}
 
-		var e processors.IPacket
-		switch v := record.(type) {
-		case nil:
-			e = p.NewPacket("", map[string]interface{}{
-				"response": res,
-			})
-		case string:
-			e = p.NewPacket(v, map[string]interface{}{
-				"response": res,
-			})
-		case map[string]interface{}:
-			e = p.NewPacket("", v)
-			e.Fields().SetValueForPath(res, "request")
-		case []interface{}:
-			e = p.NewPacket("", map[string]interface{}{
-				"response":   res,
-				p.opt.Target: v,
-			})
-		default:
-			p.Logger.Errorf("Unknow structure %#v", v)
-		}
-
-		p.opt.ProcessCommonOptions(e.Fields())
-		p.Send(e)
-		nbEvents++
+		e2 := e.Clone()
+		e2.Fields().SetValueForPath(res, "response")
+		e2.Fields().SetValueForPath(record, p.opt.Target)
+		p.opt.ProcessCommonOptions(e2.Fields())
+		p.Send(e2)
 		select {
 		case <-p.q:
 			return nil
