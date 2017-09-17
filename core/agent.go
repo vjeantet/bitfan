@@ -155,7 +155,7 @@ func (a *agent) start() error {
 	}
 
 	// Start in chan loop and a.processor.Receive(e) !
-	Log().Debugf("agent %s : Starting %d loopers", a.Label, maxConcurentPackets)
+	Log().Debugf("agent %s : %d workers", a.Label, maxConcurentPackets)
 	go func(maxConcurentPackets int) {
 		var wg = &sync.WaitGroup{}
 
@@ -174,8 +174,8 @@ func (a *agent) start() error {
 	}(maxConcurentPackets)
 
 	// Register scheduler if needed
-	Log().Debugf("agent %s : schedule=%s", a.Label, a.conf.Schedule)
 	if a.conf.Schedule != "" {
+		Log().Debugf("agent %s : schedule=%s", a.Label, a.conf.Schedule)
 		err := myScheduler.Add(a.Label, a.conf.Schedule, func() {
 			go a.processor.Tick(NewPacket("", nil))
 		})
