@@ -116,6 +116,7 @@ func (p *processor) doExec(inData []byte, e processors.IPacket) (data []byte, er
 		processors.Dynamic(&a, e.Fields())
 		args = append(args, a)
 	}
+	p.Logger.Debugf("command '%s', args=%s", p.opt.Command, args)
 	cmd = exec.Command(p.opt.Command, args...)
 	cmd.Stderr = &buferr
 	stdin, err := cmd.StdinPipe()
