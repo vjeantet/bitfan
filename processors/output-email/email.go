@@ -117,17 +117,28 @@ func (p *processor) Start(e processors.IPacket) error {
 func (p *processor) Receive(e processors.IPacket) error {
 	// TODO use prepared template
 	// connnect only if needed
+	toStr := p.opt.To
+	processors.Dynamic(&toStr, e.Fields())
+	to := strings.Split(toStr, ",")
 
-	to := strings.Split(p.opt.To, ",")
-	cc := strings.Split(p.opt.Cc, ",")
-	bcc := strings.Split(p.opt.Bcc, ",")
+	ccStr := p.opt.Cc
+	processors.Dynamic(&ccStr, e.Fields())
+	cc := strings.Split(ccStr, ",")
+
+	bccStr := p.opt.Bcc
+	processors.Dynamic(&bccStr, e.Fields())
+	bcc := strings.Split(bccStr, ",")
 
 	m := gomail.NewMessage()
 
-	m.SetHeader("From", p.opt.From)
+	fromStr := p.opt.From
+	processors.Dynamic(&fromStr, e.Fields())
+	m.SetHeader("From", fromStr)
 
 	if p.opt.Replyto != "" {
-		m.SetHeader("Reply-To", p.opt.Replyto)
+		replyToStr := p.opt.Replyto
+		processors.Dynamic(&replyToStr, e.Fields())
+		m.SetHeader("Reply-To", replyToStr)
 	}
 
 	m.SetHeader("To", to...)
