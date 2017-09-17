@@ -70,11 +70,24 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	b.DataLocation = ctx.DataLocation()
 
 	//Codecs
-	if v, ok := conf["codec"]; ok {
-		switch vcodec := v.(type) {
-		case *config.Codec:
-			conf["codec"] = codecs.New(vcodec.Name, vcodec.Options, ctx.Log(), ctx.ConfigWorkingLocation())
+	if v, ok := conf["codecs"]; ok {
+		codecCollection := &codecs.CodecCollection{}
+		for _, v := range v.(map[int]interface{}) {
+			switch vcodec := v.(type) {
+			case *config.Codec:
+				c := codecs.New(vcodec.Name, vcodec.Options, ctx.Log(), ctx.ConfigWorkingLocation())
+				switch vcodec.Role {
+				case "encoder":
+					codecCollection.Enc = c
+				case "decoder":
+					codecCollection.Dec = c
+				default:
+					codecCollection.Default = c
+				}
+			}
 		}
+		conf["codec"] = codecCollection
+		delete(conf, "codecs")
 	}
 
 	// Set processor's user options

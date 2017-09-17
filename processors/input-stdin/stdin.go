@@ -24,7 +24,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Default "line"
 	// @Type codec
-	Codec codecs.Codec
+	Codec codecs.CodecCollection
 
 	// Stop bitfan on stdin EOF ? (use it when you pipe data with |)
 	// @Default false
@@ -42,7 +42,9 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec:   codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Codec: codecs.CodecCollection{
+			Dec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
 		EofExit: false,
 	}
 	p.opt = &defaults

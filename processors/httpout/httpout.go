@@ -27,7 +27,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Default "json"
 	// @Type codec
-	Codec codecs.Codec
+	Codec codecs.CodecCollection
 
 	// URI path
 	// @Default "out"
@@ -49,8 +49,10 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec: codecs.New("json", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
-		Uri:   "out",
+		Codec: codecs.CodecCollection{
+			Enc: codecs.New("json", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
+		Uri: "out",
 		Headers: map[string]string{
 			"Content-Type": "application/json",
 		},

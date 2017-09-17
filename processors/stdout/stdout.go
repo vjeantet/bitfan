@@ -50,7 +50,7 @@ type options struct {
 	// @Default "line"
 	// @Enum "json","line","pp","rubydebug"
 	// @Type Codec
-	Codec codecs.Codec `mapstructure:"codec"`
+	Codec codecs.CodecCollection `mapstructure:"codec"`
 }
 
 // Prints events to the standard output
@@ -65,7 +65,9 @@ type processor struct {
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 
 	defaults := options{
-		Codec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Codec: codecs.CodecCollection{
+			Enc: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
 	}
 
 	p.opt = &defaults

@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"strconv"
 
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/codecs"
@@ -35,9 +36,12 @@ type options struct {
 
 	// The codec used for input data. Input codecs are a convenient method for decoding
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
+	//
+	// Default decode http request as plain data, response is json encoded.
+	// Set multiple codec with role to customize
 	// @Default "plain"
 	// @Type codec
-	Codec codecs.Codec
+	Codec codecs.CodecCollection
 
 	// URI path
 	// @Default "events"
@@ -56,17 +60,15 @@ type options struct {
 type processor struct {
 	processors.Base
 
-	opt     *options
-	q       chan bool
-	host    string
-	encoder codecs.Codec
+	opt  *options
+	q    chan bool
+	host string
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec: codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
-		Uri:   "events",
-		Body:  []string{"uuid"},
+		Uri:  "events",
+		Body: []string{"uuid"},
 	}
 	p.opt = &defaults
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -78,7 +80,14 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.Logger.Warnf("can not get hostname : %s", err.Error())
 	}
 
-	p.encoder = codecs.New("json", nil, ctx.Log(), ctx.ConfigWorkingLocation())
+	if p.opt.Codec.Enc == nil {
+		p.opt.Codec.Enc = codecs.New("json", nil, ctx.Log(), ctx.ConfigWorkingLocation())
+	}
+
+	if p.opt.Codec.Dec == nil && p.opt.Codec.Default == nil {
+		p.opt.Codec.Dec = codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation())
+	}
+
 	return err
 }
 func (p *processor) Start(e processors.IPacket) error {
@@ -147,7 +156,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 
 	p.Logger.Debug("request = ", req)
 	p.Logger.Debug("start reading body content")
-
+	i := 1
 	for dec.More() {
 		var record interface{}
 		var body map[string]interface{}
@@ -195,10 +204,11 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			body[path] = value
 		}
-		responseData[id.String()] = body
+
+		responseData[strconv.Itoa(i)] = body
 
 		p.Send(e)
-
+		i = i + 1
 		select {
 		case <-p.q:
 			return
@@ -216,7 +226,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Encode content
 	var enc codecs.Encoder
-	enc, err = p.encoder.NewEncoder(w)
+	enc, err = p.opt.Codec.NewEncoder(w)
 	if err != nil {
 		p.Logger.Errorln("codec error : ", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

@@ -53,7 +53,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Type Codec
 	// @Default "line"
-	Codec codecs.Codec `mapstructure:"codec"`
+	Codec codecs.CodecCollection `mapstructure:"codec"`
 
 	// Set the new line delimiter. Default value is "\n"
 	// @Default "\n"
@@ -125,7 +125,9 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		SincedbPath:          ".sincedb.json",
 		SincedbWriteInterval: 15,
 		StatInterval:         1,
-		Codec:                codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Codec: codecs.CodecCollection{
+			Dec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
 	}
 	p.opt = &defaults
 	p.host = fqdn.Get()

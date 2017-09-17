@@ -29,7 +29,7 @@ type Section struct {
 type Plugin struct {
 	Name     string
 	Label    string
-	Codec    *Codec
+	Codecs   map[int]*Codec
 	Settings map[int]*Setting
 	When     map[int]*When // IF and ElseIF with order
 }
@@ -245,7 +245,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 	plugin := &Plugin{}
 	plugin.Name = tok.Value.(string)
 	plugin.Settings = map[int]*Setting{}
-	plugin.Codec = &Codec{}
+	plugin.Codecs = map[int]*Codec{}
 
 	*tok, err = p.getToken(TokenLCurlyBrace, TokenString)
 	if err != nil {
@@ -261,6 +261,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 	}
 
 	i := 0
+	iCodec := 0
 	var advancedTok *Token
 	for {
 		if advancedTok == nil {
@@ -289,7 +290,8 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 				if err != nil {
 					return plugin, err
 				}
-				plugin.Codec = codec
+				plugin.Codecs[iCodec] = codec
+				iCodec = iCodec + 1
 				if rewind != nil {
 					advancedTok = rewind
 				}

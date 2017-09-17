@@ -21,7 +21,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Default "plain"
 	// @Type codec
-	Codec codecs.Codec `mapstructure:"codec"`
+	Codec codecs.CodecCollection `mapstructure:"codec"`
 
 	// Use CRON or BITFAN notation
 	// @ExampleLS interval => "every_10s"
@@ -48,7 +48,9 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec:  codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Codec: codecs.CodecCollection{
+			Dec: codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
 		Method: "GET",
 		Target: "output",
 	}

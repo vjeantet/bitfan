@@ -112,16 +112,22 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 	}
 
 	// handle codec
+	if len(plugin.Codecs) > 0 {
+		codecs := map[int]interface{}{}
+		for i, codec := range plugin.Codecs {
+			if codec.Name != "" {
+				pcodec := config.NewCodec(codec.Name)
+				for _, setting := range codec.Settings {
+					pcodec.Options[setting.K] = setting.V
+					if setting.K == "role" {
+						pcodec.Role = setting.V.(string)
+					}
+				}
 
-	if plugin.Codec != nil {
-		if plugin.Codec.Name != "" {
-			pcodec := config.NewCodec(plugin.Codec.Name)
-			for _, setting := range plugin.Codec.Settings {
-				pcodec.Options[setting.K] = setting.V
+				codecs[i] = pcodec
 			}
-
-			agent.Options["codec"] = pcodec
 		}
+		agent.Options["codecs"] = codecs
 	}
 
 	// If agent is a "use"
@@ -226,16 +232,21 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	}
 
 	// handle codec
-
-	if plugin.Codec != nil {
-		if plugin.Codec.Name != "" {
-			pcodec := config.NewCodec(plugin.Codec.Name)
-			for _, setting := range plugin.Codec.Settings {
-				pcodec.Options[setting.K] = setting.V
+	if len(plugin.Codecs) > 0 {
+		codecs := map[int]interface{}{}
+		for i, codec := range plugin.Codecs {
+			if codec.Name != "" {
+				pcodec := config.NewCodec(codec.Name)
+				for _, setting := range codec.Settings {
+					pcodec.Options[setting.K] = setting.V
+					if setting.K == "role" {
+						pcodec.Role = setting.V.(string)
+					}
+				}
+				codecs[i] = pcodec
 			}
-
-			agent.Options["codec"] = pcodec
 		}
+		agent.Options["codecs"] = codecs
 	}
 
 	// if its a use plugin
@@ -361,16 +372,21 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	}
 
 	// handle codec
-
-	if plugin.Codec != nil {
-		if plugin.Codec.Name != "" {
-			pcodec := config.NewCodec(plugin.Codec.Name)
-			for _, setting := range plugin.Codec.Settings {
-				pcodec.Options[setting.K] = setting.V
+	if len(plugin.Codecs) > 0 {
+		codecs := map[int]interface{}{}
+		for i, codec := range plugin.Codecs {
+			if codec.Name != "" {
+				pcodec := config.NewCodec(codec.Name)
+				for _, setting := range codec.Settings {
+					pcodec.Options[setting.K] = setting.V
+					if setting.K == "role" {
+						pcodec.Role = setting.V.(string)
+					}
+				}
+				codecs[i] = pcodec
 			}
-
-			agent.Options["codec"] = pcodec
 		}
+		agent.Options["codecs"] = codecs
 	}
 
 	// handle use plugin

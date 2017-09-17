@@ -31,7 +31,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Default "plain"
 	// @Type Codec
-	Codec codecs.Codec `mapstructure:"codec"`
+	Codec codecs.CodecCollection `mapstructure:"codec"`
 
 	// How many seconds a file should stay unmodified to be read
 	// use this to prevent reading a file while another process is writing into.
@@ -99,8 +99,10 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		DiscoverInterval: 15,
 		ReadOlder:        5,
 		SincedbPath:      ".sincedb.json",
-		Codec:            codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
-		Target:           "data",
+		Codec: codecs.CodecCollection{
+			Dec: codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
+		Target: "data",
 	}
 
 	p.opt = &defaults

@@ -16,16 +16,44 @@ import (
 	"golang.org/x/text/encoding/ianaindex"
 )
 
+type CodecCollection struct {
+	Default *Codec
+	Enc     *Codec
+	Dec     *Codec
+}
+
+func (c *CodecCollection) NewEncoder(w io.Writer) (Encoder, error) {
+	if c.Enc != nil {
+		return c.Enc.NewEncoder(w)
+	} else if c.Default != nil {
+		return c.Default.NewEncoder(w)
+	} else {
+		return nil, fmt.Errorf("no decoder available")
+	}
+}
+
+func (c *CodecCollection) NewDecoder(r io.Reader) (Decoder, error) {
+	if c.Dec != nil {
+		return c.Dec.NewDecoder(r)
+	} else if c.Default != nil {
+		return c.Default.NewDecoder(r)
+	} else {
+		return nil, fmt.Errorf("no decoder available")
+	}
+
+}
+
 type Codec struct {
 	Name                  string
+	Role                  string
 	Charset               string
 	Options               map[string]interface{}
 	logger                lib.Logger
 	configWorkingLocation string
 }
 
-func New(name string, conf map[string]interface{}, logger lib.Logger, cwl string) Codec {
-	c := Codec{
+func New(name string, conf map[string]interface{}, logger lib.Logger, cwl string) *Codec {
+	c := &Codec{
 		Name:                  name,
 		Charset:               "utf-8",
 		Options:               map[string]interface{}{},
@@ -35,6 +63,10 @@ func New(name string, conf map[string]interface{}, logger lib.Logger, cwl string
 	for i, k := range conf {
 		if i == "charset" {
 			c.Charset = k.(string)
+			continue
+		}
+		if i == "role" {
+			c.Role = k.(string)
 			continue
 		}
 		c.Options[i] = k
