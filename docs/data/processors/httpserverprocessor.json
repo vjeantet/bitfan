@@ -19,7 +19,7 @@
       {
         "Alias": "",
         "DefaultValue": "\"plain\"",
-        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline\n\nDefault decode http request as plain data, response is json encoded.\nSet multiple codec with role to customize",
         "ExampleLS": "",
         "Name": "Codec",
         "PossibleValues": null,
@@ -35,6 +35,26 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "string"
+      },
+      {
+        "Alias": "headers",
+        "DefaultValue": null,
+        "Doc": "Headers to send back into each outgoing response\n@LSExample {\"X-Processor\" =\u003e \"bitfan\"}",
+        "ExampleLS": "",
+        "Name": "Headers",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "body",
+        "DefaultValue": "[\"uuid\"]",
+        "Doc": "What to send back to client ?",
+        "ExampleLS": "",
+        "Name": "Body",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
       }
     ]
   },
