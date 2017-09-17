@@ -151,7 +151,7 @@ func (a *agent) start() error {
 
 	if a.processor.MaxConcurent() > 0 && maxConcurentPackets > a.processor.MaxConcurent() {
 		maxConcurentPackets = a.processor.MaxConcurent()
-		Log().Warnf("agent %s : starting only %d worker(s) (processor's limit)", a.Label, a.processor.MaxConcurent())
+		Log().Infof("agent %s : starting only %d worker(s) (processor's limit)", a.Label, a.processor.MaxConcurent())
 	}
 
 	// Start in chan loop and a.processor.Receive(e) !
