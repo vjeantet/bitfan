@@ -155,6 +155,9 @@ func (p *processor) cacheExpression(index string, expressionValue string) (*gova
 	functions := map[string]govaluate.ExpressionFunction{
 
 		"bool": func(args ...interface{}) (interface{}, error) {
+			if len(args) == 0 {
+				return false, nil
+			}
 			switch args[0].(type) {
 			case bool:
 				return args[0].(bool), nil
@@ -164,6 +167,9 @@ func (p *processor) cacheExpression(index string, expressionValue string) (*gova
 		},
 
 		"len": func(args ...interface{}) (interface{}, error) {
+			if len(args) == 0 {
+				return float64(0), nil
+			}
 			switch reflect.TypeOf(args[0]).Kind() {
 
 			case reflect.Slice:

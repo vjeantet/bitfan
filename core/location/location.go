@@ -110,6 +110,20 @@ func (l *Location) Content() ([]byte, string, error) {
 func (l *Location) TemplateWithOptions(options map[string]string) (*template.Template, string, error) {
 	content, cwl, err := l.ContentWithOptions(options)
 
+	// builtins - https://golang.org/src/text/template/funcs.go
+	// 		"and":      and,
+	//  	"call":     call,
+	//  	"html":     HTMLEscaper,
+	//  	"index":    index,
+	//  	"js":       JSEscaper,
+	//  	"len":      length,
+	//  	"not":      not,
+	//  	"or":       or,
+	//  	"print":    fmt.Sprint,
+	//  	"printf":   fmt.Sprintf,
+	//  	"println":  fmt.Sprintln,
+	//  	"urlquery": URLQueryEscaper,
+
 	funcMap := template.FuncMap{
 		"TS":         (*templateFunctions)(nil).timeStampFormat,
 		"DateFormat": (*templateFunctions)(nil).dateFormat,
@@ -118,6 +132,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 		"int":        (*templateFunctions)(nil).toInt,
 		"Time":       (*templateFunctions)(nil).asTime,
 		"Now":        (*templateFunctions)(nil).now,
+		"isset":      (*templateFunctions)(nil).isSet,
 
 		"NumFmt": (*templateFunctions)(nil).numFmt,
 

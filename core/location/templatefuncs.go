@@ -3,9 +3,11 @@ package location
 // Code comes from https://github.com/spf13/hugo/tree/master/tpl
 
 import (
+	"fmt"
 	"html"
 	"html/template"
 	"math"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +20,28 @@ import (
 )
 
 type templateFunctions struct{}
+
+// IsSet returns whether a given array, channel, slice, or map has a key
+// defined.
+func (t *templateFunctions) isSet(a interface{}, key interface{}) (bool, error) {
+	av := reflect.ValueOf(a)
+	kv := reflect.ValueOf(key)
+
+	switch av.Kind() {
+	case reflect.Array, reflect.Chan, reflect.Slice:
+		if int64(av.Len()) > kv.Int() {
+			return true, nil
+		}
+	case reflect.Map:
+		if kv.Type() == av.Type().Key() {
+			return av.MapIndex(kv).IsValid(), nil
+		}
+	default:
+		return false, fmt.Errorf("WARNING: calling IsSet with unsupported type %q (%T) will always return false.\n", av.Kind(), a)
+	}
+
+	return false, nil
+}
 
 // Replace returns a copy of the string s with all occurrences of old replaced
 // with new.

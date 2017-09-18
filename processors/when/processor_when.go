@@ -85,13 +85,23 @@ func (p *processor) assertExpressionWithFields(index int, expressionValue string
 	parameters := EvaluatedParameters{}
 	for _, v := range expression.Tokens() {
 		if v.Kind == govaluate.VARIABLE {
-			paramValue, err := e.Fields().ValueForPath(v.Value.(string))
+			paramValues, err := e.Fields().ValuesForPath(v.Value.(string))
 			if err != nil {
 				continue
 			}
+
+			var paramValue interface{}
+			switch len(paramValues) {
+			case 1:
+				paramValue = paramValues[0]
+			default:
+				paramValue = paramValues
+			}
+
 			parameters[v.Value.(string)] = paramValue
 		}
 	}
+
 	resultRaw, err := expression.Eval(parameters)
 
 	var result bool
@@ -114,6 +124,9 @@ func (p *processor) cacheExpression(index int, expressionValue string) (*govalua
 	functions := map[string]govaluate.ExpressionFunction{
 
 		"bool": func(args ...interface{}) (interface{}, error) {
+			if len(args) == 0 {
+				return false, nil
+			}
 			switch args[0].(type) {
 			case bool:
 				return args[0].(bool), nil
@@ -123,6 +136,9 @@ func (p *processor) cacheExpression(index int, expressionValue string) (*govalua
 		},
 
 		"len": func(args ...interface{}) (interface{}, error) {
+			if len(args) == 0 {
+				return float64(0), nil
+			}
 			switch reflect.TypeOf(args[0]).Kind() {
 
 			case reflect.Slice:
@@ -143,6 +159,7 @@ func (p *processor) cacheExpression(index int, expressionValue string) (*govalua
 	if err != nil {
 		return nil, err
 	}
+
 	p.compiledExpressions.Store(index, expression)
 
 	return expression, nil
