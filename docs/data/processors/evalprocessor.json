@@ -1,5 +1,5 @@
 {
-  "Doc": "Modify or add event's field with the result of an expression (math or compare)\n\n**Operators and types supported in expression :**\n\n* Modifiers: `+` `-` `/` `*` `\u0026` `|` `^` `**` `%` `\u003e\u003e` `\u003c\u003c`\n* Comparators: `\u003e` `\u003e=` `\u003c` `\u003c=` `==` `!=` `=~` `!~`\n* Logical ops: `||` `\u0026\u0026`\n* Numeric constants, as 64-bit floating point (`12345.678`)\n* String constants (single quotes: `'foobar'`)\n* Date constants (single quotes, using any permutation of RFC3339, ISO8601, ruby date, or unix date; date parsing is automatically tried with any string constant)\n* Boolean constants: `true` `false`\n* Parenthesis to control order of evaluation `(` `)`\n* Arrays (anything separated by `,` within parenthesis: `(1, 2, 'foo')`)\n* Prefixes: `!` `-` `~`\n* Ternary conditional: `?` `:`\n* Null coalescence: `??`",
+  "Doc": "Modify or add event's field with the result of\n\n* an expression (math or compare)\n* an go template\n\n**Operators and types supported in expression :**\n\n* Modifiers: `+` `-` `/` `*` `\u0026` `|` `^` `**` `%` `\u003e\u003e` `\u003c\u003c`\n* Comparators: `\u003e` `\u003e=` `\u003c` `\u003c=` `==` `!=` `=~` `!~`\n* Logical ops: `||` `\u0026\u0026`\n* Numeric constants, as 64-bit floating point (`12345.678`)\n* String constants (single quotes: `'foobar'`)\n* Date constants (single quotes, using any permutation of RFC3339, ISO8601, ruby date, or unix date; date parsing is automatically tried with any string constant)\n* Boolean constants: `true` `false`\n* Parenthesis to control order of evaluation `(` `)`\n* Arrays (anything separated by `,` within parenthesis: `(1, 2, 'foo')`)\n* Prefixes: `!` `-` `~`\n* Ternary conditional: `?` `:`\n* Null coalescence: `??`",
   "DocShort": "Evaluate expression",
   "ImportPath": "github.com/vjeantet/bitfan/processors/filter-eval",
   "Name": "evalprocessor",
@@ -23,7 +23,27 @@
         "ExampleLS": "expressions =\u003e { \"usage\" =\u003e \"[usage] * 100\" }",
         "Name": "Expressions",
         "PossibleValues": null,
-        "Required": true,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "templates",
+        "DefaultValue": null,
+        "Doc": "list of field to set with a go template location",
+        "ExampleLS": "expressions =\u003e { \"count\" =\u003e \"{{len .data}}\", \"mail\"=\u003e\"mytemplate.tpl\" }",
+        "Name": "Templates",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
+        "Alias": "var",
+        "DefaultValue": null,
+        "Doc": "You can set variable to be used in template by using ${var}.\neach reference will be replaced by the value of the variable found in Template's content\nThe replacement is case-sensitive.",
+        "ExampleLS": "var =\u003e {\"hostname\"=\u003e\"myhost\",\"varname\"=\u003e\"varvalue\"}",
+        "Name": "Var",
+        "PossibleValues": null,
+        "Required": false,
         "Type": "hash"
       }
     ]

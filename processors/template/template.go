@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"text/template"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/vjeantet/bitfan/core/location"
 	"github.com/vjeantet/bitfan/processors"
 )

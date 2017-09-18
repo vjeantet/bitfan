@@ -1,5 +1,8 @@
 //go:generate bitfanDoc
-// Modify or add event's field with the result of an expression (math or compare)
+// Modify or add event's field with the result of
+//
+// * an expression (math or compare)
+// * an go template
 //
 // **Operators and types supported in expression :**
 //
@@ -19,12 +22,15 @@
 package evalprocessor
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/Knetic/govaluate"
+	"github.com/vjeantet/bitfan/core/location"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -32,6 +38,7 @@ func New() processors.Processor {
 	return &processor{
 		opt:                 &options{},
 		compiledExpressions: map[string]*govaluate.EvaluableExpression{},
+		compiledTemplates:   map[string]*template.Template{},
 	}
 }
 
@@ -47,6 +54,7 @@ type processor struct {
 	opt *options
 
 	compiledExpressions map[string]*govaluate.EvaluableExpression
+	compiledTemplates   map[string]*template.Template
 }
 
 type options struct {
@@ -54,17 +62,63 @@ type options struct {
 
 	// list of field to set with expression's result
 	// @ExampleLS expressions => { "usage" => "[usage] * 100" }
-	Expressions map[string]interface{} `mapstructure:"expressions" validate:"required"`
+	Expressions map[string]interface{} `mapstructure:"expressions"`
+
+	// list of field to set with a go template location
+	// @ExampleLS expressions => { "count" => "{{len .data}}", "mail"=>"mytemplate.tpl" }
+	Templates map[string]string `mapstructure:"templates"`
+
+	// You can set variable to be used in template by using ${var}.
+	// each reference will be replaced by the value of the variable found in Template's content
+	// The replacement is case-sensitive.
+	// @ExampleLS var => {"hostname"=>"myhost","varname"=>"varvalue"}
+	Var map[string]string `mapstructure:"var"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
 	defaults := options{}
 	p.opt = &defaults
-	return p.ConfigureAndValidate(ctx, conf, p.opt)
+	err = p.ConfigureAndValidate(ctx, conf, p.opt)
+
+	if len(p.opt.Expressions)+len(p.opt.Templates) == 0 {
+		return fmt.Errorf("set one expression or go template")
+	}
+
+	//Prepare templates
+	for key, tplLocStr := range p.opt.Templates {
+		loc, err := location.NewLocation(tplLocStr, p.ConfigWorkingLocation)
+		if err != nil {
+			return err
+		}
+		tpl, _, err := loc.TemplateWithOptions(p.opt.Var)
+		if err != nil {
+			return err
+		}
+		p.compiledTemplates[key] = tpl
+	}
+
+	return err
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
 	var countError int
+
+	if len(p.opt.Var) > 0 {
+		e.Fields().SetValueForPath(p.opt.Var, "var")
+	}
+
+	// go templates
+	for key, _ := range p.opt.Templates {
+		buff := bytes.NewBufferString("")
+		err := p.compiledTemplates[key].Execute(buff, e.Fields())
+		if err != nil {
+			p.Logger.Errorf("template %s error : %s", key, err)
+			return err
+		}
+		e.Fields().SetValueForPath(buff.String(), key)
+	}
+
+	// govaluate expressions
 	for key, expressionString := range p.opt.Expressions {
 		expression, err := p.cacheExpression(key, expressionString.(string))
 
