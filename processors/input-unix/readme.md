@@ -7,7 +7,7 @@
 |   SETTING    |     TYPE      | REQUIRED | DEFAULT VALUE |
 |--------------|---------------|----------|---------------|
 | data_timeout | time.Duration | false    |               |
-| force_unlink | bool          | false    | ?             |
+| force_unlink | bool          | false    | false         |
 | mode         | string        | false    | ""            |
 | path         | string        | true     | ""            |
 | codec        | string        | false    | ""            |
@@ -25,7 +25,7 @@ Default value is 0
 
 ### force_unlink
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Remove socket file in case of EADDRINUSE failure
 Default value is false

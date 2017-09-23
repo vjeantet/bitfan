@@ -184,6 +184,8 @@ func (p *ProcessorOption) getDefaultValue() string {
 			defaultValue = "0"
 		case "time.Duration":
 			defaultValue = ""
+		case "bool":
+			defaultValue = "false"
 		default:
 			defaultValue = "?"
 		}

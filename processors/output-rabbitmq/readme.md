@@ -10,20 +10,20 @@
 | arguments              | amqp.Table    | false    | ?             |
 | connect_retry_interval | time.Duration | false    |               |
 | connection_timeout     | time.Duration | false    |               |
-| durable                | bool          | false    | ?             |
+| durable                | bool          | false    | false         |
 | exchange               | string        | true     | ""            |
 | exchange_type          | string        | true     | ""            |
 | heartbeat              | time.Duration | false    |               |
 | host                   | string        | false    | ""            |
 | key                    | string        | false    | ""            |
-| passive                | bool          | false    | ?             |
+| passive                | bool          | false    | false         |
 | password               | string        | false    | ""            |
-| persistent             | bool          | false    | ?             |
+| persistent             | bool          | false    | false         |
 | port                   | int           | false    |             0 |
-| ssl                    | bool          | false    | ?             |
+| ssl                    | bool          | false    | false         |
 | tags                   | array         | false    | []            |
 | user                   | string        | false    | ""            |
-| verify_ssl             | bool          | false    | ?             |
+| verify_ssl             | bool          | false    | false         |
 | vhost                  | string        | false    | ""            |
 
 
@@ -55,7 +55,7 @@ Time in seconds to wait before timing-out. Default value is 0 (no timeout)
 
 ### durable
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Is this exchange durable - should it survive a broker restart? Default value is true
 
@@ -96,7 +96,7 @@ This setting can be dynamic using the %{foo} syntax.
 
 ### passive
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Use queue passively declared, meaning it must already exist on the server. Default value is false
 To have BitFan to create the queue if necessary leave this option as false.
@@ -110,7 +110,7 @@ RabbitMQ password. Default value is "guest"
 
 ### persistent
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Should RabbitMQ persist messages to disk? Default value is true
 
@@ -122,7 +122,7 @@ RabbitMQ port to connect on. Default value is 5672
 
 ### ssl
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Enable or disable SSL. Default value is false
 
@@ -141,7 +141,7 @@ RabbitMQ username. Default value is "guest"
 
 ### verify_ssl
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Validate SSL certificate. Default value is false
 

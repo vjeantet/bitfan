@@ -41,7 +41,7 @@ type options struct {
 	// When true, unsuccessful HTTP requests, like unreachable connections, will
 	// not raise an event, but a log message.
 	// When false an event is generated with a tag _httppollerfailure
-	// @default : true
+	// @Default true
 	IgnoreFailure bool `mapstructure:"ignore_failure"`
 }
 

@@ -10,7 +10,7 @@ The generated UUIDs follow the version 4 definition in RFC 4122).
 
 |  SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
 |-----------|--------|----------|---------------|
-| Overwrite | bool   | false    | ?             |
+| Overwrite | bool   | false    | false         |
 | Target    | string | false    | ""            |
 
 
@@ -18,7 +18,7 @@ The generated UUIDs follow the version 4 definition in RFC 4122).
 
 ### Overwrite
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 If the value in the field currently (if any) should be overridden by the generated UUID.
 Defaults to false (i.e. if the field is present, with ANY value, it won’t be overridden)
