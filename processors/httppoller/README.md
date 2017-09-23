@@ -4,15 +4,17 @@ HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output 
 ## Synopsys
 
 
-|    SETTING     |  TYPE  | REQUIRED | DEFAULT VALUE |
-|----------------|--------|----------|---------------|
-| codec          | codec  | false    | "plain"       |
-| interval       | string | false    | ""            |
-| method         | string | false    | "GET"         |
-| headers        | hash   | false    | {}            |
-| url            | string | true     | ""            |
-| target         | string | false    | ""            |
-| ignore_failure | bool   | false    | true          |
+|    SETTING     |   TYPE   | REQUIRED | DEFAULT VALUE |
+|----------------|----------|----------|---------------|
+| codec          | codec    | false    | "plain"       |
+| interval       | string   | false    | ""            |
+| method         | string   | false    | "GET"         |
+| headers        | hash     | false    | {}            |
+| body           | location | false    | ?             |
+| url            | string   | true     | ""            |
+| target         | string   | false    | ""            |
+| ignore_failure | bool     | false    | true          |
+| var            | hash     | false    | {}            |
 
 
 ## Details
@@ -42,6 +44,12 @@ Http Method
 
 Define headers for the request.
 
+### body
+* Value type is location
+* Default value is `?`
+
+The request body (e.g. for an HTTP POST request). No default body is specified
+
 ### url
 * This is a required setting.
 * Value type is string
@@ -63,6 +71,14 @@ When true, unsuccessful HTTP requests, like unreachable connections, will
 not raise an event, but a log message.
 When false an event is generated with a tag _http_request_failure
 
+### var
+* Value type is hash
+* Default value is `{}`
+
+You can set variable to be used in Body by using ${var}.
+each reference will be replaced by the value of the variable found in Body's content
+The replacement is case-sensitive.
+
 
 
 ## Configuration blueprint
@@ -73,8 +89,10 @@ httppoller{
 	interval => "every_10s"
 	method => "GET"
 	headers => {"User-Agent":"Bitfan","Accept":"application/json"}
+	body => location
 	url=> "http://google.fr"
 	target => ""
 	ignore_failure => true
+	var => {"hostname"=>"myhost","varname"=>"varvalue"}
 }
 ```

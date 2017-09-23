@@ -3,10 +3,13 @@
 package httppoller
 
 import (
+	"bytes"
+	"html/template"
 	"io"
 
 	"github.com/parnurzeal/gorequest"
 	"github.com/vjeantet/bitfan/codecs"
+	"github.com/vjeantet/bitfan/core/location"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -35,6 +38,10 @@ type options struct {
 	// @ExampleLS headers => {"User-Agent":"Bitfan","Accept":"application/json"}
 	Headers map[string]string `mapstructure:"headers"`
 
+	// The request body (e.g. for an HTTP POST request). No default body is specified
+	// @Type Location
+	Body string `mapstructure:"body"`
+
 	// URL
 	// @ExampleLS url=> "http://google.fr"
 	Url string `mapstructure:"url" validate:"required"`
@@ -47,6 +54,12 @@ type options struct {
 	// When false an event is generated with a tag _http_request_failure
 	// @Default true
 	IgnoreFailure bool `mapstructure:"ignore_failure"`
+
+	// You can set variable to be used in Body by using ${var}.
+	// each reference will be replaced by the value of the variable found in Body's content
+	// The replacement is case-sensitive.
+	// @ExampleLS var => {"hostname"=>"myhost","varname"=>"varvalue"}
+	Var map[string]string `mapstructure:"var"`
 }
 
 type processor struct {
@@ -54,6 +67,7 @@ type processor struct {
 	q       chan bool
 	opt     *options
 	request *gorequest.SuperAgent
+	BodyTpl *template.Template
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -65,9 +79,30 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		Target:        "output",
 		IgnoreFailure: true,
 		Headers:       map[string]string{},
+		Body:          "",
 	}
 	p.opt = &defaults
-	return p.ConfigureAndValidate(ctx, conf, p.opt)
+
+	err := p.ConfigureAndValidate(ctx, conf, p.opt)
+
+	if p.opt.Body != "" {
+		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
+		if err != nil {
+			return err
+		}
+		content, _, err := loc.ContentWithOptions(p.opt.Var)
+		if err != nil {
+			return err
+		}
+		p.opt.Body = string(content)
+		p.BodyTpl, err = template.New("body").Parse(p.opt.Body)
+		if err != nil {
+			p.Logger.Errorf("Body tpl error : %s", err)
+			return err
+		}
+	}
+
+	return err
 }
 
 func (p *processor) Start(e processors.IPacket) error {
@@ -97,6 +132,13 @@ func (p *processor) Receive(e processors.IPacket) error {
 		for k, v := range p.opt.Headers {
 			sagent.Set(k, v)
 		}
+
+		if p.opt.Body != "" {
+			buff := bytes.NewBufferString("")
+			p.BodyTpl.Execute(buff, e.Fields())
+			sagent.Send(buff.String())
+		}
+
 		resp, _, errs = sagent.End()
 		e.Fields().SetValueForPath(p.request.Url, "httpRequestURL")
 	default:

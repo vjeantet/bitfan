@@ -57,6 +57,16 @@
         "Type": "hash"
       },
       {
+        "Alias": "body",
+        "DefaultValue": null,
+        "Doc": "The request body (e.g. for an HTTP POST request). No default body is specified",
+        "ExampleLS": "",
+        "Name": "Body",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "location"
+      },
+      {
         "Alias": "url",
         "DefaultValue": null,
         "Doc": "URL",
@@ -85,6 +95,16 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "bool"
+      },
+      {
+        "Alias": "var",
+        "DefaultValue": null,
+        "Doc": "You can set variable to be used in Body by using ${var}.\neach reference will be replaced by the value of the variable found in Body's content\nThe replacement is case-sensitive.",
+        "ExampleLS": "var =\u003e {\"hostname\"=\u003e\"myhost\",\"varname\"=\u003e\"varvalue\"}",
+        "Name": "Var",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
       }
     ]
   },
