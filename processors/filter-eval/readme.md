@@ -2,7 +2,7 @@
 Modify or add event's field with the result of
 
 * an expression (math or compare)
-* an go template
+* a go template
 
 **Operators and types supported in expression :**
 
@@ -58,7 +58,7 @@ The replacement is case-sensitive.
 ```
 evalprocessor{
 	expressions => { "usage" => "[usage] * 100" }
-	expressions => { "count" => "{{len .data}}", "mail"=>"mytemplate.tpl" }
+	templates => { "count" => "{{len .data}}", "mail"=>"mytemplate.tpl" }
 	var => {"hostname"=>"myhost","varname"=>"varvalue"}
 }
 ```

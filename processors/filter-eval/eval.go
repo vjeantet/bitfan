@@ -2,7 +2,7 @@
 // Modify or add event's field with the result of
 //
 // * an expression (math or compare)
-// * an go template
+// * a go template
 //
 // **Operators and types supported in expression :**
 //
@@ -65,7 +65,7 @@ type options struct {
 	Expressions map[string]interface{} `mapstructure:"expressions"`
 
 	// list of field to set with a go template location
-	// @ExampleLS expressions => { "count" => "{{len .data}}", "mail"=>"mytemplate.tpl" }
+	// @ExampleLS templates => { "count" => "{{len .data}}", "mail"=>"mytemplate.tpl" }
 	Templates map[string]string `mapstructure:"templates"`
 
 	// You can set variable to be used in template by using ${var}.
