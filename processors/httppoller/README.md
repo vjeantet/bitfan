@@ -4,15 +4,14 @@ HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output 
 ## Synopsys
 
 
-|     SETTING      |  TYPE  | REQUIRED | DEFAULT VALUE |
-|------------------|--------|----------|---------------|
-| codec            | codec  | false    | "plain"       |
-| interval         | string | false    | ""            |
-| method           | string | false    | "GET"         |
-| url              | string | true     | ""            |
-| target           | string | false    | ""            |
-| failure_severity | int    | false    |             0 |
-| tag_on_failure   | array  | false    | []            |
+|    SETTING     |  TYPE  | REQUIRED | DEFAULT VALUE |
+|----------------|--------|----------|---------------|
+| codec          | codec  | false    | "plain"       |
+| interval       | string | false    | ""            |
+| method         | string | false    | "GET"         |
+| url            | string | true     | ""            |
+| target         | string | false    | ""            |
+| ignore_failure | bool   | false    | true          |
 
 
 ## Details
@@ -49,23 +48,13 @@ URL
 
 When data is an array it stores the resulting data into the given target field.
 
-### failure_severity
-* Value type is int
-* Default value is `0`
+### ignore_failure
+* Value type is bool
+* Default value is `true`
 
-Level of failure
-
-1 - noFailures
-2 - unsuccessful HTTP requests (unreachable connections)
-3 - unreachable connections and HTTP responses > 400 of successful HTTP requests
-4 - unreachable connections and non-2xx HTTP responses of successful HTTP requests
-
-### tag_on_failure
-* Value type is array
-* Default value is `[]`
-
-When set, http failures will pass the received event and
-append values to the tags field when there has been an failure
+When true, unsuccessful HTTP requests, like unreachable connections, will
+not raise an event, but a log message.
+When false an event is generated with a tag _httppollerfailure
 
 
 
@@ -78,7 +67,6 @@ httppoller{
 	method => "GET"
 	url=> "http://google.fr"
 	target => ""
-	failure_severity => 123
-	tag_on_failure => ["_httprequestfailure"]
+	ignore_failure => true
 }
 ```

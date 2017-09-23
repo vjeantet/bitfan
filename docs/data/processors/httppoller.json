@@ -67,24 +67,14 @@
         "Type": "string"
       },
       {
-        "Alias": "failure_severity",
-        "DefaultValue": null,
-        "Doc": "Level of failure\n\n1 - noFailures\n2 - unsuccessful HTTP requests (unreachable connections)\n3 - unreachable connections and HTTP responses \u003e 400 of successful HTTP requests\n4 - unreachable connections and non-2xx HTTP responses of successful HTTP requests",
+        "Alias": "ignore_failure",
+        "DefaultValue": "true",
+        "Doc": "When true, unsuccessful HTTP requests, like unreachable connections, will\nnot raise an event, but a log message.\nWhen false an event is generated with a tag _httppollerfailure",
         "ExampleLS": "",
-        "Name": "FailureSeverity",
+        "Name": "IgnoreFailure",
         "PossibleValues": null,
         "Required": false,
-        "Type": "int"
-      },
-      {
-        "Alias": "tag_on_failure",
-        "DefaultValue": null,
-        "Doc": "When set, http failures will pass the received event and\nappend values to the tags field when there has been an failure",
-        "ExampleLS": "tag_on_failure =\u003e [\"_httprequestfailure\"]",
-        "Name": "TagOnFailure",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "array"
+        "Type": "bool"
       }
     ]
   },
