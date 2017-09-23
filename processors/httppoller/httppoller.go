@@ -127,7 +127,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if p.opt.FailureSeverity == failureSeverity_HTTPnon2xx {
-		if resp.StatusCode < 200 && resp.StatusCode > 299 {
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			if len(p.opt.TagOnFailure) > 0 { // pass
 				processors.AddTags(p.opt.TagOnFailure, e.Fields())
 			} else {
