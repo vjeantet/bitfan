@@ -40,7 +40,7 @@ type options struct {
 
 	// When true, unsuccessful HTTP requests, like unreachable connections, will
 	// not raise an event, but a log message.
-	// When false an event is generated with a tag _httppollerfailure
+	// When false an event is generated with a tag _http_request_failure
 	// @Default true
 	IgnoreFailure bool `mapstructure:"ignore_failure"`
 }
@@ -97,9 +97,11 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	if errs != nil {
 		if p.opt.IgnoreFailure {
-			p.Logger.Warnf("while http requesting %s : %#v", p.opt.Url, errs)
+			for err := range errs {
+				p.Logger.Warnf("while http requesting %s : %s", p.opt.Url, err)
+			}
 		} else {
-			processors.AddTags([]string{"_httppollerfailure"}, e.Fields())
+			processors.AddTags([]string{"_http_request_failure"}, e.Fields())
 			p.Send(e)
 		}
 		return nil

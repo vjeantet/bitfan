@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"log"
 	"net"
@@ -15,11 +14,21 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/moul/http2curl"
+	"github.com/pkg/errors"
 
+	"mime/multipart"
+
+	"net/textproto"
+
+	"fmt"
+
+	"path/filepath"
+
+	"github.com/moul/http2curl"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -48,6 +57,7 @@ type SuperAgent struct {
 	SliceData         []interface{}
 	FormData          url.Values
 	QueryData         url.Values
+	FileData          []File
 	BounceToRawString bool
 	RawString         string
 	Client            *http.Client
@@ -58,6 +68,13 @@ type SuperAgent struct {
 	Debug             bool
 	CurlCommand       bool
 	logger            *log.Logger
+	Retryable         struct {
+		RetryableStatus []int
+		RetryerTime     time.Duration
+		RetryerCount    int
+		Attempt         int
+		Enable          bool
+	}
 }
 
 var DisableTransportSwap = false
@@ -68,6 +85,9 @@ func New() *SuperAgent {
 		PublicSuffixList: publicsuffix.List,
 	}
 	jar, _ := cookiejar.New(&cookiejarOptions)
+
+	debug := os.Getenv("GOREQUEST_DEBUG") == "1"
+
 	s := &SuperAgent{
 		TargetType:        "json",
 		Data:              make(map[string]interface{}),
@@ -76,16 +96,19 @@ func New() *SuperAgent {
 		SliceData:         []interface{}{},
 		FormData:          url.Values{},
 		QueryData:         url.Values{},
+		FileData:          make([]File, 0),
 		BounceToRawString: false,
 		Client:            &http.Client{Jar: jar},
 		Transport:         &http.Transport{},
 		Cookies:           make([]*http.Cookie, 0),
 		Errors:            nil,
 		BasicAuth:         struct{ Username, Password string }{},
-		Debug:             false,
+		Debug:             debug,
 		CurlCommand:       false,
 		logger:            log.New(os.Stderr, "[gorequest]", log.LstdFlags),
 	}
+	// disable keep alives by default, see this issue https://github.com/parnurzeal/gorequest/issues/75
+	s.Transport.DisableKeepAlives = true
 	return s
 }
 
@@ -115,6 +138,7 @@ func (s *SuperAgent) ClearSuperAgent() {
 	s.SliceData = []interface{}{}
 	s.FormData = url.Values{}
 	s.QueryData = url.Values{}
+	s.FileData = make([]File, 0)
 	s.BounceToRawString = false
 	s.RawString = ""
 	s.ForceType = ""
@@ -217,6 +241,39 @@ func (s *SuperAgent) Set(param string, value string) *SuperAgent {
 	return s
 }
 
+// Retryable is used for setting a Retryer policy
+// Example. To set Retryer policy with 5 seconds between each attempt.
+//          3 max attempt.
+//          And StatusBadRequest and StatusInternalServerError as RetryableStatus
+
+//    gorequest.New().
+//      Post("/gamelist").
+//      Retry(3, 5 * time.seconds, http.StatusBadRequest, http.StatusInternalServerError).
+//      End()
+func (s *SuperAgent) Retry(retryerCount int, retryerTime time.Duration, statusCode ...int) *SuperAgent {
+	for _, code := range statusCode {
+		statusText := http.StatusText(code)
+		if len(statusText) == 0 {
+			s.Errors = append(s.Errors, errors.New("StatusCode '"+strconv.Itoa(code)+"' doesn't exist in http package"))
+		}
+	}
+
+	s.Retryable = struct {
+		RetryableStatus []int
+		RetryerTime     time.Duration
+		RetryerCount    int
+		Attempt         int
+		Enable          bool
+	}{
+		statusCode,
+		retryerTime,
+		retryerCount,
+		0,
+		true,
+	}
+	return s
+}
+
 // SetBasicAuth sets the basic authentication header
 // Example. To set the header for username "myuser" and password "mypass"
 //
@@ -249,6 +306,7 @@ var Types = map[string]string{
 	"urlencoded": "application/x-www-form-urlencoded",
 	"form":       "application/x-www-form-urlencoded",
 	"form-data":  "application/x-www-form-urlencoded",
+	"multipart":  "multipart/form-data",
 }
 
 // Type is a convenience function to specify the data type to send.
@@ -318,6 +376,8 @@ func (s *SuperAgent) Query(content interface{}) *SuperAgent {
 		s.queryString(v.String())
 	case reflect.Struct:
 		s.queryStruct(v.Interface())
+	case reflect.Map:
+		s.queryMap(v.Interface())
 	default:
 	}
 	return s
@@ -333,7 +393,22 @@ func (s *SuperAgent) queryStruct(content interface{}) *SuperAgent {
 		} else {
 			for k, v := range val {
 				k = strings.ToLower(k)
-				s.QueryData.Add(k, v.(string))
+				var queryVal string
+				switch t := v.(type) {
+				case string:
+					queryVal = t
+				case float64:
+					queryVal = strconv.FormatFloat(t, 'f', -1, 64)
+				case time.Time:
+					queryVal = t.Format(time.RFC3339)
+				default:
+					j, err := json.Marshal(v)
+					if err != nil {
+						continue
+					}
+					queryVal = string(j)
+				}
+				s.QueryData.Add(k, queryVal)
 			}
 		}
 	}
@@ -347,9 +422,11 @@ func (s *SuperAgent) queryString(content string) *SuperAgent {
 			s.QueryData.Add(k, v)
 		}
 	} else {
-		if queryVal, err := url.ParseQuery(content); err == nil {
-			for k, _ := range queryVal {
-				s.QueryData.Add(k, queryVal.Get(k))
+		if queryData, err := url.ParseQuery(content); err == nil {
+			for k, queryValues := range queryData {
+				for _, queryValue := range queryValues {
+					s.QueryData.Add(k, string(queryValue))
+				}
 			}
 		} else {
 			s.Errors = append(s.Errors, err)
@@ -357,6 +434,10 @@ func (s *SuperAgent) queryString(content string) *SuperAgent {
 		// TODO: need to check correct format of 'field=val&field=val&...'
 	}
 	return s
+}
+
+func (s *SuperAgent) queryMap(content interface{}) *SuperAgent {
+	return s.queryStruct(content)
 }
 
 // As Go conventions accepts ; as a synonym for &. (https://github.com/golang/go/issues/2210)
@@ -420,6 +501,12 @@ func (s *SuperAgent) Proxy(proxyUrl string) *SuperAgent {
 	return s
 }
 
+// RedirectPolicy accepts a function to define how to handle redirects. If the
+// policy function returns an error, the next Request is not made and the previous
+// request is returned.
+//
+// The policy function's arguments are the Request about to be made and the
+// past requests in order of oldest first.
 func (s *SuperAgent) RedirectPolicy(policy func(req Request, via []Request) error) *SuperAgent {
 	s.Client.CheckRedirect = func(r *http.Request, v []*http.Request) error {
 		vv := make([]Request, len(v))
@@ -481,20 +568,46 @@ func (s *SuperAgent) Send(content interface{}) *SuperAgent {
 	switch v := reflect.ValueOf(content); v.Kind() {
 	case reflect.String:
 		s.SendString(v.String())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64: // includes rune
+		s.SendString(strconv.FormatInt(v.Int(), 10))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64: // includes byte
+		s.SendString(strconv.FormatUint(v.Uint(), 10))
+	case reflect.Float64:
+		s.SendString(strconv.FormatFloat(v.Float(), 'f', -1, 64))
+	case reflect.Float32:
+		s.SendString(strconv.FormatFloat(v.Float(), 'f', -1, 32))
+	case reflect.Bool:
+		s.SendString(strconv.FormatBool(v.Bool()))
 	case reflect.Struct:
 		s.SendStruct(v.Interface())
 	case reflect.Slice:
-		// change to slice
-		slice := make([]interface{}, v.Len())
-		for i := 0; i < v.Len(); i++ {
-			slice[i] = v.Index(i).Interface()
-		}
-		s.SendSlice(slice)
+		s.SendSlice(makeSliceOfReflectValue(v))
+	case reflect.Array:
+		s.SendSlice(makeSliceOfReflectValue(v))
+	case reflect.Ptr:
+		s.Send(v.Elem().Interface())
+	case reflect.Map:
+		s.SendMap(v.Interface())
 	default:
-		// TODO: leave default for handling other types in the future such as number, byte, etc...
-		// TODO: Add support for slice and array
+		// TODO: leave default for handling other types in the future, such as complex numbers, (nested) maps, etc
+		return s
 	}
 	return s
+}
+
+func makeSliceOfReflectValue(v reflect.Value) (slice []interface{}) {
+
+	kind := v.Kind()
+	if kind != reflect.Slice && kind != reflect.Array {
+		return slice
+	}
+
+	slice = make([]interface{}, v.Len())
+	for i := 0; i < v.Len(); i++ {
+		slice[i] = v.Index(i).Interface()
+	}
+
+	return slice
 }
 
 // SendSlice (similar to SendString) returns SuperAgent's itself for any next chain and takes content []interface{} as a parameter.
@@ -502,6 +615,10 @@ func (s *SuperAgent) Send(content interface{}) *SuperAgent {
 func (s *SuperAgent) SendSlice(content []interface{}) *SuperAgent {
 	s.SliceData = append(s.SliceData, content...)
 	return s
+}
+
+func (s *SuperAgent) SendMap(content interface{}) *SuperAgent {
+	return s.SendStruct(content)
 }
 
 // SendStruct (similar to SendString) returns SuperAgent's itself for any next chain and takes content interface{} as a parameter.
@@ -545,23 +662,25 @@ func (s *SuperAgent) SendString(content string) *SuperAgent {
 			default:
 				s.BounceToRawString = true
 			}
-		} else if formVal, err := url.ParseQuery(content); err == nil {
-			for k, _ := range formVal {
-				// make it array if already have key
-				if val, ok := s.Data[k]; ok {
-					var strArray []string
-					strArray = append(strArray, formVal.Get(k))
-					// check if previous data is one string or array
-					switch oldValue := val.(type) {
-					case []string:
-						strArray = append(strArray, oldValue...)
-					case string:
-						strArray = append(strArray, oldValue)
+		} else if formData, err := url.ParseQuery(content); err == nil {
+			for k, formValues := range formData {
+				for _, formValue := range formValues {
+					// make it array if already have key
+					if val, ok := s.Data[k]; ok {
+						var strArray []string
+						strArray = append(strArray, string(formValue))
+						// check if previous data is one string or array
+						switch oldValue := val.(type) {
+						case []string:
+							strArray = append(strArray, oldValue...)
+						case string:
+							strArray = append(strArray, oldValue)
+						}
+						s.Data[k] = strArray
+					} else {
+						// make it just string if does not already have same key
+						s.Data[k] = formValue
 					}
-					s.Data[k] = strArray
-				} else {
-					// make it just string if does not already have same key
-					s.Data[k] = formVal.Get(k)
 				}
 			}
 			s.TargetType = "form"
@@ -574,22 +693,206 @@ func (s *SuperAgent) SendString(content string) *SuperAgent {
 	return s
 }
 
+type File struct {
+	Filename  string
+	Fieldname string
+	Data      []byte
+}
+
+// SendFile function works only with type "multipart". The function accepts one mandatory and up to two optional arguments. The mandatory (first) argument is the file.
+// The function accepts a path to a file as string:
+//
+//      gorequest.New().
+//        Post("http://example.com").
+//        Type("multipart").
+//        SendFile("./example_file.ext").
+//        End()
+//
+// File can also be a []byte slice of a already file read by eg. ioutil.ReadFile:
+//
+//      b, _ := ioutil.ReadFile("./example_file.ext")
+//      gorequest.New().
+//        Post("http://example.com").
+//        Type("multipart").
+//        SendFile(b).
+//        End()
+//
+// Furthermore file can also be a os.File:
+//
+//      f, _ := os.Open("./example_file.ext")
+//      gorequest.New().
+//        Post("http://example.com").
+//        Type("multipart").
+//        SendFile(f).
+//        End()
+//
+// The first optional argument (second argument overall) is the filename, which will be automatically determined when file is a string (path) or a os.File.
+// When file is a []byte slice, filename defaults to "filename". In all cases the automatically determined filename can be overwritten:
+//
+//      b, _ := ioutil.ReadFile("./example_file.ext")
+//      gorequest.New().
+//        Post("http://example.com").
+//        Type("multipart").
+//        SendFile(b, "my_custom_filename").
+//        End()
+//
+// The second optional argument (third argument overall) is the fieldname in the multipart/form-data request. It defaults to fileNUMBER (eg. file1), where number is ascending and starts counting at 1.
+// So if you send multiple files, the fieldnames will be file1, file2, ... unless it is overwritten. If fieldname is set to "file" it will be automatically set to fileNUMBER, where number is the greatest exsiting number+1.
+//
+//      b, _ := ioutil.ReadFile("./example_file.ext")
+//      gorequest.New().
+//        Post("http://example.com").
+//        Type("multipart").
+//        SendFile(b, "", "my_custom_fieldname"). // filename left blank, will become "example_file.ext"
+//        End()
+//
+func (s *SuperAgent) SendFile(file interface{}, args ...string) *SuperAgent {
+
+	filename := ""
+	fieldname := "file"
+
+	if len(args) >= 1 && len(args[0]) > 0 {
+		filename = strings.TrimSpace(args[0])
+	}
+	if len(args) >= 2 && len(args[1]) > 0 {
+		fieldname = strings.TrimSpace(args[1])
+	}
+	if fieldname == "file" || fieldname == "" {
+		fieldname = "file" + strconv.Itoa(len(s.FileData)+1)
+	}
+
+	switch v := reflect.ValueOf(file); v.Kind() {
+	case reflect.String:
+		pathToFile, err := filepath.Abs(v.String())
+		if err != nil {
+			s.Errors = append(s.Errors, err)
+			return s
+		}
+		if filename == "" {
+			filename = filepath.Base(pathToFile)
+		}
+		data, err := ioutil.ReadFile(v.String())
+		if err != nil {
+			s.Errors = append(s.Errors, err)
+			return s
+		}
+		s.FileData = append(s.FileData, File{
+			Filename:  filename,
+			Fieldname: fieldname,
+			Data:      data,
+		})
+	case reflect.Slice:
+		slice := makeSliceOfReflectValue(v)
+		if filename == "" {
+			filename = "filename"
+		}
+		f := File{
+			Filename:  filename,
+			Fieldname: fieldname,
+			Data:      make([]byte, len(slice)),
+		}
+		for i := range slice {
+			f.Data[i] = slice[i].(byte)
+		}
+		s.FileData = append(s.FileData, f)
+	case reflect.Ptr:
+		if len(args) == 1 {
+			return s.SendFile(v.Elem().Interface(), args[0])
+		}
+		if len(args) >= 2 {
+			return s.SendFile(v.Elem().Interface(), args[0], args[1])
+		}
+		return s.SendFile(v.Elem().Interface())
+	default:
+		if v.Type() == reflect.TypeOf(os.File{}) {
+			osfile := v.Interface().(os.File)
+			if filename == "" {
+				filename = filepath.Base(osfile.Name())
+			}
+			data, err := ioutil.ReadFile(osfile.Name())
+			if err != nil {
+				s.Errors = append(s.Errors, err)
+				return s
+			}
+			s.FileData = append(s.FileData, File{
+				Filename:  filename,
+				Fieldname: fieldname,
+				Data:      data,
+			})
+			return s
+		}
+
+		s.Errors = append(s.Errors, errors.New("SendFile currently only supports either a string (path/to/file), a slice of bytes (file content itself), or a os.File!"))
+	}
+
+	return s
+}
+
 func changeMapToURLValues(data map[string]interface{}) url.Values {
 	var newUrlValues = url.Values{}
 	for k, v := range data {
 		switch val := v.(type) {
 		case string:
 			newUrlValues.Add(k, val)
-		case []string:
-			for _, element := range val {
-				newUrlValues.Add(k, element)
-			}
+		case bool:
+			newUrlValues.Add(k, strconv.FormatBool(val))
 		// if a number, change to string
 		// json.Number used to protect against a wrong (for GoRequest) default conversion
 		// which always converts number to float64.
 		// This type is caused by using Decoder.UseNumber()
 		case json.Number:
 			newUrlValues.Add(k, string(val))
+		case int:
+			newUrlValues.Add(k, strconv.FormatInt(int64(val), 10))
+		// TODO add all other int-Types (int8, int16, ...)
+		case float64:
+			newUrlValues.Add(k, strconv.FormatFloat(float64(val), 'f', -1, 64))
+		case float32:
+			newUrlValues.Add(k, strconv.FormatFloat(float64(val), 'f', -1, 64))
+		// following slices are mostly needed for tests
+		case []string:
+			for _, element := range val {
+				newUrlValues.Add(k, element)
+			}
+		case []int:
+			for _, element := range val {
+				newUrlValues.Add(k, strconv.FormatInt(int64(element), 10))
+			}
+		case []bool:
+			for _, element := range val {
+				newUrlValues.Add(k, strconv.FormatBool(element))
+			}
+		case []float64:
+			for _, element := range val {
+				newUrlValues.Add(k, strconv.FormatFloat(float64(element), 'f', -1, 64))
+			}
+		case []float32:
+			for _, element := range val {
+				newUrlValues.Add(k, strconv.FormatFloat(float64(element), 'f', -1, 64))
+			}
+		// these slices are used in practice like sending a struct
+		case []interface{}:
+
+			if len(val) <= 0 {
+				continue
+			}
+
+			switch val[0].(type) {
+			case string:
+				for _, element := range val {
+					newUrlValues.Add(k, element.(string))
+				}
+			case bool:
+				for _, element := range val {
+					newUrlValues.Add(k, strconv.FormatBool(element.(bool)))
+				}
+			case json.Number:
+				for _, element := range val {
+					newUrlValues.Add(k, string(element.(json.Number)))
+				}
+			}
+		default:
+			// TODO add ptr, arrays, ...
 		}
 	}
 	return newUrlValues
@@ -626,13 +929,76 @@ func (s *SuperAgent) End(callback ...func(response Response, body string, errs [
 			},
 		}
 	}
+
 	resp, body, errs := s.EndBytes(bytesCallback...)
 	bodyString := string(body)
+
 	return resp, bodyString, errs
 }
 
 // EndBytes should be used when you want the body as bytes. The callbacks work the same way as with `End`, except that a byte array is used instead of a string.
 func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, errs []error)) (Response, []byte, []error) {
+	var (
+		errs []error
+		resp Response
+		body []byte
+	)
+
+	for {
+		resp, body, errs = s.getResponseBytes()
+		if errs != nil {
+			return nil, nil, errs
+		}
+		if s.isRetryableRequest(resp) {
+			resp.Header.Set("Retry-Count", strconv.Itoa(s.Retryable.Attempt))
+			break
+		}
+	}
+
+	respCallback := *resp
+	if len(callback) != 0 {
+		callback[0](&respCallback, body, s.Errors)
+	}
+	return resp, body, nil
+}
+
+func (s *SuperAgent) isRetryableRequest(resp Response) bool {
+	if s.Retryable.Enable && s.Retryable.Attempt < s.Retryable.RetryerCount && contains(resp.StatusCode, s.Retryable.RetryableStatus) {
+		time.Sleep(s.Retryable.RetryerTime)
+		s.Retryable.Attempt++
+		return false
+	}
+	return true
+}
+
+func contains(respStatus int, statuses []int) bool {
+	for _, status := range statuses {
+		if status == respStatus {
+			return true
+		}
+	}
+	return false
+}
+
+// EndStruct should be used when you want the body as a struct. The callbacks work the same way as with `End`, except that a struct is used instead of a string.
+func (s *SuperAgent) EndStruct(v interface{}, callback ...func(response Response, v interface{}, body []byte, errs []error)) (Response, []byte, []error) {
+	resp, body, errs := s.EndBytes()
+	if errs != nil {
+		return nil, body, errs
+	}
+	err := json.Unmarshal(body, &v)
+	if err != nil {
+		s.Errors = append(s.Errors, err)
+		return resp, body, s.Errors
+	}
+	respCallback := *resp
+	if len(callback) != 0 {
+		callback[0](&respCallback, v, body, s.Errors)
+	}
+	return resp, body, nil
+}
+
+func (s *SuperAgent) getResponseBytes() (Response, []byte, []error) {
 	var (
 		req  *http.Request
 		err  error
@@ -644,7 +1010,7 @@ func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, e
 	}
 	// check if there is forced type
 	switch s.ForceType {
-	case "json", "form", "xml", "text":
+	case "json", "form", "xml", "text", "multipart":
 		s.TargetType = s.ForceType
 		// If forcetype is not set, check whether user set Content-Type header.
 		// If yes, also bounce to the correct supported TargetType automatically.
@@ -716,11 +1082,7 @@ func (s *SuperAgent) EndBytes(callback ...func(response Response, body []byte, e
 	body, _ := ioutil.ReadAll(resp.Body)
 	// Reset resp.Body so it can be use again
 	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-	// deep copy response to give it to both return and callback func
-	respCallback := *resp
-	if len(callback) != 0 {
-		callback[0](&respCallback, body, s.Errors)
-	}
+
 	return resp, body, nil
 }
 
@@ -730,60 +1092,114 @@ func (s *SuperAgent) MakeRequest() (*http.Request, error) {
 		err error
 	)
 
-	switch s.Method {
-	case POST, PUT, PATCH:
-		if s.TargetType == "json" {
-			// If-case to give support to json array. we check if
-			// 1) Map only: send it as json map from s.Data
-			// 2) Array or Mix of map & array or others: send it as rawstring from s.RawString
-			var contentJson []byte
-			if s.BounceToRawString {
-				contentJson = []byte(s.RawString)
-			} else if len(s.Data) != 0 {
-				contentJson, _ = json.Marshal(s.Data)
-			} else if len(s.SliceData) != 0 {
-				contentJson, _ = json.Marshal(s.SliceData)
-			}
-			contentReader := bytes.NewReader(contentJson)
-			req, err = http.NewRequest(s.Method, s.Url, contentReader)
-			if err != nil {
-				return nil, err
-			}
-			req.Header.Set("Content-Type", "application/json")
-		} else if s.TargetType == "form" {
-			var contentForm []byte
-			if s.BounceToRawString || len(s.SliceData) != 0 {
-				contentForm = []byte(s.RawString)
-			} else {
-				formData := changeMapToURLValues(s.Data)
-				contentForm = []byte(formData.Encode())
-			}
-			contentReader := bytes.NewReader(contentForm)
-			req, err = http.NewRequest(s.Method, s.Url, contentReader)
-			if err != nil {
-				return nil, err
-			}
-			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		} else if s.TargetType == "text" {
-			req, err = http.NewRequest(s.Method, s.Url, strings.NewReader(s.RawString))
-			req.Header.Set("Content-Type", "text/plain")
-		} else if s.TargetType == "xml" {
-			req, err = http.NewRequest(s.Method, s.Url, strings.NewReader(s.RawString))
-			req.Header.Set("Content-Type", "application/xml")
-		} else {
-			// TODO: if nothing match, let's return warning here
-		}
-	case "":
+	if s.Method == "" {
 		return nil, errors.New("No method specified")
-	default:
-		req, err = http.NewRequest(s.Method, s.Url, nil)
+	}
+
+	if s.TargetType == "json" {
+		// If-case to give support to json array. we check if
+		// 1) Map only: send it as json map from s.Data
+		// 2) Array or Mix of map & array or others: send it as rawstring from s.RawString
+		var contentJson []byte
+		if s.BounceToRawString {
+			contentJson = []byte(s.RawString)
+		} else if len(s.Data) != 0 {
+			contentJson, _ = json.Marshal(s.Data)
+		} else if len(s.SliceData) != 0 {
+			contentJson, _ = json.Marshal(s.SliceData)
+		}
+		contentReader := bytes.NewReader(contentJson)
+		req, err = http.NewRequest(s.Method, s.Url, contentReader)
 		if err != nil {
 			return nil, err
 		}
+		req.Header.Set("Content-Type", "application/json")
+	} else if s.TargetType == "form" || s.TargetType == "form-data" || s.TargetType == "urlencoded" {
+		var contentForm []byte
+		if s.BounceToRawString || len(s.SliceData) != 0 {
+			contentForm = []byte(s.RawString)
+		} else {
+			formData := changeMapToURLValues(s.Data)
+			contentForm = []byte(formData.Encode())
+		}
+		contentReader := bytes.NewReader(contentForm)
+		req, err = http.NewRequest(s.Method, s.Url, contentReader)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	} else if s.TargetType == "text" {
+		req, err = http.NewRequest(s.Method, s.Url, strings.NewReader(s.RawString))
+		req.Header.Set("Content-Type", "text/plain")
+	} else if s.TargetType == "xml" {
+		req, err = http.NewRequest(s.Method, s.Url, strings.NewReader(s.RawString))
+		req.Header.Set("Content-Type", "application/xml")
+	} else if s.TargetType == "multipart" {
+
+		var buf bytes.Buffer
+		mw := multipart.NewWriter(&buf)
+
+		if s.BounceToRawString {
+			fieldName, ok := s.Header["data_fieldname"]
+			if !ok {
+				fieldName = "data"
+			}
+			fw, _ := mw.CreateFormField(fieldName)
+			fw.Write([]byte(s.RawString))
+		}
+
+		if len(s.Data) != 0 {
+			formData := changeMapToURLValues(s.Data)
+			for key, values := range formData {
+				for _, value := range values {
+					fw, _ := mw.CreateFormField(key)
+					fw.Write([]byte(value))
+				}
+			}
+		}
+
+		if len(s.SliceData) != 0 {
+			fieldName, ok := s.Header["json_fieldname"]
+			if !ok {
+				fieldName = "data"
+			}
+			// copied from CreateFormField() in mime/multipart/writer.go
+			h := make(textproto.MIMEHeader)
+			fieldName = strings.Replace(strings.Replace(fieldName, "\\", "\\\\", -1), `"`, "\\\"", -1)
+			h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"`, fieldName))
+			h.Set("Content-Type", "application/json")
+			fw, _ := mw.CreatePart(h)
+			contentJson, err := json.Marshal(s.SliceData)
+			if err != nil {
+				return nil, err
+			}
+			fw.Write(contentJson)
+		}
+
+		// add the files
+		if len(s.FileData) != 0 {
+			for _, file := range s.FileData {
+				fw, _ := mw.CreateFormFile(file.Fieldname, file.Filename)
+				fw.Write(file.Data)
+			}
+		}
+
+		// close before call to FormDataContentType ! otherwise its not valid multipart
+		mw.Close()
+
+		req, err = http.NewRequest(s.Method, s.Url, &buf)
+		req.Header.Set("Content-Type", mw.FormDataContentType())
+	} else {
+		// let's return an error instead of an nil pointer exception here
+		return nil, errors.New("TargetType '" + s.TargetType + "' could not be determined")
 	}
 
 	for k, v := range s.Header {
 		req.Header.Set(k, v)
+		// Setting the host header is a special case, see this issue: https://github.com/golang/go/issues/7682
+		if strings.EqualFold(k, "host") {
+			req.Host = v
+		}
 	}
 	// Add all querystring from Query func
 	q := req.URL.Query()
@@ -805,4 +1221,18 @@ func (s *SuperAgent) MakeRequest() (*http.Request, error) {
 	}
 
 	return req, nil
+}
+
+// AsCurlCommand returns a string representing the runnable `curl' command
+// version of the request.
+func (s *SuperAgent) AsCurlCommand() (string, error) {
+	req, err := s.MakeRequest()
+	if err != nil {
+		return "", err
+	}
+	cmd, err := http2curl.GetCurlCommand(req)
+	if err != nil {
+		return "", err
+	}
+	return cmd.String(), nil
 }
