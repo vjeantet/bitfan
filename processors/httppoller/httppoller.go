@@ -31,6 +31,10 @@ type options struct {
 	// @Default "GET"
 	Method string `mapstructure:"method"`
 
+	// Define headers for the request.
+	// @ExampleLS headers => {"User-Agent":"Bitfan","Accept":"application/json"}
+	Headers map[string]string `mapstructure:"headers"`
+
 	// URL
 	// @ExampleLS url=> "http://google.fr"
 	Url string `mapstructure:"url" validate:"required"`
@@ -60,6 +64,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		Method:        "GET",
 		Target:        "output",
 		IgnoreFailure: true,
+		Headers:       map[string]string{},
 	}
 	p.opt = &defaults
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -88,7 +93,11 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	switch p.opt.Method {
 	case "GET":
-		resp, _, errs = p.request.Get(p.opt.Url).End()
+		sagent := p.request.Get(p.opt.Url)
+		for k, v := range p.opt.Headers {
+			sagent.Set(k, v)
+		}
+		resp, _, errs = sagent.End()
 		e.Fields().SetValueForPath(p.request.Url, "httpRequestURL")
 	default:
 		p.Logger.Warnf("Method %s not implemented", p.opt.Method)

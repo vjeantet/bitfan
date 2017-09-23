@@ -9,6 +9,7 @@ HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output 
 | codec          | codec  | false    | "plain"       |
 | interval       | string | false    | ""            |
 | method         | string | false    | "GET"         |
+| headers        | hash   | false    | {}            |
 | url            | string | true     | ""            |
 | target         | string | false    | ""            |
 | ignore_failure | bool   | false    | true          |
@@ -35,6 +36,12 @@ Use CRON or BITFAN notation
 
 Http Method
 
+### headers
+* Value type is hash
+* Default value is `{}`
+
+Define headers for the request.
+
 ### url
 * This is a required setting.
 * Value type is string
@@ -54,7 +61,7 @@ When data is an array it stores the resulting data into the given target field.
 
 When true, unsuccessful HTTP requests, like unreachable connections, will
 not raise an event, but a log message.
-When false an event is generated with a tag _httppollerfailure
+When false an event is generated with a tag _http_request_failure
 
 
 
@@ -65,6 +72,7 @@ httppoller{
 	codec => "plain"
 	interval => "every_10s"
 	method => "GET"
+	headers => {"User-Agent":"Bitfan","Accept":"application/json"}
 	url=> "http://google.fr"
 	target => ""
 	ignore_failure => true

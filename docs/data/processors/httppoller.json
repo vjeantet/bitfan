@@ -47,6 +47,16 @@
         "Type": "string"
       },
       {
+        "Alias": "headers",
+        "DefaultValue": null,
+        "Doc": "Define headers for the request.",
+        "ExampleLS": "headers =\u003e {\"User-Agent\":\"Bitfan\",\"Accept\":\"application/json\"}",
+        "Name": "Headers",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
         "Alias": "url",
         "DefaultValue": null,
         "Doc": "URL",
@@ -69,7 +79,7 @@
       {
         "Alias": "ignore_failure",
         "DefaultValue": "true",
-        "Doc": "When true, unsuccessful HTTP requests, like unreachable connections, will\nnot raise an event, but a log message.\nWhen false an event is generated with a tag _httppollerfailure",
+        "Doc": "When true, unsuccessful HTTP requests, like unreachable connections, will\nnot raise an event, but a log message.\nWhen false an event is generated with a tag _http_request_failure",
         "ExampleLS": "",
         "Name": "IgnoreFailure",
         "PossibleValues": null,

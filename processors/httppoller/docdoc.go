@@ -53,6 +53,16 @@ func (p *processor) Doc() *doc.Processor {
         ExampleLS:      "",
       },
       &doc.ProcessorOption{
+        Name:           "Headers",
+        Alias:          "headers",
+        Doc:            "Define headers for the request.",
+        Required:       false,
+        Type:           "hash",
+        DefaultValue:   nil,
+        PossibleValues: []string{},
+        ExampleLS:      "headers => {\"User-Agent\":\"Bitfan\",\"Accept\":\"application/json\"}",
+      },
+      &doc.ProcessorOption{
         Name:           "Url",
         Alias:          "url",
         Doc:            "URL",
@@ -75,7 +85,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "IgnoreFailure",
         Alias:          "ignore_failure",
-        Doc:            "When true, unsuccessful HTTP requests, like unreachable connections, will\nnot raise an event, but a log message.\nWhen false an event is generated with a tag _httppollerfailure",
+        Doc:            "When true, unsuccessful HTTP requests, like unreachable connections, will\nnot raise an event, but a log message.\nWhen false an event is generated with a tag _http_request_failure",
         Required:       false,
         Type:           "bool",
         DefaultValue:   "true",
