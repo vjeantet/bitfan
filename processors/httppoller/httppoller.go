@@ -1,5 +1,5 @@
 //go:generate bitfanDoc
-//HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event
+//HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output into an event
 package httppoller
 
 import (
@@ -37,7 +37,29 @@ type options struct {
 
 	// When data is an array it stores the resulting data into the given target field.
 	Target string `mapstructure:"target"`
+
+	// Level of failure
+	//
+	// 1 - noFailures
+	// 2 - unsuccessful HTTP requests (unreachable connections)
+	// 3 - unreachable connections and HTTP responses > 400 of successful HTTP requests
+	// 4 - unreachable connections and non-2xx HTTP responses of successful HTTP requests
+	// @default : 4
+	FailureSeverity int `mapstructure:"failure_severity"`
+
+	// When set, http failures will pass the received event and
+	// append values to the tags field when there has been an failure
+	// @ExampleLS tag_on_failure => ["_httprequestfailure"]
+	// @default : []
+	TagOnFailure []string `mapstructure:"tag_on_failure"`
 }
+
+const (
+	failureSeverity_nothing          int = 1
+	failureSeverity_unsuccessfulHTTP int = 2
+	failureSeverity_HTTPover400      int = 3
+	failureSeverity_HTTPnon2xx       int = 4
+)
 
 type processor struct {
 	processors.Base
@@ -51,8 +73,9 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		Codec: codecs.CodecCollection{
 			Dec: codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 		},
-		Method: "GET",
-		Target: "output",
+		Method:          "GET",
+		Target:          "output",
+		FailureSeverity: failureSeverity_HTTPnon2xx,
 	}
 	p.opt = &defaults
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -82,6 +105,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	switch p.opt.Method {
 	case "GET":
 		resp, _, errs = p.request.Get(p.opt.Url).End()
+		e.Fields().SetValueForPath(p.request.Url, "httpRequestURL")
 	default:
 		p.Logger.Warnf("Method %s not implemented", p.opt.Method)
 		return nil
@@ -89,11 +113,37 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	if errs != nil {
 		p.Logger.Warnf("while http requesting %s : %#v", p.opt.Url, errs)
+
+		if p.opt.FailureSeverity > failureSeverity_nothing {
+			if len(p.opt.TagOnFailure) > 0 { // pass
+				p.Logger.Debugf("network Failure pass event with tags %s", p.opt.TagOnFailure)
+				processors.AddTags(p.opt.TagOnFailure, e.Fields())
+				p.Send(e)
+			}
+		} else {
+			p.Send(e)
+		}
 		return nil
 	}
-	if resp.StatusCode >= 400 {
-		p.Logger.Warnf("http response code %s : %d (%s)", p.opt.Url, resp.StatusCode, resp.Status)
-		return nil
+
+	if p.opt.FailureSeverity == failureSeverity_HTTPnon2xx {
+		if resp.StatusCode < 200 && resp.StatusCode > 299 {
+			if len(p.opt.TagOnFailure) > 0 { // pass
+				processors.AddTags(p.opt.TagOnFailure, e.Fields())
+			} else {
+				p.Logger.Warnf("http response code %s : %d (%s)", p.opt.Url, resp.StatusCode, resp.Status)
+				return nil
+			}
+		}
+	} else if p.opt.FailureSeverity == failureSeverity_HTTPover400 {
+		if resp.StatusCode >= 400 {
+			if len(p.opt.TagOnFailure) > 0 { // pass
+				processors.AddTags(p.opt.TagOnFailure, e.Fields())
+			} else {
+				p.Logger.Warnf("http response code %s : %d (%s)", p.opt.Url, resp.StatusCode, resp.Status)
+				return nil
+			}
+		}
 	}
 
 	// Create a reader

@@ -1,5 +1,5 @@
 {
-  "Doc": "HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event",
+  "Doc": "HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output into an event",
   "DocShort": "",
   "ImportPath": "github.com/vjeantet/bitfan/processors/httppoller",
   "Name": "httppoller",
@@ -65,6 +65,26 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "string"
+      },
+      {
+        "Alias": "failure_severity",
+        "DefaultValue": null,
+        "Doc": "Level of failure\n\n1 - noFailures\n2 - unsuccessful HTTP requests (unreachable connections)\n3 - unreachable connections and HTTP responses \u003e 400 of successful HTTP requests\n4 - unreachable connections and non-2xx HTTP responses of successful HTTP requests",
+        "ExampleLS": "",
+        "Name": "FailureSeverity",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "tag_on_failure",
+        "DefaultValue": null,
+        "Doc": "When set, http failures will pass the received event and\nappend values to the tags field when there has been an failure",
+        "ExampleLS": "tag_on_failure =\u003e [\"_httprequestfailure\"]",
+        "Name": "TagOnFailure",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
       }
     ]
   },
