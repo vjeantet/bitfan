@@ -189,6 +189,12 @@
 			"revisionTime": "2015-02-15T04:42:01Z"
 		},
 		{
+			"checksumSHA1": "n/lOgkkwZ1EVMSvN87dGe8mMPCI=",
+			"path": "github.com/gin-contrib/multitemplate",
+			"revision": "bbc6daf6024bc4c48f334a0490321cd48a24da3d",
+			"revisionTime": "2017-09-22T03:26:17Z"
+		},
+		{
 			"checksumSHA1": "d1Hkr1qPqnM43bkN2P2kP48mD6A=",
 			"path": "github.com/gin-gonic/gin",
 			"revision": "1a7ab6e4d5fdc72d6df30ef562102ae6e0d18518",
@@ -441,6 +447,12 @@
 			"revisionTime": "2016-04-24T11:30:07Z"
 		},
 		{
+			"checksumSHA1": "ex6KJu8uwkG4P4PegAIrHOhVB8Q=",
+			"path": "github.com/michelloworld/ez-gin-template",
+			"revision": "16500de79a13b17b366f23fc44f0a5e75c8e8fa8",
+			"revisionTime": "2016-11-01T12:44:17Z"
+		},
+		{
 			"checksumSHA1": "LveYDnKndgX1jERpELLVTrb5UlU=",
 			"path": "github.com/microcosm-cc/bluemonday",
 			"revision": "4ac6f27528d0a3f2a59e0b0a6f6b3ff0bb89fe20",
@@ -499,6 +511,12 @@
 			"path": "github.com/patrickmn/go-cache",
 			"revision": "e7a9def80f35fe1b170b7b8b68871d59dea117e1",
 			"revisionTime": "2016-11-25T23:48:19Z"
+		},
+		{
+			"checksumSHA1": "rJab1YdNhQooDiBWNnt7TLWPyBU=",
+			"path": "github.com/pkg/errors",
+			"revision": "2b3a18b5f0fb6b4f9190549597d3f962c02bc5eb",
+			"revisionTime": "2017-09-10T13:46:14Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
