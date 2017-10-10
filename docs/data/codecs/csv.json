@@ -5,7 +5,7 @@
       "Doc": "Parses comma-separated value data into individual fields",
       "Options": [
         {
-          "Alias": "",
+          "Alias": "separator",
           "DefaultValue": "\",\"",
           "Doc": "Define the column separator value. If this is not specified, the default is a comma ,. Optional",
           "ExampleLS": "",
@@ -35,7 +35,7 @@
           "Type": "string"
         },
         {
-          "Alias": "",
+          "Alias": "columns",
           "DefaultValue": null,
           "Doc": "Define a list of column names (in the order they appear in the CSV, as\nif it were a header line).\n\nIf columns is not configured, or there are not enough columns specified,\nthe default column names are \"column1\", \"column2\", etc.\n\nIn the case that there are more columns in the data than specified in this column\nlist, extra columns will be auto-numbered:\n(e.g. \"user_defined_1\", \"user_defined_2\", \"column3\", \"column4\", etc.)",
           "ExampleLS": "",
@@ -43,6 +43,16 @@
           "PossibleValues": null,
           "Required": false,
           "Type": "array"
+        },
+        {
+          "Alias": "comment",
+          "DefaultValue": null,
+          "Doc": "Define the comment character.\nLines beginning with the Comment character without preceding whitespace are ignored.",
+          "ExampleLS": "",
+          "Name": "Comment",
+          "PossibleValues": null,
+          "Required": false,
+          "Type": "string"
         }
       ]
     }
