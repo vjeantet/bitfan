@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/vjeantet/bitfan/codecs/csv"
+	"github.com/vjeantet/bitfan/codecs/w3c"
 	"github.com/vjeantet/bitfan/codecs/json"
 	"github.com/vjeantet/bitfan/codecs/jsonlines"
 	"github.com/vjeantet/bitfan/codecs/lib"
@@ -140,6 +141,8 @@ func (c *Codec) NewDecoder(r io.Reader) (Decoder, error) {
 		dec = multilinecodec.NewDecoder(cr)
 	case "csv":
 		dec = csvcodec.NewDecoder(cr)
+	case "w3c":
+		dec = w3ccodec.NewDecoder(cr)
 	case "json":
 		dec = jsoncodec.NewDecoder(cr)
 	case "json_lines":

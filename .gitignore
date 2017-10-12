@@ -42,3 +42,5 @@ releases
 /docs/public/
 
 /docs/themes/hugo-theme-docdock
+
+/.vscode/
