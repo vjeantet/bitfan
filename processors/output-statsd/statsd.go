@@ -3,6 +3,7 @@ package statsd
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/ShowMax/go-fqdn"
@@ -73,8 +74,8 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 func (p *processor) Receive(e processors.IPacket) error {
 	for key, value := range p.opt.Count {
-		v, err := p.dynamicValue(value, e);
-		if err != nil  {
+		v, err := p.dynamicValue(value, e)
+		if err != nil {
 			p.Logger.Warnf("string [%v] can't used as counter value: %v", value, err)
 			continue
 		}
@@ -87,28 +88,28 @@ func (p *processor) Receive(e processors.IPacket) error {
 		p.conn.Count(p.dynamicKey(key, e), -1)
 	}
 	for key, value := range p.opt.Gauge {
-		v, err := p.dynamicValue(value, e);
-		if err != nil  {
+		v, err := p.dynamicValue(value, e)
+		if err != nil {
 			p.Logger.Warnf("string [%v] can't used as gauge value: %v", value, err)
 			continue
 		}
 		p.conn.Gauge(p.dynamicKey(key, e), v)
 	}
 	for key, value := range p.opt.Timing {
-		v, err := p.dynamicValue(value, e);
-		if err != nil  {
+		v, err := p.dynamicValue(value, e)
+		if err != nil {
 			p.Logger.Warnf("string [%v] can't used as timing value: %v", value, err)
 			continue
 		}
 		p.conn.Timing(p.dynamicKey(key, e), v)
 	}
 	for key, value := range p.opt.Set {
-		v, err := p.dynamicValue(value, e);
-		if err != nil  {
+		v, err := p.dynamicValue(value, e)
+		if err != nil {
 			p.Logger.Warnf("string [%v] can't used as set value: %v", value, err)
 			continue
 		}
-		p.conn.Unique(p.dynamicKey(key, e), fmt.Sprintf("%d",v))
+		p.conn.Unique(p.dynamicKey(key, e), fmt.Sprintf("%d", v))
 	}
 	return nil
 }
@@ -116,7 +117,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 func (p *processor) dynamicValue(value interface{}, e processors.IPacket) (int, error) {
 	v := fmt.Sprintf("%v", value)
 	processors.Dynamic(&v, e.Fields())
-	return fmt.Sscan(v)
+	return strconv.Atoi(v)
 }
 
 func (p *processor) dynamicKey(key string, e processors.IPacket) string {
