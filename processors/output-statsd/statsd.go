@@ -73,7 +73,12 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 func (p *processor) Receive(e processors.IPacket) error {
 	for key, value := range p.opt.Count {
-		p.conn.Count(p.dynamicKey(key, e), dynamicValue(value, e))
+		v, err := p.dynamicValue(value, e);
+		if err != nil  {
+			p.Logger.Warnf("string [%v] can't used as counter value: %v", value, err)
+			continue
+		}
+		p.conn.Count(p.dynamicKey(key, e), v)
 	}
 	for _, key := range p.opt.Increment {
 		p.conn.Count(p.dynamicKey(key, e), 1)
@@ -82,25 +87,44 @@ func (p *processor) Receive(e processors.IPacket) error {
 		p.conn.Count(p.dynamicKey(key, e), -1)
 	}
 	for key, value := range p.opt.Gauge {
-		p.conn.Gauge(p.dynamicKey(key, e), dynamicValue(value, e))
+		v, err := p.dynamicValue(value, e);
+		if err != nil  {
+			p.Logger.Warnf("string [%v] can't used as gauge value: %v", value, err)
+			continue
+		}
+		p.conn.Gauge(p.dynamicKey(key, e), v)
 	}
 	for key, value := range p.opt.Timing {
-		p.conn.Timing(p.dynamicKey(key, e), dynamicValue(value, e))
+		v, err := p.dynamicValue(value, e);
+		if err != nil  {
+			p.Logger.Warnf("string [%v] can't used as timing value: %v", value, err)
+			continue
+		}
+		p.conn.Timing(p.dynamicKey(key, e), v)
 	}
 	for key, value := range p.opt.Set {
-		p.conn.Unique(p.dynamicKey(key, e), dynamicValue(value, e))
+		v, err := p.dynamicValue(value, e);
+		if err != nil  {
+			p.Logger.Warnf("string [%v] can't used as set value: %v", value, err)
+			continue
+		}
+		p.conn.Unique(p.dynamicKey(key, e), fmt.Sprintf("%d",v))
 	}
 	return nil
 }
 
-func dynamicValue(value interface{}, e processors.IPacket) string {
-	v := value.(string)
+func (p *processor) dynamicValue(value interface{}, e processors.IPacket) (int, error) {
+	v := fmt.Sprintf("%v", value)
 	processors.Dynamic(&v, e.Fields())
-	return v
+	return fmt.Sscan(v)
 }
 
 func (p *processor) dynamicKey(key string, e processors.IPacket) string {
-	return fmt.Sprintf("%s.%s", strings.Replace(dynamicValue(p.opt.Sender, e), ".", "_", -1), dynamicValue(key, e))
+	k, s := key, p.opt.Sender
+	processors.Dynamic(&k, e.Fields())
+	processors.Dynamic(&s, e.Fields())
+	s = strings.Replace(s, ".", "_", -1)
+	return fmt.Sprintf("%s.%s", s, k)
 }
 
 func (p *processor) Start(e processors.IPacket) error {
