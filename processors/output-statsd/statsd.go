@@ -52,7 +52,7 @@ type options struct {
 	SampleRate float32 `mapstructure:"sample_rate"`
 
 	// A set metric. metric_name => "string" to append as hash
-	Set map[string]string `mapstructure:"set"`
+	Set map[string]interface{} `mapstructure:"set"`
 
 	// A timing metric. metric_name => duration as hash
 	Timing map[string]interface{} `mapstructure:"timing"`
@@ -73,32 +73,34 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 func (p *processor) Receive(e processors.IPacket) error {
 	for key, value := range p.opt.Count {
-		p.conn.Count(p.metricBuild(key, e), value)
+		p.conn.Count(p.dynamicKey(key, e), dynamicValue(value, e))
 	}
 	for _, key := range p.opt.Increment {
-		p.conn.Count(p.metricBuild(key, e), 1)
+		p.conn.Count(p.dynamicKey(key, e), 1)
 	}
 	for _, key := range p.opt.Decrement {
-		p.conn.Count(p.metricBuild(key, e), -1)
+		p.conn.Count(p.dynamicKey(key, e), -1)
 	}
 	for key, value := range p.opt.Gauge {
-		p.conn.Gauge(p.metricBuild(key, e) , value)
+		p.conn.Gauge(p.dynamicKey(key, e), dynamicValue(value, e))
 	}
 	for key, value := range p.opt.Timing {
-		p.conn.Timing(p.metricBuild(key, e), value)
+		p.conn.Timing(p.dynamicKey(key, e), dynamicValue(value, e))
 	}
 	for key, value := range p.opt.Set {
-		p.conn.Unique(p.metricBuild(key, e), value)
+		p.conn.Unique(p.dynamicKey(key, e), dynamicValue(value, e))
 	}
 	return nil
 }
 
-func (p *processor) metricBuild(key string, e processors.IPacket) string {
-	k, s := key, p.opt.Sender
-	processors.Dynamic(&k, e.Fields())
-	processors.Dynamic(&s, e.Fields())
-	s = strings.Replace(s, ".", "_", -1)
-	return fmt.Sprintf("%s.%s", s, k)
+func dynamicValue(value interface{}, e processors.IPacket) string {
+	v := value.(string)
+	processors.Dynamic(&v, e.Fields())
+	return v
+}
+
+func (p *processor) dynamicKey(key string, e processors.IPacket) string {
+	return fmt.Sprintf("%s.%s", strings.Replace(dynamicValue(p.opt.Sender, e), ".", "_", -1), dynamicValue(key, e))
 }
 
 func (p *processor) Start(e processors.IPacket) error {

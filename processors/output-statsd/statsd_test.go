@@ -24,7 +24,7 @@ func TestMetricBuild(t *testing.T) {
 		"sender": "%{message}",
 	}
 	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
-	assert.Equal(t, "200.response.total.200", p.metricBuild("response.total.%{message}", testutils.NewPacket("200", nil)))
-	assert.Equal(t, "400.response.total.400", p.metricBuild("response.total.%{message}", testutils.NewPacket("400", nil)))
-	assert.Equal(t, "message.message.message", p.metricBuild("%{message}.%{message}", testutils.NewPacket("message", nil)))
+	assert.Equal(t, "200.response.total.200", p.dynamicKey("response.total.%{message}", testutils.NewPacket("200", nil)))
+	assert.Equal(t, "400.response.total.400", p.dynamicKey("response.total.%{message}", testutils.NewPacket("400", nil)))
+	assert.Equal(t, "message.message.message", p.dynamicKey("%{message}.%{message}", testutils.NewPacket("message", nil)))
 }
