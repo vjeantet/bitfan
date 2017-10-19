@@ -43,7 +43,8 @@ func Dynamic(str *string, fields *mxj.Map) {
 		for _, values := range maskPattern.FindAllStringSubmatch(*str, -1) {
 			values[1] = strings.Replace(values[1], `][`, `.`, -1)
 			// Search matching value, when not found use ""
-			*str = strings.Replace(*str, values[0], fields.ValueOrEmptyForPathString(values[1]), -1)
+			i, _ := fields.ValueForPath(values[1])
+			*str = strings.Replace(*str, values[0], fmt.Sprintf("%v", i), -1)
 		}
 	}
 }

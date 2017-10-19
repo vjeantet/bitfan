@@ -109,15 +109,15 @@ func (p *processor) Receive(e processors.IPacket) error {
 			p.Logger.Warnf("string [%v] can't used as set value: %v", value, err)
 			continue
 		}
-		p.conn.Unique(p.dynamicKey(key, e), fmt.Sprintf("%d", v))
+		p.conn.Unique(p.dynamicKey(key, e), fmt.Sprintf("%v", v))
 	}
 	return nil
 }
 
-func (p *processor) dynamicValue(value interface{}, e processors.IPacket) (int, error) {
+func (p *processor) dynamicValue(value interface{}, e processors.IPacket) (float64, error) {
 	v := fmt.Sprintf("%v", value)
 	processors.Dynamic(&v, e.Fields())
-	return strconv.Atoi(v)
+	return strconv.ParseFloat(v, 10)
 }
 
 func (p *processor) dynamicKey(key string, e processors.IPacket) string {
