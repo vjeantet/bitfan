@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/clbanning/mxj"
@@ -92,7 +93,7 @@ type options struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		HTTPMethod:     "post",
+		HTTPMethod:     "POST",
 		KeepAlive:      true,
 		PoolMax:        1,
 		ConnectTimeout: 5,
@@ -108,8 +109,8 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		BatchInterval:  5,
 		BatchSize:      100,
 	}
-
 	p.opt = &defaults
+	p.opt.HTTPMethod = strings.ToUpper(p.opt.HTTPMethod)
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
 }
 
