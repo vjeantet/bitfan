@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/stretchr/testify/mock"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -14,6 +15,7 @@ type DummyProcessorContext struct {
 	sentPackets   map[int][]processors.IPacket
 	builtPackets  []processors.IPacket
 	memory        processors.Memory
+	mock.Mock
 }
 
 func NewProcessorContext() *DummyProcessorContext {
@@ -86,4 +88,8 @@ var i = 0
 func newMemory(p *DummyProcessorContext) processors.Memory {
 	i += 1
 	return NewMemory("").Space(fmt.Sprintf("test_%d", i))
+}
+
+func (d *DummyProcessorContext) WebHook() processors.WebHook {
+	return nil
 }

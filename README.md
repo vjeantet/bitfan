@@ -28,6 +28,8 @@ Bitfan is written in Go and should build on all platforms.
 [![GoDoc](https://godoc.org/github.com/vjeantet/bitfan?status.svg)](https://godoc.org/github.com/vjeantet/bitfan)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vjeantet/bitfan)](https://goreportcard.com/report/github.com/vjeantet/bitfan)
 [![Build Status](https://travis-ci.org/vjeantet/bitfan.svg?branch=master)](https://travis-ci.org/vjeantet/bitfan)
+[![Coverage Status](https://coveralls.io/repos/github/vjeantet/bitfan/badge.svg?branch=master)](https://coveralls.io/github/vjeantet/bitfan?branch=master)
+
 
 
 # Similar projets in go

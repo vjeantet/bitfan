@@ -17,7 +17,7 @@ func Doc() *doc.Codec {
       Options: []*doc.CodecOption{
         &doc.CodecOption{
           Name:           "Separator",
-          Alias:          "",
+          Alias:          "separator",
           Doc:            "Define the column separator value. If this is not specified, the default is a comma ,. Optional",
           Required:       false,
           Type:           "string",
@@ -47,10 +47,20 @@ func Doc() *doc.Codec {
         },
         &doc.CodecOption{
           Name:           "Columns",
-          Alias:          "",
+          Alias:          "columns",
           Doc:            "Define a list of column names (in the order they appear in the CSV, as\nif it were a header line).\n\nIf columns is not configured, or there are not enough columns specified,\nthe default column names are \"column1\", \"column2\", etc.\n\nIn the case that there are more columns in the data than specified in this column\nlist, extra columns will be auto-numbered:\n(e.g. \"user_defined_1\", \"user_defined_2\", \"column3\", \"column4\", etc.)",
           Required:       false,
           Type:           "array",
+          DefaultValue:   nil,
+          PossibleValues: []string{},
+          ExampleLS:      "",
+        },
+        &doc.CodecOption{
+          Name:           "Comment",
+          Alias:          "comment",
+          Doc:            "Define the comment character.\nLines beginning with the Comment character without preceding whitespace are ignored.",
+          Required:       false,
+          Type:           "string",
           DefaultValue:   nil,
           PossibleValues: []string{},
           ExampleLS:      "",

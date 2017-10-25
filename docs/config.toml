@@ -11,6 +11,7 @@ noHomeIcon = false # default is false
 noSearch = false # default is false
 showVisitedLinks = false # default is false
 unfoldedMenus = ["start"] # set menu identifiers which should be displayed unfolded  
+themeStyle = "flex"
 # themeVariant = "green" # choose theme variant "green", "gold" , "blue" (default)
 
 
