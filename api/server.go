@@ -50,12 +50,12 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-func Handler(plugs map[string]map[string]core.ProcessorFactory) http.Handler {
+func Handler(path string, plugs map[string]map[string]core.ProcessorFactory) http.Handler {
 	plugins = plugs
 
 	r := gin.New()
 	r.Use(gin.Recovery(), cors())
-	v1 := r.Group("api/v1")
+	v1 := r.Group(path)
 	{
 
 		// swagger:operation GET /pipelines pipeline listPipelines
@@ -236,6 +236,8 @@ func Handler(plugs map[string]map[string]core.ProcessorFactory) http.Handler {
 		v1.GET("/docs/outputs", getDocsOutputs)
 		v1.GET("/docs/outputs/:name", getDocsOutputsByName)
 	}
+
+	core.Log().Debugf("Serving API on /%s/ ", path)
 
 	return r
 }

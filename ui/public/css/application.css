@@ -1,0 +1,40 @@
+body {
+	font-family: 'Open Sans', sans-serif;
+	background-color: #f8f8f8;
+}
+
+.navbar-default {
+	background-color: #d5e9fe;
+	border-bottom: 1px solid #ddd;
+}
+
+.navbar-default .navbar-brand {
+	color: #414042;
+	font-weight: 600;
+	font-size: 150%;
+}
+
+.navbar-brand span {
+	margin-left: 46px;
+}
+
+.logo {
+	max-width: 45px;
+	position: absolute;
+	top: 10px;
+}
+
+h1 {
+	color: #a4abb1;
+	font-size: 220%;
+	font-weight: 600;
+}
+
+a {
+	color: #41a3fe;
+}
+
+.table-responsive{
+overflow-y:visible;
+overflow-x:visible;
+}

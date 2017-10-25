@@ -16,26 +16,34 @@ const (
 	defaultStatus = 200
 )
 
-type (
-	ResponseWriter interface {
-		http.ResponseWriter
-		http.Hijacker
-		http.Flusher
-		http.CloseNotifier
+type ResponseWriter interface {
+	http.ResponseWriter
+	http.Hijacker
+	http.Flusher
+	http.CloseNotifier
 
-		Status() int
-		Size() int
-		WriteString(string) (int, error)
-		Written() bool
-		WriteHeaderNow()
-	}
+	// Returns the HTTP response status code of the current request.
+	Status() int
 
-	responseWriter struct {
-		http.ResponseWriter
-		size   int
-		status int
-	}
-)
+	// Returns the number of bytes already written into the response http body.
+	// See Written()
+	Size() int
+
+	// Writes the string into the response body.
+	WriteString(string) (int, error)
+
+	// Returns true if the response body was already written.
+	Written() bool
+
+	// Forces to write the http header (status code + headers).
+	WriteHeaderNow()
+}
+
+type responseWriter struct {
+	http.ResponseWriter
+	size   int
+	status int
+}
 
 var _ ResponseWriter = &responseWriter{}
 
@@ -87,7 +95,7 @@ func (w *responseWriter) Written() bool {
 	return w.size != noWritten
 }
 
-// Implements the http.Hijacker interface
+// Hijack implements the http.Hijacker interface.
 func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if w.size < 0 {
 		w.size = 0
@@ -95,12 +103,12 @@ func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return w.ResponseWriter.(http.Hijacker).Hijack()
 }
 
-// Implements the http.CloseNotify interface
+// CloseNotify implements the http.CloseNotify interface.
 func (w *responseWriter) CloseNotify() <-chan bool {
 	return w.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
 
-// Implements the http.Flush interface
+// Flush implements the http.Flush interface.
 func (w *responseWriter) Flush() {
 	w.ResponseWriter.(http.Flusher).Flush()
 }

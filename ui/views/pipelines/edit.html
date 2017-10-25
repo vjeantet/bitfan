@@ -1,0 +1,101 @@
+{{ define "title"}}{{.pipeline.Label}}{{ end }}
+
+{{ define "sidebar" }}
+    
+{{ end }}
+
+{{ define "content" }}
+
+
+
+<div class="row">
+  <div class="col">
+  <h1>Pipelines - {{.pipeline.Label}}</h1>
+  </div>
+</div>
+
+
+{{ range $flash := .flashes }}
+<div class="alert alert-success" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+
+<div class="row">
+  <div class="col-12">
+
+    <form method="POST" action="">
+       <div class="form-group">
+        <label for="label">Label</label>
+        <input type="text" class="form-control" name="label" id="label" placeholder="Enter pipeline's label" value="{{.pipeline.Label}}">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" name="description" id="description" placeholder="Enter pipeline's description" value="{{.pipeline.Description}}">
+      </div>
+
+      <div class="form-group">
+        <label for="content">Configuration </label>
+        <textarea class="form-control" name="content" id="content" rows="20">
+            {{- .pipeline.Content -}}
+        </textarea>
+      </div>
+      <button type="submit" name="save" class="btn btn-primary">Save</button>
+      <button type="submit" name="saverestart" class="btn btn-primary">Save and restart</button>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <h2>Assets</h2>
+    {{ range $asset := .pipeline.Assets }}
+    <li>
+      <a href="/ui/pipelines/{{$.pipeline.ID}}/assets/{{$asset.ID}}">{{$asset.Name}}</a> <a href="/ui/pipelines/{{$.pipeline.ID}}/assets/{{$asset.ID}}/delete">delete</a>
+    </li>
+    {{ end }}
+    <hr>
+  </div>
+</div>
+
+
+<script src="/ui/public/js/dropzone.js"></script>
+<link rel="stylesheet" href="/ui/public/css/dropzone.css">
+
+
+<div class="row">
+  <div class="col-12">
+
+    <form action="{{$.pipeline.ID}}/assets" class="dropzone" id="my-awesome-dropzone">
+      <div class="dz-message needsclick">
+        Drop files here or click to upload.<br>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script type="text/javascript">
+  Dropzone.options.myAwesomeDropzone = {
+  paramName: "file", // The name that will be used to transfer the file
+  maxFilesize: 2, // MB
+  createImageThumbnails: true,
+  init: function() {
+    this.on("success", function(file, responseText) {
+      // Handle the responseText here. For example, add the text to the preview element:
+      file.previewTemplate.appendChild(document.createTextNode(responseText));
+    });
+  },
+  accept: function(file, done) {
+    if (file.name == "justinbieber.jpg") {
+      done("Naha, you don't.");
+    }
+    else { done(); }
+  }
+};
+</script>
+
+
+{{ end }}
+

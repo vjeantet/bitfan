@@ -189,28 +189,28 @@
 			"revisionTime": "2015-02-15T04:42:01Z"
 		},
 		{
-			"checksumSHA1": "n/lOgkkwZ1EVMSvN87dGe8mMPCI=",
-			"path": "github.com/gin-contrib/multitemplate",
-			"revision": "bbc6daf6024bc4c48f334a0490321cd48a24da3d",
-			"revisionTime": "2017-09-22T03:26:17Z"
+			"checksumSHA1": "icGKF+8dcpfw8rvpvg5Zpi3dgaM=",
+			"path": "github.com/gin-contrib/sessions",
+			"revision": "cccdeef56346e7037ca92de250c2b55ef5e7ffe3",
+			"revisionTime": "2017-09-17T02:14:46Z"
 		},
 		{
-			"checksumSHA1": "d1Hkr1qPqnM43bkN2P2kP48mD6A=",
+			"checksumSHA1": "aYqXFrH+4eYKiJRqYUlIiAK7ClQ=",
 			"path": "github.com/gin-gonic/gin",
-			"revision": "1a7ab6e4d5fdc72d6df30ef562102ae6e0d18518",
-			"revisionTime": "2015-06-18T15:17:22Z"
+			"revision": "b8b68314faa067acae5b17c828127b04af51ebe2",
+			"revisionTime": "2017-09-29T08:48:10Z"
 		},
 		{
-			"checksumSHA1": "M8Z61f8GZs6CO23wP+ekRgZEo+w=",
+			"checksumSHA1": "OcMf7YL/oH4rr9vetN+idCQXcZs=",
 			"path": "github.com/gin-gonic/gin/binding",
-			"revision": "1a7ab6e4d5fdc72d6df30ef562102ae6e0d18518",
-			"revisionTime": "2015-06-18T15:17:22Z"
+			"revision": "b8b68314faa067acae5b17c828127b04af51ebe2",
+			"revisionTime": "2017-09-29T08:48:10Z"
 		},
 		{
-			"checksumSHA1": "/cPJSLLdEAWI/Mavbbe13RgSfP4=",
+			"checksumSHA1": "O+2Q4Uc9Vidvc/ctORliL315ZVI=",
 			"path": "github.com/gin-gonic/gin/render",
-			"revision": "1a7ab6e4d5fdc72d6df30ef562102ae6e0d18518",
-			"revisionTime": "2015-06-18T15:17:22Z"
+			"revision": "b8b68314faa067acae5b17c828127b04af51ebe2",
+			"revisionTime": "2017-09-29T08:48:10Z"
 		},
 		{
 			"checksumSHA1": "DB+/DpKJUO7dR+MyQVchJ+yyHoI=",
@@ -447,12 +447,6 @@
 			"revisionTime": "2016-04-24T11:30:07Z"
 		},
 		{
-			"checksumSHA1": "ex6KJu8uwkG4P4PegAIrHOhVB8Q=",
-			"path": "github.com/michelloworld/ez-gin-template",
-			"revision": "16500de79a13b17b366f23fc44f0a5e75c8e8fa8",
-			"revisionTime": "2016-11-01T12:44:17Z"
-		},
-		{
 			"checksumSHA1": "LveYDnKndgX1jERpELLVTrb5UlU=",
 			"path": "github.com/microcosm-cc/bluemonday",
 			"revision": "4ac6f27528d0a3f2a59e0b0a6f6b3ff0bb89fe20",
@@ -643,6 +637,12 @@
 			"path": "github.com/vjeantet/cron",
 			"revision": "9be85e4303ac0315187f6465427e6fe2c71dac9f",
 			"revisionTime": "2017-01-20T22:21:59Z"
+		},
+		{
+			"checksumSHA1": "dcFGT5Jeu01u2cuNwI+wfc++wR8=",
+			"path": "github.com/vjeantet/ez-gin-template",
+			"revision": "147dfcb99ae734092bb887b29189283cba7c7e95",
+			"revisionTime": "2017-07-31T00:08:35Z"
 		},
 		{
 			"checksumSHA1": "AKutLJKryaeNXRdUCi3GyFVW+es=",
@@ -873,10 +873,10 @@
 			"revisionTime": "2015-07-16T13:34:00Z"
 		},
 		{
-			"checksumSHA1": "bDSCvmvwCYcN5mPjePIzpPyqGYM=",
+			"checksumSHA1": "1D8GzeoFGUs5FZOoyC2DpQg8c5Y=",
 			"path": "gopkg.in/mgo.v2",
-			"revision": "b6e2fa371e64216a45e61072a96d4e3859f169da",
-			"revisionTime": "2016-02-23T13:38:14Z"
+			"revision": "3f83fa5005286a7fe593b055f0d7771a7dce4655",
+			"revisionTime": "2016-08-18T02:01:20Z"
 		},
 		{
 			"checksumSHA1": "zTjQOFGy4XTv4L33Kd2FhrV+mbM=",

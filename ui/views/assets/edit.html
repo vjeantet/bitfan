@@ -1,0 +1,71 @@
+{{ define "title"}}{{.pipeline.Label}}{{ end }}
+
+{{ define "sidebar" }}
+    
+{{ end }}
+
+{{ define "content" }}
+
+
+
+<div class="row">
+  <div class="col">
+  <h1>Pipelines - {{.pipeline.Label}} # {{.asset.Name}}</h1>
+  </div>
+</div>
+
+
+{{ range $flash := .flashes }}
+<div class="alert alert-success" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+
+<div class="row">
+  <div class="col-12">
+
+    <form method="POST" action="{{.asset.ID}}">
+       <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" name="name" id="name" value="{{.asset.Name}}">
+      </div>
+      <div class="form-group">
+        <label for="content">Configuration </label>
+        <textarea class="form-control" name="content" id="content" rows="20">{{ string .asset.Value }}</textarea>
+      </div>
+      <button type="submit" name="save" class="btn btn-primary">Save</button>
+      <button type="submit" name="saverestart" class="btn btn-primary">Save and restart pipeline</button>
+    </form>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-12">
+    <li>
+      <a href="/ui/pipelines/{{.pipeline.ID}}">Pipeline's entry point</a>
+    </li>
+    <h2>Assets</h2>
+    {{ range $asset := .pipeline.Assets }}
+    <li>
+      <a href="/ui/pipelines/{{$.pipeline.ID}}/assets/{{$asset.ID}}">{{$asset.Name}}</a>
+    </li>
+    {{ end }}
+    <hr>
+    <form method="POST" action="{{$.pipeline.ID}}/assets" enctype="multipart/form-data">
+      <div class="form-group">
+        <input type="file" name="upload">
+      </div>
+      <button type="submit" class="btn btn-primary">Add new asset</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+
+
+{{ end }}
+

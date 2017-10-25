@@ -27,6 +27,7 @@ import (
 	"github.com/vjeantet/bitfan/api"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/lib"
+	"github.com/vjeantet/bitfan/ui"
 )
 
 func init() {
@@ -90,7 +91,8 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 			handlers := []core.FnMux{}
 			handlers = append(handlers, core.WebHookServer())
-			handlers = append(handlers, core.ApiServer(api.Handler(plugins)))
+			handlers = append(handlers, core.HTTPHandler("/api/v1/", api.Handler("api/v1", plugins)))
+			handlers = append(handlers, core.HTTPHandler("/ui/", ui.Handler("ui", "ui")))
 
 			if viper.IsSet("prometheus") {
 				handlers = append(handlers, core.PrometheusServer(viper.GetString("prometheus.path")))

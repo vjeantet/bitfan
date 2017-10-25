@@ -1,0 +1,62 @@
+{{ define "title"}}Pipelines{{ end }}
+
+{{ define "sidebar" }}
+    
+{{ end }}
+
+{{ define "content" }}
+
+
+<div class="row">
+<div class="col">
+	<h1>Pipelines</h1>
+</div>
+<div class="col">
+  <div class="float-right">
+	<a href="/ui/pipelines/0/new" class="btn btn-dark">Create new pipeline</a>	
+  </div>
+</div>
+</div>
+
+
+
+<div class='table-responsive'>
+  <table class='table table-striped'>
+    <tr>
+      <th>Name</th>
+      <th>Started since</th>
+      <th></th>
+    </tr>
+
+    {{range  $pipeline := .pipelines}}
+      <tr>
+        <td class=''>
+        	<a href="/ui/pipelines/{{$pipeline.ID}}" class="">
+          {{if $pipeline.Label}}{{$pipeline.Label}}{{else}}noname{{end}}
+      </a>
+          <br/>
+          <small><span class='text-muted'>updated {{ago "%m" $pipeline.UpdatedAt}} minutes ago</span></small>
+        </td>
+        <td class=''>
+          12/12/2017
+        </td>
+        <td>
+			<a href="/ui/pipelines/{{$pipeline.ID}}" class="btn btn-outline-secondary ">
+				Edit
+			</a>
+			<button type="button" class="btn btn-outline-danger ">
+				Stop
+			</button>
+			<button type="button" class="btn btn-outline-success ">
+				Start
+			</button>
+        </td>
+      </tr>
+    {{end}}
+  </table>
+</div>
+
+
+
+{{ end }}
+
