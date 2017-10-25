@@ -24,7 +24,7 @@ var stopCmd = &cobra.Command{
 			// Send a request & read result
 			err := cli.StopPipeline(ID)
 			if err != nil {
-				fmt.Printf("error : %s\n", err.Error())
+				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
 				fmt.Printf("pipeline %s stopped\n", ID)

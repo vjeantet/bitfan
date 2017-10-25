@@ -48,7 +48,7 @@ func newAgent(conf config.Agent) (*agent, error) {
 
 	// Configure the agent (and its processor)
 	if err := a.configure(&conf); err != nil {
-		return nil, fmt.Errorf("Can not configure agent %s : %s", conf.Type, err)
+		return nil, fmt.Errorf("Can not configure agent %s : %v", conf.Type, err)
 	}
 
 	return a, nil
@@ -71,7 +71,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	Log().Debugf("data location : %s", ctx.dataLocation)
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
 		if err = os.MkdirAll(ctx.dataLocation, 0777); err != nil {
-			Log().Errorf("data location creation error : %s", err)
+			Log().Errorf("data location creation error : %v", err)
 		}
 	}
 
@@ -167,7 +167,7 @@ func (a *agent) start() error {
 
 		Log().Debugf("processor (%d) - stopping (no more packets)", a.ID)
 		if err := a.processor.Stop(NewPacket("", nil)); err != nil {
-			Log().Errorf("%s %d : %s", a.conf.Type, a.ID, err.Error())
+			Log().Errorf("%s %d : %v", a.conf.Type, a.ID, err)
 		}
 		close(a.Done)
 		Log().Debugf("processor (%d) - stopped", a.ID)
@@ -180,7 +180,7 @@ func (a *agent) start() error {
 			go a.processor.Tick(NewPacket("", nil))
 		})
 		if err != nil {
-			Log().Errorf("schedule start failed - %s : %s", a.Label, err.Error())
+			Log().Errorf("schedule start failed - %s : %v", a.Label, err)
 		} else {
 			Log().Debugf("agent %s(%s) scheduled with %s", a.Label, a.ID, a.conf.Schedule)
 		}
@@ -196,7 +196,7 @@ func (a *agent) listen(wg *sync.WaitGroup) {
 		// Receive a work request.
 		metrics.set(METRIC_CONNECTION_TRANSIT, a.conf.PipelineName, a.Label, len(a.packetChan))
 		if err := a.processor.Receive(e); err != nil {
-			Log().Errorf("agent %s: %s", a.conf.Type, err.Error())
+			Log().Errorf("agent %s: %v", a.conf.Type, err)
 		}
 		metrics.increment(METRIC_PROC_IN, a.conf.PipelineName, a.Label)
 	}

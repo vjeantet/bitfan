@@ -80,7 +80,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	buff := bytes.NewBufferString("")
 	err := p.Tpl.Execute(buff, e.Fields())
 	if err != nil {
-		p.Logger.Errorf("template error : %s", err)
+		p.Logger.Errorf("template error : %v", err)
 		return err
 	}
 

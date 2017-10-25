@@ -160,12 +160,12 @@ func (p *processor) Receive(e processors.IPacket) error {
 	if p.opt.Subject != "" {
 		loc, err := location.NewLocation(p.opt.Subject, p.ConfigWorkingLocation)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		buff := bytes.NewBufferString("")
@@ -176,12 +176,12 @@ func (p *processor) Receive(e processors.IPacket) error {
 	if p.opt.HTMLBody != "" {
 		loc, err := location.NewLocation(p.opt.HTMLBody, p.ConfigWorkingLocation)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
-			p.Logger.Errorf("email template error : %s", err)
+			p.Logger.Errorf("email template error : %v", err)
 			return err
 		}
 
@@ -193,12 +193,12 @@ func (p *processor) Receive(e processors.IPacket) error {
 	if p.opt.Body != "" {
 		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
-			p.Logger.Errorf("email template error : %s", err)
+			p.Logger.Errorf("email template error : %v", err)
 			return err
 		}
 		buff := bytes.NewBufferString("")
@@ -215,18 +215,18 @@ func (p *processor) Receive(e processors.IPacket) error {
 		f := ""
 		if _, err := os.Stat(ref); err == nil {
 			if err != nil {
-				p.Logger.Errorf("Image file error %s", err)
+				p.Logger.Errorf("Image file error %v", err)
 			}
 			var err error
 			f, err = filepath.Abs(ref)
 			if err != nil {
-				p.Logger.Errorf("Image file path error %s", err)
+				p.Logger.Errorf("Image file path error %v", err)
 				continue
 			}
 		} else if _, err := os.Stat(filepath.Join(p.ConfigWorkingLocation, ref)); err == nil {
 			f = filepath.Join(p.ConfigWorkingLocation, ref)
 		} else {
-			p.Logger.Errorf("Image file path unknow %s", ref)
+			p.Logger.Errorf("Image file path unknow %v", ref)
 			continue
 		}
 
@@ -240,12 +240,12 @@ func (p *processor) Receive(e processors.IPacket) error {
 		f := ""
 		if _, err := os.Stat(ref); err == nil {
 			if err != nil {
-				p.Logger.Errorf("Attachment file error %s", err)
+				p.Logger.Errorf("Attachment file error %v", err)
 			}
 			var err error
 			f, err = filepath.Abs(ref)
 			if err != nil {
-				p.Logger.Errorf("Attachment file path error %s", err)
+				p.Logger.Errorf("Attachment file path error %v", err)
 				continue
 			}
 		} else if _, err := os.Stat(filepath.Join(p.ConfigWorkingLocation, ref)); err == nil {
@@ -260,7 +260,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	d := gomail.NewDialer(p.opt.Host, p.opt.Port, p.opt.Username, p.opt.Password)
 	if err := d.DialAndSend(m); err != nil {
-		p.Logger.Errorf("email send error : %s", err)
+		p.Logger.Errorf("email send error : %v", err)
 		return err
 	}
 

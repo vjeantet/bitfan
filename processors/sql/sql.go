@@ -100,7 +100,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 	p.StatementTmpl, err = template.New("statement").Parse(p.opt.Statement)
 	if err != nil {
-		p.Logger.Errorf("sql Statement tpl error : %s", err)
+		p.Logger.Errorf("sql Statement tpl error : %v", err)
 		return err
 	}
 

@@ -116,7 +116,7 @@ func (p *processor) Tick(e processors.IPacket) error {
 	// -----
 
 	if err != nil {
-		return fmt.Errorf("Error while executing command '%s' (%s)", p.opt.Command, err.Error())
+		return fmt.Errorf("Error while executing command '%s' (%v)", p.opt.Command, err)
 	}
 
 	return nil

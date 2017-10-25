@@ -97,7 +97,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.opt.Body = string(content)
 		p.BodyTpl, err = template.New("body").Parse(p.opt.Body)
 		if err != nil {
-			p.Logger.Errorf("Body tpl error : %s", err)
+			p.Logger.Errorf("Body tpl error : %v", err)
 			return err
 		}
 	}
@@ -148,8 +148,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	if errs != nil {
 		if p.opt.IgnoreFailure {
-			for err := range errs {
-				p.Logger.Warnf("while http requesting %s : %s", p.opt.Url, err)
+			for _, err := range errs {
+				p.Logger.Warnf("while http requesting %s : %v", p.opt.Url, err)
 			}
 		} else {
 			processors.AddTags([]string{"_http_request_failure"}, e.Fields())

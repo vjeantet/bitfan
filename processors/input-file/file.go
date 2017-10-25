@@ -144,7 +144,7 @@ func (p *processor) Start(e processors.IPacket) error {
 		go func() {
 			err := p.discoverFilesToRead()
 			if err != nil {
-				p.Logger.Debugf("discover files to read : %s", err)
+				p.Logger.Debugf("discover files to read : %v", err)
 			}
 		}()
 	}
@@ -265,7 +265,7 @@ func (p *processor) readfile(pathfile string) error {
 	// Create a reader
 	f, err := os.Open(pathfile)
 	if err != nil {
-		p.Logger.Errorf("Error while opening %s : %s", pathfile, err)
+		p.Logger.Errorf("Error while opening %s : %v", pathfile, err)
 		return err
 	}
 	defer f.Close()

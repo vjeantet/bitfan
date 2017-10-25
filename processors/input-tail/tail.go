@@ -163,7 +163,7 @@ func (p *processor) Start(e processors.IPacket) error {
 			matches = append(matches, currentMatches...)
 			continue
 		} else {
-			p.Logger.Warningf("%s : %s", err.Error(), currentPath)
+			p.Logger.Warningf("%v : %s", err, currentPath)
 		}
 
 	}

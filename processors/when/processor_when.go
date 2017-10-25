@@ -65,7 +65,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		expressionValue := p.opt.Expressions[order]
 		result, err := p.assertExpressionWithFields(order, expressionValue, e)
 		if err != nil {
-			p.Logger.Warnf("When processor evaluation '%s' error : %s\n", expressionValue, err.Error())
+			p.Logger.Warnf("When processor evaluation '%s' error : %v", expressionValue, err)
 			continue
 		}
 
@@ -80,7 +80,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 func (p *processor) assertExpressionWithFields(index int, expressionValue string, e processors.IPacket) (bool, error) {
 	expression, err := p.cacheExpression(index, expressionValue)
 	if err != nil {
-		return false, fmt.Errorf("conditional expression error : %s", err.Error())
+		return false, fmt.Errorf("conditional expression error : %v", err)
 	}
 	parameters := EvaluatedParameters{}
 	for _, v := range expression.Tokens() {
