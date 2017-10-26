@@ -26,7 +26,7 @@ var confCmd = &cobra.Command{
 			// Send a request & read result
 			pipeline, err := cli.Pipeline(ID, true)
 			if err != nil {
-				fmt.Printf("error : %s\n", err.Error())
+				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			}
 			uid := filepath.Base(filepath.Dir(pipeline.ConfigLocation))

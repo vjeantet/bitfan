@@ -22,7 +22,7 @@ var serviceRestartCmd = &cobra.Command{
 		log.Println("stopping bitfan service...")
 		err := s.Stop()
 		if err != nil {
-			log.Printf("stop service error : %s", err)
+			log.Printf("stop service error : %v", err)
 		} else {
 			// log.Println("service bitfan stopped")
 		}
@@ -30,7 +30,7 @@ var serviceRestartCmd = &cobra.Command{
 		log.Println("starting bitfan service...")
 		err = s.Start()
 		if err != nil {
-			log.Printf("start service error : %s", err)
+			log.Printf("start service error : %v", err)
 		} else {
 			// log.Println("service bitfan started")
 		}

@@ -81,13 +81,13 @@ func initSettings(cmd *cobra.Command) {
 	if cmd.Flags().Changed("settings") {
 		settings, _ := cmd.Flags().GetString("settings")
 		if _, err := os.Stat(settings); err != nil {
-			fmt.Printf("settings: %s, error:%s\n", settings, err)
+			fmt.Printf("settings: %s, error:%v\n", settings, err)
 			os.Exit(2)
 		}
 		viper.AddConfigPath(settings) // optionally look for config in the working directory
 		err := viper.ReadInConfig()   // Find and read the config file
 		if err != nil {
-			fmt.Printf("settings: can not find bitfan.(json|toml|yml) in %s\nerror: %s\n", settings, err)
+			fmt.Printf("settings: can not find bitfan.(json|toml|yml) in %s\nerror: %v\n", settings, err)
 			os.Exit(2)
 		}
 	} else {

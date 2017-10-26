@@ -74,12 +74,12 @@ func (p *processor) startServer() (err error) {
 			os.Remove(p.opt.Path)
 			p.ln, err = net.ListenUnix("unix", &net.UnixAddr{Name: p.opt.Path, Net: "unix"})
 		} else {
-			return fmt.Errorf("could not start server: %s", err)
+			return fmt.Errorf("could not start server: %v", err)
 		}
 	}
 
 	if err != nil {
-		return fmt.Errorf("could not start server: %s", err)
+		return fmt.Errorf("could not start server: %v", err)
 	}
 
 	return err

@@ -36,7 +36,7 @@ func buildProcessorDoc() {
 	dataMap := mxj.Map(structs.Map(dp))
 	jsonBytes, _ := dataMap.JsonIndent("", "  ", true)
 	if err := ioutil.WriteFile(filepath.Clean(JsonFilePath), jsonBytes, 0644); err != nil {
-		log.Printf("writing output: %s\n", err)
+		log.Printf("writing output: %v", err)
 	}
 
 	g := &Generator{
@@ -61,13 +61,13 @@ func buildProcessorDoc() {
 	outputName = filepath.Join(cwd, strings.ToLower(*output))
 	err := ioutil.WriteFile(outputName, g.buf.Bytes(), 0644)
 	if err != nil {
-		log.Fatalf("writing output: %s", err)
+		log.Fatalf("writing output: %v", err)
 	}
 
 	outputName = filepath.Join(cwd, strings.ToLower("README.md"))
 	err = ioutil.WriteFile(outputName, dp.GenMarkdown("logstash"), 0644)
 	if err != nil {
-		log.Fatalf("writing output: %s", err)
+		log.Fatalf("writing output: %v", err)
 	}
 
 }
@@ -86,7 +86,7 @@ func buildCodecDoc(name string) {
 	dataMap := mxj.Map(structs.Map(dc))
 	jsonBytes, _ := dataMap.JsonIndent("", "  ", true)
 	if err := ioutil.WriteFile(filepath.Clean(JsonFilePath), jsonBytes, 0644); err != nil {
-		log.Printf("writing output: %s\n", err)
+		log.Printf("writing output: %v", err)
 	}
 	g := &Generator{
 		buf: bytes.Buffer{},
@@ -110,7 +110,7 @@ func buildCodecDoc(name string) {
 	outputName = filepath.Join(cwd, strings.ToLower(*output))
 	err := ioutil.WriteFile(outputName, g.buf.Bytes(), 0644)
 	if err != nil {
-		log.Fatalf("writing output: %s", err)
+		log.Fatalf("writing output: %v", err)
 	}
 
 }

@@ -43,7 +43,7 @@ var testCmd = &cobra.Command{
 			ctot++
 			err := testConfigContent(loc)
 			if err != nil {
-				fmt.Printf("%s\n -> %s\n\n", loc.Path, err)
+				fmt.Printf("%s\n -> %v\n\n", loc.Path, err)
 				cko++
 			}
 		}
@@ -60,14 +60,13 @@ var testCmd = &cobra.Command{
 func testConfigContent(loc *lib.Location) error {
 	configAgents, err := loc.ConfigAgents()
 	if err != nil {
-		return fmt.Errorf("%s", err.Error())
+		return err
 	}
 
 	configAgentsOrdered := config.Sort(configAgents, config.SortInputsFirst)
 	for _, configAgent := range configAgentsOrdered {
-		_, err := core.NewAgent(configAgent)
-		if err != nil {
-			return fmt.Errorf("%s", err.Error())
+		if _, err := core.NewAgent(configAgent); err != nil {
+			return err
 		}
 	}
 

@@ -73,7 +73,7 @@ func SetLogOutputFile(fileLocation string) {
 	Log().Formatter = &logrus.TextFormatter{DisableColors: true}
 	f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		Log().Errorf("Error while opening log file %s", err)
+		Log().Errorf("Error while opening log file %v", err)
 	}
 	Log().Out = f
 }
@@ -82,7 +82,7 @@ func SetProcessorLogOutputFile(fileLocation string) {
 	loggerProcessor.Formatter = &ProcessorFormatter{formatter: &logrus.TextFormatter{DisableColors: true}}
 	f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		Log().Errorf("Error while opening log file %s", err)
+		Log().Errorf("Error while opening log file %v", err)
 	}
 	loggerProcessor.Out = f
 }

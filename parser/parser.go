@@ -67,7 +67,7 @@ func (p *Parser) Parse() (*Configuration, error) {
 
 		tok, err = p.getToken(TokenComment, TokenString, TokenEOF, TokenRCurlyBrace)
 		if err != nil {
-			return config, fmt.Errorf("parse error Parse %s", err)
+			return config, fmt.Errorf("parse error Parse %v", err)
 		}
 
 		// If Comment Donoe
@@ -105,14 +105,14 @@ func (p *Parser) parseSection(tok *Token) (*Section, error) {
 	*tok, err = p.getToken(TokenLCurlyBrace)
 
 	if err != nil {
-		return section, fmt.Errorf("section parse error %s", err)
+		return section, fmt.Errorf("section parse error %v", err)
 	}
 	i := 0
 	for {
 		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
 		if err != nil {
-			log.Printf(" -sp- %s %s", GetTokenKindString(tok.Kind), err)
-			return section, fmt.Errorf("parse section error %s", err)
+			log.Printf(" -sp- %s %v", GetTokenKindString(tok.Kind), err)
+			return section, fmt.Errorf("parse section error %v", err)
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -170,7 +170,7 @@ func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 	var expression string
 	expression, err = conditionalexpression.ToWhenExpression(tok.Value.(string))
 	if err != nil {
-		return pluginWhen, fmt.Errorf("Conditional expression parse error %s", err)
+		return pluginWhen, fmt.Errorf("Conditional expression parse error %v", err)
 	}
 
 	when := &When{
@@ -182,13 +182,13 @@ func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 
 	*tok, err = p.getToken(TokenLCurlyBrace)
 	if err != nil {
-		return pluginWhen, fmt.Errorf("IF parse error %s", err)
+		return pluginWhen, fmt.Errorf("IF parse error %v", err)
 	}
 	i := 0
 	for {
 		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
 		if err != nil {
-			return pluginWhen, fmt.Errorf("parse IF error %s", err)
+			return pluginWhen, fmt.Errorf("parse IF error %v", err)
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -249,14 +249,14 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 
 	*tok, err = p.getToken(TokenLCurlyBrace, TokenString)
 	if err != nil {
-		return plugin, fmt.Errorf("Plugin parse error %s", err)
+		return plugin, fmt.Errorf("Plugin parse error %v", err)
 	}
 
 	if tok.Kind == TokenString {
 		plugin.Label = tok.Value.(string)
 		*tok, err = p.getToken(TokenLCurlyBrace)
 		if err != nil {
-			return plugin, fmt.Errorf("Plugin parse error %s", err)
+			return plugin, fmt.Errorf("Plugin parse error %v", err)
 		}
 	}
 
@@ -267,7 +267,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 		if advancedTok == nil {
 			*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenComma)
 			if err != nil {
-				return plugin, fmt.Errorf("plugin parse error %s", err)
+				return plugin, fmt.Errorf("plugin parse error %v", err)
 			}
 		} else {
 			tok = advancedTok
@@ -321,7 +321,7 @@ func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
 	for {
 		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace)
 		if err != nil {
-			return settings, fmt.Errorf("codec settings parse error %s", err)
+			return settings, fmt.Errorf("codec settings parse error %v", err)
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -353,12 +353,12 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 
 	*tok, err = p.getToken(TokenAssignment)
 	if err != nil {
-		return codec, nil, fmt.Errorf("codec 1 parse error %s", err)
+		return codec, nil, fmt.Errorf("codec 1 parse error %v", err)
 	}
 
 	*tok, err = p.getToken(TokenString)
 	if err != nil {
-		return codec, nil, fmt.Errorf("codec 2 parse error %s", err)
+		return codec, nil, fmt.Errorf("codec 2 parse error %v", err)
 	}
 	codec.Name = tok.Value.(string)
 
@@ -373,7 +373,7 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	for {
 		*tok, err = p.getToken(TokenRCurlyBrace, TokenComment, TokenString, TokenComma)
 		if err != nil {
-			return codec, nil, fmt.Errorf("plugin parse error %s", err)
+			return codec, nil, fmt.Errorf("plugin parse error %v", err)
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -409,12 +409,12 @@ func (p *Parser) parseSetting(tok *Token) (*Setting, error) {
 	*tok, err = p.getToken(TokenAssignment)
 
 	if err != nil {
-		return setting, fmt.Errorf("Setting 1 parse error %s", err)
+		return setting, fmt.Errorf("Setting 1 parse error %v", err)
 	}
 
 	*tok, err = p.getToken(TokenString, TokenNumber, TokenLBracket, TokenLCurlyBrace, TokenBool)
 	if err != nil {
-		return setting, fmt.Errorf("Setting 2 parse error %s", err)
+		return setting, fmt.Errorf("Setting 2 parse error %v", err)
 	}
 
 	switch tok.Kind {
@@ -473,7 +473,7 @@ func (p *Parser) parseHash() (map[string]interface{}, error) {
 	for {
 		tok, err := p.getToken(TokenComment, TokenRCurlyBrace, TokenString, TokenComma)
 		if err != nil {
-			log.Fatalf("ParseHash parse error %s", err)
+			log.Fatalf("ParseHash parse error %v", err)
 			return nil, err
 		}
 
@@ -574,12 +574,12 @@ func DumpTokens(content []byte) {
 		token, err = readToken(stream)
 
 		if err != nil {
-			fmt.Printf("ERROR %s\n", err)
+			fmt.Printf("ERROR %v\n", err)
 			return
 		}
 
 		if token.Kind == TokenIllegal {
-			fmt.Printf("ERROR %s\n", err)
+			fmt.Printf("ERROR %v\n", err)
 			color := "\033[93m"
 			log.Printf("ERROR %4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindString(token.Kind), token.Value)
 			break

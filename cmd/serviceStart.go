@@ -18,7 +18,7 @@ var serviceStartCmd = &cobra.Command{
 		s := getService(nil)
 		err := s.Start()
 		if err != nil {
-			log.Printf("start service error : %s", err)
+			log.Printf("start service error : %v", err)
 		} else {
 			log.Println("start signal sent to service bitfan")
 		}
