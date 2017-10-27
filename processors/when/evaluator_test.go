@@ -3,7 +3,8 @@ package when
 import (
 	"testing"
 
-	"github.com/Knetic/govaluate"
+	"golang.org/x/sync/syncmap"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/vjeantet/bitfan/processors"
 	"github.com/vjeantet/bitfan/processors/doc"
@@ -85,20 +86,20 @@ func newTestEvent() processors.IPacket {
 }
 
 func checkError(t *testing.T, event processors.IPacket, expression string) {
-	p := &processor{compiledExpressions: map[int]*govaluate.EvaluableExpression{}}
+	p := &processor{compiledExpressions: &syncmap.Map{}}
 	_, err := p.assertExpressionWithFields(0, expression, event)
 	assert.Error(t, err, expression)
 }
 
 func checkTrue(t *testing.T, event processors.IPacket, expression string) {
-	p := &processor{compiledExpressions: map[int]*govaluate.EvaluableExpression{}}
+	p := &processor{compiledExpressions: &syncmap.Map{}}
 	result, err := p.assertExpressionWithFields(0, expression, event)
 	assert.NoError(t, err, "err is not nil")
 	assert.True(t, result, expression)
 }
 
 func checkFalse(t *testing.T, event processors.IPacket, expression string) {
-	p := &processor{compiledExpressions: map[int]*govaluate.EvaluableExpression{}}
+	p := &processor{compiledExpressions: &syncmap.Map{}}
 	result, err := p.assertExpressionWithFields(0, expression, event)
 	assert.NoError(t, err, "err is not nil")
 	assert.False(t, result, expression)

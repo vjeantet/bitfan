@@ -51,6 +51,12 @@
 			"revisionTime": "2016-12-24T14:14:13Z"
 		},
 		{
+			"checksumSHA1": "ucu0eJ90b2Jlj+KPt0YJzGfwm7s=",
+			"path": "github.com/axgle/mahonia",
+			"revision": "c528b747d92d41ca581a7acf3e604c396fc7c034",
+			"revisionTime": "2015-10-19T00:40:08Z"
+		},
+		{
 			"checksumSHA1": "3RgReu+42CU1EQ6afDsVSvBuPyk=",
 			"path": "github.com/azr/backoff",
 			"revision": "53511d3c733003985b0b76f733df1f4d0095ee6a",
@@ -583,6 +589,12 @@
 			"path": "github.com/shurcooL/sanitized_anchor_name",
 			"revision": "1dba4b3954bc059efc3991ec364f9f9a35f597d2",
 			"revisionTime": "2016-09-18T04:11:01Z"
+		},
+		{
+			"checksumSHA1": "AdOyVgm/RMNYrsDCLBNCbTOp7Og=",
+			"path": "github.com/sloonz/go-qprintable",
+			"revision": "775b3a4592d5bfc47b0ba398ec0d4dba018e5926",
+			"revisionTime": "2016-02-03T16:03:05Z"
 		},
 		{
 			"checksumSHA1": "Sq0QP4JywTr7UM4hTK1cjCi7jec=",

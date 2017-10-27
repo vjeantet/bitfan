@@ -40,7 +40,7 @@ func TestConfigure(t *testing.T) {
 	ret := p.Configure(ctx, conf)
 	assert.Equal(t, nil, ret, "configuration is correct, it should return nil")
 
-	assert.Equal(t, len(p.opt.Add_field), 1)
+	assert.Equal(t, len(p.opt.AddField), 1)
 }
 
 func TestReceiveDropAll(t *testing.T) {

@@ -44,3 +44,5 @@ releases
 /docs/themes/hugo-theme-docdock
 
 /.vscode/
+
+*.coverprofile

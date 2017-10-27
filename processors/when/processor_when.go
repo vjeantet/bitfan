@@ -92,6 +92,8 @@ func (p *processor) assertExpressionWithFields(index int, expressionValue string
 
 			var paramValue interface{}
 			switch len(paramValues) {
+			case 0:
+				paramValue = false
 			case 1:
 				paramValue = paramValues[0]
 			default:

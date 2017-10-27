@@ -44,6 +44,9 @@ func Dynamic(str *string, fields *mxj.Map) {
 			values[1] = strings.Replace(values[1], `][`, `.`, -1)
 			// Search matching value, when not found use ""
 			i, _ := fields.ValueForPath(values[1])
+			if i == nil {
+				i = ""
+			}
 			*str = strings.Replace(*str, values[0], fmt.Sprintf("%v", i), -1)
 		}
 	}
