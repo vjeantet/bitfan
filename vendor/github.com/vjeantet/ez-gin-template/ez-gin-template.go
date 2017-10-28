@@ -46,7 +46,6 @@ func (r Render) Init() Render {
 
 	partialDirs, _ := filepath.Glob(r.TemplatesDir + "partials/" + "*" + r.Ext)
 	partials := []string{}
-	pp.Println("partialDirs-->", partialDirs)
 	for _, partial := range partialDirs {
 		partials = append(partials, partial)
 	}
@@ -57,7 +56,6 @@ func (r Render) Init() Render {
 			log.Printf("[GIN-debug] %-6s %-25s --> %s\n", "LOAD", view, renderName)
 		}
 		views := append(partials, layout, view)
-		pp.Println("views-->", views)
 		r.AddFromFiles(renderName, views...)
 	}
 

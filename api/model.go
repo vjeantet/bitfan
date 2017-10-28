@@ -43,6 +43,9 @@ type processorDoc struct {
 type Pipeline struct {
 	// the id for this pipeline
 	ID int `json:"id"`
+
+	Uuid string `json:"uiid"`
+
 	// the Label
 	// min length: 3
 	Label string `json:"label"`

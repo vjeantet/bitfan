@@ -49,6 +49,7 @@ var listCmd = &cobra.Command{
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{
 				"ID",
+				"UUID",
 				"name",
 				"configuration",
 			})
@@ -61,6 +62,7 @@ var listCmd = &cobra.Command{
 
 				table.Append([]string{
 					strconv.Itoa(pipeline.ID),
+					pipeline.Uuid,
 					pipeline.Label,
 					fmt.Sprintf("%s%s",
 						host,

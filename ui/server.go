@@ -2,11 +2,13 @@ package ui
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -16,15 +18,17 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/k0kubun/pp"
 	uuid "github.com/nu7hatch/gouuid"
+	"github.com/spf13/viper"
 
+	"github.com/vjeantet/bitfan/api"
 	eztemplate "github.com/vjeantet/ez-gin-template"
 )
 
 var db *gorm.DB
 
-func Handler(assetsPath, path string) http.Handler {
+func Handler(assetsPath, path string, dbpath string) http.Handler {
 	var err error
-	db, err = gorm.Open("sqlite3", "test.db")
+	db, err = gorm.Open("sqlite3", filepath.Join(dbpath, "bitfan.db"))
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -95,11 +99,55 @@ func Handler(assetsPath, path string) http.Handler {
 		g.GET("/pipelines/:id/assets/:assetID/download", downloadAsset)
 		g.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
-		g.GET("/pipelines/:id/start", index)
-		g.GET("/pipelines/:id/stop", index)
+		g.GET("/pipelines/:id/start", startPipeline)
+		g.GET("/pipelines/:id/stop", stopPipeline)
 	}
 
 	return r
+}
+
+func startPipeline(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.Abort()
+		return
+	}
+
+	//Récupére le pipeline en base
+	var p = Pipeline{ID: (id)}
+	db.Preload("Assets").First(&p)
+
+	//Construit l'objet ApiClientPipeline
+	appl := api.Pipeline{}
+	appl.Uuid = p.Uuid
+	appl.Label = p.Label
+	appl.Assets = []api.Asset{}
+
+	for _, a := range p.Assets {
+		appl.Assets = append(appl.Assets, api.Asset{
+			Path:    a.Name,
+			Content: base64.StdEncoding.EncodeToString(a.Value),
+		})
+		if a.Type == "entrypoint" {
+			appl.ConfigLocation = a.Name
+		}
+	}
+	//Envoie
+	cli := api.NewRestClient(viper.GetString("host"))
+	pipeline, err := cli.AddPipeline(&appl)
+	if err != nil {
+		log.Printf("error : %v\n", err)
+	} else {
+		log.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)
+	}
+
+	//OK
+	c.JSON(200, appl)
+	// c.String(200, "pipelines/new")
+}
+
+func stopPipeline(c *gin.Context) {
+
 }
 
 func newPipeline(c *gin.Context) {

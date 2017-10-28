@@ -215,14 +215,16 @@ footer {
 section.flash .alert {
   margin-bottom: 0px; }
 
-article h1 {
-  color: #a4abb1;
-  font-size: 220%;
-  font-weight: 600; }
-article a {
-  color: #41a3fe; }
-article .table-responsive {
-  overflow-y: visible;
-  overflow-x: visible; }
+article {
+  min-height: 500px; }
+  article h1 {
+    color: #a4abb1;
+    font-size: 220%;
+    font-weight: 600; }
+  article a {
+    color: #41a3fe; }
+  article .table-responsive {
+    overflow-y: visible;
+    overflow-x: visible; }
 
 /*# sourceMappingURL=application.css.map */

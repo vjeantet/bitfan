@@ -46,3 +46,7 @@ releases
 /.vscode/
 
 *.coverprofile
+
+*.css.map
+
+.sass-cache

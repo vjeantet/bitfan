@@ -4,6 +4,7 @@ import "github.com/vjeantet/bitfan/core/config"
 
 type Pipeline struct {
 	ID                 int
+	Uuid               string
 	Label              string
 	agents             map[int]*agent
 	ConfigLocation     string
@@ -13,6 +14,7 @@ type Pipeline struct {
 func newPipeline(conf *config.Pipeline, configAgents []config.Agent) (*Pipeline, error) {
 	p := &Pipeline{
 		ID:                 conf.ID,
+		Uuid:               conf.Uuid,
 		Label:              conf.Name,
 		ConfigLocation:     conf.ConfigLocation,
 		ConfigHostLocation: conf.ConfigHostLocation,

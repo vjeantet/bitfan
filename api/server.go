@@ -35,6 +35,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/gin-gonic/gin"
@@ -283,6 +284,7 @@ func getPipelines(c *gin.Context) {
 	for _, p := range ppls {
 		pipelines = append(pipelines, Pipeline{
 			ID:                 p.ID,
+			Uuid:               p.Uuid,
 			Label:              p.Label,
 			ConfigLocation:     p.ConfigLocation,
 			ConfigHostLocation: p.ConfigHostLocation,
@@ -360,9 +362,16 @@ func addPipeline(c *gin.Context) {
 	if fqdn.Get() != pipeline.ConfigHostLocation { // Copy Assets
 		// save Assets
 		// directory = $data / remote / UUID /
-		uid, _ := uuid.NewV4()
-		cwd = filepath.Join(core.DataLocation(), "_pipelines", uid.String())
-		core.Log().Debugf("configuration %s stored to %s", uid.String(), cwd)
+		uidString := pipeline.Uuid
+		if uidString == "" {
+			uid, _ := uuid.NewV4()
+			uidString = uid.String()
+		}
+
+		uidString = fmt.Sprintf("%s_%d", uidString, time.Now().Unix())
+
+		cwd = filepath.Join(core.DataLocation(), "_pipelines", uidString)
+		core.Log().Debugf("configuration %s stored to %s", uidString, cwd)
 		os.MkdirAll(cwd, os.ModePerm)
 
 		//Save assets to cwd
@@ -371,11 +380,11 @@ func addPipeline(c *gin.Context) {
 			dir := filepath.Dir(dest)
 			os.MkdirAll(dir, os.ModePerm)
 			b64Decode(asset.Content, dest)
-			core.Log().Debugf("configuration %s asset %s stored", uid.String(), asset.Path)
+			core.Log().Debugf("configuration %s asset %s stored", uidString, asset.Path)
 		}
 
 		pipeline.ConfigLocation = filepath.Join(cwd, pipeline.ConfigLocation)
-		core.Log().Debugf("configuration %s pipeline %s ready to be loaded", uid.String(), pipeline.ConfigLocation)
+		core.Log().Debugf("configuration %s pipeline %s ready to be loaded", uidString, pipeline.ConfigLocation)
 	}
 
 	var loc *lib.Location
@@ -394,6 +403,10 @@ func addPipeline(c *gin.Context) {
 	ppl := loc.ConfigPipeline()
 	if pipeline.Label != "" {
 		ppl.Name = pipeline.Label
+	}
+
+	if pipeline.Uuid != "" {
+		ppl.Uuid = pipeline.Uuid
 	}
 
 	agt, err := loc.ConfigAgents()
