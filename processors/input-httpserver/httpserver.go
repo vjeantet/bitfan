@@ -77,7 +77,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	}
 
 	if p.host, err = os.Hostname(); err != nil {
-		p.Logger.Warnf("can not get hostname : %s", err.Error())
+		p.Logger.Warnf("can not get hostname : %v", err)
 	}
 
 	if p.opt.Codec.Enc == nil {
@@ -199,7 +199,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		for _, path := range p.opt.Body {
 			value, err := e.Fields().ValueForPath(path)
 			if err != nil {
-				p.Logger.Errorf("ValueForPath %s - %s", path, err)
+				p.Logger.Errorf("ValueForPath %s - %v", path, err)
 				continue
 			}
 			body[path] = value

@@ -42,7 +42,7 @@ var restartCmd = &cobra.Command{
 		// get Pipeline by pipelineRef
 		oldPipeline, err := cli.Pipeline(pipelineRef, false)
 		if err != nil {
-			fmt.Printf("Pipeline %s not found - %s\n", pipelineRef, err.Error())
+			fmt.Printf("Pipeline %s not found - %v\n", pipelineRef, err)
 			os.Exit(1)
 		}
 
@@ -50,7 +50,7 @@ var restartCmd = &cobra.Command{
 
 		err = cli.StopPipeline(pipelineRef)
 		if err != nil {
-			fmt.Printf("error : %s\n", err.Error())
+			fmt.Printf("error : %v\n", err)
 			os.Exit(1)
 		} else {
 			fmt.Printf("pipeline %s stopped\n", pipelineRef)
@@ -63,7 +63,7 @@ var restartCmd = &cobra.Command{
 
 			pipeline, err := cli.AddPipeline(nPipeline)
 			if err != nil {
-				fmt.Printf("error : %s\n", err.Error())
+				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
 				fmt.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)
@@ -77,7 +77,7 @@ var restartCmd = &cobra.Command{
 
 			pipeline, err := cli.AddPipeline(nPipeline)
 			if err != nil {
-				fmt.Printf("error : %s\n", err.Error())
+				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
 				fmt.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)

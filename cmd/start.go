@@ -65,7 +65,7 @@ var startCmd = &cobra.Command{
 			pipeline, err := cli.AddPipeline(nPipeline)
 
 			if err != nil {
-				fmt.Printf("error : %s\n", err.Error())
+				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
 				fmt.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)

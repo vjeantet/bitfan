@@ -138,7 +138,7 @@ func (l *Location) AssetsContent() map[string]string {
 
 	b64c, err := b64EncodeFilePath(l.Path)
 	if err != nil {
-		fmt.Printf("location Asset Error %s", err)
+		fmt.Printf("location Asset Error %v\n", err)
 		return nil
 	}
 	relativePath, _ := filepath.Rel(filepath.Dir(l.Path), l.Path)
@@ -153,7 +153,7 @@ func (l *Location) AssetsContent() map[string]string {
 		if path != confDir && filepath.Base(path) != ".DS_Store" && !IsDirectory(path) {
 			b64c, err := b64EncodeFilePath(path)
 			if err != nil {
-				fmt.Printf("location Asset Error %s", err)
+				fmt.Printf("location Asset Error %v\n", err)
 				return nil
 			}
 			relativePath, _ := filepath.Rel(filepath.Dir(l.Path), path)
@@ -163,7 +163,7 @@ func (l *Location) AssetsContent() map[string]string {
 	})
 
 	if err != nil {
-		fmt.Printf("AssetsContent error - %s", err)
+		fmt.Printf("AssetsContent error - %v\n", err)
 	}
 
 	return assets
@@ -215,7 +215,7 @@ func (l *Location) content(options map[string]interface{}) ([]byte, string, erro
 
 		content, err = ioutil.ReadFile(l.Path)
 		if err != nil {
-			return content, cwl, fmt.Errorf(`Error while reading "%s" [%s]`, l.Path, err)
+			return content, cwl, fmt.Errorf(`Error while reading "%s" [%v]`, l.Path, err)
 		}
 		cwl = filepath.Dir(l.Path)
 	}
@@ -263,7 +263,7 @@ func expandFilePath(path string) ([]string, error) {
 		}
 		files, err := filepath.Glob(filepath.Join(path, "*.*"))
 		if err != nil {
-			return locs, fmt.Errorf("error %s", err.Error())
+			return locs, err
 
 		}
 		//use each file

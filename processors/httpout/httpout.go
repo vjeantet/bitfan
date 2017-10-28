@@ -64,7 +64,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	}
 
 	if p.host, err = os.Hostname(); err != nil {
-		p.Logger.Warnf("can not get hostname : %s", err.Error())
+		p.Logger.Warnf("can not get hostname : %v", err)
 	}
 
 	return err

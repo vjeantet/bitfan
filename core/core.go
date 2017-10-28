@@ -52,7 +52,7 @@ func SetDataLocation(location string) error {
 	if err != nil {
 		err = os.MkdirAll(dataLocation, os.ModePerm)
 		if err != nil {
-			Log().Errorf("%s - %s", dataLocation, err)
+			Log().Errorf("%s - %v", dataLocation, err)
 		} else {
 			Log().Debugf("created folder %s", dataLocation)
 		}

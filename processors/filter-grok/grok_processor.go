@@ -120,7 +120,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 					groked = true
 
 					if err := mapstructure.Decode(values, e.Fields()); err != nil {
-						return fmt.Errorf("Error while groking : %s", err.Error())
+						return fmt.Errorf("Error while groking : %v", err)
 					}
 					if p.opt.BreakOnMatch {
 						break
@@ -134,7 +134,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 				groked = true
 
 				if err := mapstructure.Decode(values, e.Fields()); err != nil {
-					return fmt.Errorf("Error while groking : %s", err.Error())
+					return fmt.Errorf("Error while groking : %v", err)
 				}
 				if p.opt.BreakOnMatch {
 					break

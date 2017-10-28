@@ -84,7 +84,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		}
 
 		if err := core.SetDataLocation(viper.GetString("data")); err != nil {
-			core.Log().Errorf("error with data location - %s", err)
+			core.Log().Errorf("error with data location - %v", err)
 		}
 
 		if !viper.GetBool("no-network") {
@@ -107,7 +107,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			agt, err := loc.ConfigAgents()
 
 			if err != nil {
-				log.Errorf("Error : %s %s", loc.Path, err)
+				log.Errorf("Error : %s %v", loc.Path, err)
 				os.Exit(2)
 			}
 			ppl := loc.ConfigPipeline()
@@ -124,7 +124,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 			_, err = core.StartPipeline(&ppl, agt)
 			if err != nil {
-				log.Errorf("error : %s\n", err.Error())
+				log.Errorf("error: %v", err)
 				os.Exit(1)
 			}
 		}
@@ -143,7 +143,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			log.Println("")
 			log.Printf("BitFan is stopping...")
 			core.Stop()
-			log.Printf("Everything stopped gracefully. Goodbye!\n")
+			log.Printf("Everything stopped gracefully. Goodbye!")
 		}
 
 	},

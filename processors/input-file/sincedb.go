@@ -47,12 +47,12 @@ func (p *processor) loadSinceDBInfos() (err error) {
 	}
 
 	if raw, err = ioutil.ReadFile(p.opt.SincedbPath); err != nil {
-		p.Logger.Warnf("Read sincedb failed: %q\n%s", p.opt.SincedbPath, err)
+		p.Logger.Warnf("Read sincedb failed: %q\n%v", p.opt.SincedbPath, err)
 		return
 	}
 
 	if err = json.Unmarshal(raw, &p.sinceDBInfos); err != nil {
-		p.Logger.Warnf("Unmarshal sincedb failed: %q\n%s", p.opt.SincedbPath, err)
+		p.Logger.Warnf("Unmarshal sincedb failed: %q\n%v", p.opt.SincedbPath, err)
 		return
 	}
 
@@ -73,13 +73,13 @@ func (p *processor) saveSinceDBInfos() (err error) {
 	p.sinceDBInfosMutex.Lock()
 	if raw, err = json.Marshal(p.sinceDBInfos); err != nil {
 		p.sinceDBInfosMutex.Unlock()
-		p.Logger.Warnf("Marshal sincedb failed: %s", err)
+		p.Logger.Warnf("Marshal sincedb failed: %v", err)
 		return
 	}
 	p.sinceDBInfosMutex.Unlock()
 
 	if err = ioutil.WriteFile(p.opt.SincedbPath, raw, 0664); err != nil {
-		p.Logger.Warnf("Write sincedb failed: %q\n%s", p.opt.SincedbPath, err)
+		p.Logger.Warnf("Write sincedb failed: %q\n%v", p.opt.SincedbPath, err)
 		return
 	}
 

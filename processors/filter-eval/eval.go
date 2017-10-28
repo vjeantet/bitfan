@@ -112,7 +112,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		buff := bytes.NewBufferString("")
 		err := p.compiledTemplates[key].Execute(buff, e.Fields())
 		if err != nil {
-			p.Logger.Errorf("template %s error : %s", key, err)
+			p.Logger.Errorf("template %s error : %v", key, err)
 			return err
 		}
 		e.Fields().SetValueForPath(buff.String(), key)
@@ -123,7 +123,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		expression, err := p.cacheExpression(key, expressionString.(string))
 
 		if err != nil {
-			return fmt.Errorf("evaluation expression error : %s", err.Error())
+			return fmt.Errorf("evaluation expression error : %v", err)
 		}
 
 		parameters := EvaluatedParameters{}

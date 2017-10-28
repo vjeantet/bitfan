@@ -149,7 +149,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 
 	tpl, errTpl := template.New("").Funcs(funcMap).Parse(string(content))
 	if errTpl != nil {
-		fmt.Printf("stdout Format tpl error : %s", err)
+		fmt.Printf("stdout Format tpl error : %v", err)
 		return tpl, cwl, errTpl
 	}
 	return tpl, cwl, errTpl
@@ -189,7 +189,7 @@ func (l *Location) ContentWithOptions(options map[string]string) ([]byte, string
 
 		content, err = ioutil.ReadFile(l.Path)
 		if err != nil {
-			return content, cwl, fmt.Errorf(`Error while reading "%s" [%s]`, l.Path, err)
+			return content, cwl, fmt.Errorf(`Error while reading "%s" [%v]`, l.Path, err)
 		}
 		cwl = filepath.Dir(l.Path)
 	}
@@ -235,7 +235,7 @@ func expandFilePath(path string) ([]string, error) {
 		}
 		files, err := filepath.Glob(filepath.Join(path, "*.*"))
 		if err != nil {
-			return locs, fmt.Errorf("error %s", err.Error())
+			return locs, err
 
 		}
 		//use each file
