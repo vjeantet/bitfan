@@ -51,6 +51,7 @@ func Handler(assetsPath, path string) http.Handler {
 		"dateFormat": (*templateFunctions)(nil).dateFormat,
 		"ago":        (*templateFunctions)(nil).dateAgo,
 		"string":     (*templateFunctions)(nil).toString,
+		"b64":        (*templateFunctions)(nil).toBase64,
 		"int":        (*templateFunctions)(nil).toInt,
 		"time":       (*templateFunctions)(nil).asTime,
 		"now":        (*templateFunctions)(nil).now,
@@ -65,6 +66,7 @@ func Handler(assetsPath, path string) http.Handler {
 		"upper":        (*templateFunctions)(nil).upper,
 		"trim":         (*templateFunctions)(nil).trim,
 		"trimPrefix":   (*templateFunctions)(nil).trimPrefix,
+		"hasPrefix":    (*templateFunctions)(nil).hasPrefix,
 		"replace":      (*templateFunctions)(nil).replace,
 		"markdown":     (*templateFunctions)(nil).toMarkdown,
 	}
@@ -78,7 +80,7 @@ func Handler(assetsPath, path string) http.Handler {
 		g.StaticFS("/public", http.Dir(assetsPath+"/public"))
 		g.GET("/", index)
 
-		g.GET("/pipelines", getPipelines)
+		g.GET("/pipelines", index)
 		g.POST("/pipelines", createPipeline)
 
 		g.GET("/pipelines/:id", editPipeline)
@@ -89,6 +91,8 @@ func Handler(assetsPath, path string) http.Handler {
 		g.POST("/pipelines/:id/assets", createAsset)
 		g.GET("/pipelines/:id/assets/:assetID", showAsset)
 		g.POST("/pipelines/:id/assets/:assetID", updateAsset)
+		g.PUT("/pipelines/:id/assets/:assetID", replaceAsset)
+		g.GET("/pipelines/:id/assets/:assetID/download", downloadAsset)
 		g.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
 		g.GET("/pipelines/:id/start", index)
@@ -161,6 +165,52 @@ func updateAsset(c *gin.Context) {
 	c.Redirect(302, fmt.Sprintf("/ui/pipelines/%d/assets/%d", p.ID, a.ID))
 }
 
+func replaceAsset(c *gin.Context) {
+	assetID, err := strconv.Atoi(c.Param("assetID"))
+	if err != nil {
+		pp.Println("c-->", c.Param("assetID"))
+		c.Abort()
+		return
+	}
+
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	filename := header.Filename
+	size := header.Size
+
+	// Only the first 512 bytes are used to sniff the content type.
+	buffer := make([]byte, 512)
+	n, err := file.Read(buffer)
+	if err != nil && err != io.EOF {
+		c.Abort()
+		return
+	}
+	// Reset the read pointer if necessary.
+	file.Seek(0, 0)
+	contentType := http.DetectContentType(buffer[:n])
+
+	pp.Println(header)
+
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, file); err != nil {
+		log.Fatal(err)
+	}
+
+	var a = Asset{ID: assetID}
+	db.First(&a)
+
+	a.Name = filename
+	a.ContentType = contentType
+	a.Value = buf.Bytes()
+	a.Size = int(size)
+
+	db.Save(&a)
+	c.String(200, "ok")
+}
+
 func createAsset(c *gin.Context) {
 
 	file, header, err := c.Request.FormFile("file")
@@ -169,8 +219,18 @@ func createAsset(c *gin.Context) {
 	}
 
 	filename := header.Filename
-	contentType := header.Header.Get("Content-Type")
 	size := header.Size
+
+	// Only the first 512 bytes are used to sniff the content type.
+	buffer := make([]byte, 512)
+	n, err := file.Read(buffer)
+	if err != nil && err != io.EOF {
+		c.Abort()
+		return
+	}
+	// Reset the read pointer if necessary.
+	file.Seek(0, 0)
+	contentType := http.DetectContentType(buffer[:n])
 
 	pp.Println(header)
 
@@ -197,6 +257,22 @@ func createAsset(c *gin.Context) {
 	p.Assets = append(p.Assets, a)
 	db.Save(&p)
 	c.String(200, "ok")
+}
+
+func downloadAsset(c *gin.Context) {
+	assetID, err := strconv.Atoi(c.Param("assetID"))
+	if err != nil {
+		pp.Println("c-->", c.Param("assetID"))
+		c.Abort()
+		return
+	}
+
+	var a = Asset{ID: (assetID)}
+	db.First(&a)
+	pp.Println("a.ContentType-->", a.ContentType)
+	c.Header("Content-Disposition", "attachment; filename=\""+a.Name+"\"")
+	c.Data(200, "application/octet-stream", a.Value)
+
 }
 
 func showAsset(c *gin.Context) {
@@ -237,12 +313,18 @@ func createPipeline(c *gin.Context) {
 	c.Request.ParseForm()
 
 	uid, _ := uuid.NewV4()
+	defaultValue := []byte("input{ }\n\nfilter{ }\n\noutput{ }")
 	var p = Pipeline{
-		Version:     1,
 		Label:       c.Request.PostFormValue("label"),
 		Description: c.Request.PostFormValue("description"),
 		Uuid:        uid.String(),
-		Content:     "input{ }\n\nfilter{ }\n\noutput{ }",
+		Assets: []Asset{{
+			Name:        "bitfan.conf",
+			Type:        "entrypoint",
+			ContentType: "text/plain",
+			Value:       defaultValue,
+			Size:        len(defaultValue),
+		}},
 	}
 
 	db.Create(&p)
@@ -266,16 +348,13 @@ func updatePipeline(c *gin.Context) {
 	var p = Pipeline{ID: id}
 	db.First(&p)
 
-	p.ID = 0
-	p.Version = p.Version + 1
 	p.Label = c.Request.PostFormValue("label")
-	p.Content = c.Request.PostFormValue("content")
 	p.Description = c.Request.PostFormValue("description")
 	p.UpdatedAt = time.Now()
-	db.Create(&p)
+	db.Save(&p)
 
 	session := sessions.Default(c)
-	session.AddFlash(fmt.Sprintf("Pipeline %s saved (version %d)", p.Label, p.Version))
+	session.AddFlash(fmt.Sprintf("Pipeline %s saved", p.Label))
 	session.Save()
 
 	c.Redirect(302, fmt.Sprintf("/ui/pipelines/%d", p.ID))
@@ -309,18 +388,7 @@ func index(c *gin.Context) {
 
 	var pipelines []Pipeline
 
-	rows, err := db.Model(&Pipeline{}).Select("*, MAX(version)").Group("uuid").Rows()
-	if err != nil {
-		c.AbortWithError(500, err)
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var p Pipeline
-		db.ScanRows(rows, &p)
-		pipelines = append(pipelines, p)
-	}
+	db.Find(&pipelines)
 
 	c.HTML(200, "pipelines/index", gin.H{
 		"pipelines": pipelines,

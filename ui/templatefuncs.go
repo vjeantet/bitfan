@@ -3,6 +3,7 @@ package ui
 // Code comes from https://github.com/spf13/hugo/tree/master/tpl
 
 import (
+	"encoding/base64"
 	"fmt"
 	"html"
 	"html/template"
@@ -67,6 +68,11 @@ func (t *templateFunctions) replace(s, old, new interface{}) (string, error) {
 // ToString converts the given value to a string.
 func (t *templateFunctions) toString(v interface{}) (string, error) {
 	return cast.ToStringE(v)
+}
+
+func (t *templateFunctions) toBase64(v interface{}) (string, error) {
+	return base64.StdEncoding.EncodeToString(v.([]byte)), nil
+
 }
 func (t *templateFunctions) toMarkdown(v interface{}) (string, error) {
 	unsafe := blackfriday.MarkdownCommon([]byte(cast.ToString(v)))
@@ -141,6 +147,20 @@ func (t *templateFunctions) trim(s, cutset interface{}) (string, error) {
 	}
 
 	return strings.Trim(ss, sc), nil
+}
+
+func (t *templateFunctions) hasPrefix(s, prefix interface{}) (bool, error) {
+	ss, err := cast.ToStringE(s)
+	if err != nil {
+		return false, err
+	}
+
+	pf, err := cast.ToStringE(prefix)
+	if err != nil {
+		return false, err
+	}
+
+	return strings.HasPrefix(pf, ss), nil
 }
 
 // TrimPrefix returns s without the provided leading prefix string.

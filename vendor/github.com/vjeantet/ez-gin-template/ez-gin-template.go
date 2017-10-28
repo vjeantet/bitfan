@@ -44,12 +44,21 @@ func (r Render) Init() Render {
 
 	viewDirs, _ := filepath.Glob(r.TemplatesDir + "**" + string(os.PathSeparator) + "*" + r.Ext)
 
+	partialDirs, _ := filepath.Glob(r.TemplatesDir + "partials/" + "*" + r.Ext)
+	partials := []string{}
+	pp.Println("partialDirs-->", partialDirs)
+	for _, partial := range partialDirs {
+		partials = append(partials, partial)
+	}
+
 	for _, view := range viewDirs {
 		renderName := r.getRenderName(view)
 		if r.Debug {
 			log.Printf("[GIN-debug] %-6s %-25s --> %s\n", "LOAD", view, renderName)
 		}
-		r.AddFromFiles(renderName, layout, view)
+		views := append(partials, layout, view)
+		pp.Println("views-->", views)
+		r.AddFromFiles(renderName, views...)
 	}
 
 	return r

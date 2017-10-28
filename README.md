@@ -4,7 +4,7 @@ Bitfan is an open source data processing pipeline really inspired by Logstash.
 
 Bitfan is written in Go and should build on all platforms.
 
-![Bitfan logo](docs/static/noun_307496_cc.png "Bitfan")
+![Bitfan logo](docs/static/open-fan.png "Bitfan")
 
 # Get bitfan, usage and configuration documentation and a availables processors 
 
@@ -40,7 +40,7 @@ Bitfan is written in Go and should build on all platforms.
 * spartanlogs/spartan - Spartan is a data process much like Logstash
 
 # Credits
-logo "hand fan" by lastspark from the Noun Project
+Icon made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 # Contributors
 * @vjeantet - Valere JEANTET

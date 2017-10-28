@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<link rel="shortcut icon" href="/ui/public/images/favicon.png" type="image/x-icon" />
 		<title>{{ template "title" . }}</title>
 
 		<!-- d3.js -->
@@ -17,7 +18,6 @@
 
 
 		<link type="text/css" rel="stylesheet" href="/ui/public/css/application.css">
-
 		<!-- Open Sans font -->
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet" type="text/css">
 
@@ -26,32 +26,62 @@
 		  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 		  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 		<![endif]-->
+		
+		<script src="/ui/public/js/dropzone.js"></script>
+		<link rel="stylesheet" href="/ui/public/css/dropzone.css">
+
+
 
 	</head>
 	<body>
 
-		<div class="container">
-			<nav class="navbar navbar-expand-lg navbar-light"  style="background-color: #e3f2fd;">
-			  <a class="navbar-brand" href="/ui/">
-			    <img src="/ui/public/images/logo.png" height="30" class="d-inline-block align-top" alt="">
-			    Bitfan
-			  </a>
+		<header>
+			<div class="logo">
+					<img src="/ui/public/images/open-fan.png" height="30" class="d-inline-block align-top" alt="">&nbsp;Bitfan
+			</div>
+			<div class="burger"><a href="javascript:void(0);" style="font-size:15px;">&#9776;</a></div>
+			<section>
+					<a href="/ui/" >
+						<li class="" role="">List pipelines</li>
+					</a>
+			</section>
+		</header>
 
-			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-			    <span class="navbar-toggler-icon"></span>
-			  </button>
-			  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-			    <div class="navbar-nav">
-			      <a class="nav-item nav-link" href="/ui/">Pipelines</a>
-			    </div>
-			  </div>
-			</nav>
+	<section class="flash">
+		{{ range $flash := .globalflashes }}
+		<div class="alert alert-success" role="alert">
+		  {{$flash}}
 		</div>
+		{{end}}
+	</section>
 
-		<div class="container">
-			{{ template "sidebar" . }}
-			{{ template "content" . }}
-		</div>
+	<section class="main hbox space-between">
+		{{ template "sidebar" . }}
+		<section class="page">
+			<article>{{ template "content" . }}</article>
+		</section>
+	</section>
+
+	<footer>
+			<div>
+	    	<strong>Bitfan</strong>
+	    </div>
+	    <div>
+				
+					<li class="" role="">
+						<a href="https://bitfan.io" target="_blank" rel="noopener">docs</a>
+					</li>
+					<li class="" role="">
+						<a href="https://github.com/vjeantet/bitfan" target="_blank" rel="noopener">github</a>
+					</li>
+					<li class="" role="">
+						<a href="https://godoc.org/github.com/vjeantet/bitfan" target="_blank" rel="noopener">godoc reference</a>
+					</li>
+			</div>
+			<div>
+				<small>Bitfan logo made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> <br>from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></small>
+			</div>
+	</footer>
 
 	</body>
 </html>

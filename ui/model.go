@@ -16,15 +16,16 @@ type Pipeline struct {
 
 	Description string
 
-	Content string
-
-	Version int
-
-	Assets []Asset `gorm:"many2many:pipeline_assets;"`
+	Assets []Asset `gorm:"ForeignKey:PipelineID"`
 }
 
 type Asset struct {
 	ID int `gorm:"primary_key"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+
+	PipelineID int
 
 	Name        string
 	Type        string
