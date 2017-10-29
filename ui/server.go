@@ -35,17 +35,7 @@ func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Han
 	}
 
 	// Migrate the schema
-
 	db.AutoMigrate(&Pipeline{}, &Asset{})
-
-	// database, _ := sql.Open("sqlite3", "./nraboy.db")
-	// statement, _ := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, firstname TEXT, lastname TEXT)")
-	// statement.Exec()
-	// statement, _ = database.Prepare("INSERT INTO people (firstname, lastname) VALUES (?, ?)")
-	// statement.Exec("Nic", "Raboy")
-	// rows, _ := database.Query("SELECT id, firstname, lastname FROM people")
-
-	// pp.Println("rows-->", rows)
 
 	r := gin.New()
 	render := eztemplate.New()
@@ -83,25 +73,38 @@ func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Han
 	g := r.Group(path)
 	{
 		g.StaticFS("/public", http.Dir(assetsPath+"/public"))
-		g.GET("/", index)
+		g.GET("/", getPipelines)
 
-		g.GET("/pipelines", index)
+		// list pipelines
+		g.GET("/pipelines", getPipelines)
+		// New pipeline
+		g.GET("/pipelines/:id/new", newPipeline)
+		// Create pipeline
 		g.POST("/pipelines", createPipeline)
 
+		// Show pipeline
 		g.GET("/pipelines/:id", editPipeline)
+		// Save pipeline
 		g.POST("/pipelines/:id", updatePipeline)
 
-		g.GET("/pipelines/:id/new", newPipeline)
-
-		g.POST("/pipelines/:id/assets", createAsset)
+		// Show asset
 		g.GET("/pipelines/:id/assets/:assetID", showAsset)
+		// Create asset
+		g.POST("/pipelines/:id/assets", createAsset)
+		// Update asset
 		g.POST("/pipelines/:id/assets/:assetID", updateAsset)
+		// Replace asset
 		g.PUT("/pipelines/:id/assets/:assetID", replaceAsset)
+		// Download asset
 		g.GET("/pipelines/:id/assets/:assetID/download", downloadAsset)
+		// Delete asset
 		g.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
+		// Start pipeline
 		g.GET("/pipelines/:id/start", startPipeline)
+		// Stop pipeline
 		g.GET("/pipelines/:id/stop", stopPipeline)
+		// Restart pipeline
 		g.GET("/pipelines/:id/restart", restartPipeline)
 	}
 
@@ -510,7 +513,7 @@ func editPipeline(c *gin.Context) {
 
 }
 
-func index(c *gin.Context) {
+func getPipelines(c *gin.Context) {
 
 	var pipelines []Pipeline
 
@@ -530,18 +533,4 @@ func index(c *gin.Context) {
 	c.HTML(200, "pipelines/index", gin.H{
 		"pipelines": pipelines,
 	})
-}
-
-func getPipelines(c *gin.Context) {
-
-	// var err error
-
-	// ppls := core.Pipelines()
-
-	// if err == nil {
-	// 	c.JSON(200, ppls)
-	// } else {
-	// 	c.JSON(404, gin.H{"error": "no pipelines(s) running"})
-	// }
-	// curl -i http://localhost:8080/api/v1/pipelines
 }
