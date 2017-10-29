@@ -2,19 +2,8 @@
 <nav>
 
 <section class="pipeline">
-    <h2>{{.pipeline.Label}}</h2>
-  
-      <a href="/ui/pipelines/{{.pipeline.ID}}" class="btn btn-outline-secondary ">
-        Edit
-      </a>
-      <a href="/ui/pipelines/{{.pipeline.ID}}/start" class="btn btn-outline-success ">
-        Start
-      </a>
-      <button type="button" class="btn btn-outline-danger ">
-        Stop
-      </button>
-
-  
+  <h2>{{.pipeline.Label}}</h2>
+  {{ template "pipelineactions" .pipeline }}
 </section>
 
 <section class="assets">

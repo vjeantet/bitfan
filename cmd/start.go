@@ -46,8 +46,8 @@ var startCmd = &cobra.Command{
 				if cmd.Flags().Changed("name") {
 					nPipeline.Label, _ = cmd.Flags().GetString("name")
 				}
-				if cmd.Flags().Changed("id") {
-					nPipeline.ID, _ = cmd.Flags().GetInt("id")
+				if cmd.Flags().Changed("uuid") {
+					nPipeline.Uuid, _ = cmd.Flags().GetString("uuid")
 				}
 			}
 
@@ -68,7 +68,7 @@ var startCmd = &cobra.Command{
 				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
-				fmt.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)
+				fmt.Printf("Started (UUID:%s) - %s\n", pipeline.Uuid, pipeline.Label)
 			}
 		}
 	},
@@ -77,7 +77,7 @@ var startCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(startCmd)
 	startCmd.Flags().String("name", "", "set pipeline's name")
-	startCmd.Flags().String("id", "", "set pipeline's id")
+	startCmd.Flags().String("uuid", "", "set pipeline's uuid")
 	startCmd.Flags().String("force", "", "force start even if duplicate")
 	startCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
 }

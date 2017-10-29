@@ -1,5 +1,7 @@
 package api
 
+import "time"
+
 // Doc represents a processor documentation
 //
 // A Doc is ....
@@ -41,10 +43,9 @@ type processorDoc struct {
 //
 // swagger:model Pipeline
 type Pipeline struct {
-	// the id for this pipeline
-	ID int `json:"id"`
+	Uuid string `json:"uuid"`
 
-	Uuid string `json:"uiid"`
+	StartedAt time.Time `json:"started_at"`
 
 	// the Label
 	// min length: 3

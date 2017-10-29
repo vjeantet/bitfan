@@ -24,7 +24,7 @@
   <table class='table table-striped'>
     <tr>
       <th>Name</th>
-      <th>Started since</th>
+      <th>Running since</th>
       <th></th>
     </tr>
 
@@ -38,18 +38,14 @@
           <small><span class='text-muted'>updated {{ago "%m" $pipeline.UpdatedAt}} minutes ago</span></small>
         </td>
         <td class=''>
-          12/12/2017
+      {{if $pipeline.IsUP}}
+      {{dateFormat "dd/MM/YYYY HH:mm:ss" $pipeline.StartedAt }}
+      {{else}}    
+      Not started
+      {{end}}
         </td>
         <td>
-			<a href="/ui/pipelines/{{$pipeline.ID}}" class="btn btn-outline-secondary ">
-				Edit
-			</a>
-			<button type="button" class="btn btn-outline-danger ">
-				Stop
-			</button>
-			<button type="button" class="btn btn-outline-success ">
-				Start
-			</button>
+          {{ template "pipelineactions" $pipeline }}
         </td>
       </tr>
     {{else}}

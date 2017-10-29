@@ -17,7 +17,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strconv"
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/olekukonko/tablewriter"
@@ -48,7 +47,6 @@ var listCmd = &cobra.Command{
 		} else {
 			table := tablewriter.NewWriter(os.Stdout)
 			table.SetHeader([]string{
-				"ID",
 				"UUID",
 				"name",
 				"configuration",
@@ -61,7 +59,6 @@ var listCmd = &cobra.Command{
 				}
 
 				table.Append([]string{
-					strconv.Itoa(pipeline.ID),
 					pipeline.Uuid,
 					pipeline.Label,
 					fmt.Sprintf("%s%s",

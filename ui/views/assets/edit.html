@@ -34,8 +34,23 @@
       <div class="form-group">
         
         {{if (hasPrefix  "text/" .asset.ContentType)}}
+        
+
           <label for="content">Content</label>
-          <textarea class="form-control" name="content" id="content" rows="20">{{ string .asset.Value }}</textarea>
+          <textarea name="content">{{ string .asset.Value }}</textarea>
+          <div style="height: 500px;" id="content"></div>
+           <script src="/ui/public/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+          <script>
+              var editor = ace.edit("content");
+              editor.setAutoScrollEditorIntoView(true);
+              editor.setTheme("ace/theme/monokai");
+              editor.getSession().setMode("ace/mode/javascript");
+              var textarea = $('textarea[name="content"]').hide();
+              editor.getSession().setValue(textarea.val());
+              editor.getSession().on('change', function(){
+                textarea.val(editor.getSession().getValue());
+              });
+          </script>
         {{else}}
           Download : <a href="/ui/pipelines/{{$.pipeline.ID}}/assets/{{.asset.ID}}/download">{{.asset.Name}}</a>
           <br>
@@ -53,7 +68,6 @@
       </div>
 
       <button type="submit" name="save" class="btn btn-primary">Save</button>
-      <button type="submit" name="saverestart" class="btn btn-primary">Save and restart pipeline</button>
     </form>
 
           <hr>

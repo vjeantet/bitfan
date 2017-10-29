@@ -10,7 +10,6 @@ import (
 type PipelineState int
 
 type Pipeline struct {
-	ID                 int
 	Uuid               string
 	Name               string
 	Description        string
@@ -21,14 +20,10 @@ type Pipeline struct {
 	StoppedAt time.Time
 }
 
-var pipelineIndex int = 0
-
 func NewPipeline(name, description, configLocation string) *Pipeline {
-	pipelineIndex++
 	uid, _ := uuid.NewV4()
 
 	return &Pipeline{
-		ID:                 pipelineIndex,
 		Name:               name,
 		Uuid:               uid.String(),
 		Description:        description,

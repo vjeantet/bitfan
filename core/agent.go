@@ -57,7 +57,7 @@ func newAgent(conf config.Agent) (*agent, error) {
 func (a *agent) configure(conf *config.Agent) error {
 	a.ID = conf.ID
 	a.Label = conf.Label
-	a.processor.SetPipelineID(a.conf.PipelineID)
+	a.processor.SetPipelineUUID(a.conf.PipelineUUID)
 
 	ctx := processorContext{}
 	ctx.logger = newProcessorLogger(conf.Label, conf.Type, conf.PipelineName)

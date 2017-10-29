@@ -1,19 +1,22 @@
 package core
 
-import "github.com/vjeantet/bitfan/core/config"
+import (
+	"time"
+
+	"github.com/vjeantet/bitfan/core/config"
+)
 
 type Pipeline struct {
-	ID                 int
 	Uuid               string
 	Label              string
 	agents             map[int]*agent
 	ConfigLocation     string
 	ConfigHostLocation string
+	StartedAt          time.Time
 }
 
 func newPipeline(conf *config.Pipeline, configAgents []config.Agent) (*Pipeline, error) {
 	p := &Pipeline{
-		ID:                 conf.ID,
 		Uuid:               conf.Uuid,
 		Label:              conf.Name,
 		ConfigLocation:     conf.ConfigLocation,
@@ -27,7 +30,7 @@ func newPipeline(conf *config.Pipeline, configAgents []config.Agent) (*Pipeline,
 	// for each agents in configAgents (outputs first)
 	orderedAgentConfList := config.Sort(configAgents, config.SortInputsFirst)
 	for _, agentConf := range orderedAgentConfList {
-		agentConf.PipelineID = p.ID
+		agentConf.PipelineUUID = p.Uuid
 		agentConf.PipelineName = p.Label
 		a, err := newAgent(agentConf)
 		if err != nil {
@@ -51,7 +54,7 @@ func newPipeline(conf *config.Pipeline, configAgents []config.Agent) (*Pipeline,
 
 func (p *Pipeline) addAgent(a *agent) error {
 	a.conf.PipelineName = p.Label
-	a.conf.PipelineID = p.ID
+	a.conf.PipelineUUID = p.Uuid
 	p.agents[a.ID] = a
 
 	return nil
@@ -64,6 +67,7 @@ func (p *Pipeline) start() error {
 		Log().Debugf("start %d - %s", agentConf.ID, p.agents[agentConf.ID].Label)
 		p.agents[agentConf.ID].start()
 	}
+	p.StartedAt = time.Now()
 	return nil
 }
 

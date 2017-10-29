@@ -45,7 +45,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	p.opt.ProcessCommonOptions(e.Fields())
 	p.Send(e)
 
-	core.StopPipeline(p.PipelineID)
+	core.StopPipeline(p.PipelineUUID)
 
 	if true == p.opt.ExitBitfan {
 		core.Stop()
@@ -61,7 +61,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	return nil
 }
 func (p *processor) Stop(e processors.IPacket) error {
-	p.Logger.Debug("stopping pipeline ID=", p.PipelineID)
+	p.Logger.Debug("stopping pipeline ID=", p.PipelineUUID)
 
 	return nil
 }

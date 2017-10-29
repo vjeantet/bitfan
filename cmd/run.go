@@ -92,7 +92,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			handlers := []core.FnMux{}
 			handlers = append(handlers, core.WebHookServer())
 			handlers = append(handlers, core.HTTPHandler("/api/v1/", api.Handler("api/v1", plugins)))
-			handlers = append(handlers, core.HTTPHandler("/ui/", ui.Handler("ui", "ui", core.DataLocation())))
+			handlers = append(handlers, core.HTTPHandler("/ui/", ui.Handler("ui", "ui", core.DataLocation(), viper.GetString("host"))))
 
 			if viper.IsSet("prometheus") {
 				handlers = append(handlers, core.PrometheusServer(viper.GetString("prometheus.path")))
@@ -118,7 +118,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 					ppl.Name, _ = cmd.Flags().GetString("name")
 				}
 				if cmd.Flags().Changed("id") {
-					ppl.ID, _ = cmd.Flags().GetInt("id")
+					ppl.Uuid, _ = cmd.Flags().GetString("uuid")
 				}
 			}
 
@@ -165,7 +165,7 @@ func initRunFlags(cmd *cobra.Command) {
 
 	cmd.Flags().Bool("no-network", false, "Disable network (api and webhook)")
 	cmd.Flags().String("name", "", "set pipeline's name")
-	cmd.Flags().String("id", "", "set pipeline's id")
+	cmd.Flags().String("uuid", "", "set pipeline's uuid")
 	cwd, _ := os.Getwd()
 	cmd.Flags().String("data", filepath.Join(cwd, ".bitfan"), "Path to data dir")
 

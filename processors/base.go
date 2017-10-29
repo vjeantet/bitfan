@@ -16,7 +16,7 @@ type Base struct {
 	WebHook               WebHook
 	ConfigWorkingLocation string
 	DataLocation          string
-	PipelineID            int
+	PipelineUUID          string
 }
 
 // B returns the Base Processor
@@ -28,8 +28,8 @@ func (b *Base) Doc() *doc.Processor {
 	return &doc.Processor{}
 }
 
-func (b *Base) SetPipelineID(ID int) {
-	b.PipelineID = ID
+func (b *Base) SetPipelineUUID(uuid string) {
+	b.PipelineUUID = uuid
 }
 
 func (b *Base) Configure(ctx ProcessorContext, conf map[string]interface{}) error { return nil }

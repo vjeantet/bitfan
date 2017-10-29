@@ -17,6 +17,10 @@ type Pipeline struct {
 	Description string
 
 	Assets []Asset `gorm:"ForeignKey:PipelineID"`
+
+	IsUP         bool      `gorm:"-"`
+	LocationPath string    `gorm:"-"`
+	StartedAt    time.Time `gorm:"-"`
 }
 
 type Asset struct {

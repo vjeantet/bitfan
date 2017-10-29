@@ -27,7 +27,7 @@ var restartCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		if len(args) == 0 {
-			fmt.Println("give an pipeline identifier")
+			fmt.Println("give an pipeline uuid identifier")
 			os.Exit(1)
 		}
 
@@ -66,7 +66,7 @@ var restartCmd = &cobra.Command{
 				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
-				fmt.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)
+				fmt.Printf("Started (UUID:%s) - %s\n", pipeline.Uuid, pipeline.Label)
 			}
 		} else { // with old conf
 			nPipeline := &api.Pipeline{
@@ -80,7 +80,7 @@ var restartCmd = &cobra.Command{
 				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
-				fmt.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)
+				fmt.Printf("Started (UUID:%s) - %s\n", pipeline.Uuid, pipeline.Label)
 			}
 		}
 

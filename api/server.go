@@ -34,7 +34,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 
 	fqdn "github.com/ShowMax/go-fqdn"
@@ -245,19 +244,14 @@ func Handler(path string, plugs map[string]map[string]core.ProcessorFactory) htt
 
 func getPipelineAssets(c *gin.Context) {
 	var assets []Asset
-	var err error
-	var id int
+	var id string
 
-	id, err = strconv.Atoi(c.Params.ByName("id"))
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+	id = c.Params.ByName("id")
 
 	assets = []Asset{}
 	ppls := core.Pipelines()
 	for _, p := range ppls {
-		if p.ID == id {
+		if p.Uuid == id {
 
 			loc, _ := lib.NewLocation(p.ConfigLocation, core.DataLocation())
 			for path, b64Content := range loc.AssetsContent() {
@@ -276,19 +270,19 @@ func getPipelineAssets(c *gin.Context) {
 
 func getPipelines(c *gin.Context) {
 
-	var pipelines []Pipeline
+	var pipelines map[string]Pipeline
 	var err error
 
-	pipelines = []Pipeline{}
+	pipelines = map[string]Pipeline{}
 	ppls := core.Pipelines()
 	for _, p := range ppls {
-		pipelines = append(pipelines, Pipeline{
-			ID:                 p.ID,
+		pipelines[p.Uuid] = Pipeline{
 			Uuid:               p.Uuid,
+			StartedAt:          p.StartedAt,
 			Label:              p.Label,
 			ConfigLocation:     p.ConfigLocation,
 			ConfigHostLocation: p.ConfigHostLocation,
-		})
+		}
 	}
 
 	if err == nil {
@@ -301,21 +295,17 @@ func getPipelines(c *gin.Context) {
 
 func getPipeline(c *gin.Context) {
 	var pipeline Pipeline
-	var err error
-	var id int
+	var id string
 
-	id, err = strconv.Atoi(c.Params.ByName("id"))
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+	id = c.Params.ByName("id")
 
 	pipeline = Pipeline{}
 	ppls := core.Pipelines()
 	for _, p := range ppls {
-		if p.ID == id {
+		if p.Uuid == id {
 			pipeline = Pipeline{
-				ID:                 p.ID,
+				Uuid:               p.Uuid,
+				StartedAt:          p.StartedAt,
 				Label:              p.Label,
 				ConfigLocation:     p.ConfigLocation,
 				ConfigHostLocation: p.ConfigHostLocation,
@@ -415,13 +405,13 @@ func addPipeline(c *gin.Context) {
 		return
 	}
 
-	ID, err := core.StartPipeline(&ppl, agt)
+	UUID, err := core.StartPipeline(&ppl, agt)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	core.Log().Debugf("Pipeline %s started", pipeline.Label)
-	c.Redirect(http.StatusFound, fmt.Sprintf("/api/v1/pipelines/%d", ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/api/v1/pipelines/%s", UUID))
 	return
 
 	// c.JSON(200, gin.H{"statut": "started"})
@@ -432,20 +422,20 @@ func addPipeline(c *gin.Context) {
 func deletePipeline(c *gin.Context) {
 
 	var err error
-	id, err := strconv.Atoi(c.Params.ByName("id"))
-	if err != nil {
+	id := c.Params.ByName("id")
+	if id == "" {
 		c.JSON(500, gin.H{"error": fmt.Sprintf("malformed id : %s", c.Params.ByName("id"))})
 		return
 	}
 
 	err = core.StopPipeline(id)
+
 	if err == nil {
 		c.JSON(200, gin.H{"id": c.Params.ByName("id"), "status": "deleted"})
+		core.Log().Debugf("Pipeline %s stopped", id)
 	} else {
 		c.JSON(404, gin.H{"error": err.Error()})
 	}
-
-	core.Log().Debugf("Pipeline %s stopped", id)
 
 	// curl -i -X DELETE http://localhost:8080/api/v1/pipelines/1
 }

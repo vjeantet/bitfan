@@ -18,16 +18,17 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/k0kubun/pp"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/spf13/viper"
 
 	"github.com/vjeantet/bitfan/api"
 	eztemplate "github.com/vjeantet/ez-gin-template"
 )
 
 var db *gorm.DB
+var apiClient *api.RestClient
 
-func Handler(assetsPath, path string, dbpath string) http.Handler {
+func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Handler {
 	var err error
+	apiClient = api.NewRestClient(apiBaseUrl)
 	db, err = gorm.Open("sqlite3", filepath.Join(dbpath, "bitfan.db"))
 	if err != nil {
 		panic("failed to connect database")
@@ -101,6 +102,7 @@ func Handler(assetsPath, path string, dbpath string) http.Handler {
 
 		g.GET("/pipelines/:id/start", startPipeline)
 		g.GET("/pipelines/:id/stop", stopPipeline)
+		g.GET("/pipelines/:id/restart", restartPipeline)
 	}
 
 	return r
@@ -133,20 +135,78 @@ func startPipeline(c *gin.Context) {
 		}
 	}
 	//Envoie
-	cli := api.NewRestClient(viper.GetString("host"))
-	pipeline, err := cli.AddPipeline(&appl)
+
+	pipeline, err := apiClient.AddPipeline(&appl)
 	if err != nil {
+		c.JSON(500, err.Error())
 		log.Printf("error : %v\n", err)
 	} else {
-		log.Printf("Started (ID:%d) - %s\n", pipeline.ID, pipeline.Label)
+		c.JSON(200, appl)
+		log.Printf("Started (UUID:%s) - %s\n", pipeline.Uuid, pipeline.Label)
 	}
 
 	//OK
-	c.JSON(200, appl)
+
 	// c.String(200, "pipelines/new")
+}
+func restartPipeline(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.Abort()
+		return
+	}
+
+	var p = Pipeline{ID: (id)}
+	db.Preload("Assets").First(&p)
+
+	err = apiClient.StopPipeline(p.Uuid)
+	if err != nil {
+		c.JSON(500, err.Error())
+	}
+
+	//Construit l'objet ApiClientPipeline
+	appl := api.Pipeline{}
+	appl.Uuid = p.Uuid
+	appl.Label = p.Label
+	appl.Assets = []api.Asset{}
+
+	for _, a := range p.Assets {
+		appl.Assets = append(appl.Assets, api.Asset{
+			Path:    a.Name,
+			Content: base64.StdEncoding.EncodeToString(a.Value),
+		})
+		if a.Type == "entrypoint" {
+			appl.ConfigLocation = a.Name
+		}
+	}
+	//Envoie
+
+	pipeline, err := apiClient.AddPipeline(&appl)
+	if err != nil {
+		c.JSON(500, err.Error())
+		log.Printf("error : %v\n", err)
+	} else {
+		c.JSON(200, appl)
+		log.Printf("Restarted (UUID:%s) - %s\n", pipeline.Uuid, pipeline.Label)
+	}
 }
 
 func stopPipeline(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.Abort()
+		return
+	}
+
+	var p = Pipeline{ID: (id)}
+	db.First(&p)
+
+	err = apiClient.StopPipeline(p.Uuid)
+	if err != nil {
+		c.JSON(500, err.Error())
+	} else {
+		c.JSON(200, "stopped")
+	}
 
 }
 
@@ -419,6 +479,15 @@ func editPipeline(c *gin.Context) {
 	var p = Pipeline{ID: (idInt)}
 	db.Preload("Assets").First(&p)
 
+	runningPipelines, _ := apiClient.ListPipelines()
+
+	if pup, ok := runningPipelines[p.Uuid]; ok {
+		p.IsUP = true
+		p.LocationPath = pup.ConfigLocation
+		p.StartedAt = pup.StartedAt
+
+	}
+
 	flashes := []string{}
 	for _, m := range sessions.Default(c).Flashes() {
 		flashes = append(flashes, m.(string))
@@ -437,6 +506,17 @@ func index(c *gin.Context) {
 	var pipelines []Pipeline
 
 	db.Find(&pipelines)
+
+	runningPipelines, _ := apiClient.ListPipelines()
+
+	for i, p := range pipelines {
+		if pup, ok := runningPipelines[p.Uuid]; ok {
+			pipelines[i].IsUP = true
+			pipelines[i].LocationPath = pup.ConfigLocation
+			pipelines[i].StartedAt = pup.StartedAt
+
+		}
+	}
 
 	c.HTML(200, "pipelines/index", gin.H{
 		"pipelines": pipelines,

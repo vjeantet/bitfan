@@ -105,44 +105,49 @@ func ListenAndServe(addr string, hs ...FnMux) {
 }
 
 // StartPipeline load all agents form a configPipeline and returns pipeline's ID
-func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent) (int, error) {
+func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent) (string, error) {
 	p, err := newPipeline(configPipeline, configAgents)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	pipelines.Store(p.ID, p)
+	if _, ok := pipelines.Load(p.Uuid); ok {
+		// a pipeline with same uuid is already running
+		return "", fmt.Errorf("a pipeline with uuid %s is already running", p.Uuid)
+	}
+
+	pipelines.Store(p.Uuid, p)
 
 	err = p.start()
 
-	return p.ID, err
+	return p.Uuid, err
 }
 
-func StopPipeline(ID int) error {
+func StopPipeline(Uuid string) error {
 	var err error
-	if p, ok := pipelines.Load(ID); ok {
+	if p, ok := pipelines.Load(Uuid); ok {
 		err = p.(*Pipeline).stop()
 	} else {
-		err = fmt.Errorf("Pipeline %d not found", ID)
+		err = fmt.Errorf("Pipeline %s not found", Uuid)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	pipelines.Delete(ID)
+	pipelines.Delete(Uuid)
 	return nil
 }
 
 // Stop each pipeline
 func Stop() error {
-	var IDS = []int{}
+	var Uuids = []string{}
 	pipelines.Range(func(key, value interface{}) bool {
-		IDS = append(IDS, key.(int))
+		Uuids = append(Uuids, key.(string))
 		return true
 	})
 
-	for _, ID := range IDS {
-		err := StopPipeline(ID)
+	for _, Uuid := range Uuids {
+		err := StopPipeline(Uuid)
 		if err != nil {
 			Log().Error(err)
 		}
@@ -153,10 +158,10 @@ func Stop() error {
 	return nil
 }
 
-func Pipelines() map[int]*Pipeline {
-	pps := map[int]*Pipeline{}
+func Pipelines() map[string]*Pipeline {
+	pps := map[string]*Pipeline{}
 	pipelines.Range(func(key, value interface{}) bool {
-		pps[key.(int)] = value.(*Pipeline)
+		pps[key.(string)] = value.(*Pipeline)
 		return true
 	})
 	return pps

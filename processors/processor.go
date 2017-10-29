@@ -11,7 +11,7 @@ type Processor interface {
 	Stop(IPacket) error
 	Doc() *doc.Processor
 	MaxConcurent() int
-	SetPipelineID(int)
+	SetPipelineUUID(string)
 }
 
 type ProcessorContext interface {

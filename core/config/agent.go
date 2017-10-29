@@ -5,7 +5,7 @@ type Agent struct {
 	Label           string   `json:"label"`
 	Sources         []string `json:"sources"`
 	PipelineName    string
-	PipelineID      int
+	PipelineUUID    string
 	AgentSources    PortList
 	AgentRecipients PortList
 	Type            string                 `json:"type"`

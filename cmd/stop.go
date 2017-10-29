@@ -20,14 +20,14 @@ var stopCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		cli := api.NewRestClient(viper.GetString("host"))
 
-		for _, ID := range args {
+		for _, uuid := range args {
 			// Send a request & read result
-			err := cli.StopPipeline(ID)
+			err := cli.StopPipeline(uuid)
 			if err != nil {
 				fmt.Printf("error : %v\n", err)
 				os.Exit(1)
 			} else {
-				fmt.Printf("pipeline %s stopped\n", ID)
+				fmt.Printf("pipeline %s stopped\n", uuid)
 			}
 		}
 	},

@@ -23,8 +23,8 @@ func (r *RestClient) client() *sling.Sling {
 	return sling.New().Base(r.host)
 }
 
-func (r *RestClient) ListPipelines() ([]*Pipeline, error) {
-	pipelines := new([]*Pipeline)
+func (r *RestClient) ListPipelines() (map[string]*Pipeline, error) {
+	pipelines := new(map[string]*Pipeline)
 	apierror := new(Error)
 
 	resp, err := r.client().Get("pipelines").Receive(pipelines, apierror)
@@ -45,6 +45,7 @@ func (r *RestClient) StopPipeline(ID string) error {
 		return err
 	} else if resp.StatusCode > 400 {
 		err = fmt.Errorf(apierror.Message)
+		pp.Println("err-->", err)
 	}
 	return err
 }

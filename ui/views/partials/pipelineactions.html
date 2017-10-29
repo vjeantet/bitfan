@@ -1,0 +1,17 @@
+{{define "pipelineactions"}}
+      <a href="/ui/pipelines/{{.ID}}" class="btn btn-outline-secondary ">
+        Edit
+      </a>
+      {{if .IsUP}}
+      <a href="/ui/pipelines/{{.ID}}/stop" class="btn btn-outline-danger ">
+          Stop
+      </a>
+      <a href="/ui/pipelines/{{.ID}}/restart" class="btn btn-outline-success ">
+        Restart
+      </a>
+      {{else}}
+      <a href="/ui/pipelines/{{.ID}}/start" class="btn btn-outline-success ">
+        Start
+      </a>
+      {{end}}
+{{end}}
