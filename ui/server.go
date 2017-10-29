@@ -404,6 +404,15 @@ func showAsset(c *gin.Context) {
 	var p = Pipeline{ID: id}
 	db.Preload("Assets").First(&p)
 
+	runningPipelines, _ := apiClient.ListPipelines()
+
+	if pup, ok := runningPipelines[p.Uuid]; ok {
+		p.IsUP = true
+		p.LocationPath = pup.ConfigLocation
+		p.StartedAt = pup.StartedAt
+
+	}
+
 	flashes := []string{}
 	for _, m := range sessions.Default(c).Flashes() {
 		flashes = append(flashes, m.(string))

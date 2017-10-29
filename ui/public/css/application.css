@@ -124,6 +124,16 @@ body {
   height: 100%;
   -webkit-box-sizing: border-box; }
 
+.show {
+  display: block !important; }
+
+.hidden {
+  display: none !important;
+  visibility: hidden !important; }
+
+.invisible {
+  visibility: hidden; }
+
 header {
   width: 100%;
   height: 50px;

@@ -37,10 +37,12 @@
         
 
           <label for="content">Content</label>
-          <textarea name="content">{{ string .asset.Value }}</textarea>
+          <textarea style="display: none" name="content">{{ string .asset.Value }}</textarea>
           <div style="height: 500px;" id="content"></div>
-           <script src="/ui/public/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+          <script async src="/ui/public/js/ace/ace.js" type="text/javascript" charset="utf-8">
+          </script>
           <script>
+            $(document).ready(function () {
               var editor = ace.edit("content");
               editor.setAutoScrollEditorIntoView(true);
               editor.setTheme("ace/theme/monokai");
@@ -50,6 +52,7 @@
               editor.getSession().on('change', function(){
                 textarea.val(editor.getSession().getValue());
               });
+            });
           </script>
         {{else}}
           Download : <a href="/ui/pipelines/{{$.pipeline.ID}}/assets/{{.asset.ID}}/download">{{.asset.Name}}</a>
