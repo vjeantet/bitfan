@@ -1,4 +1,12 @@
 language: go
+
+before_cache:
+-  find $GOPATH/pkg/**/github.com/vjeantet/bitfan/* -maxdepth 0 ! -name vendor -print0 | xargs -0 rm -rf
+
+cache:
+  directories:
+    - $GOPATH/pkg
+   
 install:
     - go get -v golang.org/x/tools/cmd/cover
     - go get -v github.com/stretchr/testify/assert
