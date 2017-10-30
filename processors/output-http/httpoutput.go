@@ -162,7 +162,7 @@ func (p *processor) Start(e processors.IPacket) error {
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
-	p.shutdown <- struct{}{}
+	close(p.shutdown)
 	return p.muster.Stop()
 }
 
