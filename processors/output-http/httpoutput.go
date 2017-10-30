@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/tls"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net"
@@ -29,7 +30,7 @@ type processor struct {
 	processors.Base
 	enc      codecs.Encoder
 	opt      *options
-	shutdown bool
+	shutdown chan struct{}
 }
 
 type options struct {
@@ -86,6 +87,9 @@ type options struct {
 	// @Default 100
 	BatchSize uint `mapstructure:"batch_size"`
 
+	// @Default 10
+	RetryInterval uint `mapstructure:"retry_interval"`
+
 	// Add any number of arbitrary tags to your event. There is no default value for this setting.
 	// This can help with processing later. Tags can be dynamic and include parts of the event using the %{field} syntax.
 	// Tags []string `mapstructure:"tags"`
@@ -108,9 +112,11 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		IgnorableCodes: []int{},
 		BatchInterval:  5,
 		BatchSize:      100,
+		RetryInterval:  10,
 	}
 	p.opt = &defaults
 	p.opt.HTTPMethod = strings.ToUpper(p.opt.HTTPMethod)
+	p.shutdown = make(chan struct{}, 1)
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
 }
 
@@ -156,7 +162,7 @@ func (p *processor) Start(e processors.IPacket) error {
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
-	p.shutdown = true
+	close(p.shutdown)
 	return p.muster.Stop()
 }
 
@@ -173,12 +179,7 @@ func (b *batch) Add(item interface{}) {
 // batch has been processed.
 func (b *batch) Fire(notifier muster.Notifier) {
 	defer notifier.Done()
-	var (
-		err  error
-		req  *http.Request
-		resp *http.Response
-		body bytes.Buffer
-	)
+	var body bytes.Buffer
 	writer := bufio.NewWriter(&body)
 	enc, err := b.p.opt.Codec.NewEncoder(writer)
 	if err != nil {
@@ -195,57 +196,55 @@ func (b *batch) Fire(notifier muster.Notifier) {
 		return
 	}
 	for {
-		req, err = http.NewRequest(b.p.opt.HTTPMethod, b.p.opt.URL, &body)
-		if err != nil {
-			b.p.Logger.Errorf("Create request failed with: %v", err)
+		retry, err := b.p.send(body.Bytes())
+		if err == nil {
+			b.p.Logger.Debugf("Successfully sent %d messages", len(b.Items))
 			return
 		}
-		for hName, hValue := range b.p.opt.Headers {
-			req.Header.Set(hName, hValue)
-		}
-		for {
-			if resp, err = b.p.httpClient.Do(req); err == nil {
-				break
-			}
-			b.p.Logger.Error(err)
-			time.Sleep(time.Second)
-			if b.p.shutdown {
-				return
-			}
-		}
-
-		io.Copy(ioutil.Discard, resp.Body)
-		for _, ignoreCode := range b.p.opt.IgnorableCodes {
-			if resp.StatusCode == ignoreCode {
-				b.p.Logger.Debugf("Successfully sent %d messages with status %s", len(b.Items), resp.Status)
-				resp.Body.Close()
-				return
-			}
-		}
-		if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-			b.p.Logger.Debugf("Successfully sent %d messages with status %s", len(b.Items), resp.Status)
-			resp.Body.Close()
+		if !retry {
+			b.p.Logger.Errorf("Lost %d messages with %v", len(b.Items), err)
 			return
 		}
-
-		retry := false
-		for _, retryCode := range b.p.opt.RetryableCodes {
-			if resp.StatusCode == retryCode {
-				retry = true
-				break
-			}
-		}
-		if retry {
-			b.p.Logger.Warnf("Server returned %s. Retry send", resp.Status)
-			resp.Body.Close()
-			req.Body.Close()
-			time.Sleep(time.Second * 10)
-			if b.p.shutdown {
-				return
-			}
+		b.p.Logger.Warnf("Can't sent %d messages with: %v. Retry after %d seconds", len(b.Items), err, b.p.opt.RetryInterval)
+		select {
+		case <-b.p.shutdown:
+			b.p.Logger.Errorf("Shutdown. Lost %d messages", len(b.Items))
+			return
+		case <-time.NewTimer(time.Duration(b.p.opt.RetryInterval) * time.Second).C:
 			continue
 		}
-		b.p.Logger.Errorf("Server returned %s, %d messages was be lost", resp.Status, len(b.Items))
-		return
 	}
+}
+
+func (p *processor) send(body []byte) (retry bool, err error) {
+	req, err := http.NewRequest(p.opt.HTTPMethod, p.opt.URL, bytes.NewBuffer(body))
+	if err != nil {
+		return false, fmt.Errorf("Create request failed with: %v", err)
+	}
+	defer req.Body.Close()
+	for hName, hValue := range p.opt.Headers {
+		req.Header.Set(hName, hValue)
+	}
+	resp, err := p.httpClient.Do(req)
+	if err != nil {
+		return true, fmt.Errorf("Send request failed with: %v", err)
+	}
+	defer resp.Body.Close()
+
+	io.Copy(ioutil.Discard, resp.Body)
+	for _, ignoreCode := range p.opt.IgnorableCodes {
+		if resp.StatusCode == ignoreCode {
+			return false, nil
+		}
+	}
+	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+		return false, nil
+	}
+
+	for _, retryCode := range p.opt.RetryableCodes {
+		if resp.StatusCode == retryCode {
+			return true, fmt.Errorf("Server returned %s", resp.Status)
+		}
+	}
+	return false, fmt.Errorf("Server returned %s", resp.Status)
 }
