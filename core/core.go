@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/sync/syncmap"
 
 	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/justinas/alice"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vjeantet/bitfan/core/config"
+	"github.com/vjeantet/bitfan/core/models"
 )
 
 var (
@@ -23,6 +27,8 @@ var (
 	dataLocation               string                      = "data"
 
 	pipelines syncmap.Map = syncmap.Map{}
+
+	db *gorm.DB
 )
 
 type FnMux func(sm *http.ServeMux)
@@ -53,15 +59,30 @@ func SetDataLocation(location string) error {
 		err = os.MkdirAll(dataLocation, os.ModePerm)
 		if err != nil {
 			Log().Errorf("%s - %v", dataLocation, err)
-		} else {
-			Log().Debugf("created folder %s", dataLocation)
+			return err
 		}
+		Log().Debugf("created folder %s", dataLocation)
 	} else {
 		if !fileInfo.IsDir() {
 			Log().Errorf("data path %s is not a directory", dataLocation)
+			return err
 		}
 	}
 	Log().Debugf("data location : %s", location)
+
+	// DB
+
+	db, err = gorm.Open("sqlite3", filepath.Join(location, "bitfan.db"))
+	// db.LogMode(true)
+
+	if err != nil {
+		Log().Errorf("failed to connect database : %s", err.Error())
+		return err
+	}
+
+	// Migrate the schema
+	db.AutoMigrate(&models.Pipeline{}, &models.Asset{})
+
 	return err
 }
 
@@ -79,6 +100,10 @@ func WebHookServer() FnMux {
 func PrometheusServer(path string) FnMux {
 	SetMetrics(NewPrometheus())
 	return HTTPHandler(path, prometheus.Handler())
+}
+
+func ApiServer(path string) FnMux {
+	return HTTPHandler("/"+path+"/", apiHandler(path, db, DataLocation()))
 }
 
 func HTTPHandler(path string, s http.Handler) FnMux {
@@ -154,7 +179,7 @@ func Stop() error {
 	}
 
 	myStore.close()
-
+	db.Close()
 	return nil
 }
 

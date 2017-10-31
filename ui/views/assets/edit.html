@@ -25,7 +25,7 @@
 <div class="row">
   <div class="col-12">
 
-    <form method="POST" action="{{.asset.ID}}">
+    <form method="POST" action="{{.asset.Uuid}}">
        <div class="form-group">
         <label for="name">Name</label>
         <input type="text" class="form-control" name="name" id="name" value="{{.asset.Name}}">
@@ -55,7 +55,7 @@
             });
           </script>
         {{else}}
-          Download : <a href="/ui/pipelines/{{$.pipeline.ID}}/assets/{{.asset.ID}}/download">{{.asset.Name}}</a>
+          Download : <a href="/ui/pipelines/{{$.pipeline.Uuid}}/assets/{{.asset.Uuid}}/download">{{.asset.Name}}</a>
           <br>
         {{end}}
 
@@ -76,7 +76,7 @@
           <hr>
 
       <h1>Upload and Replace asset </h1>
-        <form action="/ui/pipelines/{{$.pipeline.ID}}/assets/{{.asset.ID}}" class="dropzone" id="myasset">
+        <form action="/ui/pipelines/{{$.pipeline.Uuid}}/assets/{{.asset.Uuid}}" class="dropzone" id="myasset">
           <div class="dz-message needsclick">
             Drop file here to replace this asset.<br>
           </div>
@@ -86,7 +86,7 @@
           Dropzone.options.myasset = {
           paramName: "file", // The name that will be used to transfer the file
           method:"put",
-          maxFilesize: 200, // MB
+          maxFilesize: 20, // MB
           createImageThumbnails: true,
           init: function() {
             this.on("success", function(file, responseText) {

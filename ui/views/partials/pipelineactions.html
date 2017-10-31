@@ -1,17 +1,17 @@
 {{define "pipelineactions"}}
 <div id="asset-actions" class="btn-group btn-group-sm" role="group" aria-label="assets">
-    <a href="/ui/pipelines/{{.ID}}" class="btn btn-outline-secondary ">
+    <a href="/ui/pipelines/{{.Uuid}}" class="btn btn-outline-secondary ">
       Edit
     </a>
     <a class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       <span class="sr-only">Toggle Dropdown</span>
     </a>
     <ul class="dropdown-menu">
-      <a href="/ui/pipelines/{{.ID}}" class="dropdown-item">
+      <a href="/ui/pipelines/{{.Uuid}}" class="dropdown-item">
         Copy
       </a>
-      {{if not .IsUP}}
-      <a href="/ui/pipelines/{{.ID}}" class="dropdown-item">
+      {{if not .Active}}
+      <a href="/ui/pipelines/{{.Uuid}}/delete" class="dropdown-item">
         Delete
       </a>
       {{end}}
@@ -20,13 +20,13 @@
 
 <div id="pipeline-actions" class="btn-group btn-group-sm" role="group" aria-label="action">
 
-      <button type="button" href="/ui/pipelines/{{.ID}}/start" class="btn btn-success {{if .IsUP}}hidden{{end}}">
+      <button type="button" href="/ui/pipelines/{{.Uuid}}/start" class="btn btn-success {{if .Active}}hidden{{end}}">
         Start pipeline
       </button>
-      <button type="button" href="/ui/pipelines/{{.ID}}/stop" class="btn btn-danger {{if not .IsUP}}hidden{{end}}">
+      <button type="button" href="/ui/pipelines/{{.Uuid}}/stop" class="btn btn-danger {{if not .Active}}hidden{{end}}">
           Stop
       </button>
-      <button notoggle="true" type="button" href="/ui/pipelines/{{.ID}}/restart" class="btn btn-success {{if not .IsUP}}hidden{{end}}">
+      <button notoggle="true" type="button" href="/ui/pipelines/{{.Uuid}}/restart" class="btn btn-success {{if not .Active}}hidden{{end}}">
         Restart
       </button>
       

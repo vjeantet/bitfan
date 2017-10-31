@@ -31,14 +31,14 @@
     {{range  $pipeline := .pipelines}}
       <tr>
         <td class=''>
-        	<a href="/ui/pipelines/{{$pipeline.ID}}" class="">
+        	<a href="/ui/pipelines/{{$pipeline.Uuid}}" class="">
           {{if $pipeline.Label}}{{$pipeline.Label}}{{else}}noname{{end}}
       </a>
           <br/>
           <small><span class='text-muted'>updated {{ago "%m" $pipeline.UpdatedAt}} minutes ago</span></small>
         </td>
         <td class=''>
-      {{if $pipeline.IsUP}}
+      {{if $pipeline.Active}}
       {{dateFormat "dd/MM/YYYY HH:mm:ss" $pipeline.StartedAt }}
       {{else}}    
       Not started

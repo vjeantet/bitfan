@@ -24,7 +24,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/vjeantet/bitfan/api"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/lib"
 	"github.com/vjeantet/bitfan/ui"
@@ -85,13 +84,15 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 		if err := core.SetDataLocation(viper.GetString("data")); err != nil {
 			core.Log().Errorf("error with data location - %v", err)
+			panic(err.Error())
 		}
 
 		if !viper.GetBool("no-network") {
 
 			handlers := []core.FnMux{}
 			handlers = append(handlers, core.WebHookServer())
-			handlers = append(handlers, core.HTTPHandler("/api/v1/", api.Handler("api/v1", plugins)))
+			// handlers = append(handlers, core.HTTPHandler("/api/v1/", api.Handler("api/v1", plugins)))
+			handlers = append(handlers, core.ApiServer("api/v2"))
 			handlers = append(handlers, core.HTTPHandler("/ui/", ui.Handler("ui", "ui", core.DataLocation(), viper.GetString("host"))))
 
 			if viper.IsSet("prometheus") {

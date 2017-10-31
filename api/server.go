@@ -37,7 +37,7 @@ import (
 var plugins map[string]map[string]core.ProcessorFactory
 
 func init() {
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 }
 
 func Handler(path string, plugs map[string]map[string]core.ProcessorFactory) http.Handler {
