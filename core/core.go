@@ -132,7 +132,7 @@ func ListenAndServe(addr string, hs ...FnMux) {
 	Log().Infof("Ready to serve on %s", baseURL)
 }
 
-func Start() {
+func RunAutoStartPipelines() {
 	pipelinesToStart := []models.Pipeline{}
 	db.Where(&models.Pipeline{AutoStart: true}).Find(&pipelinesToStart).RecordNotFound()
 
