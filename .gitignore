@@ -50,3 +50,7 @@ releases
 *.css.map
 
 .sass-cache
+
+/ui/cmd/oo
+
+/ui/cmd/test.db
