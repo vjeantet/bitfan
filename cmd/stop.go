@@ -11,20 +11,20 @@ import (
 
 // stopCmd represents the stop command
 var stopCmd = &cobra.Command{
-	Use:     "stop [pipelineID]",
+	Use:     "stop [pipelineUUID]",
 	Short:   "Stop a running pipeline",
 	Aliases: []string{"remove", "rm", "delete"},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		cli := api.NewRestClient(viper.GetString("host"))
+		cli := api.New(viper.GetString("host"))
 
 		for _, uuid := range args {
 			// Send a request & read result
-			err := cli.StopPipeline(uuid)
+			_, err := cli.StopPipeline(uuid)
 			if err != nil {
-				fmt.Printf("error : %v\n", err)
+				fmt.Fprintf(os.Stderr, "error : %s\n", err.Error())
 				os.Exit(1)
 			} else {
 				fmt.Printf("pipeline %s stopped\n", uuid)

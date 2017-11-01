@@ -12,7 +12,6 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 func apiHandler(path string, db *gorm.DB, dataLocation string) http.Handler {
-
 	r := gin.New()
 	r.Use(
 		gin.Recovery(),

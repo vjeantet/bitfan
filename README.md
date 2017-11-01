@@ -1,4 +1,3 @@
-
 <h1 align="center">
   <a href="https://bitfan.io"><img src="docs/static/open-fan-black-medium.png" height="150px" alt="Bitfan"></a>
   <br>

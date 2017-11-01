@@ -5,16 +5,16 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/k0kubun/pp"
-	"github.com/vjeantet/bitfan/processors/doc"
+	"github.com/vjeantet/bitfan/core/models"
 )
 
 type RestClient struct {
 	host string
 }
 
-func NewRestClient(bitfanHost string) *RestClient {
+func New(bitfanHost string) *RestClient {
 	cli := &RestClient{
-		host: "http://" + bitfanHost + "/api/v1/",
+		host: "http://" + bitfanHost + "/api/v2/",
 	}
 	return cli
 }
@@ -23,49 +23,22 @@ func (r *RestClient) client() *sling.Sling {
 	return sling.New().Base(r.host)
 }
 
-func (r *RestClient) ListPipelines() (map[string]*Pipeline, error) {
-	pipelines := new(map[string]*Pipeline)
-	apierror := new(Error)
+func (r *RestClient) Pipelines() ([]models.Pipeline, error) {
+	pipelines := []models.Pipeline{}
+	apierror := new(models.Error)
 
-	resp, err := r.client().Get("pipelines").Receive(pipelines, apierror)
+	resp, err := r.client().Get("pipelines").Receive(&pipelines, apierror)
+
 	if err != nil {
-		return *pipelines, err
+		return pipelines, err
 	} else if resp.StatusCode > 400 {
 		err = fmt.Errorf(apierror.Message)
 	}
-	return *pipelines, err
+	return pipelines, err
 }
-
-func (r *RestClient) StopPipeline(ID string) error {
-	retour := new(map[string]interface{})
-	apierror := new(Error)
-	resp, err := r.client().Delete("pipelines/"+ID).Receive(retour, apierror)
-
-	if err != nil {
-		return err
-	} else if resp.StatusCode > 400 {
-		err = fmt.Errorf(apierror.Message)
-		pp.Println("err-->", err)
-	}
-	return err
-}
-
-func (r *RestClient) AddPipeline(pipeline *Pipeline) (*Pipeline, error) {
-	newPipeline := &Pipeline{}
-	apierror := new(Error)
-	resp, err := r.client().Post("pipelines").BodyJSON(pipeline).Receive(newPipeline, apierror)
-
-	if err != nil {
-		return newPipeline, err
-	} else if resp.StatusCode > 400 {
-		err = fmt.Errorf(apierror.Message)
-	}
-	return newPipeline, err
-}
-
-func (r *RestClient) Pipeline(ID string, full bool) (*Pipeline, error) {
-	pipeline := &Pipeline{}
-	apierror := new(Error)
+func (r *RestClient) Pipeline(ID string) (*models.Pipeline, error) {
+	pipeline := &models.Pipeline{}
+	apierror := new(models.Error)
 
 	resp, err := r.client().Get("pipelines/"+ID).Receive(pipeline, apierror)
 
@@ -76,36 +49,159 @@ func (r *RestClient) Pipeline(ID string, full bool) (*Pipeline, error) {
 		return pipeline, err
 	}
 
-	if full {
-		assets := new([]Asset)
-		resp, err = r.client().Get("pipelines/"+ID+"/assets").Receive(assets, apierror)
-		if err != nil {
-			return pipeline, err
-		} else if resp.StatusCode > 400 {
-			err = fmt.Errorf(apierror.Message)
-			return pipeline, err
-		}
-
-		pipeline.Assets = *assets
-	}
-
 	return pipeline, err
 }
 
-func (r *RestClient) ListDoc() error {
-	docs := make(map[string]map[string]*doc.Processor)
+func (r *RestClient) NewPipeline(pipeline *models.Pipeline) (*models.Pipeline, error) {
+	newPipeline := new(models.Pipeline)
+	apierror := new(models.Error)
 
-	apierror := new(Error)
-	resp, err := r.client().Get("docs").Receive(&docs, apierror)
-	pp.Println("docs-->", docs)
+	resp, err := r.client().Post("pipelines").BodyJSON(pipeline).Receive(newPipeline, apierror)
+
+	if err != nil {
+		return newPipeline, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+	return newPipeline, err
+}
+
+func (r *RestClient) UpdatePipeline(UUID string, data *map[string]interface{}) (*models.Pipeline, error) {
+	newPipeline := new(models.Pipeline)
+	apierror := new(models.Error)
+
+	resp, err := r.client().Patch("pipelines/"+UUID).BodyJSON(data).Receive(newPipeline, apierror)
+
+	if err != nil {
+		return newPipeline, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+	return newPipeline, err
+}
+
+func (r *RestClient) StartPipeline(UUID string) (*models.Pipeline, error) {
+	newPipeline := new(models.Pipeline)
+	apierror := new(models.Error)
+
+	var data = map[string]interface{}{
+		"active": true,
+	}
+
+	resp, err := r.client().Patch("pipelines/"+UUID).BodyJSON(data).Receive(newPipeline, apierror)
+	if err != nil {
+		return newPipeline, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return newPipeline, err
+}
+
+func (r *RestClient) StopPipeline(UUID string) (*models.Pipeline, error) {
+	newPipeline := new(models.Pipeline)
+	apierror := new(models.Error)
+
+	var data = map[string]interface{}{
+		"active": false,
+	}
+
+	resp, err := r.client().Patch("pipelines/"+UUID).BodyJSON(data).Receive(newPipeline, apierror)
+	if err != nil {
+		return newPipeline, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return newPipeline, err
+}
+
+func (r *RestClient) DeletePipeline(UUID string) error {
+	apierror := new(models.Error)
+
+	resp, err := r.client().Delete("pipelines/"+UUID).Receive(nil, apierror)
 	if err != nil {
 		return err
 	} else if resp.StatusCode > 400 {
 		err = fmt.Errorf(apierror.Message)
 	}
-	return err
+
+	return nil
 }
 
-func (r *RestClient) Test() {
+func (r *RestClient) NewAsset(initAsset *models.Asset) (*models.Asset, error) {
+	asset := new(models.Asset)
+	apierror := new(models.Error)
 
+	resp, err := r.client().Post("assets").BodyJSON(initAsset).Receive(asset, apierror)
+	if err != nil {
+		return asset, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return asset, nil
 }
+
+func (r *RestClient) Asset(UUID string) (*models.Asset, error) {
+	asset := new(models.Asset)
+	apierror := new(models.Error)
+
+	resp, err := r.client().Get("assets/"+UUID).Receive(asset, apierror)
+
+	if err != nil {
+		return asset, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+		return asset, err
+	}
+
+	return asset, err
+}
+
+func (r *RestClient) DeleteAsset(UUID string) error {
+	apierror := new(models.Error)
+
+	resp, err := r.client().Delete("assets/"+UUID).Receive(nil, apierror)
+	if err != nil {
+		return err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return nil
+}
+
+func (r *RestClient) UpdateAsset(UUID string, data *map[string]interface{}) (*models.Asset, error) {
+	newAsset := new(models.Asset)
+	apierror := new(models.Error)
+	pp.Println("data-->", data)
+	resp, err := r.client().Patch("assets/"+UUID).BodyJSON(data).Receive(newAsset, apierror)
+
+	if err != nil {
+		return newAsset, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+	return newAsset, err
+}
+
+func (r *RestClient) ReplaceAsset(UUID string, initAsset *models.Asset) (*models.Asset, error) {
+	newAsset := new(models.Asset)
+	apierror := new(models.Error)
+
+	resp, err := r.client().Put("assets/"+UUID).BodyJSON(initAsset).Receive(newAsset, apierror)
+
+	if err != nil {
+		return newAsset, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+	return newAsset, err
+}
+
+// func debug(r io.ReadCloser) string {
+// 	buf := new(bytes.Buffer)
+// 	buf.ReadFrom(r)
+// 	return buf.String()
+// }

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -14,22 +13,22 @@ import (
 
 // stopCmd represents the stop command
 var confCmd = &cobra.Command{
-	Use:   "conf [pipelineID]",
+	Use:   "conf [pipelineUUID]",
 	Short: "Retrieve configuration file and its related files of a running pipeline",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		cli := api.NewRestClient(viper.GetString("host"))
+		cli := api.New(viper.GetString("host"))
 
 		for _, ID := range args {
 			// Send a request & read result
-			pipeline, err := cli.Pipeline(ID, true)
+			pipeline, err := cli.Pipeline(ID)
 			if err != nil {
-				fmt.Printf("error : %v\n", err)
+				fmt.Fprintf(os.Stderr, "error : %v\n", err)
 				os.Exit(1)
 			}
-			uid := filepath.Base(filepath.Dir(pipeline.ConfigLocation))
+			uid := pipeline.Uuid
 
 			cwd, _ := os.Getwd()
 			cwd = filepath.Join(cwd, uid)
@@ -37,28 +36,18 @@ var confCmd = &cobra.Command{
 
 			//Save assets to cwd + pipeline uuid
 			for _, asset := range pipeline.Assets {
-				dest := filepath.Join(cwd, asset.Path)
+				dest := filepath.Join(cwd, asset.Name)
 				dir := filepath.Dir(dest)
 				os.MkdirAll(dir, os.ModePerm)
-				b64Decode(asset.Content, dest)
-				// fmt.Printf("%s\n", filepath.Join(uid, asset.Path))
+
+				if err := ioutil.WriteFile(dest, asset.Value, 07440); err != nil {
+					fmt.Fprintf(os.Stderr, "error : '%s' - %s \n", err.Error(), dest)
+					os.Exit(1)
+				}
 				fmt.Printf("%s\n", dest)
 			}
 		}
 	},
-}
-
-func b64Decode(code string, dest string) error {
-	buff, err := base64.StdEncoding.DecodeString(code)
-	if err != nil {
-		return err
-	}
-
-	if err := ioutil.WriteFile(dest, buff, 07440); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func init() {

@@ -299,6 +299,7 @@ func (p *PipelineApiController) startPipeline(uuid string) error {
 	// save Assets
 	// directory = $data / remote / UUID /
 
+	//TODO : This part should be core's responsability
 	uidString := fmt.Sprintf("%s_%d", pipeline.Uuid, time.Now().Unix())
 
 	cwd = filepath.Join(p.dataLocation, "_pipelines", uidString)
@@ -345,7 +346,7 @@ func (p *PipelineApiController) startPipeline(uuid string) error {
 	if err != nil {
 		return err
 	}
-
+	// END of core's responsability
 	UUID, err := StartPipeline(&ppl, agt)
 	if err != nil {
 		return err

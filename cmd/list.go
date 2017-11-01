@@ -40,8 +40,8 @@ var listCmd = &cobra.Command{
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		cli := api.NewRestClient(viper.GetString("host"))
-		pipelines, err := cli.ListPipelines()
+		cli := api.New(viper.GetString("host"))
+		pipelines, err := cli.Pipelines()
 		if err != nil {
 			fmt.Printf("list error: %v\n", err.Error())
 		} else {
@@ -49,6 +49,7 @@ var listCmd = &cobra.Command{
 			table.SetHeader([]string{
 				"UUID",
 				"name",
+				"state",
 				"configuration",
 			})
 
@@ -57,10 +58,14 @@ var listCmd = &cobra.Command{
 				if pipeline.ConfigHostLocation != fqdn.Get() {
 					host = pipeline.ConfigHostLocation + "@"
 				}
-
+				active := "stopped"
+				if pipeline.Active {
+					active = "running"
+				}
 				table.Append([]string{
 					pipeline.Uuid,
 					pipeline.Label,
+					active,
 					fmt.Sprintf("%s%s",
 						host,
 						pipeline.ConfigLocation),

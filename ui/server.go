@@ -11,15 +11,15 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/vjeantet/bitfan/apiv2"
+	"github.com/vjeantet/bitfan/api"
 	"github.com/vjeantet/bitfan/core/models"
 	eztemplate "github.com/vjeantet/ez-gin-template"
 )
 
-var apiClient *apiv2.RestClient
+var apiClient *api.RestClient
 
 func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Handler {
-	apiClient = apiv2.New(apiBaseUrl)
+	apiClient = api.New(apiBaseUrl)
 
 	r := gin.New()
 	render := eztemplate.New()
