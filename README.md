@@ -1,10 +1,22 @@
-<img height="75px" src="docs/static/open-fan-black-medium.png"  align="left"/> 
 
-# Bitfan
+<h1 align="center">
+  <a href="https://bitfan.io"><img src="docs/static/open-fan-black-medium.png" alt="Bitfan"></a>
+  <br>
+  Bitfan
+</h1>
 
-Bitfan is an open source data processing pipeline really inspired by Logstash.
+<h4 align="center">Data and Event processing pipeliner really inspired by Logstash.</h4>
 
-Bitfan is written in Go and should build on all platforms.
+<p align="center">
+  
+[![GoDoc](https://godoc.org/github.com/vjeantet/bitfan?status.svg)](https://godoc.org/github.com/vjeantet/bitfan)
+[![Go Report Card](https://goreportcard.com/badge/github.com/vjeantet/bitfan)](https://goreportcard.com/report/github.com/vjeantet/bitfan)
+[![Build Status](https://travis-ci.org/vjeantet/bitfan.svg?branch=master)](https://travis-ci.org/vjeantet/bitfan)
+[![Coverage Status](https://coveralls.io/repos/github/vjeantet/bitfan/badge.svg?branch=master)](https://coveralls.io/github/vjeantet/bitfan?branch=master)
+
+</p>
+
+---
 
 # Get bitfan, usage and configuration documentation and a availables processors 
 
@@ -23,12 +35,6 @@ Bitfan is written in Go and should build on all platforms.
 - [x] monitor pipeline processors and events with prometheus
 - [ ] REST API to manage Bitfan (WIP)
 
-# Badges
-
-[![GoDoc](https://godoc.org/github.com/vjeantet/bitfan?status.svg)](https://godoc.org/github.com/vjeantet/bitfan)
-[![Go Report Card](https://goreportcard.com/badge/github.com/vjeantet/bitfan)](https://goreportcard.com/report/github.com/vjeantet/bitfan)
-[![Build Status](https://travis-ci.org/vjeantet/bitfan.svg?branch=master)](https://travis-ci.org/vjeantet/bitfan)
-[![Coverage Status](https://coveralls.io/repos/github/vjeantet/bitfan/badge.svg?branch=master)](https://coveralls.io/github/vjeantet/bitfan?branch=master)
 
 
 
