@@ -76,8 +76,9 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 			core.ListenAndServe(viper.GetString("host"), handlers...)
 		}
-
-		core.Start()
+		if len(args) == 0 {
+			core.Start()
+		}
 		core.Log().Debugln("bitfan started")
 
 		// Start configumation in config or in STDIN
