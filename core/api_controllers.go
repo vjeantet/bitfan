@@ -2,19 +2,13 @@ package core
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/k0kubun/pp"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core/models"
-	"github.com/vjeantet/bitfan/lib"
 )
 
 type AssetApiController struct {
@@ -148,7 +142,7 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 
 	// Handle optinal Start
 	if pipeline.Active == true {
-		err = p.startPipeline(pipeline.Uuid)
+		err = StartPipelineByUUID(pipeline.Uuid)
 		if err != nil {
 			c.JSON(500, models.Error{Message: err.Error()})
 			return
@@ -219,6 +213,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 		c.JSON(500, models.Error{Message: err.Error()})
 		return
 	}
+
 	p.database.Save(&mPipeline)
 
 	// handle Start / Stop / Restart
@@ -230,19 +225,19 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 			switch nextActive {
 			case true: // restart
 				Log().Debugf("restarting pipeline %s", uuid)
-				err := p.stopPipeline(uuid)
+				err := StopPipeline(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
 					return
 				}
-				err = p.startPipeline(uuid)
+				err = StartPipelineByUUID(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
 					return
 				}
 			case false: // stop
 				Log().Debugf("stopping pipeline %s", uuid)
-				err := p.stopPipeline(uuid)
+				err := StopPipeline(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
 					return
@@ -252,7 +247,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 			switch nextActive {
 			case true: // start pipeline
 				Log().Debugf("starting pipeline %s", uuid)
-				err := p.startPipeline(uuid)
+				err := StartPipelineByUUID(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
 					return
@@ -282,76 +277,4 @@ func (p *PipelineApiController) DeleteByUUID(c *gin.Context) {
 	// TODO : Delete related Assets
 
 	c.JSON(204, "")
-}
-
-func (p *PipelineApiController) stopPipeline(uuid string) error {
-	return StopPipeline(uuid)
-}
-func (p *PipelineApiController) startPipeline(uuid string) error {
-
-	pipeline := models.Pipeline{Uuid: uuid}
-	if p.database.Preload("Assets").Where(&pipeline).First(&pipeline).RecordNotFound() {
-		return fmt.Errorf("Pipeline %s not found", uuid)
-	}
-
-	var cwd string
-
-	// save Assets
-	// directory = $data / remote / UUID /
-
-	//TODO : This part should be core's responsability
-	uidString := fmt.Sprintf("%s_%d", pipeline.Uuid, time.Now().Unix())
-
-	cwd = filepath.Join(p.dataLocation, "_pipelines", uidString)
-	Log().Debugf("configuration %s stored to %s", uidString, cwd)
-	os.MkdirAll(cwd, os.ModePerm)
-
-	pp.Println("pipeline-->", pipeline)
-
-	//Save assets to cwd
-	for _, asset := range pipeline.Assets {
-		dest := filepath.Join(cwd, asset.Name)
-		dir := filepath.Dir(dest)
-		os.MkdirAll(dir, os.ModePerm)
-		if err := ioutil.WriteFile(dest, asset.Value, 07770); err != nil {
-			return err
-		}
-
-		if asset.Type == models.ASSET_TYPE_ENTRYPOINT {
-			pipeline.ConfigLocation = filepath.Join(cwd, asset.Name)
-		}
-
-		if pipeline.ConfigLocation == "" {
-			return fmt.Errorf("missing entrypont for pipeline %s", pipeline.Uuid)
-		}
-
-		Log().Debugf("configuration %s asset %s stored", uidString, asset.Name)
-	}
-
-	Log().Debugf("configuration %s pipeline %s ready to be loaded", uidString, pipeline.ConfigLocation)
-
-	var loc *lib.Location
-	var err error
-	loc, err = lib.NewLocation(pipeline.ConfigLocation, cwd)
-
-	if err != nil {
-		return err
-	}
-
-	ppl := loc.ConfigPipeline()
-	ppl.Name = pipeline.Label
-	ppl.Uuid = pipeline.Uuid
-
-	agt, err := loc.ConfigAgents()
-	if err != nil {
-		return err
-	}
-	// END of core's responsability
-	UUID, err := StartPipeline(&ppl, agt)
-	if err != nil {
-		return err
-	}
-	Log().Debugf("Pipeline %s started UUID=%s, uuid=%s", pipeline.Label, UUID, pipeline.Uuid)
-
-	return nil
 }

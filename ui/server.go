@@ -158,6 +158,11 @@ func updatePipeline(c *gin.Context) {
 	var data = map[string]interface{}{
 		"label":       c.Request.PostFormValue("label"),
 		"description": c.Request.PostFormValue("description"),
+		"auto_start":  false,
+	}
+
+	if _, ok := c.Request.PostForm["auto_start"]; ok {
+		data["auto_start"] = true
 	}
 
 	pnew, _ := apiClient.UpdatePipeline(pipelineUUID, &data)

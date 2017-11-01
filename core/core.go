@@ -2,10 +2,12 @@ package core
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"golang.org/x/sync/syncmap"
 
@@ -16,6 +18,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/lib"
 )
 
 var (
@@ -127,6 +130,76 @@ func ListenAndServe(addr string, hs ...FnMux) {
 	baseURL = fmt.Sprintf("http://%s:%s", addrSpit[0], addrSpit[1])
 
 	Log().Infof("Ready to serve on %s", baseURL)
+}
+
+func Start() {
+	pipelinesToStart := []models.Pipeline{}
+	db.Where(&models.Pipeline{AutoStart: true}).Find(&pipelinesToStart).RecordNotFound()
+
+	for _, p := range pipelinesToStart {
+		StartPipelineByUUID(p.Uuid)
+	}
+}
+
+func StartPipelineByUUID(UUID string) error {
+	tPipeline := models.Pipeline{Uuid: UUID}
+	if db.Preload("Assets").Where(&tPipeline).First(&tPipeline).RecordNotFound() {
+		return fmt.Errorf("Pipeline %s not found", UUID)
+	}
+
+	uidString := fmt.Sprintf("%s_%d", tPipeline.Uuid, time.Now().Unix())
+
+	cwd := filepath.Join(DataLocation(), "_pipelines", uidString)
+	Log().Debugf("configuration %s stored to %s", uidString, cwd)
+	os.MkdirAll(cwd, os.ModePerm)
+
+	//Save assets to cwd
+	for _, asset := range tPipeline.Assets {
+		dest := filepath.Join(cwd, asset.Name)
+		dir := filepath.Dir(dest)
+		os.MkdirAll(dir, os.ModePerm)
+		if err := ioutil.WriteFile(dest, asset.Value, 07770); err != nil {
+			return err
+		}
+
+		if asset.Type == models.ASSET_TYPE_ENTRYPOINT {
+			tPipeline.ConfigLocation = filepath.Join(cwd, asset.Name)
+		}
+
+		if tPipeline.ConfigLocation == "" {
+			return fmt.Errorf("missing entrypont for pipeline %s", tPipeline.Uuid)
+		}
+
+		Log().Debugf("configuration %s asset %s stored", uidString, asset.Name)
+	}
+
+	Log().Debugf("configuration %s pipeline %s ready to be loaded", uidString, tPipeline.ConfigLocation)
+
+	//TODO : resolve lib.Location dans location.Location
+
+	var loc *lib.Location
+	var err error
+	loc, err = lib.NewLocation(tPipeline.ConfigLocation, cwd)
+	if err != nil {
+		return err
+	}
+
+	ppl := loc.ConfigPipeline()
+	ppl.Name = tPipeline.Label
+	ppl.Uuid = tPipeline.Uuid
+
+	agt, err := loc.ConfigAgents()
+	if err != nil {
+		return err
+	}
+
+	nUUID, err := StartPipeline(&ppl, agt)
+	if err != nil {
+		return err
+	}
+
+	Log().Debugf("Pipeline %s started UUID=%s", tPipeline.Label, nUUID)
+	return nil
 }
 
 // StartPipeline load all agents form a configPipeline and returns pipeline's ID

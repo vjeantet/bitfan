@@ -57,6 +57,30 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		}
 		log := core.Log()
 
+		if err := core.SetDataLocation(viper.GetString("data")); err != nil {
+			core.Log().Errorf("error with data location - %v", err)
+			panic(err.Error())
+		}
+
+		if !viper.GetBool("no-network") {
+
+			handlers := []core.FnMux{}
+			handlers = append(handlers, core.WebHookServer())
+			// handlers = append(handlers, core.HTTPHandler("/api/v2/", api.Handler("api/v2", plugins)))
+			handlers = append(handlers, core.ApiServer("api/v2"))
+			handlers = append(handlers, core.HTTPHandler("/ui/", ui.Handler("ui", "ui", core.DataLocation(), viper.GetString("host"))))
+
+			if viper.IsSet("prometheus") {
+				handlers = append(handlers, core.PrometheusServer(viper.GetString("prometheus.path")))
+			}
+
+			core.ListenAndServe(viper.GetString("host"), handlers...)
+		}
+
+		core.Start()
+		core.Log().Debugln("bitfan started")
+
+		// Start configumation in config or in STDIN
 		var locations lib.Locations
 		cwd, _ := os.Getwd()
 
@@ -81,28 +105,6 @@ When no configuration is passed to the command, bitfan use the config set in glo
 				locations.AddLocation(loc)
 			}
 		}
-
-		if err := core.SetDataLocation(viper.GetString("data")); err != nil {
-			core.Log().Errorf("error with data location - %v", err)
-			panic(err.Error())
-		}
-
-		if !viper.GetBool("no-network") {
-
-			handlers := []core.FnMux{}
-			handlers = append(handlers, core.WebHookServer())
-			// handlers = append(handlers, core.HTTPHandler("/api/v1/", api.Handler("api/v1", plugins)))
-			handlers = append(handlers, core.ApiServer("api/v2"))
-			handlers = append(handlers, core.HTTPHandler("/ui/", ui.Handler("ui", "ui", core.DataLocation(), viper.GetString("host"))))
-
-			if viper.IsSet("prometheus") {
-				handlers = append(handlers, core.PrometheusServer(viper.GetString("prometheus.path")))
-			}
-
-			core.ListenAndServe(viper.GetString("host"), handlers...)
-		}
-
-		core.Log().Debugln("bitfan started")
 
 		for _, loc := range locations.Items {
 			agt, err := loc.ConfigAgents()
