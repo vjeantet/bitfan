@@ -1,6 +1,6 @@
 
 <h1 align="center">
-  <a href="https://bitfan.io"><img src="docs/static/open-fan-black-medium.png" alt="Bitfan"></a>
+  <a href="https://bitfan.io"><img src="docs/static/open-fan-black-medium.png" height="150px" alt="Bitfan"></a>
   <br>
   Bitfan
 </h1>
@@ -8,12 +8,18 @@
 <h4 align="center">Data and Event processing pipeliner really inspired by Logstash.</h4>
 
 <p align="center">
-  
-[![GoDoc](https://godoc.org/github.com/vjeantet/bitfan?status.svg)](https://godoc.org/github.com/vjeantet/bitfan)
-[![Go Report Card](https://goreportcard.com/badge/github.com/vjeantet/bitfan)](https://goreportcard.com/report/github.com/vjeantet/bitfan)
-[![Build Status](https://travis-ci.org/vjeantet/bitfan.svg?branch=master)](https://travis-ci.org/vjeantet/bitfan)
-[![Coverage Status](https://coveralls.io/repos/github/vjeantet/bitfan/badge.svg?branch=master)](https://coveralls.io/github/vjeantet/bitfan?branch=master)
-
+	<a href="https://godoc.org/github.com/vjeantet/bitfan">
+		<img src="https://godoc.org/github.com/vjeantet/bitfan?status.svg" alt="GoDoc" style="max-width:100%;">
+	</a>
+    <a href="https://goreportcard.com/report/github.com/vjeantet/bitfan">
+    	<img src="https://goreportcard.com/badge/github.com/vjeantet/bitfan" alt="Go Report Card" style="max-width:100%;">
+    </a>
+    <a href="https://travis-ci.org/vjeantet/bitfan">
+    	<img src="https://travis-ci.org/vjeantet/bitfan.svg?branch=master" alt="Build Status" style="max-width:100%;">
+    </a>
+    <a href="https://coveralls.io/github/vjeantet/bitfan?branch=master">
+    	<img src="https://coveralls.io/repos/github/vjeantet/bitfan/badge.svg?branch=master" alt="Coverage Status" style="max-width:100%;">
+   	</a>
 </p>
 
 ---
