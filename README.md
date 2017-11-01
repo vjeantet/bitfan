@@ -1,10 +1,9 @@
+<img height="100px" src="docs/static/open-fan-black-medium.png" align="left" />
 # Bitfan
 
 Bitfan is an open source data processing pipeline really inspired by Logstash.
 
 Bitfan is written in Go and should build on all platforms.
-
-![Bitfan logo](docs/static/open-fan.png "Bitfan")
 
 # Get bitfan, usage and configuration documentation and a availables processors 
 
