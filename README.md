@@ -1,6 +1,6 @@
+<img height="75px" src="docs/static/open-fan-black-medium.png"  align="left"/> 
 
-
-# <img height="45px" src="docs/static/open-fan-black-medium.png"  /> Bitfan
+# Bitfan
 
 Bitfan is an open source data processing pipeline really inspired by Logstash.
 
