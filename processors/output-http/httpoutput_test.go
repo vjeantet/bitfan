@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vjeantet/bitfan/codecs"
@@ -78,5 +79,58 @@ func TestLine(t *testing.T) {
 	assert.NoError(t, p.Receive(testutils.NewPacket("message1", map[string]interface{}{"abc": "def1", "n": 123})))
 	assert.NoError(t, p.Receive(testutils.NewPacket("message2", map[string]interface{}{"abc": "def2", "n": 456})))
 	assert.Equal(t, "message1\tdef1\t123\nmessage2\tdef2\t456\n", <-c)
+	assert.NoError(t, p.Stop(nil))
+}
+
+func TestRetry(t *testing.T) {
+	c := make(chan string, 1)
+	counter := 0
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		counter++
+		if counter == 1 {
+			w.WriteHeader(http.StatusInternalServerError)
+			c <- "500"
+		} else {
+			body, _ := ioutil.ReadAll(r.Body)
+			c <- string(body)
+			w.WriteHeader(http.StatusOK)
+		}
+	}))
+	defer ts.Close()
+	p := New().(*processor)
+	ctx := testutils.NewProcessorContext()
+	conf := map[string]interface{}{
+		"url": ts.URL,
+		"codec": codecs.CodecCollection{
+			Enc: codecs.New("line", map[string]interface{}{
+				"format": "{{.message}}",
+			}, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
+		"batch_size":     1,
+		"batch_interval": 1,
+		"retry_interval": 1,
+	}
+	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
+	assert.NoError(t, p.Start(nil))
+	assert.NoError(t, p.Receive(testutils.NewPacket("message", nil)))
+	assert.Equal(t, "500", <-c)
+	assert.Equal(t, "message\n", <-c)
+	assert.NoError(t, p.Stop(nil))
+}
+
+func TestStopInRetry(t *testing.T) {
+	p := New().(*processor)
+	ctx := testutils.NewProcessorContext()
+	conf := map[string]interface{}{
+		"url":            "bad url",
+		"batch_size":     1,
+		"batch_interval": 1,
+		"retry_interval": 1,
+	}
+	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
+	assert.NoError(t, p.Start(nil))
+	assert.NoError(t, p.Receive(testutils.NewPacket("doom message", nil)))
+	time.Sleep(time.Second)
 	assert.NoError(t, p.Stop(nil))
 }
