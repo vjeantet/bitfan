@@ -22,7 +22,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/api"
+	"github.com/vjeantet/bitfan/api/client"
 )
 
 func init() {
@@ -40,7 +40,7 @@ var listCmd = &cobra.Command{
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		cli := api.New(viper.GetString("host"))
+		cli := client.New(viper.GetString("host"))
 		pipelines, err := cli.Pipelines()
 		if err != nil {
 			fmt.Printf("list error: %v\n", err.Error())

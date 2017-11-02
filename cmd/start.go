@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/api"
+	"github.com/vjeantet/bitfan/api/client"
 )
 
 // startCmd represents the start command
@@ -19,7 +19,7 @@ var startCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 
-		cli := api.New(viper.GetString("host"))
+		cli := client.New(viper.GetString("host"))
 
 		for _, uuid := range args {
 			// Send a request & read result

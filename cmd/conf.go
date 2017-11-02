@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/api"
+	"github.com/vjeantet/bitfan/api/client"
 )
 
 // stopCmd represents the stop command
@@ -19,7 +19,7 @@ var confCmd = &cobra.Command{
 		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		cli := api.New(viper.GetString("host"))
+		cli := client.New(viper.GetString("host"))
 
 		for _, ID := range args {
 			// Send a request & read result
