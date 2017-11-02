@@ -19,7 +19,6 @@ import (
 	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/core/models"
 	"github.com/vjeantet/bitfan/lib"
-	"github.com/vjeantet/bitfan/logBufferLru"
 )
 
 var (
@@ -106,18 +105,8 @@ func PrometheusServer(path string) FnMux {
 	return HTTPHandler(path, prometheus.Handler())
 }
 
-func ApiServer(path string) FnMux {
-	hook, _ := logBufferLru.NewHook(logBufferLru.HookConfig{Size: 100 * 10})
-	logger.Hooks.Add(hook)
-	return HTTPHandler(
-		"/"+path+"/",
-		apiHandler(
-			path,
-			db,
-			DataLocation(),
-			hook,
-		),
-	)
+func Database() *gorm.DB {
+	return db
 }
 
 func HTTPHandler(path string, s http.Handler) FnMux {
@@ -265,6 +254,14 @@ func Stop() error {
 	myStore.close()
 	db.Close()
 	return nil
+}
+
+func GetPipeline(UUID string) (*Pipeline, bool) {
+	if i, found := pipelines.Load(UUID); found {
+		return i.(*Pipeline), found
+	} else {
+		return nil, found
+	}
 }
 
 func Pipelines() map[string]*Pipeline {

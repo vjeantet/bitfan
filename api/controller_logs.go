@@ -1,4 +1,4 @@
-package core
+package api
 
 // Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -8,8 +8,10 @@ import (
 	"bytes"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
@@ -38,6 +40,32 @@ var wsupgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
+}
+
+type LogApiController struct {
+	Hub *Hub
+}
+
+func (l *LogApiController) Stream(c *gin.Context) {
+	l.wshandler(c.Writer, c.Request)
+}
+
+func (l *LogApiController) wshandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := wsupgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	client := &Client{hub: l.Hub, conn: conn, send: make(chan []byte, 256)}
+	l.Hub.register <- client
+	msgs := strings.Split(strings.TrimSpace(l.Hub.Wellcome()), "\n")
+
+	for _, m := range msgs {
+		client.send <- []byte(m)
+	}
+
+	go client.writePump()
+	go client.readPump()
 }
 
 // Client is a middleman between the websocket connection and the hub.

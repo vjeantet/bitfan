@@ -1,10 +1,11 @@
-package core
+package api
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/logBufferLru"
 )
 
@@ -12,7 +13,8 @@ import (
 func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
-func apiHandler(path string, db *gorm.DB, dataLocation string, logs *logBufferLru.BufferLruHook) http.Handler {
+
+func Handler(path string, db *gorm.DB, dataLocation string, logs *logBufferLru.BufferLruHook) http.Handler {
 	r := gin.New()
 	r.Use(
 		gin.Recovery(),
@@ -74,7 +76,7 @@ func apiHandler(path string, db *gorm.DB, dataLocation string, logs *logBufferLr
 		// v1.GET("/docs/outputs/:name", getDocsOutputsByName)
 	}
 
-	Log().Debugf("Serving API on /%s/ ", path)
+	core.Log().Debugf("Serving API on /%s/ ", path)
 
 	return r
 }
