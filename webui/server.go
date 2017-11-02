@@ -1,4 +1,4 @@
-package ui
+package webui
 
 import (
 	"bytes"
@@ -18,7 +18,7 @@ import (
 
 var apiClient *api.RestClient
 
-func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Handler {
+func Handler(assetsPath, URLpath string, dbpath string, apiBaseUrl string) http.Handler {
 	apiClient = api.New(apiBaseUrl)
 
 	r := gin.New()
@@ -54,7 +54,7 @@ func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Han
 	store := sessions.NewCookieStore([]byte("secret"))
 	r.Use(sessions.Sessions("mysession", store), gin.Recovery())
 	// r.Use(gin.Recovery())
-	g := r.Group(path)
+	g := r.Group(URLpath)
 	{
 		g.StaticFS("/public", http.Dir(assetsPath+"/public"))
 		g.GET("/", getPipelines)
