@@ -12,9 +12,8 @@ import (
 )
 
 type PipelineApiController struct {
-	database     *gorm.DB
-	dataLocation string
-	path         string
+	database *gorm.DB
+	path     string
 }
 
 func (p *PipelineApiController) Create(c *gin.Context) {

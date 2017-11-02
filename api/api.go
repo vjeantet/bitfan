@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/logBufferLru"
 )
@@ -14,7 +13,11 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-func Handler(path string, db *gorm.DB, dataLocation string, logs *logBufferLru.BufferLruHook) http.Handler {
+func Handler(path string) http.Handler {
+
+	logs, _ := logBufferLru.NewHook(logBufferLru.HookConfig{Size: 100 * 10})
+	core.Log().Hooks.Add(logs)
+
 	r := gin.New()
 	r.Use(
 		gin.Recovery(),
@@ -27,14 +30,12 @@ func Handler(path string, db *gorm.DB, dataLocation string, logs *logBufferLru.B
 	{
 
 		pipelineCtrl := &PipelineApiController{
-			database:     db,
-			dataLocation: dataLocation,
-			path:         path,
+			database: core.Database(),
+			path:     path,
 		}
 		assetCtrl := &AssetApiController{
-			database:     db,
-			dataLocation: dataLocation,
-			path:         path,
+			database: core.Database(),
+			path:     path,
 		}
 
 		logsCtrl := &LogApiController{

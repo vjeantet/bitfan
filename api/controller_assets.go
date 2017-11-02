@@ -11,9 +11,8 @@ import (
 )
 
 type AssetApiController struct {
-	database     *gorm.DB
-	dataLocation string
-	path         string
+	database *gorm.DB
+	path     string
 }
 
 func (a *AssetApiController) Create(c *gin.Context) {
