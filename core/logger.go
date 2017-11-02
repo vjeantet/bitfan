@@ -6,178 +6,145 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-	"github.com/vjeantet/bitfan/processors"
 )
 
-var logger = logrus.New()
-var loggerProcessor = logrus.New()
+var logger *Logger
 
 func init() {
-	logger.Level = logrus.WarnLevel
-	// logger.Formatter = &ProcessorFormatter{formatter: &logrus.JSONFormatter{}}
-
-	loggerProcessor.Level = logrus.WarnLevel
-	loggerProcessor.Formatter = &ProcessorFormatter{formatter: &logrus.TextFormatter{}}
+	logrus.SetLevel(logrus.WarnLevel)
+	logrus.SetFormatter(&bitfanFormatter{formatter: &logrus.TextFormatter{}})
+	logger = NewLogger("core", nil)
 }
 
-type ProcessorFormatter struct {
-	formatter  logrus.Formatter
-	Xpipeline  string
-	Xagent     string
-	Xprocessor string
+type bitfanFormatter struct {
+	formatter logrus.Formatter
 }
 
-func (p *ProcessorFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	if v, ok := entry.Data["Xprocessor"]; ok {
+func (p *bitfanFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+	if v, ok := entry.Data["component"]; ok {
 		entry.Message = fmt.Sprintf(`[%s] %s`,
 			v,
 			entry.Message,
 		)
+	} else {
+		entry.Message = fmt.Sprintf(`%s`, entry.Message)
 	}
 	return p.formatter.Format(entry)
 }
 
-func Log() *logrus.Logger {
+//Should be unexported
+func Log() *Logger {
 	return logger
 }
 
-func LogWithEvent(e processors.IPacket) *logrus.Entry {
-	return Log().WithFields(logrus.Fields{
-		"field.message": e.Fields().ValueOrEmptyForPathString("message"),
-	})
+func SetLogDebugMode() {
+	logrus.SetLevel(logrus.DebugLevel)
 }
 
-func SetLogDebugMode(components []string) {
-	for _, c := range components {
-		switch c {
-		case "core":
-			Log().Level = logrus.DebugLevel
-		case "processors":
-			loggerProcessor.Level = logrus.DebugLevel
-		}
-	}
-}
-
-func SetLogVerboseMode(components []string) {
-	for _, c := range components {
-		switch c {
-		case "core":
-			Log().Level = logrus.InfoLevel
-		case "processors":
-			loggerProcessor.Level = logrus.InfoLevel
-		}
-	}
+func SetLogVerboseMode() {
+	logrus.SetLevel(logrus.InfoLevel)
 }
 
 func SetLogOutputFile(fileLocation string) {
-	Log().Out = ioutil.Discard
-	Log().Formatter = &logrus.TextFormatter{DisableColors: true}
+	logrus.SetOutput(ioutil.Discard)
+	logrus.SetFormatter(&logrus.TextFormatter{DisableColors: true})
 	f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		Log().Errorf("Error while opening log file %v", err)
 	}
-	Log().Out = f
+	logrus.SetOutput(f)
 }
 
-func SetProcessorLogOutputFile(fileLocation string) {
-	loggerProcessor.Formatter = &ProcessorFormatter{formatter: &logrus.TextFormatter{DisableColors: true}}
-	f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0644)
-	if err != nil {
-		Log().Errorf("Error while opening log file %v", err)
-	}
-	loggerProcessor.Out = f
-}
-
-type processorLogger struct {
+type Logger struct {
 	e *logrus.Entry
 }
 
-func newProcessorLogger(procType, agentID, pipelineID string) *processorLogger {
-	return &processorLogger{
-		e: loggerProcessor.WithFields(map[string]interface{}{
-			"Xprocessor": procType,
-			"pipeline":   pipelineID,
-			"agent":      agentID,
-		}),
+func NewLogger(component string, data map[string]interface{}) *Logger {
+	if data == nil {
+		data = map[string]interface{}{}
+	}
+	data["component"] = component
+	return &Logger{
+		e: logrus.WithFields(data),
 	}
 }
 
-func (p *processorLogger) Debug(args ...interface{}) {
+func (p *Logger) Debug(args ...interface{}) {
 	p.e.Debug(args...)
 }
-func (p *processorLogger) Debugf(format string, args ...interface{}) {
+func (p *Logger) Debugf(format string, args ...interface{}) {
 	p.e.Debugf(format, args...)
 }
-func (p *processorLogger) Debugln(args ...interface{}) {
+func (p *Logger) Debugln(args ...interface{}) {
 	p.e.Debugln(args...)
 }
 
-func (p *processorLogger) Error(args ...interface{}) {
+func (p *Logger) Error(args ...interface{}) {
 	p.e.Error(args...)
 }
-func (p *processorLogger) Errorf(format string, args ...interface{}) {
+func (p *Logger) Errorf(format string, args ...interface{}) {
 	p.e.Errorf(format, args...)
 }
-func (p *processorLogger) Errorln(args ...interface{}) {
+func (p *Logger) Errorln(args ...interface{}) {
 	p.e.Errorln(args...)
 }
 
-func (p *processorLogger) Fatal(args ...interface{}) {
+func (p *Logger) Fatal(args ...interface{}) {
 	p.e.Fatal(args...)
 }
-func (p *processorLogger) Fatalf(format string, args ...interface{}) {
+func (p *Logger) Fatalf(format string, args ...interface{}) {
 	p.e.Fatalf(format, args...)
 }
-func (p *processorLogger) Fatalln(args ...interface{}) {
+func (p *Logger) Fatalln(args ...interface{}) {
 	p.e.Fatalln(args...)
 }
 
-func (p *processorLogger) Info(args ...interface{}) {
+func (p *Logger) Info(args ...interface{}) {
 	p.e.Info(args...)
 }
-func (p *processorLogger) Infof(format string, args ...interface{}) {
+func (p *Logger) Infof(format string, args ...interface{}) {
 	p.e.Infof(format, args...)
 }
-func (p *processorLogger) Infoln(args ...interface{}) {
+func (p *Logger) Infoln(args ...interface{}) {
 	p.e.Infoln(args...)
 }
 
-func (p *processorLogger) Panic(args ...interface{}) {
+func (p *Logger) Panic(args ...interface{}) {
 	p.e.Panic(args...)
 }
-func (p *processorLogger) Panicf(format string, args ...interface{}) {
+func (p *Logger) Panicf(format string, args ...interface{}) {
 	p.e.Panicf(format, args...)
 }
-func (p *processorLogger) Panicln(args ...interface{}) {
+func (p *Logger) Panicln(args ...interface{}) {
 	p.e.Panicln(args...)
 }
 
-func (p *processorLogger) Print(args ...interface{}) {
+func (p *Logger) Print(args ...interface{}) {
 	p.e.Print(args...)
 }
-func (p *processorLogger) Printf(format string, args ...interface{}) {
+func (p *Logger) Printf(format string, args ...interface{}) {
 	p.e.Printf(format, args...)
 }
-func (p *processorLogger) Println(args ...interface{}) {
+func (p *Logger) Println(args ...interface{}) {
 	p.e.Println(args...)
 }
 
-func (p *processorLogger) Warn(args ...interface{}) {
+func (p *Logger) Warn(args ...interface{}) {
 	p.e.Warn(args...)
 }
 
-func (p *processorLogger) Warnf(format string, args ...interface{}) {
+func (p *Logger) Warnf(format string, args ...interface{}) {
 	p.e.Warnf(format, args...)
 }
-func (p *processorLogger) Warning(args ...interface{}) {
+func (p *Logger) Warning(args ...interface{}) {
 	p.e.Warning(args...)
 }
-func (p *processorLogger) Warningf(format string, args ...interface{}) {
+func (p *Logger) Warningf(format string, args ...interface{}) {
 	p.e.Warningf(format, args...)
 }
-func (p *processorLogger) Warningln(args ...interface{}) {
+func (p *Logger) Warningln(args ...interface{}) {
 	p.e.Warningln(args...)
 }
-func (p *processorLogger) Warnln(args ...interface{}) {
+func (p *Logger) Warnln(args ...interface{}) {
 	p.e.Warnln(args...)
 }

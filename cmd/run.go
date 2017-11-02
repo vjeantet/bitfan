@@ -49,14 +49,16 @@ When no configuration is passed to the command, bitfan use the config set in glo
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 
-		core.SetLogVerboseMode(viper.GetStringSlice("verbose"))
-		core.SetLogDebugMode(viper.GetStringSlice("debug"))
+		if viper.GetBool("verbose") {
+			core.SetLogVerboseMode()
+		}
+		if viper.GetBool("debug") {
+			core.SetLogDebugMode()
+		}
 
 		if viper.IsSet("log") {
 			core.SetLogOutputFile(viper.GetString("log"))
-			core.SetProcessorLogOutputFile(viper.GetString("log"))
 		}
-		log := core.Log()
 
 		if err := core.SetDataLocation(viper.GetString("data")); err != nil {
 			core.Log().Errorf("error with data location - %v", err)
@@ -81,7 +83,6 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		if len(args) == 0 {
 			core.RunAutoStartPipelines()
 		}
-
 		core.Log().Debugln("bitfan started")
 
 		// Start configumation in config or in STDIN
@@ -115,7 +116,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			agt, err := loc.ConfigAgents()
 
 			if err != nil {
-				log.Errorf("Error : %s %v", loc.Path, err)
+				core.Log().Errorf("Error : %s %v", loc.Path, err)
 				os.Exit(2)
 			}
 			ppl := loc.ConfigPipeline()
@@ -132,7 +133,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 			_, err = core.StartPipeline(&ppl, agt)
 			if err != nil {
-				log.Errorf("error: %v", err)
+				core.Log().Errorf("error: %v", err)
 				os.Exit(1)
 			}
 		}
@@ -148,10 +149,10 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			<-ch
 			close(ch)
 
-			log.Println("")
-			log.Printf("BitFan is stopping...")
+			core.Log().Println("")
+			core.Log().Printf("BitFan is stopping...")
 			core.Stop()
-			log.Printf("Everything stopped gracefully. Goodbye!")
+			core.Log().Printf("Everything stopped gracefully. Goodbye!")
 		}
 
 	},

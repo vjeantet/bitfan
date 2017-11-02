@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/logBufferLru"
 )
@@ -13,10 +14,14 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
+var logger *core.Logger
+
 func Handler(path string) http.Handler {
 
-	logs, _ := logBufferLru.NewHook(logBufferLru.HookConfig{Size: 100 * 10})
-	core.Log().Hooks.Add(logs)
+	logger = core.NewLogger("api", nil)
+
+	logs, _ := logBufferLru.NewHook(logBufferLru.HookConfig{Size: 1000 * 10})
+	logrus.AddHook(logs)
 
 	r := gin.New()
 	r.Use(
@@ -77,7 +82,7 @@ func Handler(path string) http.Handler {
 		// v1.GET("/docs/outputs/:name", getDocsOutputsByName)
 	}
 
-	core.Log().Debugf("Serving API on /%s/ ", path)
+	logger.Debugf("Serving API on /%s/ ", path)
 
 	return r
 }

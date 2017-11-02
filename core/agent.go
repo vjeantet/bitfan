@@ -60,8 +60,17 @@ func (a *agent) configure(conf *config.Agent) error {
 	a.processor.SetPipelineUUID(a.conf.PipelineUUID)
 
 	ctx := processorContext{}
-	ctx.logger = newProcessorLogger(conf.Label, conf.Type, conf.PipelineName)
-	ctx.packetSender = a.send
+	ctx.logger = NewLogger("pipeline",
+		map[string]interface{}{
+			"processor_type":  conf.Type,
+			"pipeline_uuid":   conf.PipelineUUID,
+			"processor_label": conf.Label,
+		},
+	)
+
+	ctx.packetSender = a.send // 	data["processor_type"] = proc_type
+	// 	data["pipeline_uuid"] = pipelineUUID
+	// 	data["processor_label"] = proc_label
 	ctx.packetBuilder = NewPacket
 	ctx.dataLocation = filepath.Join(dataLocation, conf.Type)
 	ctx.configWorkingLocation = conf.Wd

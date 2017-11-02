@@ -41,11 +41,7 @@ func (b *BufferLruHook) String() string {
 
 // Fire is called when a log event is fired.
 func (hook *BufferLruHook) Fire(entry *logrus.Entry) error {
-	msg, err := entry.String()
-	if err != nil {
-		return err
-	}
-	msg = fmt.Sprintf("%s %s\n", entry.Time.Format("02-01-06 15:04:05 - "), entry.Message)
+	msg := fmt.Sprintf("%s %s\n", entry.Time.Format("02-01-06 15:04:05 - "), entry.Message)
 	go func(m []byte) { hook.c <- m }([]byte(msg))
 	hook.buf.Write([]byte(msg))
 	return nil

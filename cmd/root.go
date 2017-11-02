@@ -114,8 +114,8 @@ func init() {
 
 	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.bitfan/ then /etc/bitfan/", "Set the directory containing the bitfan.toml settings")
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
-	RootCmd.PersistentFlags().StringSlice("verbose", []string{}, "Increase verbosity of core, processors, etc... (value = core,processors)")
-	RootCmd.PersistentFlags().StringSlice("debug", []string{}, "Increase verbosity to the last level (trace) (value = core,processors)")
+	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity of logs")
+	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace)")
 }
 
 // initConfig reads in config file and ENV variables if set.
