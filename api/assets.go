@@ -26,7 +26,12 @@ func (a *AssetApiController) Create(c *gin.Context) {
 	uid, _ := uuid.NewV4()
 	asset.Uuid = uid.String()
 	asset.Size = len(asset.Value)
-	asset.ContentType = http.DetectContentType(asset.Value[:512])
+
+	n := 512
+	if len(asset.Value) < 512 {
+		n = len(asset.Value)
+	}
+	asset.ContentType = http.DetectContentType(asset.Value[:n])
 
 	a.database.Create(&asset)
 
@@ -108,7 +113,11 @@ func (a *AssetApiController) ReplaceByUUID(c *gin.Context) {
 	asset.Name = tmpasset.Name
 	asset.Value = tmpasset.Value
 	asset.Size = len(asset.Value)
-	asset.ContentType = http.DetectContentType(asset.Value[:512])
+	n := 512
+	if len(asset.Value) < 512 {
+		n = len(asset.Value)
+	}
+	asset.ContentType = http.DetectContentType(asset.Value[:n])
 
 	a.database.Save(&asset)
 
