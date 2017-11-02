@@ -2,7 +2,9 @@ package core
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -10,6 +12,32 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core/models"
 )
+
+type LogApiController struct {
+	Hub *Hub
+}
+
+func (l *LogApiController) Stream(c *gin.Context) {
+	l.wshandler(c.Writer, c.Request)
+}
+
+func (l *LogApiController) wshandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := wsupgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	client := &Client{hub: l.Hub, conn: conn, send: make(chan []byte, 256)}
+	l.Hub.register <- client
+	msgs := strings.Split(strings.TrimSpace(l.Hub.Wellcome()), "\n")
+
+	for _, m := range msgs {
+		client.send <- []byte(m)
+	}
+
+	go client.writePump()
+	go client.readPump()
+}
 
 type AssetApiController struct {
 	database     *gorm.DB

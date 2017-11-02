@@ -25,7 +25,7 @@ func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Han
 	render := eztemplate.New()
 	render.TemplatesDir = assetsPath + "/views/" // default
 	render.Ext = ".html"                         // default
-	// render.Debug = true                          // default
+	render.Debug = true                          // default
 	render.TemplateFuncMap = template.FuncMap{
 		"dateFormat": (*templateFunctions)(nil).dateFormat,
 		"ago":        (*templateFunctions)(nil).dateAgo,
@@ -58,6 +58,9 @@ func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Han
 	{
 		g.StaticFS("/public", http.Dir(assetsPath+"/public"))
 		g.GET("/", getPipelines)
+
+		// list pipelines
+		g.GET("/logs", getLogs)
 
 		// list pipelines
 		g.GET("/pipelines", getPipelines)
@@ -94,6 +97,10 @@ func Handler(assetsPath, path string, dbpath string, apiBaseUrl string) http.Han
 	}
 
 	return r
+}
+
+func getLogs(c *gin.Context) {
+	c.HTML(200, "logs/logs", gin.H{})
 }
 
 func getPipelines(c *gin.Context) {

@@ -156,8 +156,7 @@ header {
     display: flex;
     flex: 2;
     align-items: stretch;
-    flex-direction: row;
-    justify-content: space-between; }
+    flex-direction: row; }
     header > section a {
       display: block;
       padding: 0 1em;

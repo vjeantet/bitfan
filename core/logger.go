@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -14,6 +14,8 @@ var loggerProcessor = logrus.New()
 
 func init() {
 	logger.Level = logrus.WarnLevel
+	// logger.Formatter = &ProcessorFormatter{formatter: &logrus.JSONFormatter{}}
+
 	loggerProcessor.Level = logrus.WarnLevel
 	loggerProcessor.Formatter = &ProcessorFormatter{formatter: &logrus.TextFormatter{}}
 }
@@ -46,7 +48,6 @@ func LogWithEvent(e processors.IPacket) *logrus.Entry {
 }
 
 func SetLogDebugMode(components []string) {
-
 	for _, c := range components {
 		switch c {
 		case "core":

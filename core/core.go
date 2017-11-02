@@ -19,6 +19,7 @@ import (
 	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/core/models"
 	"github.com/vjeantet/bitfan/lib"
+	"github.com/vjeantet/bitfan/logBufferLru"
 )
 
 var (
@@ -106,7 +107,17 @@ func PrometheusServer(path string) FnMux {
 }
 
 func ApiServer(path string) FnMux {
-	return HTTPHandler("/"+path+"/", apiHandler(path, db, DataLocation()))
+	hook, _ := logBufferLru.NewHook(logBufferLru.HookConfig{Size: 100 * 10})
+	logger.Hooks.Add(hook)
+	return HTTPHandler(
+		"/"+path+"/",
+		apiHandler(
+			path,
+			db,
+			DataLocation(),
+			hook,
+		),
+	)
 }
 
 func HTTPHandler(path string, s http.Handler) FnMux {

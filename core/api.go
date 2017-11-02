@@ -5,18 +5,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/vjeantet/bitfan/logBufferLru"
 )
 
 // var plugins map[string]map[string]core.ProcessorFactory
 func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
-func apiHandler(path string, db *gorm.DB, dataLocation string) http.Handler {
+func apiHandler(path string, db *gorm.DB, dataLocation string, logs *logBufferLru.BufferLruHook) http.Handler {
 	r := gin.New()
 	r.Use(
 		gin.Recovery(),
 		func(c *gin.Context) {
-			c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+			// c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 			c.Next()
 		},
 	)
@@ -33,6 +34,14 @@ func apiHandler(path string, db *gorm.DB, dataLocation string) http.Handler {
 			dataLocation: dataLocation,
 			path:         path,
 		}
+
+		logsCtrl := &LogApiController{
+			Hub: newHub(logs.String),
+		}
+		logs.AddChan(logsCtrl.Hub.Broadcast)
+		go logsCtrl.Hub.run()
+
+		v2.GET("/logs", logsCtrl.Stream) // Websocket
 
 		// curl -i -X POST http://localhost:5123/api/v2/pipelines
 		v2.POST("/pipelines", pipelineCtrl.Create) // créer pipeline
