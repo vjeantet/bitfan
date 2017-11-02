@@ -1,0 +1,80 @@
+{{define "pipelinesidebar"}}
+<nav>
+
+<section class="pipeline">
+  <h2>{{.pipeline.Label}}</h2>
+  {{ template "pipelineactions" .pipeline }}
+</section>
+
+<script id="asset-template" type="text/x-jsrender">
+  <li>
+    <a href="/ui/pipelines/{{$.pipeline.Uuid}}/assets/[[:uuid]]">[[:name]]</a> 
+    <span class="action">
+        <a class="delete" href="/ui/pipelines/{{$.pipeline.Uuid}}/assets/[[:uuid]]/delete">delete</a>
+    </span>
+  </li>
+</script>
+
+<section class="assets">
+  <h2>Assets</h2>
+  {{ range $asset := .pipeline.Assets }}
+  <li>
+    <a href="/ui/pipelines/{{$.pipeline.Uuid}}/assets/{{$asset.Uuid}}">{{$asset.Name}}</a> 
+    <span class="action">
+      {{if ne $asset.Type "entrypoint"}}
+        <a class="delete" href="/ui/pipelines/{{$.pipeline.Uuid}}/assets/{{$asset.Uuid}}/delete">delete</a>
+      {{end}}
+    </span>
+  </li>
+  {{ end }}
+</section>
+
+
+<form action="/ui/pipelines/{{$.pipeline.Uuid}}/assets" class="dropzone" id="my-awesome-dropzone">
+  <div class="dz-message needsclick">
+    Drop files here or click to upload.<br>
+  </div>
+</form>
+
+    <div class="dz-preview dz-file-preview well" id="dz-preview-template">
+      <div class="dz-details">
+        <div class="dz-filename" style="font-size: 10px"><span data-dz-name></span></div>
+        <div class="dz-size" data-dz-size style="font-size: 10px"></div>
+      </div>
+      <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+      <div class="dz-success-mark"><span></span></div>
+      <div class="dz-error-mark"><span></span></div>
+      <div class="dz-error-message"><span data-dz-errormessage></span></div>
+    </div>
+
+    <script type="text/javascript">
+      var drop = $('#dz-preview-template').html();
+      Dropzone.options.myAwesomeDropzone = {
+      paramName: "file", // The name that will be used to transfer the file
+      maxFilesize: 20, // MB
+      // previewTemplate: drop,
+
+      createImageThumbnails: true,
+      init: function() {
+        this.on("success", function(file, responseText) {
+
+          var tmpl = $.templates("#asset-template");
+          $('section .assets').append(tmpl.render({uuid: file.upload.uuid,name:file.upload.filename}));   
+          
+          var d = this
+          setTimeout(function(){
+            $(file.previewTemplate).fadeOut('slow');
+            setTimeout(function(){d.removeFile(file);},500);
+          },2500);
+        });
+      },
+      uploadprogress: function( file,progress, bytesSent) {
+        if (file.previewElement) {
+          console.log(progress + "%") ;
+        }
+      }
+    };
+  </script>
+
+</nav>
+{{end}}

@@ -1,0 +1,77 @@
+{{ define "title"}}Logs{{ end }}
+
+{{ define "sidebar" }}
+{{ end }}
+
+
+
+{{ define "content" }}
+<div class="row">
+  <div class="col">
+  <h1>Logs</h1>
+  </div>
+</div>
+
+{{ range $flash := .flashes }}
+<div class="alert alert-success" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+<script id="logmessage-template" type="text/x-jsrender">
+  <li>[[:message]]</li>
+</script>
+
+<script>
+	$(document).ready(function(){
+		var loc = window.location, new_uri;
+		if (loc.protocol === "https:") {
+		    new_uri = "wss:";
+		} else {
+		    new_uri = "ws:";
+		}
+		new_uri += "//" + loc.host;
+		new_uri += "/api/v2/logs";
+
+		var websocket = new WebSocket(new_uri); 
+		websocket.onopen = function(event) { 
+			console.log("<div class='chat-connection-ack'>Connection is established!</div>");		
+		}
+
+		var logmessagetmpl = $.templates("#logmessage-template");
+		websocket.onmessage = function(event) {
+			// var Data = JSON.parse(event.data);
+			// console.log("<div class='"+Data.message_type+"'>"+Data.message+"</div>");
+			// console.log(event)
+			$('#logs').append(logmessagetmpl.render({message: event.data}));   
+		};
+		
+		websocket.onerror = function(event){
+			console.log("<div class='error'>Problem due to some Error</div>");
+		};
+		websocket.onclose = function(event){
+			console.log("<div class='chat-connection-ack'>Connection Closed</div>");
+		}; 
+		
+		// $('#frmChat').on("submit",function(event){
+		// 	event.preventDefault();
+		// 	$('#chat-user').attr("type","hidden");		
+		// 	var messageJSON = {
+		// 		chat_user: $('#chat-user').val(),
+		// 		chat_message: $('#chat-message').val()
+		// 	};
+		// 	websocket.send(JSON.stringify(messageJSON));
+		// });
+	});
+</script>
+
+<div class="row">
+  <div class="col-12">
+  	<div id="logs"></div>
+  </div>
+</div>
+
+
+
+
+{{ end }}
