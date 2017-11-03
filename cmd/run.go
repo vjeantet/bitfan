@@ -69,7 +69,7 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 			handlers := []core.FnMux{}
 			handlers = append(handlers, core.WebHookServer())
-			handlers = append(handlers, core.HTTPHandler("/ui/", webui.Handler("webui", "ui", core.DataLocation(), viper.GetString("host"))))
+			handlers = append(handlers, core.HTTPHandler("/ui/", webui.Handler("webui/assets", "ui", core.DataLocation(), viper.GetString("host"))))
 			handlers = append(handlers, core.HTTPHandler("/api/v2/", api.Handler("api/v2")))
 
 			if viper.IsSet("prometheus") {

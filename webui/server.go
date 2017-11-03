@@ -25,7 +25,7 @@ func Handler(assetsPath, URLpath string, dbpath string, apiBaseUrl string) http.
 	render := eztemplate.New()
 	render.TemplatesDir = assetsPath + "/views/" // default
 	render.Ext = ".html"                         // default
-	// render.Debug = true                          // default
+	render.Debug = true                          // default
 	render.TemplateFuncMap = template.FuncMap{
 		"dateFormat": (*templateFunctions)(nil).dateFormat,
 		"ago":        (*templateFunctions)(nil).dateAgo,
@@ -100,6 +100,7 @@ func Handler(assetsPath, URLpath string, dbpath string, apiBaseUrl string) http.
 }
 
 func getLogs(c *gin.Context) {
+	// TODO : proxy WS:// github.com/koding/websocketproxy
 	c.HTML(200, "logs/logs", gin.H{})
 }
 

@@ -14,10 +14,10 @@
 # log = "/var/log/bitfan-app.log"
 
 ## Set log verbosity on core and/or processors
-# verbose = true
+verbose = true
 
 # # Debuging
-debug = true
+#debug = true
 
 # Default number of concurent packet processing for processor ?
 # Can be overided in pipeline configuration
