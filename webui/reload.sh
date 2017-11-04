@@ -1,0 +1,1 @@
+CompileDaemon -directory=".." -build="go build -o ./oo" -build-dir="." -command="./oo"

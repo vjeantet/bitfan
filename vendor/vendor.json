@@ -651,12 +651,6 @@
 			"revisionTime": "2017-01-20T22:21:59Z"
 		},
 		{
-			"checksumSHA1": "dcFGT5Jeu01u2cuNwI+wfc++wR8=",
-			"path": "github.com/vjeantet/ez-gin-template",
-			"revision": "147dfcb99ae734092bb887b29189283cba7c7e95",
-			"revisionTime": "2017-07-31T00:08:35Z"
-		},
-		{
 			"checksumSHA1": "AKutLJKryaeNXRdUCi3GyFVW+es=",
 			"path": "github.com/vjeantet/go-lexer",
 			"revision": "7344c549c57e8da70a9579b1ad8b0b95232efa3d",
