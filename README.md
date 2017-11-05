@@ -38,7 +38,8 @@
 - [x] install bitfan as a system daemon / service
 - [x] manage running pipelines (list / stop / start a pipeline in a running bitfan)
 - [x] monitor pipeline processors and events with prometheus
-- [ ] REST API to manage Bitfan (WIP)
+- [x] REST API to manage Bitfan
+- [x] WebUI : https://github.com/vjeantet/bitfan-ui
 
 
 
