@@ -24,7 +24,7 @@ import (
 var (
 	metrics     Metrics
 	myScheduler *scheduler
-	myStore     *memory
+	myMemory    *memory
 
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
 	dataLocation               string                      = "data"
@@ -41,7 +41,7 @@ func init() {
 	myScheduler = newScheduler()
 	myScheduler.Start()
 	//Init Store
-	myStore = NewMemory(dataLocation)
+	myMemory = NewMemory(dataLocation)
 }
 
 // RegisterProcessor is called by the processor loader when the program starts
@@ -251,7 +251,7 @@ func Stop() error {
 		}
 	}
 
-	myStore.close()
+	myMemory.close()
 	db.Close()
 	return nil
 }

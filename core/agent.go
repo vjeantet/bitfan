@@ -74,7 +74,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	ctx.packetBuilder = NewPacket
 	ctx.dataLocation = filepath.Join(dataLocation, conf.Type)
 	ctx.configWorkingLocation = conf.Wd
-	ctx.memory = myStore.Space(conf.Type)
+	ctx.memory = myMemory.Space(conf.Type)
 	ctx.webHook = newWebHook(conf.PipelineName, conf.Label)
 
 	Log().Debugf("data location : %s", ctx.dataLocation)
