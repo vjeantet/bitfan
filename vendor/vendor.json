@@ -51,6 +51,12 @@
 			"revisionTime": "2016-12-24T14:14:13Z"
 		},
 		{
+			"checksumSHA1": "l0iFqayYAaEip6Olaq3/LCOa/Sg=",
+			"path": "github.com/armon/circbuf",
+			"revision": "bbbad097214e2918d8543d5201d12bfd7bca254d",
+			"revisionTime": "2015-08-27T00:49:46Z"
+		},
+		{
 			"checksumSHA1": "ucu0eJ90b2Jlj+KPt0YJzGfwm7s=",
 			"path": "github.com/axgle/mahonia",
 			"revision": "c528b747d92d41ca581a7acf3e604c396fc7c034",
@@ -139,6 +145,12 @@
 			"path": "github.com/elastic/go-lumber/server/v2",
 			"revision": "616041e345fc33c97bc0eb0fa6b388aa07bca3e1",
 			"revisionTime": "2016-06-17T14:03:01Z"
+		},
+		{
+			"checksumSHA1": "7DxViusFRJ7UPH0jZqYatwDrOkY=",
+			"path": "github.com/elazarl/go-bindata-assetfs",
+			"revision": "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43",
+			"revisionTime": "2017-02-27T21:27:28Z"
 		},
 		{
 			"checksumSHA1": "xw+J5sjZGi2Z6jm3kjLQjkv5zuA=",
@@ -241,6 +253,12 @@
 			"path": "github.com/google/go-querystring/query",
 			"revision": "9235644dd9e52eeae6fa48efd539fdc351a0af53",
 			"revisionTime": "2016-03-11T01:20:12Z"
+		},
+		{
+			"checksumSHA1": "hEnH6sgR83Qfx7UNnphNNlelmj0=",
+			"path": "github.com/gorilla/websocket",
+			"revision": "a91eba7f97777409bc2c443f5534d41dd20c5720",
+			"revisionTime": "2017-03-19T17:27:27Z"
 		},
 		{
 			"checksumSHA1": "//3ZiHjCb0xPbp7yeJMLuHZr7r8=",
@@ -361,6 +379,18 @@
 			"path": "github.com/jeromer/syslogparser/rfc5424",
 			"revision": "ff71fe7a7d5279df4b964b31f7ee4adf117277f6",
 			"revisionTime": "2015-07-17T04:28:40Z"
+		},
+		{
+			"checksumSHA1": "zaq9ljjq1vR9vRFPE9NMapyrYio=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "3a9e91ab372120a0e35b518430255308e3d8d5ea",
+			"revisionTime": "2017-09-28T14:48:21Z"
+		},
+		{
+			"checksumSHA1": "4VZ1gLZHMumRjV3fclS1aX8S1aQ=",
+			"path": "github.com/jinzhu/gorm/dialects/sqlite",
+			"revision": "3a9e91ab372120a0e35b518430255308e3d8d5ea",
+			"revisionTime": "2017-09-28T14:48:21Z"
 		},
 		{
 			"checksumSHA1": "Lc5CWD5nzSttJNateoWlPgFE3Vw=",

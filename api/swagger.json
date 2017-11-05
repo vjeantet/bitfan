@@ -1,0 +1,208 @@
+{
+  "swagger": "2.0",
+  "paths": {},
+  "definitions": {
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "ContentType": {
+          "type": "string"
+        },
+        "CreatedAt": {},
+        "ID": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "PipelineUUID": {
+          "type": "string"
+        },
+        "Size": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "UpdatedAt": {},
+        "Value": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8"
+          }
+        },
+        "uuid": {
+          "type": "string",
+          "x-go-name": "Uuid"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+    },
+    "Error": {
+      "description": "A Error is ....\n\nA Error can have.....",
+      "type": "object",
+      "title": "Error represents an error",
+      "properties": {
+        "error": {
+          "type": "string",
+          "x-go-name": "Message"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+    },
+    "Pipeline": {
+      "description": "A Pipeline is ....\n\nA Pipeline can have.....",
+      "type": "object",
+      "title": "Pipeline represents a pipeline",
+      "properties": {
+        "Active": {
+          "type": "boolean"
+        },
+        "CreatedAt": {},
+        "Description": {
+          "type": "string"
+        },
+        "LocationPath": {
+          "type": "string"
+        },
+        "UpdatedAt": {},
+        "assets": {
+          "description": "Assets",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Asset"
+          },
+          "x-go-name": "Assets"
+        },
+        "auto_start": {
+          "type": "boolean",
+          "x-go-name": "AutoStart"
+        },
+        "config_host_location": {
+          "description": "the location's host",
+          "type": "string",
+          "x-go-name": "ConfigHostLocation"
+        },
+        "config_location": {
+          "description": "the location",
+          "type": "string",
+          "x-go-name": "ConfigLocation"
+        },
+        "label": {
+          "description": "the Label",
+          "type": "string",
+          "x-go-name": "Label"
+        },
+        "started_at": {
+          "x-go-name": "StartedAt"
+        },
+        "uuid": {
+          "type": "string",
+          "x-go-name": "Uuid"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+    },
+    "processorDoc": {
+      "description": "A Doc is ....\n\nA Doc can have.....",
+      "type": "object",
+      "title": "Doc represents a processor documentation",
+      "properties": {
+        "doc": {
+          "type": "string",
+          "x-go-name": "Doc"
+        },
+        "doc_short": {
+          "type": "string",
+          "x-go-name": "DocShort"
+        },
+        "kind": {
+          "type": "string",
+          "x-go-name": "Kind"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "options": {
+          "type": "object",
+          "properties": {
+            "doc": {
+              "type": "string",
+              "x-go-name": "Doc"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "alias": {
+                    "type": "string",
+                    "x-go-name": "Alias"
+                  },
+                  "default_value": {
+                    "type": "object",
+                    "x-go-name": "DefaultValue"
+                  },
+                  "doc": {
+                    "type": "string",
+                    "x-go-name": "Doc"
+                  },
+                  "example": {
+                    "description": "LogstashExample",
+                    "type": "string",
+                    "x-go-name": "ExampleLS"
+                  },
+                  "name": {
+                    "type": "string",
+                    "x-go-name": "Name"
+                  },
+                  "requiered": {
+                    "type": "boolean",
+                    "x-go-name": "Required"
+                  },
+                  "type": {
+                    "type": "string",
+                    "x-go-name": "Type"
+                  }
+                }
+              },
+              "x-go-name": "Options"
+            }
+          },
+          "x-go-name": "Options"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "default": {
+                "type": "boolean",
+                "x-go-name": "Default"
+              },
+              "doc": {
+                "type": "string",
+                "x-go-name": "Doc"
+              },
+              "name": {
+                "type": "string",
+                "x-go-name": "Name"
+              },
+              "number": {
+                "type": "integer",
+                "format": "int64",
+                "x-go-name": "Number"
+              }
+            }
+          },
+          "x-go-name": "Ports"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+    }
+  }
+}
