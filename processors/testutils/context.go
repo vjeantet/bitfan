@@ -3,7 +3,7 @@ package testutils
 import (
 	"fmt"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"github.com/vjeantet/bitfan/processors"
 )
