@@ -12,8 +12,7 @@ import (
 	"golang.org/x/sync/syncmap"
 
 	fqdn "github.com/ShowMax/go-fqdn"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+
 	"github.com/justinas/alice"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vjeantet/bitfan/core/config"
@@ -25,13 +24,12 @@ var (
 	metrics     Metrics
 	myScheduler *scheduler
 	myMemory    *memory
+	myStore     *Store
 
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
 	dataLocation               string                      = "data"
 
 	pipelines syncmap.Map = syncmap.Map{}
-
-	db *gorm.DB
 )
 
 type FnMux func(sm *http.ServeMux)
@@ -74,17 +72,11 @@ func SetDataLocation(location string) error {
 	Log().Debugf("data location : %s", location)
 
 	// DB
-
-	db, err = gorm.Open("sqlite3", filepath.Join(location, "bitfan.db"))
-	// db.LogMode(true)
-
+	myStore, err = NewStore(location)
 	if err != nil {
-		Log().Errorf("failed to connect database : %s", err.Error())
+		Log().Errorf("failed to start store : %s", err.Error())
 		return err
 	}
-
-	// Migrate the schema
-	db.AutoMigrate(&models.Pipeline{}, &models.Asset{})
 
 	return err
 }
@@ -105,8 +97,8 @@ func PrometheusServer(path string) FnMux {
 	return HTTPHandler(path, prometheus.Handler())
 }
 
-func Database() *gorm.DB {
-	return db
+func Storage() *Store {
+	return myStore
 }
 
 func HTTPHandler(path string, s http.Handler) FnMux {
@@ -133,18 +125,16 @@ func ListenAndServe(addr string, hs ...FnMux) {
 }
 
 func RunAutoStartPipelines() {
-	pipelinesToStart := []models.Pipeline{}
-	db.Where(&models.Pipeline{AutoStart: true}).Find(&pipelinesToStart).RecordNotFound()
-
+	pipelinesToStart := myStore.FindPipelinesWithAutoStart()
 	for _, p := range pipelinesToStart {
 		StartPipelineByUUID(p.Uuid)
 	}
 }
 
 func StartPipelineByUUID(UUID string) error {
-	tPipeline := models.Pipeline{Uuid: UUID}
-	if db.Preload("Assets").Where(&tPipeline).First(&tPipeline).RecordNotFound() {
-		return fmt.Errorf("Pipeline %s not found", UUID)
+	tPipeline, err := myStore.FindOnePipelineByUUID(UUID)
+	if err != nil {
+		return err
 	}
 
 	uidString := fmt.Sprintf("%s_%d", tPipeline.Uuid, time.Now().Unix())
@@ -178,7 +168,6 @@ func StartPipelineByUUID(UUID string) error {
 	//TODO : resolve lib.Location dans location.Location
 
 	var loc *lib.Location
-	var err error
 	loc, err = lib.NewLocation(tPipeline.ConfigLocation, cwd)
 	if err != nil {
 		return err
@@ -252,7 +241,7 @@ func Stop() error {
 	}
 
 	myMemory.close()
-	db.Close()
+	myStore.close()
 	return nil
 }
 

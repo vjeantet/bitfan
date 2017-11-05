@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
@@ -12,8 +11,7 @@ import (
 )
 
 type PipelineApiController struct {
-	database *gorm.DB
-	path     string
+	path string
 }
 
 func (p *PipelineApiController) Create(c *gin.Context) {
@@ -31,7 +29,7 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 		pipeline.Assets[i].Uuid = uid.String()
 	}
 
-	p.database.Create(&pipeline)
+	core.Storage().CreatePipeline(&pipeline)
 
 	// Handle optinal Start
 	if pipeline.Active == true {
@@ -46,11 +44,8 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 }
 
 func (p *PipelineApiController) Find(c *gin.Context) {
-	var pipelines []models.Pipeline
-	var err error
 
-	pipelines = []models.Pipeline{}
-	p.database.Find(&pipelines)
+	pipelines := core.Storage().FindPipelines()
 
 	runningPipelines := core.Pipelines() //core
 	for i, p := range pipelines {
@@ -61,19 +56,15 @@ func (p *PipelineApiController) Find(c *gin.Context) {
 		}
 	}
 
-	if err == nil {
-		c.JSON(200, pipelines)
-	} else {
-		c.JSON(404, models.Error{Message: "no pipelines(s) running"})
-	}
+	c.JSON(200, pipelines)
+
 }
 
 func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
-
-	mPipeline := models.Pipeline{Uuid: uuid}
-	if p.database.Preload("Assets").Where(&mPipeline).First(&mPipeline).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Pipeline " + uuid + " not found"})
+	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
 
@@ -89,14 +80,15 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 
 func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
-	mPipeline := models.Pipeline{Uuid: uuid}
-	if p.database.Where(&mPipeline).First(&mPipeline).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Pipeline " + uuid + " not found"})
+
+	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
 
 	data := map[string]interface{}{}
-	err := c.BindJSON(&data)
+	err = c.BindJSON(&data)
 	if err != nil {
 		c.JSON(500, models.Error{Message: err.Error()})
 		return
@@ -107,7 +99,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 		return
 	}
 
-	p.database.Save(&mPipeline)
+	core.Storage().SavePipeline(&mPipeline)
 
 	// handle Start / Stop / Restart
 	_, active := core.GetPipeline(uuid)
@@ -159,15 +151,13 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 func (p *PipelineApiController) DeleteByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 
-	mPipeline := models.Pipeline{Uuid: uuid}
-	if p.database.Where(&mPipeline).First(&mPipeline).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Pipeline " + uuid + " not found"})
+	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
 
-	p.database.Delete(&mPipeline)
-	p.database.Delete(models.Asset{}, "pipeline_uuid = ?", uuid)
-	// TODO : Delete related Assets
+	core.Storage().DeletePipeline(&mPipeline)
 
 	c.JSON(204, "")
 }

@@ -35,12 +35,10 @@ func Handler(path string) http.Handler {
 	{
 
 		pipelineCtrl := &PipelineApiController{
-			database: core.Database(),
-			path:     path,
+			path: path,
 		}
 		assetCtrl := &AssetApiController{
-			database: core.Database(),
-			path:     path,
+			path: path,
 		}
 
 		logsCtrl := &LogApiController{

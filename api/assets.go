@@ -5,14 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	uuid "github.com/nu7hatch/gouuid"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/core/models"
 )
 
 type AssetApiController struct {
-	database *gorm.DB
-	path     string
+	path string
 }
 
 func (a *AssetApiController) Create(c *gin.Context) {
@@ -33,7 +32,7 @@ func (a *AssetApiController) Create(c *gin.Context) {
 	}
 	asset.ContentType = http.DetectContentType(asset.Value[:n])
 
-	a.database.Create(&asset)
+	core.Storage().CreateAsset(&asset)
 
 	c.Redirect(302, fmt.Sprintf("/%s/assets/%s", a.path, asset.Uuid))
 }
@@ -41,9 +40,9 @@ func (a *AssetApiController) Create(c *gin.Context) {
 func (a *AssetApiController) FindOneByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 
-	asset := models.Asset{Uuid: uuid}
-	if a.database.Where(&asset).First(&asset).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Asset " + uuid + " not found"})
+	asset, err := core.Storage().FindOneAssetByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
 
@@ -53,9 +52,9 @@ func (a *AssetApiController) FindOneByUUID(c *gin.Context) {
 func (a *AssetApiController) DownloadOneByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 
-	asset := models.Asset{Uuid: uuid}
-	if a.database.Where(&asset).First(&asset).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Asset " + uuid + " not found"})
+	asset, err := core.Storage().FindOneAssetByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
 
@@ -65,19 +64,19 @@ func (a *AssetApiController) DownloadOneByUUID(c *gin.Context) {
 
 func (a *AssetApiController) UpdateByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
-	asset := models.Asset{Uuid: uuid}
-	if a.database.Where(&asset).First(&asset).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Asset " + uuid + " not found"})
+	asset, err := core.Storage().FindOneAssetByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
 
-	err := c.BindJSON(&asset)
+	err = c.BindJSON(&asset)
 	if err != nil {
 		c.JSON(500, models.Error{Message: err.Error()})
 		return
 	}
 
-	a.database.Save(&asset)
+	core.Storage().SaveAsset(&asset)
 
 	c.Redirect(302, fmt.Sprintf("/%s/assets/%s", a.path, asset.Uuid))
 }
@@ -85,26 +84,27 @@ func (a *AssetApiController) UpdateByUUID(c *gin.Context) {
 func (a *AssetApiController) DeleteByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 
-	asset := models.Asset{Uuid: uuid}
-	if a.database.Where(&asset).First(&asset).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Asset " + uuid + " not found"})
+	asset, err := core.Storage().FindOneAssetByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
 
-	a.database.Delete(&asset)
+	core.Storage().DeleteAsset(&asset)
 
 	c.JSON(204, "")
 }
 
 func (a *AssetApiController) ReplaceByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
-	asset := models.Asset{Uuid: uuid}
-	if a.database.Where(&asset).First(&asset).RecordNotFound() {
-		c.JSON(404, models.Error{Message: "Asset " + uuid + " not found"})
+	asset, err := core.Storage().FindOneAssetByUUID(uuid)
+	if err != nil {
+		c.JSON(404, models.Error{Message: err.Error()})
 		return
 	}
+
 	tmpasset := models.Asset{}
-	err := c.BindJSON(&tmpasset)
+	err = c.BindJSON(&tmpasset)
 	if err != nil {
 		c.JSON(500, models.Error{Message: err.Error()})
 		return
@@ -119,7 +119,7 @@ func (a *AssetApiController) ReplaceByUUID(c *gin.Context) {
 	}
 	asset.ContentType = http.DetectContentType(asset.Value[:n])
 
-	a.database.Save(&asset)
+	core.Storage().SaveAsset(&asset)
 
 	c.Redirect(302, fmt.Sprintf("/%s/assets/%s", a.path, asset.Uuid))
 }
