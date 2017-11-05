@@ -54,3 +54,5 @@ releases
 /ui/cmd/oo
 
 /ui/cmd/test.db
+
+/webui/webui

@@ -23,9 +23,8 @@ func Handler(assetsPath, URLpath string, apiBaseUrl string) http.Handler {
 
 	r := gin.New()
 	render := NewRender()
-	// render.TemplatesDir = assetsPath + "/views/" // default
-	// render.Ext = ".html" // default
-	render.Debug = true // default
+	render.AssetsDir = assetsPath // default
+	// render.Debug = true           // default
 	render.TemplateFuncMap = template.FuncMap{
 		"dateFormat": (*templateFunctions)(nil).dateFormat,
 		"ago":        (*templateFunctions)(nil).dateAgo,

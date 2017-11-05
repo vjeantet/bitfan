@@ -33,7 +33,7 @@ func NewRender() Render {
 		// TemplatesDir holds the location of the templates
 		TemplatesDir: "assets/views/",
 		// Layout is the file name of the layout file
-		Layout: "layouts/base.html",
+		Layout: "layout.html",
 		// Ext is the file extension of the rendered templates
 		Ext: ".html",
 		// Template's function map
@@ -75,8 +75,7 @@ func (r Render) Init() Render {
 	layout := r.TemplatesDir + r.Layout
 
 	viewDirs, _ := r.Glob(r.TemplatesDir + "**" + string(os.PathSeparator) + "*" + r.Ext)
-
-	partials, _ := r.Glob(r.TemplatesDir + "partials/" + "*" + r.Ext)
+	partials, _ := r.Glob(r.TemplatesDir + "_*" + r.Ext)
 
 	for _, view := range viewDirs {
 		renderName := r.getRenderName(view)

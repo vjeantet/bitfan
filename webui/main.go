@@ -16,7 +16,7 @@ func main() {
 	httpServerMux.Handle(
 		"/ui/",
 		server.Handler(
-			"assets",
+			"",
 			"ui",
 			"127.0.0.1:5123",
 		),
