@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/dghubble/sling"
-	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/core/models"
 )
 
@@ -175,7 +174,6 @@ func (r *RestClient) DeleteAsset(UUID string) error {
 func (r *RestClient) UpdateAsset(UUID string, data *map[string]interface{}) (*models.Asset, error) {
 	newAsset := new(models.Asset)
 	apierror := new(models.Error)
-	pp.Println("data-->", data)
 	resp, err := r.client().Patch("assets/"+UUID).BodyJSON(data).Receive(newAsset, apierror)
 
 	if err != nil {

@@ -9,7 +9,6 @@ import (
 	elastic "gopkg.in/olivere/elastic.v3"
 
 	"github.com/clbanning/mxj"
-	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -46,7 +45,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Start(e processors.IPacket) error {
-	pp.Println(p.opt)
 	p.q = make(chan bool)
 	var err error
 	// Create a client
