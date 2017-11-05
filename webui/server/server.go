@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-contrib/sessions"
@@ -54,7 +56,14 @@ func Handler(assetsPath, URLpath string, apiBaseUrl string) http.Handler {
 	r.Use(sessions.Sessions("mysession", store), gin.Recovery())
 	g := r.Group(URLpath)
 	{
-		g.StaticFS("/public", &assetfs.AssetFS{Asset, AssetDir, AssetInfo, "assets/public"})
+		tmpDir := filepath.Join(assetsPath, "assets")
+		if _, err := os.Stat(tmpDir); !os.IsNotExist(err) {
+			// assets exists on disk, UseFS
+			g.StaticFS("/public", http.Dir(filepath.Join(tmpDir, "public")))
+		} else {
+			// assets from bindData
+			g.StaticFS("/public", &assetfs.AssetFS{Asset, AssetDir, AssetInfo, "assets/public"})
+		}
 
 		g.GET("/", getPipelines)
 

@@ -12,7 +12,7 @@ import (
 func main() {
 
 	httpServerMux := http.NewServeMux()
-
+	httpServerMux.HandleFunc("/", redirect)
 	httpServerMux.Handle(
 		"/ui/",
 		server.Handler(
@@ -28,4 +28,8 @@ func main() {
 		addr = "127.0.0.1:" + port
 	}
 	http.ListenAndServe(addr, httpServerMux)
+}
+
+func redirect(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/ui/", 301)
 }

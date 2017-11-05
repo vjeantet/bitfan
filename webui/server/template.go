@@ -65,8 +65,10 @@ func (r Render) Init() Render {
 	tmpDir := filepath.Join(r.AssetsDir, r.TemplatesDir)
 	if _, err := os.Stat(tmpDir); !os.IsNotExist(err) {
 		// assets exists on disk, UseFS
-		r.TemplatesDir = filepath.Join(r.AssetsDir, r.TemplatesDir) + string(os.PathSeparator)
-		r.UseFS = true
+		if r.UseFS == false {
+			r.TemplatesDir = filepath.Join(r.AssetsDir, r.TemplatesDir) + string(os.PathSeparator)
+			r.UseFS = true
+		}
 	} else {
 		// assets from bindData
 		r.UseFS = false
