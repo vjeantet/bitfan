@@ -363,24 +363,6 @@
 			"revisionTime": "2015-07-17T04:28:40Z"
 		},
 		{
-			"checksumSHA1": "zaq9ljjq1vR9vRFPE9NMapyrYio=",
-			"path": "github.com/jinzhu/gorm",
-			"revision": "3a9e91ab372120a0e35b518430255308e3d8d5ea",
-			"revisionTime": "2017-09-28T14:48:21Z"
-		},
-		{
-			"checksumSHA1": "4VZ1gLZHMumRjV3fclS1aX8S1aQ=",
-			"path": "github.com/jinzhu/gorm/dialects/sqlite",
-			"revision": "3a9e91ab372120a0e35b518430255308e3d8d5ea",
-			"revisionTime": "2017-09-28T14:48:21Z"
-		},
-		{
-			"checksumSHA1": "VIp1lZm6joWhlNdwhady8u//qRw=",
-			"path": "github.com/jinzhu/inflection",
-			"revision": "1c35d901db3da928c72a72d8458480cc9ade058f",
-			"revisionTime": "2017-01-02T12:52:26Z"
-		},
-		{
 			"checksumSHA1": "Lc5CWD5nzSttJNateoWlPgFE3Vw=",
 			"path": "github.com/justinas/alice",
 			"revision": "052b8b6c18edb9db317af86806d8e00ebaa94160",
@@ -457,12 +439,6 @@
 			"path": "github.com/mattn/go-runewidth",
 			"revision": "c718ccb0685f9fa7129b1b41c04d2877423c419d",
 			"revisionTime": "2015-02-16T02:40:47Z"
-		},
-		{
-			"checksumSHA1": "vJOfjdXbjymKpuay2nyRnGncJUw=",
-			"path": "github.com/mattn/go-sqlite3",
-			"revision": "05548ff55570cdb9ac72ff4a25a3b5e77a6fb7e5",
-			"revisionTime": "2017-09-01T08:40:05Z"
 		},
 		{
 			"checksumSHA1": "kyzMPE3pJ8dc+ifT9Ie682Wb+8I=",
