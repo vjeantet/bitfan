@@ -645,6 +645,12 @@
 			"revisionTime": "2016-09-25T22:06:09Z"
 		},
 		{
+			"checksumSHA1": "BI2wWTGWOdOWmgW0HCkXLydcIT4=",
+			"path": "github.com/timshannon/bolthold",
+			"revision": "bb7fe75fc693a8d6d182c31fe6e42e3e89e3889a",
+			"revisionTime": "2017-09-29T22:12:03Z"
+		},
+		{
 			"checksumSHA1": "iG2B2A82ztGrpp3VVNyR5/Xzp0w=",
 			"path": "github.com/ugorji/go/codec",
 			"revision": "54210f4e076c57f351166f0ed60e67d3fca57a36",
