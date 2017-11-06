@@ -69,6 +69,12 @@
 			"revisionTime": "2016-02-29T21:34:45Z"
 		},
 		{
+			"checksumSHA1": "nBhBtI5wOm4+vOD4xZbWbE3FlZM=",
+			"path": "github.com/boltdb/bolt",
+			"revision": "a705895fdad108f053eae7ee011ed94a0541ee13",
+			"revisionTime": "2016-12-28T23:26:56Z"
+		},
+		{
 			"checksumSHA1": "Y9anndxw8wlCmbcT1Wx05q57y7U=",
 			"path": "github.com/clbanning/mxj",
 			"revision": "1cda74d18ebbb04f525b355309c16d594e1f8f77",
