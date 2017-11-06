@@ -11,7 +11,7 @@ go generate .
 arch=amd64
 os=windows
 product=${productName}_v${versionLabel}_${os}_${arch}
-env GOOS=$os GOARCH=$arch CC="x86_64-w64-mingw32-gcc" CGO_ENABLED=1 go build -ldflags="-s -w -X main.version=${1} -X main.buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` " -o releases/${product}.exe .
+env GOOS=$os GOARCH=$arch go build -ldflags="-s -w -X main.version=${1} -X main.buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` " -o releases/${product}.exe .
 cd releases
 zip -r ${product}.zip ${product}.exe
 rm $product.exe

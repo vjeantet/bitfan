@@ -3,8 +3,6 @@ package models
 import "time"
 
 type Asset struct {
-	ID int `gorm:"primary_key"`
-
 	Uuid string `json:"uuid"`
 
 	CreatedAt time.Time
@@ -15,11 +13,8 @@ type Asset struct {
 	Name        string
 	Type        string
 	ContentType string
-	Value       []byte //`json:"-"`
+	Value       []byte
 	Size        int
-
-	// Base64 encoded content
-	// Content string `json:"-" gorm:"-"`
 }
 
 const (

@@ -10,8 +10,6 @@ import "time"
 //
 // swagger:model Pipeline
 type Pipeline struct {
-	ID int `json:"-" gorm:"primary_key"`
-
 	Uuid string `json:"uuid"`
 
 	// the Label
@@ -20,20 +18,20 @@ type Pipeline struct {
 	Description string
 
 	// the location
-	ConfigLocation string `json:"config_location" gorm:"-"`
+	ConfigLocation string `json:"config_location"`
 
 	// the location's host
-	ConfigHostLocation string `json:"config_host_location" gorm:"-"`
+	ConfigHostLocation string `json:"config_host_location"`
 
 	// Assets
-	Assets []Asset `json:"assets" gorm:"ForeignKey:PipelineUUID;AssociationForeignKey:Uuid"`
+	Assets []Asset `json:"assets"`
 
-	Active       bool `gorm:"-"`
+	Active       bool
 	LocationPath string
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	StartedAt time.Time `json:"started_at"`
 
-	AutoStart bool `json:"auto_start" mapstructure:"auto_start" `
+	AutoStart bool `json:"auto_start" mapstructure:"auto_start"`
 }
