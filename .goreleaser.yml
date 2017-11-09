@@ -1,0 +1,21 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  -
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm
+    goarm:
+      - 7
+# Archive customization
+archive:
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  replacements:
+    darwin: macOS

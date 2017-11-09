@@ -9,10 +9,6 @@
           "type": "string"
         },
         "CreatedAt": {},
-        "ID": {
-          "type": "integer",
-          "format": "int64"
-        },
         "Name": {
           "type": "string"
         },
