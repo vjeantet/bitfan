@@ -141,6 +141,12 @@
 			"revisionTime": "2016-06-17T14:03:01Z"
 		},
 		{
+			"checksumSHA1": "7DxViusFRJ7UPH0jZqYatwDrOkY=",
+			"path": "github.com/elazarl/go-bindata-assetfs",
+			"revision": "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43",
+			"revisionTime": "2017-02-27T21:27:28Z"
+		},
+		{
 			"checksumSHA1": "xw+J5sjZGi2Z6jm3kjLQjkv5zuA=",
 			"path": "github.com/etrepat/postman/handler",
 			"revision": "739b9fdbb08757a56b4f12a3e1b119ea229d349a",

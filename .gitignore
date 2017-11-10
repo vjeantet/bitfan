@@ -56,3 +56,5 @@ releases
 /ui/cmd/test.db
 
 /webui/webui
+
+/dist/

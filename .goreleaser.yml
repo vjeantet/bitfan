@@ -1,7 +1,18 @@
 # .goreleaser.yml
 # Build customization
 builds:
-  -
+  - binary: bitfan
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm
+    goarm:
+      - 7
+  - binary: bitfan-ui
+    main: ./cmd/bitfanUI/main.go
     goos:
       - windows
       - darwin
