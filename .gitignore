@@ -58,3 +58,5 @@ releases
 /webui/webui
 
 /dist/
+
+/cmd/bitfan/.bitfan/
