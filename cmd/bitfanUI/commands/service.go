@@ -29,9 +29,9 @@ var serviceCmd = &cobra.Command{
 
 func getServiceConfig() *service.Config {
 	return &service.Config{
-		Name:        "bitfan-ui",
-		DisplayName: "bitfan-ui",
-		Description: "bitfan-ui",
+		Name:        "bitfanUI",
+		DisplayName: "bitfanUI",
+		Description: "bitfanUI",
 	}
 }
 func GetService() service.Service {

@@ -2,6 +2,7 @@
 # Build customization
 builds:
   - binary: bitfan
+    main: ./cmd/bitfan/main.go
     goos:
       - windows
       - darwin
@@ -11,7 +12,7 @@ builds:
       - arm
     goarm:
       - 7
-  - binary: bitfan-ui
+  - binary: bitfanUI
     main: ./cmd/bitfanUI/main.go
     goos:
       - windows
