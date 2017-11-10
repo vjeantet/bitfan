@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/logBufferLru"
 )
 
 // var plugins map[string]map[string]core.ProcessorFactory
@@ -20,14 +19,14 @@ func Handler(path string) http.Handler {
 
 	logger = core.NewLogger("api", nil)
 
-	logs, _ := logBufferLru.NewHook(logBufferLru.HookConfig{Size: 1000 * 10})
+	logs, _ := newHook(hookConfig{Size: 100})
 	logrus.AddHook(logs)
 
 	r := gin.New()
 	r.Use(
 		gin.Recovery(),
 		func(c *gin.Context) {
-			// c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+			c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 			c.Next()
 		},
 	)

@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -58,10 +57,8 @@ func (l *LogApiController) wshandler(w http.ResponseWriter, r *http.Request) {
 	}
 	client := &Client{hub: l.Hub, conn: conn, send: make(chan []byte, 256)}
 	l.Hub.register <- client
-	msgs := strings.Split(strings.TrimSpace(l.Hub.Wellcome()), "\n")
-
-	for _, m := range msgs {
-		client.send <- []byte(m)
+	for _, m := range l.Hub.Wellcome() {
+		client.send <- m
 	}
 
 	go client.writePump()
@@ -165,10 +162,10 @@ type Hub struct {
 	// Unregister requests from clients.
 	unregister chan *Client
 
-	Wellcome func() string
+	Wellcome func() [][]byte
 }
 
-func newHub(wellcomeMessage func() string) *Hub {
+func newHub(wellcomeMessage func() [][]byte) *Hub {
 	return &Hub{
 		Broadcast:  make(chan []byte),
 		register:   make(chan *Client),
