@@ -23,7 +23,7 @@ import (
 	"runtime"
 
 	"github.com/kardianos/service"
-	"github.com/vjeantet/bitfan/cmd"
+	"github.com/vjeantet/bitfan/cli"
 )
 
 var version = "dev"
@@ -37,7 +37,7 @@ func main() {
 	if !service.Interactive() {
 
 		// PASS Service
-		s := cmd.GetService()
+		s := cli.GetService()
 
 		slogger, err := s.Logger(nil)
 		if err != nil {
@@ -52,8 +52,8 @@ func main() {
 	}
 
 	//interactive
-	cmd.Version = version
-	cmd.Buildstamp = buildstamp
-	cmd.Execute()
+	cli.Version = version
+	cli.Buildstamp = buildstamp
+	cli.Execute()
 
 }
