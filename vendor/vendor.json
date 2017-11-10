@@ -333,6 +333,12 @@
 			"revisionTime": "2016-04-28T00:30:50Z"
 		},
 		{
+			"checksumSHA1": "j65V4wnJboT4pfppNC/gjr2Gl+c=",
+			"path": "github.com/hpcloud/tail/winfile",
+			"revision": "a30252cb686a21eb2d0b98132633053ec2f7f1e5",
+			"revisionTime": "2016-04-28T00:30:50Z"
+		},
+		{
 			"checksumSHA1": "Y328JgHgMALOH5QwFQm7VnyrNdI=",
 			"path": "github.com/hraban/lrucache",
 			"revision": "a1cd14943f73930436f5affeb56ddeb0ff09ccd9",
@@ -733,6 +739,36 @@
 			"path": "golang.org/x/sys/unix",
 			"revision": "c200b10b5d5e122be351b67af224adc6128af5bf",
 			"revisionTime": "2016-10-22T18:22:21Z"
+		},
+		{
+			"checksumSHA1": "Pki0iA65Dtsjh4gtabPkp/lOa2I=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a",
+			"revisionTime": "2017-08-01T08:50:40Z"
+		},
+		{
+			"checksumSHA1": "ZdFZFaXmCgEEaEhVPkyXrnhKhsg=",
+			"path": "golang.org/x/sys/windows/registry",
+			"revision": "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a",
+			"revisionTime": "2017-08-01T08:50:40Z"
+		},
+		{
+			"checksumSHA1": "ST+op4RrLhGa0ntyFTrCWVjdqs4=",
+			"path": "golang.org/x/sys/windows/svc",
+			"revision": "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a",
+			"revisionTime": "2017-08-01T08:50:40Z"
+		},
+		{
+			"checksumSHA1": "uVlUSSKplihZG7N+QJ6fzDZ4Kh8=",
+			"path": "golang.org/x/sys/windows/svc/eventlog",
+			"revision": "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a",
+			"revisionTime": "2017-08-01T08:50:40Z"
+		},
+		{
+			"checksumSHA1": "+OPy/ga50ikLv5w5Pf4WvBYThrQ=",
+			"path": "golang.org/x/sys/windows/svc/mgr",
+			"revision": "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a",
+			"revisionTime": "2017-08-01T08:50:40Z"
 		},
 		{
 			"checksumSHA1": "Mr4ur60bgQJnQFfJY0dGtwWwMPE=",
