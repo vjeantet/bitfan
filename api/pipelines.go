@@ -62,7 +62,7 @@ func (p *PipelineApiController) Find(c *gin.Context) {
 
 func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
-	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid)
+	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid, false)
 	if err != nil {
 		c.JSON(404, models.Error{Message: err.Error()})
 		return
@@ -81,7 +81,7 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 
-	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid)
+	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid, false)
 	if err != nil {
 		c.JSON(404, models.Error{Message: err.Error()})
 		return
@@ -109,7 +109,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 		case true: // pipeline is on
 			switch nextActive {
 			case true: // restart
-				core.Log().Debugf("restarting pipeline %s", uuid)
+				apiLogger.Debugf("restarting pipeline %s", uuid)
 				err := core.StopPipeline(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
@@ -121,7 +121,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 					return
 				}
 			case false: // stop
-				core.Log().Debugf("stopping pipeline %s", uuid)
+				apiLogger.Debugf("stopping pipeline %s", uuid)
 				err := core.StopPipeline(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
@@ -131,7 +131,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 		case false: // pipeline is off
 			switch nextActive {
 			case true: // start pipeline
-				core.Log().Debugf("starting pipeline %s", uuid)
+				apiLogger.Debugf("starting pipeline %s", uuid)
 				err := core.StartPipelineByUUID(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
@@ -151,7 +151,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 func (p *PipelineApiController) DeleteByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 
-	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid)
+	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid, false)
 	if err != nil {
 		c.JSON(404, models.Error{Message: err.Error()})
 		return

@@ -34,8 +34,6 @@
       <div class="form-group">
         
         {{if (hasPrefix  "text/" .asset.ContentType)}}
-        
-
           <label for="content">Content</label>
           <textarea style="display: none" name="content">{{ string .asset.Value }}</textarea>
           <div style="height: 500px;" id="content"></div>

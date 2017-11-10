@@ -25,11 +25,16 @@ type Render struct {
 }
 
 func NewRender() Render {
+	pwd, err := os.Getwd()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	r := Render{
 
 		Templates: map[string]*template.Template{},
 
-		AssetsDir: "webui/",
+		AssetsDir: pwd,
 		// TemplatesDir holds the location of the templates
 		TemplatesDir: "assets/views/",
 		// Layout is the file name of the layout file
@@ -62,20 +67,15 @@ func (r Render) Glob(pattern string) ([]string, error) {
 }
 
 func (r Render) Init() Render {
-	tmpDir := filepath.Join(r.AssetsDir, r.TemplatesDir)
-	if _, err := os.Stat(tmpDir); !os.IsNotExist(err) {
+	if _, err := os.Stat(r.TemplatesDir); !os.IsNotExist(err) {
 		// assets exists on disk, UseFS
-		if r.UseFS == false {
-			r.TemplatesDir = filepath.Join(r.AssetsDir, r.TemplatesDir) + string(os.PathSeparator)
-			r.UseFS = true
-		}
+		r.UseFS = true
 	} else {
 		// assets from bindData
 		r.UseFS = false
 	}
 
 	layout := r.TemplatesDir + r.Layout
-
 	viewDirs, _ := r.Glob(r.TemplatesDir + "**" + string(os.PathSeparator) + "*" + r.Ext)
 	partials, _ := r.Glob(r.TemplatesDir + "_*" + r.Ext)
 

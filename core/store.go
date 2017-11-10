@@ -90,7 +90,7 @@ func (s *Store) FindPipelinesWithAutoStart() []models.Pipeline {
 	return pps
 }
 
-func (s *Store) FindOnePipelineByUUID(UUID string) (models.Pipeline, error) {
+func (s *Store) FindOnePipelineByUUID(UUID string, withAssetValues bool) (models.Pipeline, error) {
 	tPipeline := models.Pipeline{Uuid: UUID}
 
 	var sps []StorePipeline
@@ -110,11 +110,26 @@ func (s *Store) FindOnePipelineByUUID(UUID string) (models.Pipeline, error) {
 	tPipeline.AutoStart = sps[0].AutoStart
 
 	for _, a := range sps[0].Assets {
-		tPipeline.Assets = append(tPipeline.Assets, models.Asset{
+		asset := models.Asset{
 			Uuid: a.Uuid,
 			Name: a.Label,
 			Type: a.Type,
-		})
+		}
+
+		if withAssetValues {
+			var sas []StoreAsset
+			err := s.db.Find(&sas, bolthold.Where(bolthold.Key).Eq(a.Uuid))
+			if err != nil {
+				return tPipeline, err
+			}
+			if len(sas) == 0 {
+				return tPipeline, fmt.Errorf("Asset %s not found", a.Uuid)
+			}
+			asset.Value = sas[0].Value
+			asset.Size = sas[0].Size
+			asset.ContentType = sas[0].ContentType
+		}
+		tPipeline.Assets = append(tPipeline.Assets, asset)
 	}
 
 	return tPipeline, nil
@@ -171,18 +186,21 @@ func (s *Store) SavePipeline(p *models.Pipeline) {
 				Label: a.Name,
 				Type:  a.Type,
 			})
-		sav := &StoreAsset{
-			Uuid:         a.Uuid,
-			CreatedAt:    time.Now(),
-			UpdatedAt:    time.Now(),
-			PipelineUUID: sp.Uuid,
-			Label:        a.Name,
-			Type:         a.Type,
-			ContentType:  a.ContentType,
-			Value:        a.Value,
-			Size:         a.Size,
+
+		if a.PipelineUUID != "" { // a.PipelineUUID = "" means its a RefAsset
+			sav := &StoreAsset{
+				Uuid:         a.Uuid,
+				CreatedAt:    time.Now(),
+				UpdatedAt:    time.Now(),
+				PipelineUUID: sp.Uuid,
+				Label:        a.Name,
+				Type:         a.Type,
+				ContentType:  a.ContentType,
+				Value:        a.Value,
+				Size:         a.Size,
+			}
+			s.db.Upsert(sav.Uuid, sav)
 		}
-		s.db.Upsert(sav.Uuid, sav)
 	}
 
 	s.db.Upsert(sp.Uuid, sp)

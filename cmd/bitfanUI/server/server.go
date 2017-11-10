@@ -186,7 +186,6 @@ func startPipeline(c *gin.Context) {
 		log.Printf("error : %v\n", err)
 	} else {
 		c.JSON(200, pipeline)
-		log.Printf("Started (UUID:%s) - %s\n", pipeline.Uuid, pipeline.Label)
 	}
 }
 
@@ -199,7 +198,6 @@ func stopPipeline(c *gin.Context) {
 		log.Printf("error : %v\n", err)
 	} else {
 		c.JSON(200, pipeline)
-		log.Printf("Stopped (UUID:%s) - %s\n", pipeline.Uuid, pipeline.Label)
 	}
 }
 
