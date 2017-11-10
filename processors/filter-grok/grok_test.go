@@ -275,13 +275,13 @@ func TestNamed_captures_only(t *testing.T) { t.Skip("...") }
 func TestKeep_empty_captures(t *testing.T) {
 	p := New().(*processor)
 	ctx := testutils.NewProcessorContext()
-	p.opt.Match = map[string]interface{}{
-		"message": `%{COMBINEDAPACHELOG}`,
-	}
-	p.Configure(ctx, map[string]interface{}{"keep_empty_captures": true})
+	p.Configure(ctx, map[string]interface{}{
+		"keep_empty_captures": true,
+		"match":               map[string]interface{}{"message": `%{SYSLOGBASE} %{GREEDYDATA:message}`},
+	})
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket(`127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"`, nil)
+	em := testutils.NewPacket(`128.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"`, nil)
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
 	p.Receive(em)
 	// em.AssertExpectations(t)
@@ -292,10 +292,10 @@ func TestKeep_empty_captures(t *testing.T) {
 func TestKeep_empty_capturesFalse(t *testing.T) {
 	p := New().(*processor)
 	ctx := testutils.NewProcessorContext()
-	p.opt.Match = map[string]interface{}{
-		"message": `%{COMBINEDAPACHELOG}`,
-	}
-	p.Configure(ctx, map[string]interface{}{"keep_empty_captures": false})
+	p.Configure(ctx, map[string]interface{}{
+		"keep_empty_captures": false,
+		"match":               map[string]interface{}{"message": `%{COMBINEDAPACHELOG}`},
+	})
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
 	em := testutils.NewPacket(`127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"`, nil)
@@ -313,9 +313,11 @@ func TestBreak_on_matchFalse(t *testing.T) {
 	ctx := testutils.NewProcessorContext()
 	conf := map[string]interface{}{
 		"match": map[string]interface{}{
-			"unknow":  `%{NUMBER} %{GREEDYDATA:message}`,
-			"message": `%{SYSLOGBASE} %{GREEDYDATA:message}`,
-			"program": `%{WORD:programname}/%{WORD:daemon}`,
+			"message": []string{
+				`%{NUMBER} %{GREEDYDATA:message}`,
+				`%{SYSLOGBASE} %{GREEDYDATA:message}`,
+				`%{WORD:programname}/%{WORD:daemon}`,
+			},
 		},
 		"break_on_match": false,
 	}
@@ -326,7 +328,6 @@ func TestBreak_on_matchFalse(t *testing.T) {
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
 	p.Receive(em)
 	// em.AssertExpectations(t)
-	// pp.Print(em.Fields())
 	assert.Equal(t, "smtpd", em.Fields().ValueOrEmptyForPathString("daemon"), "field value not proprely groked")
 }
 
@@ -336,9 +337,11 @@ func TestBreak_on_matchTrue(t *testing.T) {
 	ctx := testutils.NewProcessorContext()
 	conf := map[string]interface{}{
 		"match": map[string]interface{}{
-			"unknow":  `%{NUMBER} %{GREEDYDATA:message}`,
-			"message": `%{SYSLOGBASE} %{GREEDYDATA:message}`,
-			"program": `%{GREEDYDATA:programname}/%{GREEDYDATA:daemon}`,
+			"message": []string{
+				`%{NUMBER} %{GREEDYDATA:message}`,
+				`%{SYSLOGBASE} %{GREEDYDATA:message}`,
+				`%{GREEDYDATA:programname}/%{GREEDYDATA:daemon}`,
+			},
 		},
 		"break_on_match": true,
 	}
