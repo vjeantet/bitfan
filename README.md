@@ -39,7 +39,7 @@
 - [x] manage running pipelines (list / stop / start a pipeline in a running bitfan)
 - [x] monitor pipeline processors and events with prometheus
 - [x] REST API to manage Bitfan
-- [x] WebUI : https://github.com/vjeantet/bitfan-ui
+- [x] WebUI
 
 
 
