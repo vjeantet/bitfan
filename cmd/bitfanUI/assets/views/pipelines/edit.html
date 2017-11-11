@@ -1,0 +1,50 @@
+{{ define "title"}}{{.pipeline.Label}}{{ end }}
+
+{{ define "sidebar" }}
+{{ template "pipelinesidebar" . }}
+{{ end }}
+
+
+
+{{ define "content" }}
+<div class="row">
+  <div class="col">
+  <h1>Edit pipeline informations</h1>
+  </div>
+</div>
+
+
+{{ range $flash := .flashes }}
+<div class="alert alert-success" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+
+<div class="row">
+  <div class="col-12">
+
+    <form method="POST" action="">
+       <div class="form-group">
+        <label for="label">Label</label>
+        <input type="text" class="form-control" name="label" id="label" placeholder="Enter pipeline's label" value="{{.pipeline.Label}}">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" name="description" id="description" placeholder="Enter pipeline's description" value="{{.pipeline.Description}}">
+      </div>
+      <div class="form-group">
+        <input type="checkbox" name="auto_start" id="auto_start" value="YES" {{if .pipeline.AutoStart}}checked{{end}}>
+        <label for="auto_start"> auto start with bitfan</label>
+      </div>
+
+
+      <button type="submit" name="save" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+{{ end }}

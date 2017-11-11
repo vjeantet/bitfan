@@ -1,0 +1,84 @@
+{{ define "title"}}Logs{{ end }}
+
+{{ define "sidebar" }}
+{{ end }}
+
+
+
+{{ define "content" }}
+<div class="row">
+  <div class="col">
+  <h1>Logs</h1>
+  </div>
+</div>
+
+{{ range $flash := .flashes }}
+<div class="alert alert-success" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+<script id="logmessage-template" type="text/x-jsrender">
+  <li class="level[[:ev.Level]]">
+  <span class="level">
+[[if ev.Level == 5]]
+  DEBUG
+[[else ev.Level == 4 ]]
+  INFO
+[[else ev.Level == 3 ]]
+  WARN
+[[else ev.Level == 2 ]]
+  ERROR
+[[else ev.Level == 1 ]]
+  FATAL
+[[/if]]
+</span>
+  <span class="time">[[:timeString]]</span>
+  <span class="component">[[:ev.Data.component]]</span>
+  <span class="message">[[:ev.Message]]</span>
+  </li>
+</script>
+
+<script>
+	$(document).ready(function(){
+		new_uri = "ws://" + {{.bitfanHost}} + "/api/v2/logs";
+		var websocket = new WebSocket(new_uri); 
+		websocket.onopen = function(event) { 
+			console.log("Connection is established!");		
+		}
+
+		var logmessagetmpl = $.templates("#logmessage-template");
+		websocket.onmessage = function(event) {
+			var Data = JSON.parse(event.data);
+			console.log(Data);
+			$('#logs').append(logmessagetmpl.render({
+				ev: Data, 
+				timeString:moment(Data.Time).format('L LTS'),
+			}));   
+		};
+		
+		websocket.onerror = function(event){
+			notie.alert({ type: 'warning', stay:false, text: 'Problem due to some Error' }) ;
+		};
+		websocket.onclose = function(event){
+			notie.alert({ type: 'warning', stay:false, text: 'Connection Closed' }) ;
+		}; 
+		
+		// $('#frmChat').on("submit",function(event){
+		// 	event.preventDefault();
+		// 	$('#chat-user').attr("type","hidden");		
+		// 	var messageJSON = {
+		// 		chat_user: $('#chat-user').val(),
+		// 		chat_message: $('#chat-message').val()
+		// 	};
+		// 	websocket.send(JSON.stringify(messageJSON));
+		// });
+	});
+</script>
+
+<div class="row">
+  <div class="col-12">
+  	<div id="logs"></div>
+  </div>
+</div>
+{{ end }}

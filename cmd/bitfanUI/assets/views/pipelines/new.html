@@ -1,0 +1,54 @@
+{{ define "title"}}{{.pipeline.Label}}{{ end }}
+
+{{ define "sidebar" }}
+    
+{{ end }}
+
+{{ define "content" }}
+
+
+
+<div class="row">
+  <div class="col">
+  <h1>Pipelines - New</h1>
+  </div>
+</div>
+
+
+{{ range $flash := .flashes }}
+<div class="alert alert-warning" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+
+<div class="row">
+  <div class="col-10">
+
+<form method="POST" action="/pipelines">
+   <div class="form-group">
+    <label for="label">Label</label>
+    <input type="text" class="form-control" name="label" id="label" placeholder="Enter pipeline's label" value="{{.pipeline.Label}}">
+  </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input type="text" class="form-control" name="description" id="description" placeholder="Enter pipeline's description" value="{{.pipeline.Description}}">
+  </div>
+  <button type="submit" name="save" class="btn btn-primary">Save...</button>
+</form>
+
+
+  </div>
+  <div class="col">
+    
+    
+
+
+  </div>
+</div>
+
+
+
+
+{{ end }}
+

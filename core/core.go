@@ -132,7 +132,7 @@ func RunAutoStartPipelines() {
 }
 
 func StartPipelineByUUID(UUID string) error {
-	tPipeline, err := myStore.FindOnePipelineByUUID(UUID)
+	tPipeline, err := myStore.FindOnePipelineByUUID(UUID, true)
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func StartPipelineByUUID(UUID string) error {
 		}
 
 		if tPipeline.ConfigLocation == "" {
-			return fmt.Errorf("missing entrypont for pipeline %s", tPipeline.Uuid)
+			return fmt.Errorf("missing entrypoint for pipeline %s", tPipeline.Uuid)
 		}
 
 		Log().Debugf("configuration %s asset %s stored", uidString, asset.Name)

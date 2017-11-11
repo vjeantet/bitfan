@@ -13,11 +13,11 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
-var logger *core.Logger
+var apiLogger *core.Logger
 
 func Handler(path string) http.Handler {
 
-	logger = core.NewLogger("api", nil)
+	apiLogger = core.NewLogger("api", nil)
 
 	logs, _ := newHook(hookConfig{Size: 100})
 	logrus.AddHook(logs)
@@ -79,7 +79,7 @@ func Handler(path string) http.Handler {
 		// v1.GET("/docs/outputs/:name", getDocsOutputsByName)
 	}
 
-	logger.Debugf("Serving API on /%s/ ", path)
+	apiLogger.Debugf("Serving API on /%s/ ", path)
 
 	return r
 }
