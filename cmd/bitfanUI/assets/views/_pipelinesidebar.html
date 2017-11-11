@@ -18,7 +18,7 @@
 <section class="assets">
   <h2>Assets</h2>
   {{ range $asset := .pipeline.Assets }}
-  <li class="asset_type_{{$asset.Type}}">
+  <li class="asset_type_{{$asset.Type}} {{if $.asset }}{{if eq $asset.Uuid $.asset.Uuid}}active{{end}}{{end}}">
     <a href="/pipelines/{{$.pipeline.Uuid}}/assets/{{$asset.Uuid}}">{{$asset.Name}}</a> 
     <span class="action">
       {{if ne $asset.Type "entrypoint"}}

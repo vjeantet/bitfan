@@ -133,8 +133,11 @@ nav {
             &:hover {
                 background-color: white;
             }
-            &.asset_type_entrypoint{
+            &.active >a {
                 font-weight: bold;
+            }
+            &.asset_type_entrypoint a {
+                color:green;
             }
         }
     }
