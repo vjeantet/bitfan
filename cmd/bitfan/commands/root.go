@@ -19,6 +19,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -71,6 +72,14 @@ var RootCmd = &cobra.Command{
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	// Workarround to run as "bitfan run" if no know command where found
+	// waiting https://github.com/spf13/cobra/pull/369 to delete this
+	_, _, err := RootCmd.Find(os.Args[1:])
+	if err != nil && strings.HasPrefix(err.Error(), "unknown command") {
+		// insert "run" in args
+		os.Args = append(os.Args[:1], append([]string{"run"}, os.Args[1:]...)...)
+	}
+
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println("cmd execute error: ", err)
 		os.Exit(-1)
