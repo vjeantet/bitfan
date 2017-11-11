@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
+	"github.com/vjeantet/bitfan/processors"
 )
 
 var logger *Logger
@@ -69,6 +70,13 @@ func NewLogger(component string, data map[string]interface{}) *Logger {
 	}
 }
 
+func (p *Logger) TraceEvent(e processors.IPacket) {
+	p.e.WithFields(
+		map[string]interface{}{
+			"event": e.Fields().Old(),
+		},
+	).Info("TRACE EVENT")
+}
 func (p *Logger) Debug(args ...interface{}) {
 	p.e.Debug(args...)
 }
