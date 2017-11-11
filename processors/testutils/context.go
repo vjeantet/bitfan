@@ -18,10 +18,22 @@ type DummyProcessorContext struct {
 	mock.Mock
 }
 
+type dummyLog struct {
+	*logrus.Logger
+}
+
+func (d *dummyLog) TraceEvent(e processors.IPacket) {
+}
+func newLogger() *dummyLog {
+	return &dummyLog{
+		logrus.New(),
+	}
+}
+
 func NewProcessorContext() *DummyProcessorContext {
 	dp := &DummyProcessorContext{}
 	// dp.logger = log.New(os.Stdout, "TEST: ", log.Ldate|log.Ltime|log.Lshortfile)
-	dp.logger = logrus.New()
+	dp.logger = newLogger()
 	dp.sentPackets = map[int][]processors.IPacket{}
 	dp.packetSender = newSender(dp)
 	dp.packetBuilder = newPacket(dp)
