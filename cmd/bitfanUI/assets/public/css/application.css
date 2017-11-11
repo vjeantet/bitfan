@@ -208,6 +208,8 @@ nav {
         display: flex; }
       nav section.assets li:hover {
         background-color: white; }
+      nav section.assets li.asset_type_entrypoint {
+        font-weight: bold; }
 
 footer {
   background: #e5e5e5;
