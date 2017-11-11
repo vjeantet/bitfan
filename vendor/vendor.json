@@ -669,6 +669,12 @@
 			"revisionTime": "2017-09-29T22:12:03Z"
 		},
 		{
+			"checksumSHA1": "7kR30C1UZXp50sNOQQjmd/D1i60=",
+			"path": "github.com/tommy351/gin-sessions",
+			"revision": "353060947eb6549deb9e15229c73ed37931acf5f",
+			"revisionTime": "2015-06-17T14:18:53Z"
+		},
+		{
 			"checksumSHA1": "iG2B2A82ztGrpp3VVNyR5/Xzp0w=",
 			"path": "github.com/ugorji/go/codec",
 			"revision": "54210f4e076c57f351166f0ed60e67d3fca57a36",

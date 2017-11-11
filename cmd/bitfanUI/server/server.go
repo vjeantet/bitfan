@@ -12,6 +12,7 @@ import (
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-gonic/gin"
+	sessions "github.com/tommy351/gin-sessions"
 
 	"github.com/vjeantet/bitfan/api/client"
 	"github.com/vjeantet/bitfan/core/models"
@@ -55,8 +56,8 @@ func Handler(baseURL string, debug bool) http.Handler {
 	}
 
 	r.HTMLRender = render.Init()
-	// store := sessions.NewCookieStore([]byte("secret"))
-	// r.Use(sessions.Sessions("mysession", store), gin.Recovery())
+	store := sessions.NewCookieStore([]byte("qg498+f"))
+	r.Use(sessions.Middleware("my_session", store), gin.Recovery())
 
 	if _, err := os.Stat("assets"); !os.IsNotExist(err) {
 		// assets exists on disk, UseFS
@@ -122,6 +123,21 @@ func getPipelines(c *gin.Context) {
 	})
 }
 
+func flashes(c *gin.Context) []string {
+	flashes := []string{}
+	for _, m := range sessions.Get(c).Flashes() {
+		flashes = append(flashes, m.(string))
+	}
+	sessions.Get(c).Save()
+	return flashes
+}
+
+func flash(c *gin.Context, message string) {
+	session := sessions.Get(c)
+	session.AddFlash(message)
+	session.Save()
+}
+
 func editPipeline(c *gin.Context) {
 	id := c.Param("id")
 
@@ -129,6 +145,7 @@ func editPipeline(c *gin.Context) {
 
 	c.HTML(200, "pipelines/edit", gin.H{
 		"pipeline": p,
+		"flashes":  flashes(c),
 	})
 
 }
@@ -154,7 +171,7 @@ func createPipeline(c *gin.Context) {
 	}
 
 	pnew, _ := apiClient.NewPipeline(&p)
-
+	flash(c, fmt.Sprintf("Pipeline %s created", p.Label))
 	c.Redirect(302, fmt.Sprintf("/pipelines/%s", pnew.Uuid))
 }
 
@@ -173,7 +190,7 @@ func updatePipeline(c *gin.Context) {
 	}
 
 	pnew, _ := apiClient.UpdatePipeline(pipelineUUID, &data)
-
+	flash(c, fmt.Sprintf("Pipeline %s saved", pnew.Label))
 	c.Redirect(302, fmt.Sprintf("/pipelines/%s", pnew.Uuid))
 }
 
@@ -256,6 +273,7 @@ func showAsset(c *gin.Context) {
 	c.HTML(200, "assets/edit", gin.H{
 		"asset":    a,
 		"pipeline": p,
+		"flashes":  flashes(c),
 	})
 }
 
@@ -307,6 +325,8 @@ func updateAsset(c *gin.Context) {
 		return
 	}
 
+	flash(c, fmt.Sprintf("Asset %s saved", asset.Name))
+
 	c.Redirect(302, fmt.Sprintf("/pipelines/%s/assets/%s", asset.PipelineUUID, asset.Uuid))
 }
 
@@ -339,6 +359,8 @@ func replaceAsset(c *gin.Context) {
 		log.Printf("error : %v\n", err)
 		return
 	}
+
+	flash(c, fmt.Sprintf("Asset %s saved", asset.Name))
 
 	c.JSON(200, asset)
 }
