@@ -17,6 +17,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 
 	"github.com/spf13/cobra"
@@ -34,6 +35,8 @@ var RootCmd = &cobra.Command{
 		viper.BindPFlag("log", cmd.Flags().Lookup("log"))
 		viper.BindPFlag("verbose", cmd.Flags().Lookup("verbose"))
 		viper.BindPFlag("debug", cmd.Flags().Lookup("debug"))
+		viper.BindPFlag("data", cmd.Flags().Lookup("data"))
+		viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -105,12 +108,17 @@ func init() {
 	RootCmd.Flags().StringP("eval", "e", "", "Use the given string as the configuration data.")
 	RootCmd.Flags().BoolP("version", "V", false, "Display version info.")
 	RootCmd.Flags().IntP("workers", "w", runtime.NumCPU(), "number of workers")
+	cwd, _ := os.Getwd()
+	RootCmd.Flags().String("data", filepath.Join(cwd, ".bitfan"), "Path to data dir")
+	RootCmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
 
 	RootCmd.Flags().MarkDeprecated("config", "use the run command")
 	RootCmd.Flags().MarkDeprecated("configtest", "use the test command")
 	RootCmd.Flags().MarkDeprecated("eval", "use the run or test command")
 	RootCmd.Flags().MarkDeprecated("version", "use the version command")
 	RootCmd.Flags().MarkHidden("workers")
+	RootCmd.Flags().MarkHidden("data")
+	RootCmd.Flags().MarkHidden("host")
 
 	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.bitfan/ then /etc/bitfan/", "Set the directory containing the bitfan.toml settings")
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")

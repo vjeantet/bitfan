@@ -26,7 +26,7 @@ import (
 	"github.com/vjeantet/bitfan/cmd/bitfan/commands"
 )
 
-var version = "dev"
+var version = "master"
 var buildstamp = ""
 
 func main() {
