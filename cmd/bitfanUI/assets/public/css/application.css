@@ -172,6 +172,14 @@ header {
         list-style: none;
         list-style-type: none;
         list-style-image: none; }
+    header > section#bitfan-location {
+      flex-direction: row;
+      justify-content: flex-end;
+      margin: 10px; }
+    header > section#bitfan-location > div {
+      max-width: 350px; }
+    header > section#bitfan-location * {
+      font-size: 12px; }
   header > div.burger {
     display: none; }
     header > div.burger a {
@@ -200,6 +208,10 @@ nav {
         display: flex; }
       nav section.assets li:hover {
         background-color: white; }
+      nav section.assets li.active > a {
+        font-weight: bold; }
+      nav section.assets li.asset_type_entrypoint a {
+        color: green; }
 
 footer {
   background: #e5e5e5;

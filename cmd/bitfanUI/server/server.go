@@ -12,6 +12,7 @@ import (
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-gonic/gin"
+	sessions "github.com/tommy351/gin-sessions"
 
 	"github.com/vjeantet/bitfan/api/client"
 	"github.com/vjeantet/bitfan/core/models"
@@ -55,8 +56,8 @@ func Handler(baseURL string, debug bool) http.Handler {
 	}
 
 	r.HTMLRender = render.Init()
-	// store := sessions.NewCookieStore([]byte("secret"))
-	// r.Use(sessions.Sessions("mysession", store), gin.Recovery())
+	store := sessions.NewCookieStore([]byte("qg498+f"))
+	r.Use(sessions.Middleware("my_session", store), gin.Recovery())
 
 	if _, err := os.Stat("assets"); !os.IsNotExist(err) {
 		// assets exists on disk, UseFS
@@ -104,22 +105,61 @@ func Handler(baseURL string, debug bool) http.Handler {
 	// Delete asset
 	r.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
+	// Replace asset
+	r.PUT("/settings/api", changeBitfanApiURL)
+
 	return r
+}
+
+func changeBitfanApiURL(c *gin.Context) {
+	var values map[string]interface{}
+	err := c.BindJSON(&values)
+	if err != nil {
+		c.JSON(500, err.Error())
+		log.Printf("error : %v\n", err)
+		return
+	}
+
+	newURL := values["url"].(string)
+
+	if newURL == "" {
+		c.JSON(500, "provide the bitfan api host:port")
+		log.Printf("error : %v\n", err)
+		return
+	}
+
+	apiBaseUrl = newURL
+	apiClient = client.New(apiBaseUrl)
+	c.JSON(200, values)
 }
 
 func getLogs(c *gin.Context) {
 	// TODO : proxy WS:// github.com/koding/websocketproxy
-	c.HTML(200, "logs/logs", gin.H{
+	c.HTML(200, "logs/logs", withCommonValues(c, gin.H{
 		"bitfanHost": apiBaseUrl,
-	})
+	}))
+}
+
+func withCommonValues(c *gin.Context, h gin.H) gin.H {
+	session := sessions.Get(c)
+	h["apiHost"] = apiBaseUrl
+	h["flashes"] = session.Flashes()
+	session.Save()
+	return h
 }
 
 func getPipelines(c *gin.Context) {
 	pipelines, err := apiClient.Pipelines()
-	c.HTML(200, "pipelines/index", gin.H{
+	c.HTML(200, "pipelines/index", withCommonValues(c, gin.H{
 		"pipelines": pipelines,
 		"error":     err,
-	})
+	}))
+}
+
+func flash(c *gin.Context, message string) {
+	session := sessions.Get(c)
+	session.AddFlash(message)
+	session.Save()
 }
 
 func editPipeline(c *gin.Context) {
@@ -127,14 +167,14 @@ func editPipeline(c *gin.Context) {
 
 	p, _ := apiClient.Pipeline(id)
 
-	c.HTML(200, "pipelines/edit", gin.H{
+	c.HTML(200, "pipelines/edit", withCommonValues(c, gin.H{
 		"pipeline": p,
-	})
+	}))
 
 }
 
 func newPipeline(c *gin.Context) {
-	c.HTML(200, "pipelines/new", gin.H{})
+	c.HTML(200, "pipelines/new", withCommonValues(c, gin.H{}))
 }
 
 func createPipeline(c *gin.Context) {
@@ -154,7 +194,7 @@ func createPipeline(c *gin.Context) {
 	}
 
 	pnew, _ := apiClient.NewPipeline(&p)
-
+	flash(c, fmt.Sprintf("Pipeline %s created", p.Label))
 	c.Redirect(302, fmt.Sprintf("/pipelines/%s", pnew.Uuid))
 }
 
@@ -173,7 +213,7 @@ func updatePipeline(c *gin.Context) {
 	}
 
 	pnew, _ := apiClient.UpdatePipeline(pipelineUUID, &data)
-
+	flash(c, fmt.Sprintf("Pipeline %s saved", pnew.Label))
 	c.Redirect(302, fmt.Sprintf("/pipelines/%s", pnew.Uuid))
 }
 
@@ -253,10 +293,10 @@ func showAsset(c *gin.Context) {
 	p, _ := apiClient.Pipeline(pipelineUUID)
 	a, _ := apiClient.Asset(assetUUID)
 
-	c.HTML(200, "assets/edit", gin.H{
+	c.HTML(200, "assets/edit", withCommonValues(c, gin.H{
 		"asset":    a,
 		"pipeline": p,
-	})
+	}))
 }
 
 func deleteAsset(c *gin.Context) {
@@ -307,6 +347,8 @@ func updateAsset(c *gin.Context) {
 		return
 	}
 
+	flash(c, fmt.Sprintf("Asset %s saved", asset.Name))
+
 	c.Redirect(302, fmt.Sprintf("/pipelines/%s/assets/%s", asset.PipelineUUID, asset.Uuid))
 }
 
@@ -339,6 +381,8 @@ func replaceAsset(c *gin.Context) {
 		log.Printf("error : %v\n", err)
 		return
 	}
+
+	flash(c, fmt.Sprintf("Asset %s saved", asset.Name))
 
 	c.JSON(200, asset)
 }

@@ -77,7 +77,21 @@ header {
                 list-style-image: none;
             }
         }
+        &#bitfan-location {
+            flex-direction: row;
+            justify-content: flex-end;
+            margin: 10px;
+        }
+        &#bitfan-location > div{
+         max-width: 350px;
+         // display: flex;
+        }
+        &#bitfan-location * {
+            font-size: 12px;
+        }
     }
+
+
 
     >div.burger {
         display: none;
@@ -118,6 +132,12 @@ nav {
 
             &:hover {
                 background-color: white;
+            }
+            &.active >a {
+                font-weight: bold;
+            }
+            &.asset_type_entrypoint a {
+                color:green;
             }
         }
     }

@@ -28,6 +28,9 @@ type CommonOptions struct {
 	// ` }
 	// If the event has field "somefield" == "hello" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.
 	RemoveTag []string `mapstructure:"remove_tag"`
+
+	// Log each event produced by the processor (usefull while building or debugging a pipeline)
+	Trace bool `mapstructure:"trace"`
 }
 
 func (c *CommonOptions) ProcessCommonOptions(data *mxj.Map) {

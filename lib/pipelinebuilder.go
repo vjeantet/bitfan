@@ -193,6 +193,16 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 		}
 	}
 
+	// @see commit dbeb4015a88893bffd6334d38f34f978312eff82
+	if trace, ok := agent.Options["trace"]; ok {
+		switch t := trace.(type) {
+		case string:
+			agent.Trace = true
+		case bool:
+			agent.Trace = t
+		}
+	}
+
 	if workers, ok := agent.Options["workers"]; ok {
 		switch t := workers.(type) {
 		case int64:
@@ -343,6 +353,16 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 		}
 	}
 
+	// @see commit dbeb4015a88893bffd6334d38f34f978312eff82
+	if trace, ok := agent.Options["trace"]; ok {
+		switch t := trace.(type) {
+		case string:
+			agent.Trace = true
+		case bool:
+			agent.Trace = t
+		}
+	}
+
 	// ajoute l'agent à la liste des agents
 	agent_list = append([]config.Agent{agent}, agent_list...)
 	return agent_list, nil
@@ -482,6 +502,16 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			agent.Schedule = fmt.Sprintf("@every %ds", i)
 		} else {
 			agent.Schedule = t
+		}
+	}
+
+	// @see commit dbeb4015a88893bffd6334d38f34f978312eff82
+	if trace, ok := agent.Options["trace"]; ok {
+		switch t := trace.(type) {
+		case string:
+			agent.Trace = true
+		case bool:
+			agent.Trace = t
 		}
 	}
 

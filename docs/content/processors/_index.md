@@ -13,7 +13,8 @@ weight = 70
 | add_tag             | array | false    | []            |
 | remove_field        | array | false    | []            |
 | remove_tag          | array | false    | []            |
-| Type              | string | false    | ""            |
+| trace               | bool  | false    | false         |
+| type               | string | false    | ""            |
 
 
 ## Details
@@ -42,6 +43,14 @@ If this filter is successful, remove arbitrary fields from this event.
 * Value type is array
 * Default value is `[]`
 
+### Trace
+* Value type is bool
+* Default value is `false`
+
+Log each event produced by the processor.
+Usefull while building or debugging a configuration pipeline.
+
+Trace event are logged at INFO level.
 
 
 ### Type
