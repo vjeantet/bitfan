@@ -16,9 +16,9 @@
     <a href="https://travis-ci.org/vjeantet/bitfan">
     	<img src="https://travis-ci.org/vjeantet/bitfan.svg?branch=master" alt="Build Status" style="max-width:100%;">
     </a>
-    <a href="https://coveralls.io/github/vjeantet/bitfan?branch=master">
-    	<img src="https://coveralls.io/repos/github/vjeantet/bitfan/badge.svg?branch=master" alt="Coverage Status" style="max-width:100%;">
-   	</a>
+    <a href="https://codecov.io/gh/vjeantet/bitfan">
+        <img src="https://codecov.io/gh/vjeantet/bitfan/branch/master/graph/badge.svg" alt="Codecov" />
+    </a>
 </p>
 
 ---
