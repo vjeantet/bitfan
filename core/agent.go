@@ -88,6 +88,10 @@ func (a *agent) configure(conf *config.Agent) error {
 }
 
 func (a *agent) traceEvent(way string, packet processors.IPacket, portNumbers ...int) {
+	verb := "received"
+	if way == "OUT" {
+		verb = "sent"
+	}
 	Log().e.WithFields(
 		map[string]interface{}{
 			"processor_type":  a.conf.Type,
@@ -95,8 +99,9 @@ func (a *agent) traceEvent(way string, packet processors.IPacket, portNumbers ..
 			"processor_label": a.conf.Label,
 			"event":           packet.Fields().Old(),
 			"ports":           portNumbers,
+			"trace":           way,
 		},
-	).Info("TRACE " + way)
+	).Info(verb + " event by " + a.conf.Label + " on pipeline '" + a.conf.PipelineName + "'")
 }
 
 func (a *agent) send(packet processors.IPacket, portNumbers ...int) bool {

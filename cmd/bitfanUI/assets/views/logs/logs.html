@@ -19,23 +19,33 @@
 {{end}}
 
 <script id="logmessage-template" type="text/x-jsrender">
-  <li class="level[[:ev.Level]]">
-  <span class="level">
-[[if ev.Level == 5]]
-  DEBUG
-[[else ev.Level == 4 ]]
-  INFO
-[[else ev.Level == 3 ]]
-  WARN
-[[else ev.Level == 2 ]]
-  ERROR
-[[else ev.Level == 1 ]]
-  FATAL
-[[/if]]
-</span>
-  <span class="time">[[:timeString]]</span>
-  <span class="component">[[:ev.Data.component]]</span>
-  <span class="message">[[:ev.Message]]</span>
+  <li class="level[[:ev.Level]] [[if eventHTML]]trace_[[:ev.Data.trace]][[/if]]">
+  <span class="message_header">
+	<span class="level">
+	[[if eventHTML]]
+	  TRACE
+	[[else ev.Level == 5]]
+	  DEBUG
+	[[else ev.Level == 4 ]]
+	  INFO
+	[[else ev.Level == 3 ]]
+	  WARN
+	[[else ev.Level == 2 ]]
+	  ERROR
+	[[else ev.Level == 1 ]]
+	  FATAL
+	[[/if]]
+	</span>
+ 	<span class="time">[[:timeString]]</span>
+	<span class="component">[[:ev.Data.component]]</span>	
+  </span>
+  <span class="message_content">
+	  <span class="message">[[:ev.Message]]</span>
+	  [[if eventHTML]]
+	  <span class="event">[[:eventHTML]]</span>
+	  [[/if]]
+  </span>
+  
   </li>
 </script>
 
@@ -54,7 +64,10 @@
 			$('#logs').append(logmessagetmpl.render({
 				ev: Data, 
 				timeString:moment(Data.Time).format('L LTS'),
-			}));   
+				eventHTML: syntaxHighlightIfEvent(Data.Data.event),
+			}));
+
+			$('html, body').scrollTop( $(document).height() );
 		};
 		
 		websocket.onerror = function(event){
@@ -74,6 +87,35 @@
 		// 	websocket.send(JSON.stringify(messageJSON));
 		// });
 	});
+
+function syntaxHighlightIfEvent(data){
+	if (data) {
+		return syntaxHighlight(data)
+	}
+}
+
+function syntaxHighlight(json) {
+	if (typeof json != 'string') {
+        json = JSON.stringify(json, undefined, '\t');
+    }
+
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
 </script>
 
 <div class="row">
