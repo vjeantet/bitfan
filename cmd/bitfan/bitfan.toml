@@ -14,7 +14,7 @@
 # log = "/var/log/bitfan-app.log"
 
 ## Set log verbosity on core and/or processors
-verbose = true
+# verbose = true (default)
 
 # # Debuging
 #debug = true

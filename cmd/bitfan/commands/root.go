@@ -131,7 +131,7 @@ func init() {
 
 	RootCmd.PersistentFlags().String("settings", "current dir, then ~/.bitfan/ then /etc/bitfan/", "Set the directory containing the bitfan.toml settings")
 	RootCmd.PersistentFlags().StringP("log", "l", "", "Log to a given path. Default is to log to stdout.")
-	RootCmd.PersistentFlags().Bool("verbose", false, "Increase verbosity of logs")
+	RootCmd.PersistentFlags().Bool("verbose", true, "Increase verbosity of logs")
 	RootCmd.PersistentFlags().Bool("debug", false, "Increase verbosity to the last level (trace)")
 }
 
