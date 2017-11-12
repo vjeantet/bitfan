@@ -14,6 +14,8 @@ import (
 	"time"
 
 	durationfmt "github.com/davidscholberg/go-durationfmt"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
 	"github.com/spf13/cast"
 	"github.com/vjeantet/jodaTime"
 )
@@ -40,6 +42,12 @@ func (t *templateFunctions) isSet(a interface{}, key interface{}) (bool, error) 
 	}
 
 	return false, nil
+}
+
+func (t *templateFunctions) toMarkdown(v interface{}) (string, error) {
+	unsafe := blackfriday.MarkdownCommon([]byte(cast.ToString(v)))
+	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+	return string(html), nil
 }
 
 // Replace returns a copy of the string s with all occurrences of old replaced

@@ -7,8 +7,20 @@
 {{ define "content" }}
 
 
+{{if eq .asset.Type "entrypoint"}}
 
-<div class="row">
+<div class="row" class="pipeline-description">
+<div class="col">
+{{if ne .pipeline.Description ""}}
+  {{safeHTML (markdown .pipeline.Description)}}
+{{else}}
+  <h1>Pipeline's entry point ({{.asset.Name}})</h1>
+{{end}}
+</div>
+</div>
+{{end}}
+
+<div class="row {{if eq .asset.Type "entrypoint"}}hidden{{end}}" >
   <div class="col">
   <h1>{{.asset.Name}}</h1>
   </div>
@@ -26,7 +38,7 @@
   <div class="col-12">
 
     <form method="POST" action="">
-       <div class="form-group">
+       <div class="form-group {{if eq .asset.Type "entrypoint"}}hidden{{end}}">
         <label for="name">Name</label>
         <input type="text" class="form-control" name="name" id="name" value="{{.asset.Name}}">
       </div>

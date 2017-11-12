@@ -53,6 +53,7 @@ func Handler(baseURL string, debug bool) http.Handler {
 		"trimPrefix":   (*templateFunctions)(nil).trimPrefix,
 		"hasPrefix":    (*templateFunctions)(nil).hasPrefix,
 		"replace":      (*templateFunctions)(nil).replace,
+		"markdown":     (*templateFunctions)(nil).toMarkdown,
 	}
 
 	r.HTMLRender = render.Init()
@@ -185,7 +186,7 @@ func createPipeline(c *gin.Context) {
 		Label:       c.Request.PostFormValue("label"),
 		Description: c.Request.PostFormValue("description"),
 		Assets: []models.Asset{{
-			Name:        "bitfan.conf",
+			Name:        "entrypoint.conf",
 			Type:        "entrypoint",
 			ContentType: "text/plain",
 			Value:       defaultValue,

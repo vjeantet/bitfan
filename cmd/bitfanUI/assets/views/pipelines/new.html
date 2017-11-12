@@ -32,7 +32,7 @@
   </div>
   <div class="form-group">
     <label for="description">Description</label>
-    <input type="text" class="form-control" name="description" id="description" placeholder="Enter pipeline's description" value="{{.pipeline.Description}}">
+    <textarea class="form-control" rows=10 name="description" id="description" placeholder="Enter pipeline's description, you can use markdown">{{ string .pipeline.Description }}</textarea>
   </div>
   <button type="submit" name="save" class="btn btn-primary">Save...</button>
 </form>
