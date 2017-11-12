@@ -14,4 +14,4 @@ script:
     - ./go.test.sh
 after_success:
     - bash <(curl -s https://codecov.io/bash)
-    - test -n "$TRAVIS_TAG" && go get github.com/goreleaser/goreleaser && goreleaser 
+    - test -n "$TRAVIS_TAG" && go get github.com/goreleaser/goreleaser && goreleaser --skip-validate
