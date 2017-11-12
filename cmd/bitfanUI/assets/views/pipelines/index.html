@@ -31,7 +31,7 @@
     {{range  $pipeline := .pipelines}}
       <tr>
         <td class=''>
-        	<a href="/pipelines/{{$pipeline.Uuid}}" class="">
+        	<a href="/pipelines/{{$pipeline.Uuid}}{{range $pipeline.Assets}}{{if eq "entrypoint" .Type}}/assets/{{.Uuid}}{{end}}{{end}}" class="">
           {{if $pipeline.Label}}{{$pipeline.Label}}{{else}}noname{{end}}
       </a>
           <br/>
