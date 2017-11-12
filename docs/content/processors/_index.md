@@ -13,7 +13,8 @@ weight = 70
 | add_tag             | array | false    | []            |
 | remove_field        | array | false    | []            |
 | remove_tag          | array | false    | []            |
-| Type              | string | false    | ""            |
+| trace               | bool  | false    | false         |
+| type               | string | false    | ""            |
 
 
 ## Details
