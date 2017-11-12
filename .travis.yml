@@ -11,10 +11,7 @@ install:
     - go get -v golang.org/x/tools/cmd/cover
     - go get -v github.com/stretchr/testify/assert
 script:
-    - go get -v github.com/go-playground/overalls
-    - overalls -project=github.com/vjeantet/bitfan -covermode=count -ignore=vendor,.git,docs,.bitfan,data,examples.d,releases -concurrency=2
+    - ./go.test.sh
 after_success:
-    - go get -v github.com/mattn/goveralls
-    - export PATH=$PATH:$HOME/gopath/bin
-    - goveralls -coverprofile=overalls.coverprofile -service=travis-ci
+    - bash <(curl -s https://codecov.io/bash)
     - test -n "$TRAVIS_TAG" && go get github.com/goreleaser/goreleaser && goreleaser 
