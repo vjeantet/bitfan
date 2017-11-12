@@ -87,9 +87,25 @@ func (a *agent) configure(conf *config.Agent) error {
 	return a.processor.Configure(ctx, conf.Options)
 }
 
+func (a *agent) traceEvent(way string, packet processors.IPacket, portNumbers ...int) {
+	Log().e.WithFields(
+		map[string]interface{}{
+			"processor_type":  a.conf.Type,
+			"pipeline_uuid":   a.conf.PipelineUUID,
+			"processor_label": a.conf.Label,
+			"event":           packet.Fields().Old(),
+			"ports":           portNumbers,
+		},
+	).Info("TRACE " + way)
+}
+
 func (a *agent) send(packet processors.IPacket, portNumbers ...int) bool {
 	if len(portNumbers) == 0 {
 		portNumbers = []int{0}
+	}
+
+	if a.conf.Trace {
+		a.traceEvent("OUT", packet, portNumbers...)
 	}
 
 	// for each portNumbes
@@ -204,6 +220,11 @@ func (a *agent) listen(wg *sync.WaitGroup) {
 	for e := range a.packetChan {
 		// Receive a work request.
 		metrics.set(METRIC_CONNECTION_TRANSIT, a.conf.PipelineName, a.Label, len(a.packetChan))
+
+		if a.conf.Trace {
+			a.traceEvent("IN", e, 0)
+		}
+
 		if err := a.processor.Receive(e); err != nil {
 			Log().Errorf("agent %s: %v", a.conf.Type, err)
 		}

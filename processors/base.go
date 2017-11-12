@@ -46,13 +46,6 @@ func (b *Base) MaxConcurent() int {
 	return 0
 }
 
-func (b *Base) tracePacketSender(ps PacketSender) PacketSender {
-	return func(e IPacket, ports ...int) bool {
-		b.Logger.TraceEvent(e)
-		return ps(e, ports...)
-	}
-}
-
 func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interface{}, rawVal interface{}) error {
 
 	// Logger
@@ -62,11 +55,7 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	b.ConfigWorkingLocation = ctx.ConfigWorkingLocation()
 
 	// Packet Sender func
-	if _, ok := conf["trace"]; ok {
-		b.Send = b.tracePacketSender(ctx.PacketSender())
-	} else {
-		b.Send = ctx.PacketSender()
-	}
+	b.Send = ctx.PacketSender()
 
 	// Packet Builder func
 	b.NewPacket = ctx.PacketBuilder()

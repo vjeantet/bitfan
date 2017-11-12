@@ -31,6 +31,4 @@ type Logger interface {
 	Warningf(format string, args ...interface{})
 	Warningln(args ...interface{})
 	Warnln(args ...interface{})
-
-	TraceEvent(e IPacket)
 }

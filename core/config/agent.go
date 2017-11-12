@@ -10,6 +10,7 @@ type Agent struct {
 	AgentRecipients PortList
 	Type            string                 `json:"type"`
 	Schedule        string                 `json:"schedule"`
+	Trace           bool                   `json:"trace"`
 	PoolSize        int                    `json:"pool_size"`
 	Buffer          int                    `json:"buffer_size"`
 	Options         map[string]interface{} `json:"options"`
