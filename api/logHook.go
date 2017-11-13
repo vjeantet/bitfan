@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 )
@@ -17,6 +18,7 @@ type logHook struct {
 	config *hookConfig
 	slice  [][]byte
 	c      chan []byte
+	mutex  sync.Mutex
 }
 
 // newHook creates a hook to be added to an instance of logger
@@ -48,10 +50,13 @@ func (l *logHook) Fire(entry *logrus.Entry) error {
 	go func(serialized []byte) {
 		l.c <- serialized
 	}(serialized)
+
+	l.mutex.Lock()
 	l.slice = append(l.slice, serialized)
 	if len(l.slice) > l.config.Size {
 		l.slice = l.slice[1:]
 	}
+	l.mutex.Unlock()
 
 	return nil
 }
