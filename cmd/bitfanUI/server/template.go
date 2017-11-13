@@ -67,16 +67,18 @@ func (r Render) Glob(pattern string) ([]string, error) {
 }
 
 func (r Render) Init() Render {
+	pathSeparator := string(os.PathSeparator)
 	if _, err := os.Stat(r.TemplatesDir); !os.IsNotExist(err) {
 		// assets exists on disk, UseFS
 		r.UseFS = true
 	} else {
 		// assets from bindData
 		r.UseFS = false
+		pathSeparator = "/"
 	}
 
 	layout := r.TemplatesDir + r.Layout
-	viewDirs, _ := r.Glob(r.TemplatesDir + "**" + string(os.PathSeparator) + "*" + r.Ext)
+	viewDirs, _ := r.Glob(r.TemplatesDir + "**" + pathSeparator + "*" + r.Ext)
 	partials, _ := r.Glob(r.TemplatesDir + "_*" + r.Ext)
 
 	for _, view := range viewDirs {
