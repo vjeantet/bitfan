@@ -29,10 +29,10 @@ func (a *AssetApiController) CheckSyntax(c *gin.Context) {
 	_, err = parser.NewParser(bytes.NewReader(asset.Value)).Parse()
 	if err != nil {
 		c.JSON(200, gin.H{
-			"l":    err.(parser.ParseError).Line,
-			"c":    err.(parser.ParseError).Column,
+			"l":    err.(*parser.ParseError).Line,
+			"c":    err.(*parser.ParseError).Column,
 			"uuid": asset.Uuid,
-			"m":    err.(parser.ParseError).Reason,
+			"m":    err.(*parser.ParseError).Reason,
 		})
 	} else {
 		c.JSON(200, gin.H{

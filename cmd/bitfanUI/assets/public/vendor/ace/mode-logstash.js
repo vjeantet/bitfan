@@ -10,7 +10,7 @@ var LogstashHighlightRules = function() {
 
     this.$rules = {
         start: [{
-            token: "entity.name.type.class.logstash",
+            token: "storage.type.logstash",
             regex: /^(?:input|filter|codec|output)/,
             comment: "classes: inputs, codecs, filters and outputs"
         }, {
@@ -76,7 +76,7 @@ var LogstashHighlightRules = function() {
             comment: "functions: types of inputs, codecs, filters and outputs"
         }, {
             token: "comment.line.number-sign.logstash",
-            regex: /^(?:\s*)?#.+/,
+            regex: /#.+$/,
             comment: "Comments"
         }, {
             token: [
@@ -267,7 +267,7 @@ oop.inherits(Mode, TextMode);
 
 (function() {
        
-    this.lineCommentStart = ";";
+    this.lineCommentStart = "#";
     
     this.$id = "ace/mode/logstash";
 }).call(Mode.prototype);

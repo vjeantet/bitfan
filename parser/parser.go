@@ -55,8 +55,8 @@ type ParseError struct {
 	Reason string
 }
 
-func NewParseError(l int, c int, message string) ParseError {
-	return ParseError{
+func NewParseError(l int, c int, message string) *ParseError {
+	return &ParseError{
 		Line:   l,
 		Column: c,
 		Reason: message,
@@ -107,7 +107,7 @@ func (p *Parser) Parse() (*Configuration, error) {
 
 	}
 
-	return config, nil
+	return config, err
 }
 
 func (p *Parser) parseSection(tok *Token) (*Section, error) {
@@ -175,7 +175,7 @@ func (p *Parser) parseSection(tok *Token) (*Section, error) {
 		}
 	}
 
-	return section, nil
+	return section, err
 }
 
 func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
@@ -184,10 +184,10 @@ func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 	pluginWhen.When = make(map[int]*When)
 
 	var err error
-	var expression string
-	expression, err = conditionalexpression.ToWhenExpression(tok.Value.(string))
-	if err != nil {
-		return pluginWhen, fmt.Errorf("Conditional expression parse error %v", err)
+
+	expression, errc := conditionalexpression.ToWhenExpression(tok.Value.(string))
+	if errc != nil {
+		return pluginWhen, NewParseError(tok.Line, tok.Col, "Conditional expression parse error : "+errc.Error())
 	}
 
 	when := &When{
@@ -253,7 +253,7 @@ func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 
 	id := len(pluginWhen.When)
 	pluginWhen.When[id] = when
-	return pluginWhen, nil
+	return pluginWhen, err
 }
 
 func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
@@ -327,7 +327,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 
 	}
 
-	return plugin, nil
+	return plugin, err
 }
 
 func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
@@ -359,7 +359,7 @@ func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
 		}
 
 	}
-	return settings, nil
+	return settings, err
 }
 
 func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
@@ -382,7 +382,7 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	// rechercher un {
 	*tok, err = p.getToken(TokenLCurlyBrace)
 	if err != nil {
-		return codec, tok, nil
+		return codec, tok, err
 	}
 
 	// il y a un { -> on charge les settings jusqu'au }
@@ -414,7 +414,7 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	}
 
 	// log.Printf(" -pc- %s %s", TokenType(tok.Kind).String(), tok.Value)
-	return codec, nil, nil
+	return codec, nil, err
 }
 
 func (p *Parser) parseSetting(tok *Token) (*Setting, error) {
@@ -490,7 +490,6 @@ func (p *Parser) parseHash() (map[string]interface{}, error) {
 	for {
 		tok, err := p.getToken(TokenComment, TokenRCurlyBrace, TokenString, TokenComma)
 		if err != nil {
-			log.Fatalf("ParseHash parse error %v", err)
 			return nil, err
 		}
 
