@@ -75,3 +75,42 @@ func GetTokenKindString(kind TokenKind) string {
 
 	return "TokenIllegal"
 }
+
+func GetTokenKindHumanString(kind TokenKind) string {
+
+	switch kind {
+
+	case TokenIllegal:
+		return "TokenIllegal"
+	case TokenEOF:
+		return "End of content"
+	case TokenAssignment:
+		return "=>"
+	case TokenLCurlyBrace:
+		return "{"
+	case TokenLBracket:
+		return "["
+	case TokenRCurlyBrace:
+		return "}"
+	case TokenRBracket:
+		return "]"
+	case TokenString:
+		return "string"
+	case TokenNumber:
+		return "number"
+	case TokenIf:
+		return "if"
+	case TokenElse:
+		return "else"
+	case TokenElseIf:
+		return "else if"
+	case TokenComment:
+		return "comment"
+	case TokenComma:
+		return ","
+	case TokenBool:
+		return "bool"
+	}
+
+	return "TokenIllegal"
+}

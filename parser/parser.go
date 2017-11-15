@@ -113,7 +113,7 @@ func (p *Parser) Parse() (*Configuration, error) {
 func (p *Parser) parseSection(tok *Token) (*Section, error) {
 	section := &Section{}
 	if tok.Value != "input" && tok.Value != "filter" && tok.Value != "output" {
-		return section, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected '%s'", tok.Value))
+		return section, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected '%s', exepected one of 'input', 'filter' or 'output'", tok.Value))
 	}
 
 	section.Name = tok.Value.(string)
@@ -123,14 +123,13 @@ func (p *Parser) parseSection(tok *Token) (*Section, error) {
 	*tok, err = p.getToken(TokenLCurlyBrace)
 
 	if err != nil {
-		return section, fmt.Errorf("section parse error %v", err)
+		return section, err
 	}
 	i := 0
 	for {
 		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
 		if err != nil {
-			log.Printf(" -sp- %s %v", GetTokenKindString(tok.Kind), err)
-			return section, fmt.Errorf("parse section error %v", err)
+			return section, err
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -200,13 +199,13 @@ func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 
 	*tok, err = p.getToken(TokenLCurlyBrace)
 	if err != nil {
-		return pluginWhen, fmt.Errorf("IF parse error %v", err)
+		return pluginWhen, err
 	}
 	i := 0
 	for {
 		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenIf, TokenElse, TokenElseIf)
 		if err != nil {
-			return pluginWhen, fmt.Errorf("parse IF error %v", err)
+			return pluginWhen, err
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -569,12 +568,12 @@ func (p *Parser) getToken(types ...TokenKind) (Token, error) {
 	}
 
 	if len(types) == 1 {
-		return tok, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected '%s' ", tok.Value, GetTokenKindString(types[0])))
+		return tok, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected '%s' ", tok.Value, GetTokenKindHumanString(types[0])))
 	}
 
 	list := make([]string, len(types))
 	for i, t := range types {
-		list[i] = GetTokenKindString(t)
+		list[i] = GetTokenKindHumanString(t)
 	}
 
 	return tok, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected one of '%s' ", tok.Value, strings.Join(list, "|")))
@@ -599,7 +598,7 @@ func DumpTokens(content []byte) {
 		if token.Kind == TokenIllegal {
 			fmt.Printf("ERROR %v\n", err)
 			color := "\033[93m"
-			log.Printf("ERROR %4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindString(token.Kind), token.Value)
+			log.Printf("ERROR %4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindHumanString(token.Kind), token.Value)
 			break
 		}
 
@@ -615,7 +614,7 @@ func DumpTokens(content []byte) {
 			color = "\033[90m"
 		}
 
-		log.Printf("%4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindString(token.Kind), token.Value)
+		log.Printf("%4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindHumanString(token.Kind), token.Value)
 
 		// append this valid token
 		ret = append(ret, token)
