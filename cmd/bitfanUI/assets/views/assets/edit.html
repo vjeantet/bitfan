@@ -37,7 +37,7 @@
 <div class="row">
   <div class="col-12">
 
-    <form method="POST" action="">
+    <form id="bitfan-asset-form" method="POST" action="">
        <div class="form-group {{if eq .asset.Type "entrypoint"}}hidden{{end}}">
         <label for="name">Name</label>
         <input type="text" class="form-control" name="name" id="name" value="{{.asset.Name}}">
@@ -77,6 +77,19 @@
                   checkContentSyntax() ;
                 {{end}}
 
+              });
+
+              editor.commands.addCommand(
+                {
+                  name: 'saveFile',
+                  bindKey: {
+                  win: 'Ctrl-S',
+                  mac: 'Command-S',
+                  sender: 'editor|cli'
+                },
+                exec: function(env, args, request) {
+                 $("#bitfan-asset-form").submit() ;
+                }
               });
 
 
