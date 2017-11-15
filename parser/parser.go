@@ -49,6 +49,24 @@ type Setting struct {
 	V interface{}
 }
 
+type ParseError struct {
+	Line   int
+	Column int
+	Reason string
+}
+
+func NewParseError(l int, c int, message string) ParseError {
+	return ParseError{
+		Line:   l,
+		Column: c,
+		Reason: message,
+	}
+}
+
+func (p ParseError) Error() string {
+	return fmt.Sprintf("Parse error line %d, column %d : %s", p.Line, p.Column, p.Reason)
+}
+
 func NewParser(r io.Reader) *Parser {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r)
@@ -67,7 +85,7 @@ func (p *Parser) Parse() (*Configuration, error) {
 
 		tok, err = p.getToken(TokenComment, TokenString, TokenEOF, TokenRCurlyBrace)
 		if err != nil {
-			return config, fmt.Errorf("parse error Parse %v", err)
+			return config, err
 		}
 
 		// If Comment Donoe
@@ -95,7 +113,7 @@ func (p *Parser) Parse() (*Configuration, error) {
 func (p *Parser) parseSection(tok *Token) (*Section, error) {
 	section := &Section{}
 	if tok.Value != "input" && tok.Value != "filter" && tok.Value != "output" {
-		return section, fmt.Errorf("parse error, unexpected '%s', line %d col %d", tok.Value, tok.Line, tok.Col)
+		return section, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected '%s'", tok.Value))
 	}
 
 	section.Name = tok.Value.(string)
@@ -249,14 +267,14 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 
 	*tok, err = p.getToken(TokenLCurlyBrace, TokenString)
 	if err != nil {
-		return plugin, fmt.Errorf("Plugin parse error %v", err)
+		return plugin, err
 	}
 
 	if tok.Kind == TokenString {
 		plugin.Label = tok.Value.(string)
 		*tok, err = p.getToken(TokenLCurlyBrace)
 		if err != nil {
-			return plugin, fmt.Errorf("Plugin parse error %v", err)
+			return plugin, err
 		}
 	}
 
@@ -267,7 +285,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 		if advancedTok == nil {
 			*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenComma)
 			if err != nil {
-				return plugin, fmt.Errorf("plugin parse error %v", err)
+				return plugin, err
 			}
 		} else {
 			tok = advancedTok
@@ -321,7 +339,7 @@ func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
 	for {
 		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace)
 		if err != nil {
-			return settings, fmt.Errorf("codec settings parse error %v", err)
+			return settings, err
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -353,12 +371,12 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 
 	*tok, err = p.getToken(TokenAssignment)
 	if err != nil {
-		return codec, nil, fmt.Errorf("codec 1 parse error %v", err)
+		return codec, nil, err
 	}
 
 	*tok, err = p.getToken(TokenString)
 	if err != nil {
-		return codec, nil, fmt.Errorf("codec 2 parse error %v", err)
+		return codec, nil, err
 	}
 	codec.Name = tok.Value.(string)
 
@@ -373,7 +391,7 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	for {
 		*tok, err = p.getToken(TokenRCurlyBrace, TokenComment, TokenString, TokenComma)
 		if err != nil {
-			return codec, nil, fmt.Errorf("plugin parse error %v", err)
+			return codec, nil, err
 		}
 
 		if tok.Kind == TokenRCurlyBrace {
@@ -409,12 +427,12 @@ func (p *Parser) parseSetting(tok *Token) (*Setting, error) {
 	*tok, err = p.getToken(TokenAssignment)
 
 	if err != nil {
-		return setting, fmt.Errorf("Setting 1 parse error %v", err)
+		return setting, err
 	}
 
 	*tok, err = p.getToken(TokenString, TokenNumber, TokenLBracket, TokenLCurlyBrace, TokenBool)
 	if err != nil {
-		return setting, fmt.Errorf("Setting 2 parse error %v", err)
+		return setting, err
 	}
 
 	switch tok.Kind {
@@ -536,12 +554,12 @@ func (p *Parser) getToken(types ...TokenKind) (Token, error) {
 
 	tok, err := readToken(p.l)
 	if err != nil {
-		return Token{}, fmt.Errorf("Illegal token '%s' found line %d col %d ", tok.Value, tok.Line, tok.Col)
+		return Token{}, NewParseError(tok.Line, tok.Col, fmt.Sprintf("illegal token '%s'", tok.Value))
 	}
 
 	if tok.Kind == TokenIllegal {
 		// log.Printf(" -- %s %s", TokenType(tok.Kind).String(), tok.Value)
-		return Token{}, fmt.Errorf("Illegal token '%s' found line %d col %d ", tok.Value, tok.Line, tok.Col)
+		return Token{}, NewParseError(tok.Line, tok.Col, fmt.Sprintf("illegal token '%s'", tok.Value))
 	}
 
 	for _, t := range types {
@@ -551,7 +569,7 @@ func (p *Parser) getToken(types ...TokenKind) (Token, error) {
 	}
 
 	if len(types) == 1 {
-		return tok, fmt.Errorf("unexpected token '%s' expected '%s' on line %d col %d", tok.Value, GetTokenKindString(types[0]), tok.Line, tok.Col)
+		return tok, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected '%s' ", tok.Value, GetTokenKindString(types[0])))
 	}
 
 	list := make([]string, len(types))
@@ -559,7 +577,7 @@ func (p *Parser) getToken(types ...TokenKind) (Token, error) {
 		list[i] = GetTokenKindString(t)
 	}
 
-	return tok, fmt.Errorf("unexpected token '%s' expected one of %s on line %d col %d", tok.Value, strings.Join(list, "|"), tok.Line, tok.Col)
+	return tok, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected one of '%s' ", tok.Value, strings.Join(list, "|")))
 }
 
 func DumpTokens(content []byte) {

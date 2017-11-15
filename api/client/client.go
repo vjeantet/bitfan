@@ -198,6 +198,20 @@ func (r *RestClient) ReplaceAsset(UUID string, initAsset *models.Asset) (*models
 	return newAsset, err
 }
 
+func (r *RestClient) CheckSyntax(asset *models.Asset) (map[string]interface{}, error) {
+	apierror := new(models.Error)
+
+	syntaxCheckResult := new(map[string]interface{})
+	resp, err := r.client().Post("assets/0/syntax-check").BodyJSON(asset).Receive(syntaxCheckResult, apierror)
+	if err != nil {
+		return *syntaxCheckResult, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return *syntaxCheckResult, nil
+}
+
 // func debug(r io.ReadCloser) string {
 // 	buf := new(bytes.Buffer)
 // 	buf.ReadFrom(r)

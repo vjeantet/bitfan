@@ -47,7 +47,7 @@
         
         {{if (hasPrefix  "text/" .asset.ContentType)}}
           <label for="content">Content</label>
-          <textarea style="display: none" name="content">{{ string .asset.Value }}</textarea>
+          <textarea style="display: none" name="content" id="bitfan-asset-content">{{ string .asset.Value }}</textarea>
           <div style="height: 500px;" id="content"></div>
           <script src="/public/vendor/ace/ace.js" type="text/javascript" charset="utf-8">
           </script>
@@ -72,7 +72,47 @@
               editor.getSession().setValue(textarea.val());
               editor.getSession().on('change', function(){
                 textarea.val(editor.getSession().getValue());
+                editor.getSession().clearAnnotations() ;
+                {{if eq .asset.Type "entrypoint"}}
+                  checkContentSyntax() ;
+                {{end}}
+
               });
+
+
+              var checkContentSyntax = function () {
+                
+                sendData = {
+                  uuid: "{{.asset.Uuid}}",
+                  value: Base64.encode($('#bitfan-asset-content').val())
+                }
+                $.ajax({
+                  type: 'post',
+                  contentType: "text/plain; charset=utf-8",
+                  data: JSON.stringify(sendData),
+                  dataType: 'json',
+                  url: "http://{{.apiHost}}/api/v2/assets/{{.asset.Uuid}}/syntax-check",
+                  beforeSend: function(){
+                    
+                  },
+                  success: function (output) {
+                      editor.getSession().setAnnotations([{
+                        row: output.l-1,
+                        column: output.c,
+                        text: output.m,
+                        type: "error" // also warning and information
+                      }]);
+
+                  },
+                  error: function (output) {
+                      return false;
+                  }
+                });
+
+                return false;
+              };
+
+
             });
           </script>
         {{else}}
@@ -93,6 +133,8 @@
 
       <button type="submit" name="save" class="btn btn-primary">Save</button>
     </form>
+
+
 
           <hr>
 

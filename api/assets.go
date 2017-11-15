@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 
@@ -8,10 +9,38 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/parser"
 )
 
 type AssetApiController struct {
 	path string
+}
+
+func (a *AssetApiController) CheckSyntax(c *gin.Context) {
+	var asset models.Asset
+	uuid := c.Param("uuid")
+	asset.Uuid = uuid
+	err := c.BindJSON(&asset)
+	if err != nil {
+		c.JSON(500, models.Error{Message: err.Error()})
+		return
+	}
+
+	_, err = parser.NewParser(bytes.NewReader(asset.Value)).Parse()
+	if err != nil {
+		c.JSON(200, gin.H{
+			"l":    err.(parser.ParseError).Line,
+			"c":    err.(parser.ParseError).Column,
+			"uuid": asset.Uuid,
+			"m":    err.(parser.ParseError).Reason,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"uuid": asset.Uuid,
+			"m":    "ok",
+		})
+	}
+
 }
 
 func (a *AssetApiController) Create(c *gin.Context) {
