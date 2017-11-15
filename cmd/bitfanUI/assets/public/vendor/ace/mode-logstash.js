@@ -9,25 +9,49 @@ var LogstashHighlightRules = function() {
     // regexps are ordered -> the first match is used
 
     this.$rules = {
-        start: [{
-            token: "storage.type.logstash",
+                start: [
+        {
+            token: "support.constant.logstash",
             regex: /^(?:input|filter|codec|output)/,
             comment: "classes: inputs, codecs, filters and outputs"
-        }, {
+        }, 
+       
+        
+        {
+            token: [
+                "keyword.control.logstash",
+                "text.logstash",
+                "text.logstash",
+                "string.text.logstash",
+                "text.logstash",
+                "text.logstash",
+                "keyword.operator.logstash"
+            ],
+            regex: /(if|else if)(\s+)(\[)(\w*)(\])(\s*)(==|!=|<|>|<=|>=|=~|!~|in|not in|!)/,
+            comment: "if/else if statements"
+        }, 
+        {
             token: [
                 "keyword.operator.logstash",
                 "text.logstash",
                 "text.logstash",
-                "entity.name.function.logstash",
+                "string.text.logstash",
                 "text.logstash"
             ],
             regex: /(?:(and|or)(\s+)(\[)(\w*)(\]))+/,
             comment: "complex if/else if statements"
-        }, {
+        }, 
+        {
             token: "keyword.operator.logstash",
             regex: /==|!=|<|>|<=|>=|=~|!~|in|not in|and|or|nand|xor|!/,
             comment: "Operators"
-        }, {
+        }, 
+        {
+            token: "string.text.logstash",
+            regex: /".+?[^"]*"/,
+            comment: "String values"
+        },
+        {
             token: [
                 "entity.name.function.logstash",
                 "entity.name.function.logstash",
@@ -35,23 +59,8 @@ var LogstashHighlightRules = function() {
             ],
             regex: /(%{)(\w*)(})/,
             comment: "Groked Field"
-        }, {
-            token: "string.text.logstash",
-            regex: /".+?[^"]*"/,
-            comment: "String values"
-        }, {
-            token: [
-                "keyword.control.logstash",
-                "text.logstash",
-                "text.logstash",
-                "entity.name.function.logstash",
-                "text.logstash",
-                "text.logstash",
-                "keyword.operator.logstash"
-            ],
-            regex: /(if|else if)(\s+)(\[)(\w*)(\])(\s*)(==|!=|<|>|<=|>=|=~|!~|in|not in|!)/,
-            comment: "if/else if statements"
-        }, {
+        }, 
+        {
             token: [
                 "keyword.control.logstash",
                 "text.logstash",
@@ -59,37 +68,30 @@ var LogstashHighlightRules = function() {
             ],
             regex: /(else)(\s+)({)/,
             comment: "else statements"
-        }, {
+        },
+        {
             token: [
                 "text.logstash",
-                "entity.name.function.logstash",
+                "variable.parameter.logstash",
                 "text.logstash",
-                "string.text.logstash",
-                "text.logstash",
-                "text.logstash",
-                "variable.text.logstash",
-                "text.logstash",
-                "keyword.operator.logstash",
-                "text.logstash"
+                "keyword.logstash",
             ],
-            regex: /^(\s*)(\w+)(\s*)("?.+?[^"]*"?)(\s*{)((?:\s*)?)((?:\w+)?)((?:\s*)?)((?:=>)?)((?:\s*)?)/,
-            comment: "functions: types of inputs, codecs, filters and outputs"
-        }, {
+            regex: /(\s*)(\w+)(\s*)(=>)/,
+            comment: "agent options"
+        },
+        {
             token: "comment.line.number-sign.logstash",
             regex: /#.+$/,
             comment: "Comments"
-        }, {
+        }, 
+        {
             token: [
-                "keyword.text.logstash",
-                "variable.text.logstash",
-                "keyword.text.logstash",
-                "keyword.operator.logstash",
-                "keyword.text.logstash",
                 "constant.numeric.logstash"
             ],
-            regex: /^((?:\s*)?)(\w+)((?:\s*)?)(=>)((?:\s*)?)(\d+)/,
+            regex: /(\d+)/,
             comment: "Variables: Number values"
-        }, {
+        }, 
+        {
             token: [
                 "keyword.text.logstash",
                 "variable.text.logstash",
@@ -99,7 +101,20 @@ var LogstashHighlightRules = function() {
             ],
             regex: /^((?:\s*)?)(\w+)((?:\s*)?)(=>)((?:\s*)?)/,
             comment: "Variables: String values"
-        }]
+        },
+        {
+            token: [
+                "keyword.text.logstash",
+                "entity.name.function.logstash",
+                "keyword.text.logstash",
+                "entity.name.function.logstash",
+                "keyword.text.logstash"
+                ],
+            regex: /((?:\s}{*)?)(\w+)((?:\s*)?)(\w+)((?:\s*)?)/,
+            comment: "agent name"
+        } 
+        
+        ]
     }
     
     this.normalizeRules();
