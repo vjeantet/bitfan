@@ -51,12 +51,23 @@
           <div style="height: 500px;" id="content"></div>
           <script src="/public/vendor/ace/ace.js" type="text/javascript" charset="utf-8">
           </script>
+          <script src="/public/vendor/ace/ext-modelist.js"></script>
           <script>
+
             $(document).ready(function () {
+
+              function getModeByFileExtension(path){
+                  var modelist = ace.require("ace/ext/modelist");
+                  return modelist.getModeForPath(path).mode;
+              }
+
               var editor = ace.edit("content");
               editor.setAutoScrollEditorIntoView(true);
               editor.setTheme("ace/theme/monokai");
-              editor.getSession().setMode("ace/mode/javascript");
+
+              var mode = getModeByFileExtension("{{.asset.Name}}");
+              editor.getSession().setMode(mode);
+
               var textarea = $('textarea[name="content"]').hide();
               editor.getSession().setValue(textarea.val());
               editor.getSession().on('change', function(){
