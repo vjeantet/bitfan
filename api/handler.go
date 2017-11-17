@@ -39,6 +39,7 @@ func Handler(path string) http.Handler {
 		assetCtrl := &AssetApiController{
 			path: path,
 		}
+		backupCtrl := &BackupApiController{}
 
 		logsCtrl := &LogApiController{
 			Hub: newHub(logs.String),
@@ -71,6 +72,7 @@ func Handler(path string) http.Handler {
 		v2.DELETE("/assets/:uuid", assetCtrl.DeleteByUUID)           // delete asset
 
 		v2.POST("/assets/:uuid/syntax-check", assetCtrl.CheckSyntax) // check syntax
+		v2.GET("/backup", backupCtrl.Backup)                         // backup
 		// v1.GET("/docs", getDocs)
 		// v1.GET("/docs/inputs", getDocsInputs)
 		// v1.GET("/docs/inputs/:name", getDocsInputsByName)

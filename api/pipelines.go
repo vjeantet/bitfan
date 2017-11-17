@@ -45,7 +45,7 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 
 func (p *PipelineApiController) Find(c *gin.Context) {
 
-	pipelines := core.Storage().FindPipelines()
+	pipelines := core.Storage().FindPipelines(false)
 
 	runningPipelines := core.Pipelines() //core
 	for i, p := range pipelines {
