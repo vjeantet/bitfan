@@ -17,6 +17,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/core/store"
 	"github.com/vjeantet/bitfan/lib"
 )
 
@@ -24,7 +25,7 @@ var (
 	metrics     Metrics
 	myScheduler *scheduler
 	myMemory    *memory
-	myStore     *Store
+	myStore     *store.Store
 
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
 	dataLocation               string                      = "data"
@@ -72,7 +73,7 @@ func SetDataLocation(location string) error {
 	Log().Debugf("data location : %s", location)
 
 	// DB
-	myStore, err = NewStore(location)
+	myStore, err = store.NewStore(location, Log())
 	if err != nil {
 		Log().Errorf("failed to start store : %s", err.Error())
 		return err
@@ -97,7 +98,7 @@ func PrometheusServer(path string) FnMux {
 	return HTTPHandler(path, prometheus.Handler())
 }
 
-func Storage() *Store {
+func Storage() *store.Store {
 	return myStore
 }
 
@@ -241,7 +242,7 @@ func Stop() error {
 	}
 
 	myMemory.close()
-	myStore.close()
+	myStore.Close()
 	return nil
 }
 

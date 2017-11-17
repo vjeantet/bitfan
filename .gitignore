@@ -62,3 +62,5 @@ releases
 /cmd/bitfan/.bitfan/
 
 /cmd/bitfan/notes.md
+
+/.idea/
