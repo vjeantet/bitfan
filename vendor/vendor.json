@@ -477,10 +477,10 @@
 			"revisionTime": "2015-02-16T02:40:47Z"
 		},
 		{
-			"checksumSHA1": "kyzMPE3pJ8dc+ifT9Ie682Wb+8I=",
+			"checksumSHA1": "uG+IUzkWNbnKd0QN59U+psVwfzI=",
 			"path": "github.com/mattn/go-zglob",
-			"revision": "2dbd7f37a45e993d5180a251b4bdd314d6333b70",
-			"revisionTime": "2016-06-07T00:28:33Z"
+			"revision": "4b74c24375b3b1ee226867156e01996f4e19a8d6",
+			"revisionTime": "2017-11-03T11:38:18Z"
 		},
 		{
 			"checksumSHA1": "bKMZjd2wPw13VwoE7mBeSv5djFA=",

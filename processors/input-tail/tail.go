@@ -154,6 +154,8 @@ func (p *processor) filesToRead() ([]string, error) {
 		fixedPaths = append(fixedPaths, path)
 	}
 
+	p.Logger.Debugf("fixedPaths = %v", fixedPaths)
+
 	var matches []string
 	// find files
 	for _, currentPath := range fixedPaths {
@@ -277,17 +279,13 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	}
 	p.sinceDBInfosMutex.Unlock()
 
-	if p.opt.StartPosition == "beginning" {
-		since.Offset = 0
-	}
-
-	if since.Offset == 0 {
-		if p.opt.StartPosition == "end" {
-			whence = os.SEEK_END
-		} else {
-			whence = os.SEEK_SET
-		}
-	} else {
+	// Default start reading at end
+	whence = os.SEEK_END
+	// if this is not the first contact with this file set cursor
+	if since.Offset != 0 {
+		whence = os.SEEK_SET
+	} else if p.opt.StartPosition == "beginning" {
+		// if this is the first contact and use want to start at the beginning set cursor at 0
 		whence = os.SEEK_SET
 	}
 
