@@ -382,7 +382,7 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	// rechercher un {
 	*tok, err = p.getToken(TokenLCurlyBrace)
 	if err != nil {
-		return codec, tok, err
+		return codec, tok, nil
 	}
 
 	// il y a un { -> on charge les settings jusqu'au }
