@@ -235,6 +235,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	p.sinceDB = processors.NewSinceDB(&processors.SinceDBOptions{
 		Identifier:    p.opt.SincedbPath,
 		WriteInterval: p.opt.SincedbWriteInterval,
+		Storage:       p.Store,
 	})
 
 	go func() {
@@ -253,7 +254,7 @@ func (p *processor) Start(e processors.IPacket) error {
 func (p *processor) Stop(e processors.IPacket) error {
 	close(p.q)
 	p.wg.Wait()
-	p.sinceDB.Save()
+	p.sinceDB.Close()
 	return nil
 }
 
@@ -267,13 +268,6 @@ func (p *processor) tailFile(path string, q chan bool) error {
 		whence int
 		err    error
 	)
-
-	// p.sinceDBInfosMutex.Lock()
-	// if since, ok = p.sinceDBInfos[path]; !ok {
-	// 	p.sinceDBInfos[path] = &sinceDBInfo{}
-	// 	since = p.sinceDBInfos[path]
-	// }
-	// p.sinceDBInfosMutex.Unlock()
 
 	offset, err = p.sinceDB.RessourceOffset(path)
 	if err != nil {
@@ -329,13 +323,16 @@ func (p *processor) tailFile(path string, q chan bool) error {
 			case string:
 				e = p.NewPacket(v, map[string]interface{}{
 					"host": p.host,
+					"path": path,
 				})
 			case map[string]interface{}:
 				e = p.NewPacket("", v)
 				e.Fields().SetValueForPath(p.host, "host")
+				e.Fields().SetValueForPath(path, "path")
 			case []interface{}:
 				e = p.NewPacket("", map[string]interface{}{
 					"host": p.host,
+					"path": path,
 					"data": v,
 				})
 			default:
