@@ -20,28 +20,3 @@ func NewStore(location string, log core.Logger) (*Store, error) {
 func (s *Store) Close() {
 	s.db.Close()
 }
-
-type processorStorage struct {
-	store         *Store
-	processorType string
-}
-
-func (s *Store) NewProcessorStorage(processorType string) *processorStorage {
-	return &processorStorage{store: s, processorType: processorType}
-}
-
-func (p *processorStorage) Get(key, bucket string) ([]byte, error) {
-	return []byte(""), nil
-}
-
-func (p *processorStorage) Set(key, bucket string, value []byte) error {
-	return nil
-}
-
-func (p *processorStorage) Delete(key, bucket string) error {
-	return nil
-}
-
-func (p *processorStorage) Has(key, bucket string) (bool, error) {
-	return false, nil
-}

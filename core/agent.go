@@ -76,7 +76,13 @@ func (a *agent) configure(conf *config.Agent) error {
 	ctx.configWorkingLocation = conf.Wd
 	ctx.memory = myMemory.Space(conf.Type)
 	ctx.webHook = newWebHook(conf.PipelineName, conf.Label)
-	ctx.store = Storage().NewProcessorStorage(conf.Type)
+
+	var err error
+	ctx.store, err = Storage().NewProcessorStorage(conf.Type)
+	if err != nil {
+		Log().Errorf("Storage error : %s", err.Error())
+	}
+
 	Log().Debugf("data location : %s", ctx.dataLocation)
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
 		if err = os.MkdirAll(ctx.dataLocation, 0777); err != nil {
