@@ -483,6 +483,12 @@
 			"revisionTime": "2017-11-03T11:38:18Z"
 		},
 		{
+			"checksumSHA1": "8yK2nkx5rtMHoQQH8D5/+fhTrWQ=",
+			"path": "github.com/mattn/go-zglob/fastwalk",
+			"revision": "4b74c24375b3b1ee226867156e01996f4e19a8d6",
+			"revisionTime": "2017-11-03T11:38:18Z"
+		},
+		{
 			"checksumSHA1": "bKMZjd2wPw13VwoE7mBeSv5djFA=",
 			"path": "github.com/matttproud/golang_protobuf_extensions/pbutil",
 			"revision": "c12348ce28de40eed0136aa2b644d0ee0650e56c",
