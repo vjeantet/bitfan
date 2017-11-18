@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/apex/log"
 	"github.com/timshannon/bolthold"
 	"github.com/vjeantet/bitfan/core/models"
 )
@@ -36,7 +35,7 @@ func (s *Store) FindPipelinesWithAutoStart() []models.Pipeline {
 	var sps []StorePipeline
 	err := s.db.Find(&sps, bolthold.Where("AutoStart").Eq(true))
 	if err != nil {
-		log.Errorf("Store : FindPipelinesWithAutoStart - %s", err.Error())
+		s.log.Error("Store : FindPipelinesWithAutoStart " + err.Error())
 		return pps
 	}
 
@@ -182,13 +181,13 @@ func (s *Store) SavePipeline(p *models.Pipeline) {
 func (s *Store) DeletePipeline(p *models.Pipeline) {
 	err := s.db.DeleteMatching(&StoreAsset{}, bolthold.Where("PipelineUUID").Eq(p.Uuid))
 	if err != nil {
-		log.Errorf("Store : DeletePipeline - %s", err.Error())
+		s.log.Error("Store : DeletePipeline -" + err.Error())
 		return
 	}
 
 	err = s.db.Delete(p.Uuid, &StorePipeline{})
 	if err != nil {
-		log.Errorf("Store : DeletePipeline - %s", err.Error())
+		s.log.Error("Store : DeletePipeline - " + err.Error())
 		return
 	}
 
@@ -200,7 +199,7 @@ func (s *Store) FindPipelines(withAssetValues bool) []models.Pipeline {
 	var sps []StorePipeline
 	err := s.db.Find(&sps, &bolthold.Query{})
 	if err != nil {
-		log.Errorf("Store : FindPipelines - %s", err.Error())
+		s.log.Error("Store : FindPipelines - " + err.Error())
 		return pps
 	}
 
