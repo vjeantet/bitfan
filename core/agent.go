@@ -76,7 +76,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	ctx.configWorkingLocation = conf.Wd
 	ctx.memory = myMemory.Space(conf.Type)
 	ctx.webHook = newWebHook(conf.PipelineName, conf.Label)
-
+	ctx.store = Storage().NewProcessorStorage(conf.Type)
 	Log().Debugf("data location : %s", ctx.dataLocation)
 	if _, err := os.Stat(ctx.dataLocation); os.IsNotExist(err) {
 		if err = os.MkdirAll(ctx.dataLocation, 0777); err != nil {
@@ -138,6 +138,7 @@ type processorContext struct {
 	logger                processors.Logger
 	memory                processors.Memory
 	webHook               processors.WebHook
+	store                 processors.IStore
 	dataLocation          string
 	configWorkingLocation string
 }
@@ -164,6 +165,10 @@ func (p processorContext) ConfigWorkingLocation() string {
 
 func (p processorContext) DataLocation() string {
 	return p.dataLocation
+}
+
+func (p processorContext) Store() processors.IStore {
+	return p.store
 }
 
 func (a *agent) addOutput(in chan *event, portNumber int) error {

@@ -14,9 +14,18 @@ type Store struct {
 
 func NewStore(location string, log core.Logger) (*Store, error) {
 	database, err := bolthold.Open(filepath.Join(location, "bitfan.bolt.db"), 0666, nil)
-	return &Store{db: database, log:log}, err
+	return &Store{db: database, log: log}, err
 }
 
 func (s *Store) Close() {
 	s.db.Close()
+}
+
+type processorStorage struct {
+	store         *Store
+	processorType string
+}
+
+func (s *Store) NewProcessorStorage(processorType string) *processorStorage {
+	return &processorStorage{store: s, processorType: processorType}
 }
