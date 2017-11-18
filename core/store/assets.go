@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/apex/log"
 	"github.com/timshannon/bolthold"
 	"github.com/vjeantet/bitfan/core/models"
 )
@@ -40,11 +39,11 @@ func (s *Store) CreateAsset(a *models.Asset) {
 	var sps []StorePipeline
 	err := s.db.Find(&sps, bolthold.Where(bolthold.Key).Eq(a.PipelineUUID))
 	if err != nil {
-		log.Errorf("Store : createAsset - %s", err.Error())
+		s.log.Error("Store : createAsset - " + err.Error())
 		return
 	}
 	if len(sps) == 0 {
-		log.Errorf("Store : createAsset - can not find pipeline (%s)", a.PipelineUUID)
+		s.log.Error("Store : createAsset - can not find pipeline " + a.PipelineUUID)
 		return
 	}
 
@@ -74,11 +73,11 @@ func (s *Store) SaveAsset(a *models.Asset) {
 	var sps []StorePipeline
 	err := s.db.Find(&sps, bolthold.Where(bolthold.Key).Eq(a.PipelineUUID))
 	if err != nil {
-		log.Errorf("Store : SaveAsset - %s", err.Error())
+		s.log.Error("Store : SaveAsset -" + err.Error())
 		return
 	}
 	if len(sps) == 0 {
-		log.Errorf("Store : SaveAsset - can not find pipeline (%s)", a.PipelineUUID)
+		s.log.Error("Store : SaveAsset - can not find pipeline : " + a.PipelineUUID)
 		return
 	}
 
@@ -95,18 +94,18 @@ func (s *Store) SaveAsset(a *models.Asset) {
 func (s *Store) DeleteAsset(a *models.Asset) {
 	err := s.db.Delete(a.Uuid, &StoreAsset{})
 	if err != nil {
-		log.Errorf("Store : DeleteAsset - %s", err.Error())
+		s.log.Error("Store : DeleteAsset : " + err.Error())
 		return
 	}
 
 	var sps []StorePipeline
 	err = s.db.Find(&sps, bolthold.Where(bolthold.Key).Eq(a.PipelineUUID))
 	if err != nil {
-		log.Errorf("Store : DeleteAsset - %s", err.Error())
+		s.log.Error("Store : DeleteAsset - " + err.Error())
 		return
 	}
 	if len(sps) == 0 {
-		log.Errorf("Store : DeleteAsset - can not find pipeline (%s)", a.PipelineUUID)
+		s.log.Error("Store : DeleteAsset - can not find pipeline " + a.PipelineUUID)
 		return
 	}
 
