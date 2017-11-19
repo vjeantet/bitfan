@@ -14,6 +14,7 @@ type Base struct {
 	Logger                Logger
 	Memory                Memory
 	WebHook               WebHook
+	Store                 IStore
 	ConfigWorkingLocation string
 	DataLocation          string
 	PipelineUUID          string
@@ -68,6 +69,8 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 
 	// Datalocation
 	b.DataLocation = ctx.DataLocation()
+
+	b.Store = ctx.Store()
 
 	//Codecs
 	if v, ok := conf["codecs"]; ok {

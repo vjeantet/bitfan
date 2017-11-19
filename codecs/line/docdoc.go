@@ -49,7 +49,7 @@ func Doc() *doc.Codec {
           Doc:            "Format as a golang text/template",
           Required:       false,
           Type:           "string",
-          DefaultValue:   "\"{{Timestamp .}} {{.host}} {{.message}}\"",
+          DefaultValue:   "\"{{TS \"dd/MM/yyyy:HH:mm:ss\" .}} {{.host}} {{.message}}\"",
           PossibleValues: []string{},
           ExampleLS:      "",
         },

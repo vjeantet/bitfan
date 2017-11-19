@@ -22,4 +22,5 @@ type ProcessorContext interface {
 	WebHook() WebHook
 	ConfigWorkingLocation() string
 	DataLocation() string
+	Store() IStore
 }

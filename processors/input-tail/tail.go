@@ -26,15 +26,13 @@ func New() processors.Processor {
 type processor struct {
 	processors.Base
 
-	opt                 *options
-	sinceDBInfos        map[string]*sinceDBInfo
-	sinceDBLastInfosRaw []byte
-	sinceDBLastSaveTime time.Time
-	q                   chan bool
-	wg                  sync.WaitGroup
-	sinceDBInfosMutex   *sync.Mutex
-	host                string
-	watchFiles          map[string]bool
+	sinceDB *processors.SinceDB
+
+	opt        *options
+	q          chan bool
+	wg         sync.WaitGroup
+	host       string
+	watchFiles map[string]bool
 }
 
 type options struct {
@@ -136,10 +134,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
 
-	if false == filepath.IsAbs(p.opt.SincedbPath) {
-		p.opt.SincedbPath = filepath.Join(p.DataLocation, p.opt.SincedbPath)
-	}
-
 	return err
 }
 
@@ -238,7 +232,12 @@ func (p *processor) Start(e processors.IPacket) error {
 	p.q = make(chan bool)
 	p.watchFiles = make(map[string]bool)
 
-	p.loadSinceDBInfos()
+	p.sinceDB = processors.NewSinceDB(&processors.SinceDBOptions{
+		Identifier:    p.opt.SincedbPath,
+		WriteInterval: p.opt.SincedbWriteInterval,
+		Storage:       p.Store,
+	})
+
 	go func() {
 		ticker := time.NewTicker(time.Duration(p.opt.DiscoverInterval) * time.Second)
 		for {
@@ -249,15 +248,13 @@ func (p *processor) Start(e processors.IPacket) error {
 		}
 	}()
 
-	go p.checkSaveSinceDBInfosLoop()
-
 	return nil
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
 	close(p.q)
 	p.wg.Wait()
-	p.saveSinceDBInfos()
+	p.sinceDB.Close()
 	return nil
 }
 
@@ -267,22 +264,20 @@ func (p *processor) Stop(e processors.IPacket) error {
 func (p *processor) tailFile(path string, q chan bool) error {
 	defer p.wg.Done()
 	var (
-		since  *sinceDBInfo
-		ok     bool
+		offset int
 		whence int
+		err    error
 	)
 
-	p.sinceDBInfosMutex.Lock()
-	if since, ok = p.sinceDBInfos[path]; !ok {
-		p.sinceDBInfos[path] = &sinceDBInfo{}
-		since = p.sinceDBInfos[path]
+	offset, err = p.sinceDB.RessourceOffset(path)
+	if err != nil {
+		return err
 	}
-	p.sinceDBInfosMutex.Unlock()
 
 	// Default start reading at end
 	whence = os.SEEK_END
 	// if this is not the first contact with this file set cursor
-	if since.Offset != 0 {
+	if offset != 0 {
 		whence = os.SEEK_SET
 	} else if p.opt.StartPosition == "beginning" {
 		// if this is the first contact and use want to start at the beginning set cursor at 0
@@ -292,7 +287,7 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	t, err := tail.TailFile(path, tail.Config{
 		Logger: p.Logger,
 		Location: &tail.SeekInfo{
-			Offset: since.Offset,
+			Offset: int64(offset),
 			Whence: whence,
 		},
 		Follow: true,
@@ -328,13 +323,16 @@ func (p *processor) tailFile(path string, q chan bool) error {
 			case string:
 				e = p.NewPacket(v, map[string]interface{}{
 					"host": p.host,
+					"path": path,
 				})
 			case map[string]interface{}:
 				e = p.NewPacket("", v)
 				e.Fields().SetValueForPath(p.host, "host")
+				e.Fields().SetValueForPath(path, "path")
 			case []interface{}:
 				e = p.NewPacket("", map[string]interface{}{
 					"host": p.host,
+					"path": path,
 					"data": v,
 				})
 			default:
@@ -343,8 +341,8 @@ func (p *processor) tailFile(path string, q chan bool) error {
 
 			p.opt.ProcessCommonOptions(e.Fields())
 			p.Send(e)
-			since.Offset, _ = t.Tell()
-			p.checkSaveSinceDBInfos()
+			offset64, _ := t.Tell()
+			p.sinceDB.SetRessourceOffset(path, int(offset64))
 		}
 	}()
 
