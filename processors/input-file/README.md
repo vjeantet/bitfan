@@ -45,7 +45,7 @@ use this to prevent reading a file while another process is writing into.
 
 How often (in seconds) we expand the filename patterns in the path option
 to discover new files to watch. Default value is 15
-When value is 0, processor will read file, one time, on start.
+When value is 0, processor will read file, one time, on event.
 
 ### exclude
 * Value type is array

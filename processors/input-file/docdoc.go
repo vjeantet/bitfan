@@ -45,7 +45,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "DiscoverInterval",
         Alias:          "discover_interval",
-        Doc:            "How often (in seconds) we expand the filename patterns in the path option\nto discover new files to watch. Default value is 15\nWhen value is 0, processor will read file, one time, on start.",
+        Doc:            "How often (in seconds) we expand the filename patterns in the path option\nto discover new files to watch. Default value is 15\nWhen value is 0, processor will read file, one time, on event.",
         Required:       false,
         Type:           "int",
         DefaultValue:   "15",

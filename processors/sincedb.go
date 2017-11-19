@@ -11,6 +11,7 @@ type SinceDB struct {
 	options *SinceDBOptions
 	offsets *syncmap.Map
 	done    chan (bool)
+	dryrun  bool
 }
 
 type SinceDBOptions struct {
@@ -27,23 +28,32 @@ func NewSinceDB(sdboptions *SinceDBOptions) *SinceDB {
 		offsets: &syncmap.Map{},
 	}
 
-	// Start the write looper
-	go func() {
-		tick := time.NewTicker(time.Duration(s.options.WriteInterval) * time.Second)
-		for {
-			select {
-			case <-tick.C:
-				s.save()
-			case <-s.done:
-				return
+	if s.options.Identifier == "/dev/null" || s.options.Identifier == "" {
+		s.dryrun = true
+	}
+
+	if s.dryrun == false {
+		// Start the write looper
+		go func() {
+			tick := time.NewTicker(time.Duration(s.options.WriteInterval) * time.Second)
+			for {
+				select {
+				case <-tick.C:
+					s.save()
+				case <-s.done:
+					return
+				}
 			}
-		}
-	}()
+		}()
+	}
 
 	return s
 }
 
 func (s *SinceDB) save() {
+	if s.dryrun {
+		return
+	}
 	s.offsets.Range(func(key, value interface{}) bool {
 		s.options.Storage.Set(key.(string), s.options.Identifier, value.([]byte))
 		s.offsets.Delete(key)
@@ -60,6 +70,17 @@ func (s *SinceDB) Close() error {
 
 // Retreive SinceDB ressource's offset from Storage
 func (s *SinceDB) RessourceOffset(ressource string) (int, error) {
+
+	// If a value not already stored exists
+	if value, ok := s.offsets.Load(ressource); ok {
+		offset, err := strconv.Atoi(string(value.([]byte)))
+		if err != nil {
+			return 0, err
+		}
+		return offset, nil
+	}
+
+	// Try to find value in storage
 	v, err := s.options.Storage.Get(ressource, s.options.Identifier)
 	if err != nil {
 		return 0, err

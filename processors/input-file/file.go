@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	fqdn "github.com/ShowMax/go-fqdn"
@@ -39,7 +38,7 @@ type options struct {
 
 	// How often (in seconds) we expand the filename patterns in the path option
 	// to discover new files to watch. Default value is 15
-	// When value is 0, processor will read file, one time, on start.
+	// When value is 0, processor will read file, one time, on event.
 	// @Default 15
 	DiscoverInterval int `mapstructure:"discover_interval"`
 
@@ -88,9 +87,7 @@ type processor struct {
 
 	filestoWatch chan string
 
-	sinceDBInfos        *sinceDBInfo
-	sinceDBLastSaveTime time.Time
-	sinceDBInfosMutex   *sync.Mutex
+	sinceDB *processors.SinceDB
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -111,11 +108,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	var err error
 	err = p.ConfigureAndValidate(ctx, conf, p.opt)
 
-	if false == filepath.IsAbs(p.opt.SincedbPath) {
-		p.opt.SincedbPath = filepath.Join(p.DataLocation, p.opt.SincedbPath)
-	}
-	p.Logger.Debugf("sincedb=%s", p.opt.SincedbPath)
-
 	// Fix relative paths
 	fixedPaths := []string{}
 	for _, path := range p.opt.Path {
@@ -133,7 +125,12 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 func (p *processor) MaxConcurent() int { return 1 }
 
 func (p *processor) Start(e processors.IPacket) error {
-	p.loadSinceDBInfos()
+	p.sinceDB = processors.NewSinceDB(&processors.SinceDBOptions{
+		Identifier:    p.opt.SincedbPath,
+		WriteInterval: p.opt.DiscoverInterval/2 + 1,
+		Storage:       p.Store,
+	})
+
 	p.q2 = make(chan bool)
 	p.q = make(chan bool)
 
@@ -143,6 +140,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	if p.opt.DiscoverInterval > 0 {
 		go func() {
 			err := p.discoverFilesToRead()
+
 			if err != nil {
 				p.Logger.Debugf("discover files to read : %v", err)
 			}
@@ -189,7 +187,6 @@ func (p *processor) discoverFilesToRead() error {
 
 		select {
 		case <-time.NewTicker(time.Second * time.Duration(p.opt.DiscoverInterval)).C:
-			p.saveSinceDBInfos()
 			continue
 		case <-p.q2:
 			return nil
@@ -228,7 +225,12 @@ func (p *processor) filesToRead() ([]string, error) {
 	// ignore already seen files
 	var matches_tmp []string
 	for _, name := range matches {
-		if !p.sinceDBInfos.has(name) {
+		offset, err := p.sinceDB.RessourceOffset(name)
+		if err != nil {
+			return matches, err
+		}
+
+		if offset == 0 { // not found or found but not processed
 			matches_tmp = append(matches_tmp, name)
 		} else {
 			p.Logger.Debugf("scan ignore (sincedb) %s", name)
@@ -269,6 +271,12 @@ func (p *processor) readfile(pathfile string) error {
 		return err
 	}
 	defer f.Close()
+
+	stat, err := f.Stat()
+	if err != nil {
+		p.Logger.Errorf("Error while stating %s : %v", pathfile, err)
+		return err
+	}
 
 	var dec codecs.Decoder
 
@@ -319,15 +327,13 @@ func (p *processor) readfile(pathfile string) error {
 	}
 
 	// mark file read on sincedb
-	p.markFileReaded(pathfile)
+	p.sinceDB.SetRessourceOffset(pathfile, int(stat.Size()))
 	return nil
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
 	close(p.q2)
 	<-p.q
-	if p.opt.DiscoverInterval > 0 {
-		p.saveSinceDBInfos()
-	}
+	p.sinceDB.Close()
 	return nil
 }

@@ -28,7 +28,7 @@ type encoderOptions struct {
 	Delimiter string
 
 	// Format as a golang text/template
-	// @Default "{{Timestamp .}} {{.host}} {{.message}}"
+	// @Default "{{TS "dd/MM/yyyy:HH:mm:ss" .}} {{.host}} {{.message}}"
 	Format string `mapstructure:"format"`
 
 	// You can set variable to be used in Statements by using ${var}.

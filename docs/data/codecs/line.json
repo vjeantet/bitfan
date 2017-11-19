@@ -36,7 +36,7 @@
         },
         {
           "Alias": "format",
-          "DefaultValue": "\"{{Timestamp .}} {{.host}} {{.message}}\"",
+          "DefaultValue": "\"{{TS \"dd/MM/yyyy:HH:mm:ss\" .}} {{.host}} {{.message}}\"",
           "Doc": "Format as a golang text/template",
           "ExampleLS": "",
           "Name": "Format",
