@@ -37,15 +37,15 @@ func Log() *Logger {
 	return logger
 }
 
-func SetLogDebugMode() {
+func setLogDebugMode() {
 	logrus.SetLevel(logrus.DebugLevel)
 }
 
-func SetLogVerboseMode() {
+func setLogVerboseMode() {
 	logrus.SetLevel(logrus.InfoLevel)
 }
 
-func SetLogOutputFile(fileLocation string) {
+func setLogOutputFile(fileLocation string) {
 	logrus.SetOutput(ioutil.Discard)
 	logrus.SetFormatter(&logrus.TextFormatter{DisableColors: true})
 	f, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)

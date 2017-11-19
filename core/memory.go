@@ -10,7 +10,7 @@ type memorySpace struct {
 	c    *cache.Cache
 }
 
-func NewMemory(location string) *memory {
+func newMemory(location string) *memory {
 	return &memory{}
 }
 

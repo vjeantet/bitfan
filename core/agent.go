@@ -71,7 +71,7 @@ func (a *agent) configure(conf *config.Agent) error {
 	ctx.packetSender = a.send // 	data["processor_type"] = proc_type
 	// 	data["pipeline_uuid"] = pipelineUUID
 	// 	data["processor_label"] = proc_label
-	ctx.packetBuilder = NewPacket
+	ctx.packetBuilder = newPacket
 	ctx.dataLocation = filepath.Join(dataLocation, conf.Type)
 	ctx.configWorkingLocation = conf.Wd
 	ctx.memory = myMemory.Space(conf.Type)
@@ -185,7 +185,7 @@ func (a *agent) addOutput(in chan *event, portNumber int) error {
 // Start agent
 func (a *agent) start() error {
 	// Start processor
-	a.processor.Start(NewPacket("start", map[string]interface{}{}))
+	a.processor.Start(newPacket("start", map[string]interface{}{}))
 
 	// Maximum number of concurent packet consumption ?
 	var maxConcurentPackets = a.conf.PoolSize
@@ -207,7 +207,7 @@ func (a *agent) start() error {
 		wg.Wait()
 
 		Log().Debugf("processor (%d) - stopping (no more packets)", a.ID)
-		if err := a.processor.Stop(NewPacket("", nil)); err != nil {
+		if err := a.processor.Stop(newPacket("", nil)); err != nil {
 			Log().Errorf("%s %d : %v", a.conf.Type, a.ID, err)
 		}
 		close(a.Done)
@@ -218,7 +218,7 @@ func (a *agent) start() error {
 	if a.conf.Schedule != "" {
 		Log().Debugf("agent %s : schedule=%s", a.Label, a.conf.Schedule)
 		err := myScheduler.Add(a.Label, a.conf.Schedule, func() {
-			go a.processor.Tick(NewPacket("", nil))
+			go a.processor.Tick(newPacket("", nil))
 		})
 		if err != nil {
 			Log().Errorf("schedule start failed - %s : %v", a.Label, err)

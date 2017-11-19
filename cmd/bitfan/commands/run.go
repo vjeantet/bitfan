@@ -48,40 +48,27 @@ When no configuration is passed to the command, bitfan use the config set in glo
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if viper.GetBool("verbose") {
-			core.SetLogVerboseMode()
-		}
-		if viper.GetBool("debug") {
-			core.SetLogDebugMode()
-		}
-
-		if viper.IsSet("log") {
-			core.SetLogOutputFile(viper.GetString("log"))
-		}
-
-		if err := core.SetDataLocation(viper.GetString("data")); err != nil {
-			core.Log().Errorf("error with data location - %v", err)
-			panic(err.Error())
+		opt := core.Options{
+			VerboseLog:   viper.GetBool("verbose"),
+			Debug:        viper.GetBool("debug"),
+			LogFile:      viper.GetString("log"),
+			DataLocation: viper.GetString("data"),
+			Host:         viper.GetString("host"),
 		}
 
 		if !viper.GetBool("no-network") {
-
-			handlers := []core.FnMux{}
-			handlers = append(handlers, core.WebHookServer())
-			handlers = append(handlers, core.HTTPHandler("/api/v2/", api.Handler("api/v2")))
-
+			opt.HttpHandlers = append(opt.HttpHandlers, core.HTTPHandler("/api/v2/", api.Handler("api/v2")))
 			if viper.IsSet("prometheus") {
-				handlers = append(handlers, core.PrometheusServer(viper.GetString("prometheus.path")))
+				opt.HttpHandlers = append(opt.HttpHandlers, core.PrometheusServer(viper.GetString("prometheus.path")))
 			}
-
-			core.ListenAndServe(viper.GetString("host"), handlers...)
 		}
 
 		// AutoStart pipelines only when no configuration given as command line args
 		if len(args) == 0 {
-			core.RunAutoStartPipelines()
+			opt.AutoStart = true
 		}
-		core.Log().Debugln("bitfan started")
+
+		core.Start(opt)
 
 		// Start configumation in config or in STDIN
 		// TODO : Refactor with RunAutoStartPipelines
