@@ -15,6 +15,7 @@ type DummyProcessorContext struct {
 	sentPackets   map[int][]processors.IPacket
 	builtPackets  []processors.IPacket
 	memory        processors.Memory
+	store         processors.IStore
 	mock.Mock
 }
 
@@ -26,6 +27,7 @@ func NewProcessorContext() *DummyProcessorContext {
 	dp.packetSender = newSender(dp)
 	dp.packetBuilder = newPacket(dp)
 	dp.memory = newMemory(dp)
+	dp.store = newStore(dp)
 	return dp
 }
 
@@ -81,6 +83,10 @@ func (d *DummyProcessorContext) DataLocation() string {
 
 func (d *DummyProcessorContext) Memory() processors.Memory {
 	return d.memory
+}
+
+func (d *DummyProcessorContext) Store() processors.IStore {
+	return d.store
 }
 
 var i = 0
