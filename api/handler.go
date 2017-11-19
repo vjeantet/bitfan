@@ -39,7 +39,7 @@ func Handler(path string) http.Handler {
 		assetCtrl := &AssetApiController{
 			path: path,
 		}
-		backupCtrl := &BackupApiController{}
+		dbCtrl := &DatabaseController{}
 
 		logsCtrl := &LogApiController{
 			Hub: newHub(logs.String),
@@ -53,8 +53,8 @@ func Handler(path string) http.Handler {
 		v2.POST("/pipelines", pipelineCtrl.Create) // créer pipeline
 
 		// curl -i -X GET http://localhost:5123/api/v2/pipelines
-		v2.GET("/pipelines", pipelineCtrl.Find) // list pipelines
-
+		v2.GET("/pipelines", pipelineCtrl.Find)            // list pipelines
+		v2.GET("/pipelines.zip", pipelineCtrl.DownloadAll) // backup
 		// curl -i -X GET http://localhost:5123/api/v2/pipelines/408b9a7b-933e-4d3d-6df1-65324a0a5315
 		v2.GET("/pipelines/:uuid", pipelineCtrl.FindOneByUUID) // show pipeline
 
@@ -72,7 +72,7 @@ func Handler(path string) http.Handler {
 		v2.DELETE("/assets/:uuid", assetCtrl.DeleteByUUID)           // delete asset
 
 		v2.POST("/assets/:uuid/syntax-check", assetCtrl.CheckSyntax) // check syntax
-		v2.GET("/backup", backupCtrl.Backup)                         // backup
+
 		// v1.GET("/docs", getDocs)
 		// v1.GET("/docs/inputs", getDocsInputs)
 		// v1.GET("/docs/inputs/:name", getDocsInputsByName)
@@ -80,6 +80,8 @@ func Handler(path string) http.Handler {
 		// v1.GET("/docs/filters/:name", getDocsFiltersByName)
 		// v1.GET("/docs/outputs", getDocsOutputs)
 		// v1.GET("/docs/outputs/:name", getDocsOutputsByName)
+
+		v2.GET("/db.zip", dbCtrl.Download)
 	}
 
 	apiLogger.Debugf("Serving API on /%s/ ", path)

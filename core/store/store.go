@@ -1,8 +1,10 @@
 package store
 
 import (
+	"io"
 	"path/filepath"
 
+	"github.com/boltdb/bolt"
 	"github.com/timshannon/bolthold"
 )
 
@@ -18,4 +20,15 @@ func NewStore(location string, log Logger) (*Store, error) {
 
 func (s *Store) Close() {
 	s.db.Close()
+}
+
+// CopyTo writes the raw database's content to given io.Writer
+func (s *Store) CopyTo(w io.Writer) (int, error) {
+	size := 0
+	err := s.db.Bolt().View(func(tx *bolt.Tx) error {
+		size = int(tx.Size())
+		_, err := tx.WriteTo(w)
+		return err
+	})
+	return size, err
 }

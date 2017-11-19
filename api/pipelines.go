@@ -1,17 +1,64 @@
 package api
 
 import (
+	"archive/zip"
+	"bytes"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/jodaTime"
 )
 
 type PipelineApiController struct {
 	path string
+}
+
+func (b *PipelineApiController) DownloadAll(c *gin.Context) {
+
+	// Create a new zip archive.
+	buf := new(bytes.Buffer)
+	zipWriter := zip.NewWriter(buf)
+
+	// Find all Pipelines
+	pipelines := core.Storage().FindPipelines(true)
+
+	for _, p := range pipelines {
+		folderName := slugify(p.Label) + "_" + p.Uuid
+		for _, a := range p.Assets {
+			zipFile, err := zipWriter.Create(folderName + "/" + a.Name)
+			if err != nil {
+				c.String(500, err.Error())
+				return
+			}
+			_, err = zipFile.Write(a.Value)
+			if err != nil {
+				c.String(500, err.Error())
+				return
+			}
+		}
+	}
+
+	// Make sure to check the error on Close.
+	err := zipWriter.Close()
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	filename := jodaTime.Format("'bitfan_pipelines_'YYYYMMdd-HHmmss'.zip'", time.Now())
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename=\""+filename+"\"")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Content-Length", strconv.Itoa(buf.Len()))
+
+	c.Data(200, "application/zip", buf.Bytes())
 }
 
 func (p *PipelineApiController) Create(c *gin.Context) {

@@ -13,7 +13,22 @@
 </div>
 <div class="col">
   <div class="float-right">
-	<a href="/pipelines/0/new" class="btn btn-dark">Create new pipeline</a>	
+	
+
+  <div id="asset-actions" class="btn-group btn-group" role="group" aria-label="assets">
+    <a href="/pipelines/0/new" class="btn btn-dark">Create new pipeline</a> 
+
+    <a class="btn btn-outline-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="sr-only">Toggle Dropdown</span>
+    </a>
+    <ul class="dropdown-menu">
+      <a href="http://{{.apiHost}}/api/v2/pipelines.zip" class="dropdown-item">
+        Download all
+      </a>
+    </ul>
+  </div> 
+  
+
   </div>
 </div>
 </div>

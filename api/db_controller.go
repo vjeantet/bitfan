@@ -11,41 +11,35 @@ import (
 	"github.com/vjeantet/jodaTime"
 )
 
-type BackupApiController struct {
+type DatabaseController struct {
 }
 
-func (b *BackupApiController) Backup(c *gin.Context) {
+func (b *DatabaseController) Download(c *gin.Context) {
 
 	// Create a new zip archive.
 	buf := new(bytes.Buffer)
 	zipWriter := zip.NewWriter(buf)
 
-	// Find all Pipelines
-	pipelines := core.Storage().FindPipelines(true)
-
-	for _, p := range pipelines {
-		for _, a := range p.Assets {
-			zipFile, err := zipWriter.Create(slugify(p.Label+"_"+p.Uuid) + "/" + a.Name)
-			if err != nil {
-				c.String(500, err.Error())
-				return
-			}
-			_, err = zipFile.Write(a.Value)
-			if err != nil {
-				c.String(500, err.Error())
-				return
-			}
-		}
-	}
-
-	// Make sure to check the error on Close.
-	err := zipWriter.Close()
+	zipFile, err := zipWriter.Create("bitfan.bolt.db")
 	if err != nil {
 		c.String(500, err.Error())
 		return
 	}
 
-	filename := jodaTime.Format("'BITFAN_BACKUP_'YYYYMMdd-HHmmss'.zip'", time.Now())
+	_, err = core.Storage().CopyTo(zipFile)
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	// Make sure to check the error on Close.
+	err = zipWriter.Close()
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	filename := jodaTime.Format("'bitfan_db_'YYYYMMdd-HHmmss'.zip'", time.Now())
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Type", "application/octet-stream")
 	c.Header("Content-Disposition", "attachment; filename=\""+filename+"\"")
