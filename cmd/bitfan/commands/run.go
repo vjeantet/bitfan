@@ -34,40 +34,6 @@ func init() {
 	initRunFlags(runCmd)
 }
 
-func startPipelineByUUID(UUID string) error {
-	tPipeline, err := core.Storage().FindOnePipelineByUUID(UUID, true)
-	if err != nil {
-		return err
-	}
-
-	entryPointPath, err := core.Storage().PreparePipelineExecutionStage(&tPipeline)
-	if err != nil {
-		return err
-	}
-
-	var loc *entrypoint.Entrypoint
-	loc, err = entrypoint.New(entryPointPath, "", entrypoint.CONTENT_REF)
-	if err != nil {
-		return err
-	}
-
-	ppl := loc.ConfigPipeline()
-	ppl.Name = tPipeline.Label
-	ppl.Uuid = tPipeline.Uuid
-
-	agt, err := loc.ConfigAgents()
-	if err != nil {
-		return err
-	}
-
-	_, err = core.StartPipeline(&ppl, agt)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run [config1] [config2] [config...]",
@@ -98,27 +64,43 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		}
 
 		core.Start(opt)
+		core.Log().Infoln("bitfan ready")
 
-		// AutoStart pipelines only when no configuration given as command line args
+		// Start Pipelines
+
+		// Prepare entrypoints
+		var entrypoints entrypoint.EntrypointList
+		//	From Storage when len == 0
 		if len(args) == 0 {
-			pipelinesToStart := core.Storage().FindPipelinesWithAutoStart()
+			pipelinesToStart := core.Storage().FindPipelinesWithAutoStart(true)
 			for _, p := range pipelinesToStart {
-				startPipelineByUUID(p.Uuid)
-				core.Log().Debugf("Pipeline %s started UUID=%s", p.Label, p.Uuid)
+				entryPointPath, err := core.Storage().PreparePipelineExecutionStage(&p)
+				if err != nil {
+					core.Log().Fatalln(err)
+				}
+
+				var loc *entrypoint.Entrypoint
+				loc, err = entrypoint.New(entryPointPath, "", entrypoint.CONTENT_REF)
+				loc.PipelineName = p.Label
+				loc.PipelineUuid = p.Uuid
+				if err != nil {
+					core.Log().Fatalln(err)
+				}
+				entrypoints.AddEntrypoint(loc)
 			}
 		}
 
-		// Start configumation in config or in STDIN
-		// TODO : Refactor with RunAutoStartPipelines
-		var locations entrypoint.EntrypointList
+		//	From config when config == 0
 		cwd, _ := os.Getwd()
-
 		if len(args) == 0 {
 			for _, v := range viper.GetStringSlice("config") {
 				loc, _ := entrypoint.New(v, cwd, entrypoint.CONTENT_REF)
-				locations.AddEntrypoint(loc)
+				entrypoints.AddEntrypoint(loc)
 			}
-		} else {
+		}
+
+		//	From args when config > 0
+		if len(args) > 0 {
 			for _, v := range args {
 				var loc *entrypoint.Entrypoint
 				var err error
@@ -127,15 +109,14 @@ When no configuration is passed to the command, bitfan use the config set in glo
 					// is a content ?
 					loc, err = entrypoint.New(v, cwd, entrypoint.CONTENT_INLINE)
 					if err != nil {
-						return
+						core.Log().Fatalln(err)
 					}
 				}
-
-				locations.AddEntrypoint(loc)
+				entrypoints.AddEntrypoint(loc)
 			}
 		}
 
-		for _, loc := range locations.Items {
+		for _, loc := range entrypoints.Items {
 			agt, err := loc.ConfigAgents()
 
 			if err != nil {
@@ -143,25 +124,13 @@ When no configuration is passed to the command, bitfan use the config set in glo
 				os.Exit(2)
 			}
 			ppl := loc.ConfigPipeline()
-
-			// Allow pipeline customisation only when only one location was provided by user
-			if len(locations.Items) == 1 {
-				if cmd.Flags().Changed("name") {
-					ppl.Name, _ = cmd.Flags().GetString("name")
-				}
-				if cmd.Flags().Changed("id") {
-					ppl.Uuid, _ = cmd.Flags().GetString("uuid")
-				}
-			}
-
 			_, err = core.StartPipeline(&ppl, agt)
 			if err != nil {
 				core.Log().Errorf("error: %v", err)
 				os.Exit(1)
 			}
+			core.Log().Infof("Pipeline started %s (%s)", ppl.Name, ppl.Uuid)
 		}
-
-		core.Log().Infoln("bitfan ready")
 
 		if service.Interactive() {
 			// Wait for signal CTRL+C for send a stop event to all AgentProcessor
@@ -196,11 +165,8 @@ func initRunFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP("host", "H", "127.0.0.1:5123", "Service Host to connect to")
 
 	cmd.Flags().Bool("no-network", false, "Disable network (api and webhook)")
-	cmd.Flags().String("name", "", "set pipeline's name")
-	cmd.Flags().String("uuid", "", "set pipeline's uuid")
 	cwd, _ := os.Getwd()
 	cmd.Flags().String("data", filepath.Join(cwd, ".bitfan"), "Path to data dir")
-
 	cmd.Flags().Bool("api", true, "Expose REST Api")
 	cmd.Flags().Bool("prometheus", false, "Export stats using prometheus output")
 	cmd.Flags().String("prometheus.path", "/metrics", "Expose Prometheus metrics at specified path.")

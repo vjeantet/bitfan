@@ -24,17 +24,18 @@ const (
 
 // Entrypoint is a the pipeline's definition
 type Entrypoint struct {
-	Path        string
-	Kind        int // Kind of content
-	Workingpath string
-	Content     string
+	Path         string
+	Kind         int // Kind of content
+	Workingpath  string
+	Content      string
+	PipelineName string
+	PipelineUuid string
 }
 
 // List of Entrypoints
 type EntrypointList struct {
 	Items []*Entrypoint
 }
-
 
 // Create a new entrypoint (pipeline definition)
 //
@@ -77,7 +78,6 @@ func New(contentValue string, cwl string, contentKind int) (*Entrypoint, error) 
 	return loc, nil
 }
 
-
 // AddEntrypoint add the provided entrypoint to the list
 func (e *EntrypointList) AddEntrypoint(loc *Entrypoint) error {
 	// if it's a file try to expand
@@ -86,18 +86,23 @@ func (e *EntrypointList) AddEntrypoint(loc *Entrypoint) error {
 		if err != nil {
 			return err
 		}
-
-		for _, subpath := range subpaths {
-			subloc := &Entrypoint{
-				Path:        subpath,
-				Workingpath: loc.Workingpath,
-				Kind:        loc.Kind,
+		if len(subpaths) == 1 {
+			e.Items = append(e.Items, loc)
+		} else {
+			for _, subpath := range subpaths {
+				subloc := &Entrypoint{
+					Path:        subpath,
+					Workingpath: loc.Workingpath,
+					Kind:        loc.Kind,
+				}
+				e.Items = append(e.Items, subloc)
 			}
-			e.Items = append(e.Items, subloc)
 		}
-	} else {
-		e.Items = append(e.Items, loc)
+
+		return nil
 	}
+
+	e.Items = append(e.Items, loc)
 
 	return nil
 }
@@ -118,6 +123,13 @@ func (e *Entrypoint) ConfigPipeline() config.Pipeline {
 		extension := filepath.Ext(filename)
 		pipelineName := filename[0 : len(filename)-len(extension)]
 		pipeline = config.NewPipeline(pipelineName, "nodescription", e.Path)
+	}
+
+	if e.PipelineName != "" {
+		pipeline.Name = e.PipelineName
+	}
+	if e.PipelineUuid != "" {
+		pipeline.Uuid = e.PipelineUuid
 	}
 
 	return *pipeline
@@ -142,7 +154,7 @@ func (e *Entrypoint) ConfigAgents() ([]config.Agent, error) {
 func entrypointContent(path string, cwl string, options map[string]interface{}) ([]byte, string, error) {
 	e, err := New(path, cwl, CONTENT_REF)
 	if err != nil {
-		return nil,"", err
+		return nil, "", err
 	}
 	return e.content(options)
 }
