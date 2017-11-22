@@ -9,7 +9,7 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/core/models"
-	"github.com/vjeantet/bitfan/parser"
+	"github.com/vjeantet/bitfan/entrypoint/parser/logstash"
 )
 
 type AssetApiController struct {
@@ -26,13 +26,13 @@ func (a *AssetApiController) CheckSyntax(c *gin.Context) {
 		return
 	}
 
-	_, err = parser.NewParser(bytes.NewReader(asset.Value)).Parse()
+	_, err = logstash.NewParser(bytes.NewReader(asset.Value)).Parse()
 	if err != nil {
 		c.JSON(200, gin.H{
-			"l":    err.(*parser.ParseError).Line,
-			"c":    err.(*parser.ParseError).Column,
+			"l":    err.(*logstash.ParseError).Line,
+			"c":    err.(*logstash.ParseError).Column,
 			"uuid": asset.Uuid,
-			"m":    err.(*parser.ParseError).Reason,
+			"m":    err.(*logstash.ParseError).Reason,
 		})
 	} else {
 		c.JSON(200, gin.H{

@@ -1,4 +1,4 @@
-package lib
+package parser
 
 import (
 	"bytes"
@@ -6,24 +6,29 @@ import (
 	"strconv"
 
 	"github.com/vjeantet/bitfan/core/config"
-	"github.com/vjeantet/bitfan/parser"
+	"github.com/vjeantet/bitfan/entrypoint/parser/logstash"
 )
 
-func parseConfigLocation(name string, path string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
-	var locs Locations
+var entryPointContent func(string, string,map[string]interface{}) ([]byte, string, error)
 
-	if path != "" {
-		loc, err := NewLocation(path, pwd)
-		if err != nil {
-			return nil, err
-		}
-
-		locs.AddLocation(loc)
-	} else {
+func parseConfigLocation(path string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
+	if path == "" {
 		return []config.Agent{}, fmt.Errorf("no location provided to get content from ; options=%v ", options)
 	}
 
-	return locs.Items[0].configAgentsWithOptions(options, pickSections...)
+	content, cwd, err := entryPointContent(path, pwd,options)
+
+	if err != nil {
+		return nil, err
+	}
+
+	agents, err := buildAgents(content, cwd, pickSections...)
+	return agents, err
+}
+
+func BuildAgents(content []byte, pwd string, contentProvider func(string, string, map[string]interface{}) ([]byte, string, error)) ([]config.Agent, error) {
+	entryPointContent = contentProvider
+	return buildAgents(content, pwd)
 }
 
 func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.Agent, error) {
@@ -33,7 +38,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 		pickSections = []string{"input", "filter", "output"}
 	}
 
-	p := parser.NewParser(bytes.NewReader(content))
+	p := logstash.NewParser(bytes.NewReader(content))
 
 	LSConfiguration, err := p.Parse()
 
@@ -91,7 +96,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 }
 
 // TODO : this should return ports to be able to use multiple path use
-func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []config.Port, error) {
+func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]config.Agent, []config.Port, error) {
 
 	var agent config.Agent
 	agent = config.NewAgent()
@@ -138,7 +143,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 			switch v.(type) {
 			case string:
 				agent.Options["path"] = []string{v.(string)}
-				fileConfigAgents, err := parseConfigLocation("", v.(string), agent.Options, pwd, "input", "filter")
+				fileConfigAgents, err := parseConfigLocation(v.(string), agent.Options, pwd, "input", "filter")
 				if err != nil {
 					return nil, nil, err
 				}
@@ -155,7 +160,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 				newOutPorts := []config.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
-					fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "input", "filter")
+					fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "input", "filter")
 					if err != nil {
 						return nil, nil, err
 					}
@@ -220,7 +225,7 @@ func buildInputAgents(plugin *parser.Plugin, pwd string) ([]config.Agent, []conf
 	return []config.Agent{agent}, []config.Port{outPort}, nil
 }
 
-func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, error) {
+func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, error) {
 	agent_list := []config.Agent{}
 
 	var agent config.Agent
@@ -273,7 +278,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			switch v.(type) {
 			case string:
 				agent.Options["path"] = []string{v.(string)}
-				fileConfigAgents, err := parseConfigLocation("", v.(string), agent.Options, pwd, "filter", "output")
+				fileConfigAgents, err := parseConfigLocation(v.(string), agent.Options, pwd, "filter", "output")
 				if err != nil {
 					return nil, err
 				}
@@ -290,7 +295,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			case []interface{}:
 				CombinedFileConfigAgents := []config.Agent{}
 				for _, p := range v.([]interface{}) {
-					fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
+					fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "filter", "output")
 					if err != nil {
 						return nil, err
 					}
@@ -368,7 +373,7 @@ func buildOutputAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	return agent_list, nil
 }
 
-func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, []config.Port, error) {
+func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, []config.Port, error) {
 
 	agent_list := []config.Agent{}
 
@@ -419,7 +424,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 			switch v.(type) {
 			case string:
 				agent.Options["path"] = []string{v.(string)}
-				fileConfigAgents, err := parseConfigLocation("", v.(string), agent.Options, pwd, "filter")
+				fileConfigAgents, err := parseConfigLocation(v.(string), agent.Options, pwd, "filter")
 				if err != nil {
 					return nil, nil, err
 				}
@@ -440,7 +445,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 				newOutPorts := []config.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
-					fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "filter")
+					fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "filter")
 					if err != nil {
 						return nil, nil, err
 					}
@@ -471,7 +476,7 @@ func buildFilterAgents(plugin *parser.Plugin, lastOutPorts []config.Port, pwd st
 	if plugin.Name == "route" {
 		CombinedFileConfigAgents := []config.Agent{}
 		for _, p := range agent.Options["path"].([]interface{}) {
-			fileConfigAgents, err := parseConfigLocation("", p.(string), agent.Options, pwd, "filter", "output")
+			fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "filter", "output")
 			if err != nil {
 				return nil, nil, err
 			}

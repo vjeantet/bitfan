@@ -8,7 +8,7 @@ import (
 
 	"github.com/vjeantet/bitfan/core"
 	config "github.com/vjeantet/bitfan/core/config"
-	"github.com/vjeantet/bitfan/lib"
+	"github.com/vjeantet/bitfan/entrypoint"
 )
 
 func init() {
@@ -21,20 +21,20 @@ var testCmd = &cobra.Command{
 	Short: "Test configurations (files, url, directories)",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		var locations lib.Locations
+		var locations entrypoint.EntrypointList
 		cwd, _ := os.Getwd()
 		for _, v := range args {
-			var loc *lib.Location
+			var loc *entrypoint.Entrypoint
 			var err error
-			loc, err = lib.NewLocation(v, cwd)
+			loc, err = entrypoint.New(v, cwd, entrypoint.CONTENT_REF)
 			if err != nil {
-				loc, err = lib.NewLocationContent(v, cwd)
+				loc, err = entrypoint.New(v, cwd, entrypoint.CONTENT_INLINE)
 				if err != nil {
 					return
 				}
 			}
 
-			locations.AddLocation(loc)
+			locations.AddEntrypoint(loc)
 		}
 
 		var cko int
@@ -57,7 +57,7 @@ var testCmd = &cobra.Command{
 	},
 }
 
-func testConfigContent(loc *lib.Location) error {
+func testConfigContent(loc *entrypoint.Entrypoint) error {
 	configAgents, err := loc.ConfigAgents()
 	if err != nil {
 		return err

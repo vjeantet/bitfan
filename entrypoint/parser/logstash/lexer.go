@@ -1,4 +1,4 @@
-package parser
+package logstash
 
 import (
 	"bytes"
@@ -9,11 +9,11 @@ import (
 	"unicode"
 )
 
-func readToken(stream *lexerStream) (Token, error) {
-	var ret Token
+func readToken(stream *lexerStream) (token, error) {
+	var ret token
 	var tokenValue interface{}
 	var tokenString string
-	var kind TokenKind
+	var kind tokenKind
 	var character rune
 	var completed bool
 	var err error
@@ -157,7 +157,7 @@ func readToken(stream *lexerStream) (Token, error) {
 			tokenValue, completed = readUntilFalse(stream, true, false, true, isNotQuoteS(character))
 
 			if !completed {
-				return Token{}, errors.New("Unclosed string literal")
+				return token{}, errors.New("Unclosed string literal")
 			}
 
 			// advance the stream one position, since reading until false assumes the terminator is a real token

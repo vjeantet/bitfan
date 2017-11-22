@@ -29,7 +29,7 @@ type StoreAssetRef struct {
 	Type  string
 }
 
-func (s *Store) FindPipelinesWithAutoStart() []models.Pipeline {
+func (s *Store) FindPipelinesWithAutoStart(withAssetValues bool) []models.Pipeline {
 	pps := []models.Pipeline{}
 
 	var sps []StorePipeline
@@ -50,11 +50,26 @@ func (s *Store) FindPipelinesWithAutoStart() []models.Pipeline {
 		tPipeline.AutoStart = p.AutoStart
 
 		for _, a := range p.Assets {
-			tPipeline.Assets = append(tPipeline.Assets, models.Asset{
+			asset := models.Asset{
 				Uuid: a.Uuid,
 				Name: a.Label,
 				Type: a.Type,
-			})
+			}
+
+			if withAssetValues {
+				var sas []StoreAsset
+				err := s.db.Find(&sas, bolthold.Where(bolthold.Key).Eq(a.Uuid))
+				if err != nil {
+					return pps
+				}
+				if len(sas) == 0 {
+					return pps
+				}
+				asset.Value = sas[0].Value
+				asset.Size = sas[0].Size
+				asset.ContentType = sas[0].ContentType
+			}
+			tPipeline.Assets = append(tPipeline.Assets, asset)
 		}
 		pps = append(pps, tPipeline)
 	}

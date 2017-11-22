@@ -1,10 +1,10 @@
-package parser
+package logstash
 
 import "fmt"
 
 // Represents a single parsed token.
-type Token struct {
-	Kind  TokenKind
+type token struct {
+	Kind  tokenKind
 	Value interface{}
 	Pos   int
 	Line  int
@@ -12,10 +12,10 @@ type Token struct {
 }
 
 // Represents all valid types of tokens that a token can be.
-type TokenKind int
+type tokenKind int
 
 const (
-	TokenIllegal TokenKind = iota + 1
+	TokenIllegal     tokenKind = iota + 1
 	TokenEOF
 	TokenAssignment
 	TokenLCurlyBrace
@@ -32,12 +32,12 @@ const (
 	TokenBool
 )
 
-func (t *Token) String() string {
-	return fmt.Sprintf("%s '%s'", GetTokenKindString(t.Kind), t.Value)
+func (t *token) String() string {
+	return fmt.Sprintf("%s '%s'", getTokenKindString(t.Kind), t.Value)
 }
 
-// GetTokenKindString returns a string that describes the given TokenKind.
-func GetTokenKindString(kind TokenKind) string {
+// GetTokenKindString returns a string that describes the given tokenKind.
+func getTokenKindString(kind tokenKind) string {
 
 	switch kind {
 
@@ -76,7 +76,7 @@ func GetTokenKindString(kind TokenKind) string {
 	return "TokenIllegal"
 }
 
-func GetTokenKindHumanString(kind TokenKind) string {
+func getTokenKindHumanString(kind tokenKind) string {
 
 	switch kind {
 

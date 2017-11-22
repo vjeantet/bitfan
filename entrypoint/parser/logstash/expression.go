@@ -1,4 +1,4 @@
-package conditionalexpression
+package logstash
 
 import (
 	"bytes"
@@ -9,7 +9,8 @@ import (
 	"github.com/vjeantet/go-lexer"
 )
 
-func ToWhenExpression(lsExpression string) (string, error) {
+// returns a bitfan compatible expression from a logstash one
+func toWhenExpression(lsExpression string) (string, error) {
 	lsExpression = fixNotInExpr(lsExpression)
 	r := bytes.NewReader([]byte(lsExpression))
 	l := lexer.New(r, lexBegin)

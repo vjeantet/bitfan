@@ -1,4 +1,4 @@
-package parser
+package logstash
 
 type lexerStream struct {
 	source     []rune
