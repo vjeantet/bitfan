@@ -12,6 +12,7 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/entrypoint"
 	"github.com/vjeantet/jodaTime"
 )
 
@@ -80,7 +81,7 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 
 	// Handle optinal Start
 	if pipeline.Active == true {
-		err = core.StartPipelineByUUID(pipeline.Uuid)
+		err = p.startPipelineByUUID(pipeline.Uuid)
 		if err != nil {
 			c.JSON(500, models.Error{Message: err.Error()})
 			return
@@ -88,6 +89,41 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 	}
 
 	c.Redirect(302, fmt.Sprintf("/%s/pipelines/%s", p.path, pipeline.Uuid))
+}
+
+func (p *PipelineApiController) startPipelineByUUID(UUID string) error {
+	tPipeline, err := core.Storage().FindOnePipelineByUUID(UUID, true)
+	if err != nil {
+		return err
+	}
+
+	entryPointPath, err := core.Storage().PreparePipelineExecutionStage(&tPipeline)
+	if err != nil {
+		return err
+	}
+
+	var loc *entrypoint.Entrypoint
+	loc, err = entrypoint.New(entryPointPath, "", entrypoint.CONTENT_REF)
+	if err != nil {
+		return err
+	}
+
+	ppl := loc.ConfigPipeline()
+	ppl.Name = tPipeline.Label
+	ppl.Uuid = tPipeline.Uuid
+
+	agt, err := loc.ConfigAgents()
+	if err != nil {
+		return err
+	}
+
+	nUUID, err := core.StartPipeline(&ppl, agt)
+	if err != nil {
+		return err
+	}
+
+	apiLogger.Debugf("Pipeline %s started UUID=%s", tPipeline.Label, nUUID)
+	return nil
 }
 
 func (p *PipelineApiController) Find(c *gin.Context) {
@@ -162,7 +198,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 					c.JSON(500, models.Error{Message: err.Error()})
 					return
 				}
-				err = core.StartPipelineByUUID(uuid)
+				err = p.startPipelineByUUID(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
 					return
@@ -179,7 +215,7 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 			switch nextActive {
 			case true: // start pipeline
 				apiLogger.Debugf("starting pipeline %s", uuid)
-				err := core.StartPipelineByUUID(uuid)
+				err := p.startPipelineByUUID(uuid)
 				if err != nil {
 					c.JSON(500, models.Error{Message: err.Error()})
 					return

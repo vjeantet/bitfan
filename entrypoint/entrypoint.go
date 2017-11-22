@@ -1,4 +1,4 @@
-// Entrypoint manage pipeline's definitions to get them ready for core
+// Entrypoint manage pipeline's definitions to get Pipeline ready to be used by the core
 package entrypoint
 
 import (
@@ -37,6 +37,13 @@ type EntrypointList struct {
 
 
 // Create a new entrypoint (pipeline definition)
+//
+// - contentValue may be a filesystem path, a URL or a string,
+//
+// - cwl Working Location should be provided to the parser, it could be an filesystem dir, a baseUrl base path, this part is
+// used when the entrypoint contains references to other configurations. @see use, route processors.
+//
+// - contentKind refer to the kind of contentValue @see CONTENT_* constants
 func New(contentValue string, cwl string, contentKind int) (*Entrypoint, error) {
 	loc := &Entrypoint{}
 

@@ -34,6 +34,40 @@ func init() {
 	initRunFlags(runCmd)
 }
 
+func startPipelineByUUID(UUID string) error {
+	tPipeline, err := core.Storage().FindOnePipelineByUUID(UUID, true)
+	if err != nil {
+		return err
+	}
+
+	entryPointPath, err := core.Storage().PreparePipelineExecutionStage(&tPipeline)
+	if err != nil {
+		return err
+	}
+
+	var loc *entrypoint.Entrypoint
+	loc, err = entrypoint.New(entryPointPath, "", entrypoint.CONTENT_REF)
+	if err != nil {
+		return err
+	}
+
+	ppl := loc.ConfigPipeline()
+	ppl.Name = tPipeline.Label
+	ppl.Uuid = tPipeline.Uuid
+
+	agt, err := loc.ConfigAgents()
+	if err != nil {
+		return err
+	}
+
+	_, err = core.StartPipeline(&ppl, agt)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run [config1] [config2] [config...]",
@@ -63,12 +97,16 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			}
 		}
 
+		core.Start(opt)
+
 		// AutoStart pipelines only when no configuration given as command line args
 		if len(args) == 0 {
-			opt.AutoStart = true
+			pipelinesToStart := core.Storage().FindPipelinesWithAutoStart()
+			for _, p := range pipelinesToStart {
+				startPipelineByUUID(p.Uuid)
+				core.Log().Debugf("Pipeline %s started UUID=%s", p.Label, p.Uuid)
+			}
 		}
-
-		core.Start(opt)
 
 		// Start configumation in config or in STDIN
 		// TODO : Refactor with RunAutoStartPipelines
