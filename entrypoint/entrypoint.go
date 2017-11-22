@@ -22,7 +22,7 @@ const (
 	CONTENT_INLINE         // Content is a value
 )
 
-// Entrypoint is a the pipeline's definition
+// Entrypoint is a the pipeline's definition ressource
 type Entrypoint struct {
 	Path         string
 	Kind         int // Kind of content
