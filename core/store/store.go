@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/apex/log"
 	"github.com/boltdb/bolt"
 	"github.com/timshannon/bolthold"
 	"github.com/vjeantet/bitfan/core/models"
@@ -45,7 +44,7 @@ func (s *Store) PreparePipelineExecutionStage(tPipeline *models.Pipeline) (strin
 		dest := filepath.Join(cwd, asset.Name)
 		dir := filepath.Dir(dest)
 		os.MkdirAll(dir, os.ModePerm)
-		log.Debugf("configuration  stored to %s", cwd)
+		s.log.Debugf("configuration  stored to %s", cwd)
 		if err := ioutil.WriteFile(dest, asset.Value, 07770); err != nil {
 			return "", err
 		}
@@ -58,10 +57,10 @@ func (s *Store) PreparePipelineExecutionStage(tPipeline *models.Pipeline) (strin
 			return "", fmt.Errorf("missing entrypoint for pipeline %s", tPipeline.Uuid)
 		}
 
-		log.Debugf("configuration %s asset %s stored", tPipeline.Uuid, asset.Name)
+		s.log.Debugf("configuration %s asset %s stored", tPipeline.Uuid, asset.Name)
 	}
 
-	log.Debugf("configuration %s pipeline %s ready to be loaded", tPipeline.Uuid, tPipeline.ConfigLocation)
+	s.log.Debugf("configuration %s pipeline %s ready to be loaded", tPipeline.Uuid, tPipeline.ConfigLocation)
 	return tPipeline.ConfigLocation, nil
 }
 
