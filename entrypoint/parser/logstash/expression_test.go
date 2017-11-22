@@ -172,7 +172,7 @@ func TestExpressions(t *testing.T) {
 }
 
 func check(t *testing.T, lsExpression string, gvExpression string) {
-	result, err := ToWhenExpression(lsExpression)
+	result, err := toWhenExpression(lsExpression)
 	assert.NoError(t, err, "err is not nil")
 	assert.Equal(t, result, gvExpression)
 }
