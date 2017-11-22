@@ -19,7 +19,7 @@ import (
 	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/core/models"
 	"github.com/vjeantet/bitfan/core/store"
-	"github.com/vjeantet/bitfan/lib"
+	"github.com/vjeantet/bitfan/entrypoint"
 )
 
 var (
@@ -190,10 +190,10 @@ func StartPipelineByUUID(UUID string) error {
 
 	Log().Debugf("configuration %s pipeline %s ready to be loaded", uidString, tPipeline.ConfigLocation)
 
-	//TODO : resolve lib.Location dans location.Location
+	//TODO : resolve lib.Entrypoint dans location.Entrypoint
 
-	var loc *lib.Location
-	loc, err = lib.NewLocation(tPipeline.ConfigLocation, cwd)
+	var loc *entrypoint.Entrypoint
+	loc, err = entrypoint.New(tPipeline.ConfigLocation, cwd, entrypoint.CONTENT_REF)
 	if err != nil {
 		return err
 	}

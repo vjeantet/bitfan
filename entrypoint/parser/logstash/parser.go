@@ -1,14 +1,11 @@
-package parser
+package logstash
 
 import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"strconv"
 	"strings"
-
-	"github.com/vjeantet/bitfan/parser/conditionalexpression"
 )
 
 type Parser struct {
@@ -55,7 +52,7 @@ type ParseError struct {
 	Reason string
 }
 
-func NewParseError(l int, c int, message string) *ParseError {
+func newParseError(l int, c int, message string) *ParseError {
 	return &ParseError{
 		Line:   l,
 		Column: c,
@@ -75,7 +72,7 @@ func NewParser(r io.Reader) *Parser {
 
 func (p *Parser) Parse() (*Configuration, error) {
 	var err error
-	var tok Token
+	var tok token
 
 	config := &Configuration{
 		Sections: map[string]*Section{},
@@ -110,10 +107,10 @@ func (p *Parser) Parse() (*Configuration, error) {
 	return config, err
 }
 
-func (p *Parser) parseSection(tok *Token) (*Section, error) {
+func (p *Parser) parseSection(tok *token) (*Section, error) {
 	section := &Section{}
 	if tok.Value != "input" && tok.Value != "filter" && tok.Value != "output" {
-		return section, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected '%s', exepected one of 'input', 'filter' or 'output'", tok.Value))
+		return section, newParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected '%s', exepected one of 'input', 'filter' or 'output'", tok.Value))
 	}
 
 	section.Name = tok.Value.(string)
@@ -178,16 +175,16 @@ func (p *Parser) parseSection(tok *Token) (*Section, error) {
 	return section, err
 }
 
-func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
+func (p *Parser) parseWHEN(tok *token) (*Plugin, error) {
 	pluginWhen := &Plugin{}
 	pluginWhen.Name = "when"
 	pluginWhen.When = make(map[int]*When)
 
 	var err error
 
-	expression, errc := conditionalexpression.ToWhenExpression(tok.Value.(string))
+	expression, errc := toWhenExpression(tok.Value.(string))
 	if errc != nil {
-		return pluginWhen, NewParseError(tok.Line, tok.Col, "Conditional expression parse error : "+errc.Error())
+		return pluginWhen, newParseError(tok.Line, tok.Col, "Conditional expression parse error : "+errc.Error())
 	}
 
 	when := &When{
@@ -256,7 +253,7 @@ func (p *Parser) parseWHEN(tok *Token) (*Plugin, error) {
 	return pluginWhen, err
 }
 
-func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
+func (p *Parser) parsePlugin(tok *token) (*Plugin, error) {
 	var err error
 
 	plugin := &Plugin{}
@@ -279,7 +276,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 
 	i := 0
 	iCodec := 0
-	var advancedTok *Token
+	var advancedTok *token
 	for {
 		if advancedTok == nil {
 			*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace, TokenComma)
@@ -330,7 +327,7 @@ func (p *Parser) parsePlugin(tok *Token) (*Plugin, error) {
 	return plugin, err
 }
 
-func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
+func (p *Parser) parseCodecSettings(tok *token) (map[int]*Setting, error) {
 	var err error
 	settings := make(map[int]*Setting)
 
@@ -362,7 +359,7 @@ func (p *Parser) parseCodecSettings(tok *Token) (map[int]*Setting, error) {
 	return settings, err
 }
 
-func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
+func (p *Parser) parseCodec(tok *token) (*Codec, *token, error) {
 	var err error
 
 	codec := &Codec{}
@@ -417,7 +414,7 @@ func (p *Parser) parseCodec(tok *Token) (*Codec, *Token, error) {
 	return codec, nil, err
 }
 
-func (p *Parser) parseSetting(tok *Token) (*Setting, error) {
+func (p *Parser) parseSetting(tok *token) (*Setting, error) {
 	setting := &Setting{}
 
 	setting.K = tok.Value.(string)
@@ -548,16 +545,16 @@ func (p *Parser) rewindToken() error {
 	return nil
 }
 
-func (p *Parser) getToken(types ...TokenKind) (Token, error) {
+func (p *Parser) getToken(types ...tokenKind) (token, error) {
 
 	tok, err := readToken(p.l)
 	if err != nil {
-		return Token{}, NewParseError(tok.Line, tok.Col, fmt.Sprintf("illegal token '%s'", tok.Value))
+		return token{}, newParseError(tok.Line, tok.Col, fmt.Sprintf("illegal token '%s'", tok.Value))
 	}
 
 	if tok.Kind == TokenIllegal {
 		// log.Printf(" -- %s %s", TokenType(tok.Kind).String(), tok.Value)
-		return Token{}, NewParseError(tok.Line, tok.Col, fmt.Sprintf("illegal token '%s'", tok.Value))
+		return token{}, newParseError(tok.Line, tok.Col, fmt.Sprintf("illegal token '%s'", tok.Value))
 	}
 
 	for _, t := range types {
@@ -567,55 +564,56 @@ func (p *Parser) getToken(types ...TokenKind) (Token, error) {
 	}
 
 	if len(types) == 1 {
-		return tok, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected '%s' ", tok.Value, GetTokenKindHumanString(types[0])))
+		return tok, newParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected '%s' ", tok.Value, getTokenKindHumanString(types[0])))
 	}
 
 	list := make([]string, len(types))
 	for i, t := range types {
-		list[i] = GetTokenKindHumanString(t)
+		list[i] = getTokenKindHumanString(t)
 	}
 
-	return tok, NewParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected one of '%s' ", tok.Value, strings.Join(list, "|")))
+	return tok, newParseError(tok.Line, tok.Col, fmt.Sprintf("unexpected token '%s', expected one of '%s' ", tok.Value, strings.Join(list, "|")))
 }
 
-func DumpTokens(content []byte) {
-	var ret []Token
-	var token Token
-	var stream *lexerStream
-	var err error
+// For Dev
+// func DumpTokens(content []byte) {
+// 	var ret []token
+// 	var tok token
+// 	var stream *lexerStream
+// 	var err error
 
-	stream = newLexerStream(string(content))
-	for stream.canRead() {
+// 	stream = newLexerStream(string(content))
+// 	for stream.canRead() {
 
-		token, err = readToken(stream)
+// 		tok, err = readToken(stream)
 
-		if err != nil {
-			fmt.Printf("ERROR %v\n", err)
-			return
-		}
+// 		if err != nil {
+// 			fmt.Printf("ERROR %v\n", err)
+// 			return
+// 		}
 
-		if token.Kind == TokenIllegal {
-			fmt.Printf("ERROR %v\n", err)
-			color := "\033[93m"
-			log.Printf("ERROR %4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindHumanString(token.Kind), token.Value)
-			break
-		}
+// 		if tok.Kind == TokenIllegal {
+// 			fmt.Printf("ERROR %v\n", err)
+// 			color := "\033[93m"
+// 			log.Printf("ERROR %4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", tok.Pos, tok.Line, tok.Col, color, getTokenKindHumanString(tok.Kind), tok.Value)
+// 			break
+// 		}
 
-		// state, err = getLexerStateForToken(token.Kind)
-		// if err != nil {
-		// 	return
-		// }
-		color := "\033[93m"
-		if token.Kind == TokenIf || token.Kind == TokenElseIf || token.Kind == TokenElse {
-			color = "\033[1m\033[91m"
-		}
-		if token.Kind == TokenLBracket || token.Kind == TokenRBracket || token.Kind == TokenRCurlyBrace || token.Kind == TokenLCurlyBrace {
-			color = "\033[90m"
-		}
+// 		// state, err = getLexerStateForToken(tok.Kind)
+// 		// if err != nil {
+// 		// 	return
+// 		// }
+// 		color := "\033[93m"
+// 		if tok.Kind == TokenIf || tok.Kind == TokenElseIf || tok.Kind == TokenElse {
+// 			color = "\033[1m\033[91m"
+// 		}
+// 		if tok.Kind == TokenLBracket || tok.Kind == TokenRBracket || tok.Kind == TokenRCurlyBrace || tok.Kind == TokenLCurlyBrace {
+// 			color = "\033[90m"
+// 		}
 
-		log.Printf("%4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", token.Pos, token.Line, token.Col, color, GetTokenKindHumanString(token.Kind), token.Value)
+// 		log.Printf("%4d line %3d:%-2d %s%-20s\033[0m _\033[92m%s\033[0m_", tok.Pos, tok.Line, tok.Col, color, getTokenKindHumanString(tok.Kind), tok.Value)
 
-		// append this valid token
-		ret = append(ret, token)
-	}
-}
+// 		// append this valid tok
+// 		ret = append(ret, tok)
+// 	}
+// }

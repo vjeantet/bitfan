@@ -1,4 +1,4 @@
-package conditionalexpression
+package logstash
 
 import (
 	"testing"

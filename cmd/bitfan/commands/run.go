@@ -26,7 +26,7 @@ import (
 
 	"github.com/vjeantet/bitfan/api"
 	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/lib"
+	"github.com/vjeantet/bitfan/entrypoint"
 )
 
 func init() {
@@ -72,28 +72,28 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 		// Start configumation in config or in STDIN
 		// TODO : Refactor with RunAutoStartPipelines
-		var locations lib.Locations
+		var locations entrypoint.EntrypointList
 		cwd, _ := os.Getwd()
 
 		if len(args) == 0 {
 			for _, v := range viper.GetStringSlice("config") {
-				loc, _ := lib.NewLocation(v, cwd)
-				locations.AddLocation(loc)
+				loc, _ := entrypoint.New(v, cwd, entrypoint.CONTENT_REF)
+				locations.AddEntrypoint(loc)
 			}
 		} else {
 			for _, v := range args {
-				var loc *lib.Location
+				var loc *entrypoint.Entrypoint
 				var err error
-				loc, err = lib.NewLocation(v, cwd)
+				loc, err = entrypoint.New(v, cwd, entrypoint.CONTENT_REF)
 				if err != nil {
 					// is a content ?
-					loc, err = lib.NewLocationContent(v, cwd)
+					loc, err = entrypoint.New(v, cwd, entrypoint.CONTENT_INLINE)
 					if err != nil {
 						return
 					}
 				}
 
-				locations.AddLocation(loc)
+				locations.AddEntrypoint(loc)
 			}
 		}
 
