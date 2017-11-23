@@ -31,6 +31,15 @@ var (
 
 type fnMux func(sm *http.ServeMux)
 
+type Options struct {
+	Host         string
+	HttpHandlers []fnMux
+	Debug        bool
+	VerboseLog   bool
+	LogFile      string
+	DataLocation string
+}
+
 func init() {
 	metrics = &MetricsVoid{}
 	myScheduler = newScheduler()
