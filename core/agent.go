@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/vjeantet/bitfan/core/metrics"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -140,14 +141,14 @@ func (a *Agent) send(packet processors.IPacket, portNumbers ...int) bool {
 	for _, portNumber := range portNumbers {
 		if len(a.outputs[portNumber]) == 1 {
 			a.outputs[portNumber][0] <- packet.(*event)
-			metrics.increment(METRIC_PROC_OUT, a.PipelineName, a.Label)
+			myMetrics.Increment(metrics.PROC_OUT, a.PipelineName, a.Label)
 		} else {
 			// do not use go routine nor waitgroup as it slow down the processing
 			for _, out := range a.outputs[portNumber] {
 				// Clone() is a time killer
 				// TODO : failback if out does not take out packet on x ms (share on a bitfanSlave)
 				out <- packet.Clone().(*event)
-				metrics.increment(METRIC_PROC_OUT, a.PipelineName, a.Label)
+				myMetrics.Increment(metrics.PROC_OUT, a.PipelineName, a.Label)
 			}
 		}
 	}
@@ -212,7 +213,7 @@ func (a *Agent) listen(wg *sync.WaitGroup) {
 	Log().Debugf("Starting EventLoop on %d-%s", a.ID, a.Label)
 	for e := range a.packetChan {
 		// Receive a work request.
-		metrics.set(METRIC_CONNECTION_TRANSIT, a.PipelineName, a.Label, len(a.packetChan))
+		myMetrics.Set(metrics.CONNECTION_TRANSIT, a.PipelineName, a.Label, len(a.packetChan))
 
 		if a.Trace {
 			a.traceEvent("IN", e, 0)
@@ -221,7 +222,7 @@ func (a *Agent) listen(wg *sync.WaitGroup) {
 		if err := a.processor.Receive(e); err != nil {
 			Log().Errorf("agent %s: %v", a.Type, err)
 		}
-		metrics.increment(METRIC_PROC_IN, a.PipelineName, a.Label)
+		myMetrics.Increment(metrics.PROC_IN, a.PipelineName, a.Label)
 	}
 	wg.Done()
 }

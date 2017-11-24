@@ -58,8 +58,9 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 		if !viper.GetBool("no-network") {
 			opt.HttpHandlers = append(opt.HttpHandlers, core.HTTPHandler("/api/v2/", api.Handler("api/v2")))
+
 			if viper.IsSet("prometheus") {
-				opt.HttpHandlers = append(opt.HttpHandlers, core.PrometheusServer(viper.GetString("prometheus.path")))
+				opt.Prometheus = viper.GetString("prometheus.path")
 			}
 		}
 

@@ -12,13 +12,13 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/justinas/alice"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vjeantet/bitfan/core/memory"
+	"github.com/vjeantet/bitfan/core/metrics"
 	"github.com/vjeantet/bitfan/store"
 )
 
 var (
-	metrics     Metrics
+	myMetrics   metrics.Metrics
 	myScheduler *scheduler
 	myMemory    *memory.Memory
 	myStore     *store.Store
@@ -38,10 +38,11 @@ type Options struct {
 	VerboseLog   bool
 	LogFile      string
 	DataLocation string
+	Prometheus   string
 }
 
 func init() {
-	metrics = &MetricsVoid{}
+	myMetrics = metrics.New()
 	myScheduler = newScheduler()
 	myScheduler.Start()
 	//Init Store
@@ -53,10 +54,6 @@ func init() {
 func RegisterProcessor(name string, procFact ProcessorFactory) {
 	Log().Debugf("%s processor registered", name)
 	availableProcessorsFactory[name] = procFact
-}
-
-func setMetrics(s Metrics) {
-	metrics = s
 }
 
 func setDataLocation(location string) error {
@@ -91,12 +88,6 @@ func webHookServer() fnMux {
 	whPrefixURL = "/"
 	commonHandlers := alice.New(loggingHandler, recoverHandler)
 	return HTTPHandler("/", commonHandlers.ThenFunc(routerHandler))
-}
-
-// TODO : should be unexported
-func PrometheusServer(path string) fnMux {
-	setMetrics(NewPrometheus())
-	return HTTPHandler(path, prometheus.Handler())
 }
 
 // TODO : should be unexported
@@ -142,6 +133,12 @@ func Start(opt Options) {
 	if err := setDataLocation(opt.DataLocation); err != nil {
 		Log().Errorf("error with data location - %v", err)
 		panic(err.Error())
+	}
+
+	if opt.Prometheus != "" {
+		m := metrics.NewPrometheus(opt.Prometheus)
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler(m.Path, m.HTTPHandler()))
+		myMetrics = m
 	}
 
 	if len(opt.HttpHandlers) > 0 {

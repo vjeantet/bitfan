@@ -1,6 +1,7 @@
-package core
+package metrics
 
 import (
+	"net/http"
 	"runtime"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -13,10 +14,12 @@ type metricsPrometheus struct {
 	agent_packet_out          *prometheus.CounterVec
 	connection_packet_transit *prometheus.GaugeVec
 	goroutines                prometheus.GaugeFunc
+	Path                      string
 }
 
-func NewPrometheus() Metrics {
+func NewPrometheus(path string) *metricsPrometheus {
 	stats := &metricsPrometheus{
+		Path: path,
 		goroutines: prometheus.NewGaugeFunc(
 			prometheus.GaugeOpts{
 				Namespace: namespace,
@@ -63,30 +66,34 @@ func NewPrometheus() Metrics {
 	return stats
 }
 
-func (s *metricsPrometheus) set(metric int, pipelineName string, name string, v int) error {
+func (m *metricsPrometheus) HTTPHandler() http.Handler {
+	return prometheus.Handler()
+}
+
+func (s *metricsPrometheus) Set(metric int, pipelineName string, name string, v int) error {
 	switch metric {
-	case METRIC_CONNECTION_TRANSIT:
+	case CONNECTION_TRANSIT:
 		s.connection_packet_transit.WithLabelValues(pipelineName, name).Set(float64(v))
 	}
 
 	return nil
 }
 
-func (s *metricsPrometheus) increment(metric int, pipelineName string, name string) error {
+func (s *metricsPrometheus) Increment(metric int, pipelineName string, name string) error {
 
 	switch metric {
-	case METRIC_PROC_OUT:
+	case PROC_OUT:
 		s.agent_packet_out.WithLabelValues(pipelineName, name).Inc()
-	case METRIC_PROC_IN:
+	case PROC_IN:
 		s.agent_packet_in.WithLabelValues(pipelineName, name).Inc()
-	case METRIC_CONNECTION_TRANSIT:
+	case CONNECTION_TRANSIT:
 		s.connection_packet_transit.WithLabelValues(pipelineName, name).Inc()
 	}
 
 	return nil
 }
 
-func (s *metricsPrometheus) decrement(metric int, pipelineName string, name string) error {
+func (s *metricsPrometheus) Decrement(metric int, pipelineName string, name string) error {
 	s.connection_packet_transit.WithLabelValues(pipelineName, name).Dec()
 	return nil
 }
