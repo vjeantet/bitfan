@@ -5,14 +5,14 @@ import (
 	"io"
 
 	"github.com/vjeantet/bitfan/codecs/csv"
-	"github.com/vjeantet/bitfan/codecs/w3c"
 	"github.com/vjeantet/bitfan/codecs/json"
 	"github.com/vjeantet/bitfan/codecs/jsonlines"
-	"github.com/vjeantet/bitfan/codecs/lib"
 	"github.com/vjeantet/bitfan/codecs/line"
 	"github.com/vjeantet/bitfan/codecs/multiline"
 	"github.com/vjeantet/bitfan/codecs/plain"
 	"github.com/vjeantet/bitfan/codecs/rubydebug"
+	"github.com/vjeantet/bitfan/codecs/w3c"
+	"github.com/vjeantet/bitfan/commons"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
 )
@@ -49,11 +49,11 @@ type Codec struct {
 	Role                  string
 	Charset               string
 	Options               map[string]interface{}
-	logger                lib.Logger
+	logger                commons.Logger
 	configWorkingLocation string
 }
 
-func New(name string, conf map[string]interface{}, logger lib.Logger, cwl string) *Codec {
+func New(name string, conf map[string]interface{}, logger commons.Logger, cwl string) *Codec {
 	c := &Codec{
 		Name:                  name,
 		Charset:               "utf-8",

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 type decoder struct {
@@ -17,7 +17,7 @@ type decoder struct {
 	r           *csv.Reader
 	columnnames []string
 	options     decoderOptions
-	log         lib.Logger
+	log         commons.Logger
 }
 
 // Parses comma-separated value data into individual fields
@@ -66,7 +66,7 @@ func NewDecoder(r io.Reader) *decoder {
 
 	return d
 }
-func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
 	d.log = logger
 
 	if err := mapstructure.Decode(conf, &d.options); err != nil {

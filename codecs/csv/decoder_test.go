@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 func TestDefaultSettings(t *testing.T) {
@@ -75,7 +75,7 @@ func TestWithCustomColumns(t *testing.T) {
 		"columns":                   []string{"user_defined_1", "user_defined_2"},
 		"comment":                   "#",
 	}
-	var l lib.Logger
+	var l commons.Logger
 	err := d.SetOptions(conf, l, "")
 	assert.NoError(t, err)
 

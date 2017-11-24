@@ -8,7 +8,7 @@ import (
 	"io"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 type decoder struct {
@@ -17,7 +17,7 @@ type decoder struct {
 	columnnames []string
 	options     decoderOptions
 	comma       rune
-	log         lib.Logger
+	log         commons.Logger
 	title       bool
 }
 
@@ -68,7 +68,7 @@ func NewDecoder(r io.Reader) *decoder {
 
 	return d
 }
-func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
 	d.log = logger
 
 	if err := mapstructure.Decode(conf, &d.options); err != nil {

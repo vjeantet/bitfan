@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 func TestDefaultSettings(t *testing.T) {
@@ -51,7 +51,7 @@ func TestDefaultSettings(t *testing.T) {
 	}
 
 	d := NewDecoder(strings.NewReader(data))
-	var l lib.Logger
+	var l commons.Logger
 	err := d.SetOptions(map[string]interface{}{}, l, "")
 	assert.NoError(t, err)
 
@@ -122,7 +122,7 @@ func TestTabSeparatedColumns(t *testing.T) {
 	}
 
 	d := NewDecoder(strings.NewReader(data))
-	var l lib.Logger
+	var l commons.Logger
 	err := d.SetOptions(conf, l, "")
 	assert.NoError(t, err)
 
@@ -173,7 +173,7 @@ func TestWithCustomColumns(t *testing.T) {
 
 	d := NewDecoder(strings.NewReader(data))
 
-	var l lib.Logger
+	var l commons.Logger
 	err := d.SetOptions(conf, l, "")
 	assert.NoError(t, err)
 

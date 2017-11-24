@@ -30,8 +30,8 @@ import (
 	"text/template"
 
 	"github.com/Knetic/govaluate"
+	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
-	"github.com/vjeantet/bitfan/processors/helper"
 )
 
 func New() processors.Processor {
@@ -86,7 +86,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 	//Prepare templates
 	for key, tplLocStr := range p.opt.Templates {
-		loc, err := helper.NewLocation(tplLocStr, p.ConfigWorkingLocation)
+		loc, err := commons.NewLocation(tplLocStr, p.ConfigWorkingLocation)
 		if err != nil {
 			return err
 		}
