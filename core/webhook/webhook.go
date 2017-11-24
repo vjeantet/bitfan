@@ -1,4 +1,4 @@
-package core
+package webhook
 
 import (
 	"fmt"
@@ -7,7 +7,10 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
+	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/gosimple/slug"
+	"github.com/justinas/alice"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 type webHook struct {
@@ -18,9 +21,10 @@ type webHook struct {
 
 var webHookMap = syncmap.Map{}
 var baseURL = ""
-var whPrefixURL = ""
+var whPrefixURL = "/"
+var Log commons.Logger
 
-func newWebHook(pipelineLabel, nameSpace string) *webHook {
+func New(pipelineLabel, nameSpace string) *webHook {
 	return &webHook{pipelineLabel: pipelineLabel, namespace: nameSpace, Hooks: []string{}}
 }
 
@@ -33,14 +37,14 @@ func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
 	hUrl := w.buildURL(hookName)
 	w.Hooks = append(w.Hooks, hookName)
 	webHookMap.Store(hUrl, hf)
-	Log().Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
+	Log.Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }
 
 // Delete a route
 func (w *webHook) Delete(hookName string) {
 	hUrl := w.buildURL(hookName)
 	webHookMap.Delete(hUrl)
-	Log().Debugf("WebHook unregisted [%s]", hUrl)
+	Log.Debugf("WebHook unregisted [%s]", hUrl)
 }
 
 // Delete all routes belonging to webHook
@@ -50,13 +54,24 @@ func (w *webHook) Unregister() {
 	}
 }
 
+func Handler(host string) http.Handler {
+	addrSpit := strings.Split(host, ":")
+	if addrSpit[0] == "0.0.0.0" {
+		addrSpit[0] = fqdn.Get()
+	}
+	baseURL = fmt.Sprintf("http://%s:%s", addrSpit[0], addrSpit[1])
+
+	commonHandlers := alice.New(loggingHandler, recoverHandler)
+	return commonHandlers.ThenFunc(routerHandler)
+}
+
 func routerHandler(w http.ResponseWriter, r *http.Request) {
 	hUrl := strings.ToLower(r.URL.Path)
 	if hfi, ok := webHookMap.Load(hUrl); ok {
-		Log().Debugf("Webhook found for %s", hUrl)
+		Log.Debugf("Webhook found for %s", hUrl)
 		hfi.(http.HandlerFunc)(w, r)
 	} else {
-		Log().Warnf("Webhook not found for %s", hUrl)
+		Log.Warnf("Webhook not found for %s", hUrl)
 		w.WriteHeader(404)
 		fmt.Fprint(w, "Not Found !")
 	}
@@ -65,7 +80,7 @@ func routerHandler(w http.ResponseWriter, r *http.Request) {
 func loggingHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
-		Log().Debugf("Webhook [%s] %s", r.Method, r.URL.Path)
+		Log.Debugf("Webhook [%s] %s", r.Method, r.URL.Path)
 	}
 	return http.HandlerFunc(fn)
 }
@@ -74,7 +89,7 @@ func recoverHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				Log().Errorf("Webhook panic [%s] %s : %+v", r.Method, r.URL.Path, err)
+				Log.Errorf("Webhook panic [%s] %s : %+v", r.Method, r.URL.Path, err)
 				http.Error(w, http.StatusText(500), 500)
 			}
 		}()

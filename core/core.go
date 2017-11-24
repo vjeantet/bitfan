@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
 	"golang.org/x/sync/syncmap"
 
-	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/spf13/viper"
 
-	"github.com/justinas/alice"
 	"github.com/vjeantet/bitfan/core/memory"
 	"github.com/vjeantet/bitfan/core/metrics"
+	"github.com/vjeantet/bitfan/core/webhook"
 	"github.com/vjeantet/bitfan/store"
 )
 
@@ -84,12 +82,6 @@ func setDataLocation(location string) error {
 	return err
 }
 
-func webHookServer() fnMux {
-	whPrefixURL = "/"
-	commonHandlers := alice.New(loggingHandler, recoverHandler)
-	return HTTPHandler("/", commonHandlers.ThenFunc(routerHandler))
-}
-
 // TODO : should be unexported
 func Storage() *store.Store {
 	return myStore
@@ -107,14 +99,7 @@ func listenAndServe(addr string, hs ...fnMux) {
 		h(httpServerMux)
 	}
 	go http.ListenAndServe(addr, httpServerMux)
-
-	addrSpit := strings.Split(addr, ":")
-	if addrSpit[0] == "0.0.0.0" {
-		addrSpit[0] = fqdn.Get()
-	}
-
-	baseURL = fmt.Sprintf("http://%s:%s", addrSpit[0], addrSpit[1])
-	Log().Infof("Ready to serve on %s", baseURL)
+	Log().Infof("Ready to serve on %s", addr)
 }
 
 func Start(opt Options) {
@@ -142,7 +127,8 @@ func Start(opt Options) {
 	}
 
 	if len(opt.HttpHandlers) > 0 {
-		opt.HttpHandlers = append(opt.HttpHandlers, webHookServer())
+		webhook.Log = logger
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/", webhook.Handler(opt.Host)))
 
 		listenAndServe(opt.Host, opt.HttpHandlers...)
 	}

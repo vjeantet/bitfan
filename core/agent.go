@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/vjeantet/bitfan/core/metrics"
+	"github.com/vjeantet/bitfan/core/webhook"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -92,7 +93,7 @@ func (a *Agent) configure() error {
 	ctx.dataLocation = filepath.Join(dataLocation, a.Type)
 	ctx.configWorkingLocation = a.Wd
 	ctx.memory = myMemory.Space(a.Type)
-	ctx.webHook = newWebHook(a.PipelineName, a.Label)
+	ctx.webHook = webhook.New(a.PipelineName, a.Label)
 
 	var err error
 	ctx.store, err = Storage().NewProcessorStorage(a.Type)
