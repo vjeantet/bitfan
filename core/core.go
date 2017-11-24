@@ -13,13 +13,14 @@ import (
 
 	"github.com/justinas/alice"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/vjeantet/bitfan/core/memory"
 	"github.com/vjeantet/bitfan/store"
 )
 
 var (
 	metrics     Metrics
 	myScheduler *scheduler
-	myMemory    *memory
+	myMemory    *memory.Memory
 	myStore     *store.Store
 
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
@@ -44,7 +45,7 @@ func init() {
 	myScheduler = newScheduler()
 	myScheduler.Start()
 	//Init Store
-	myMemory = newMemory(dataLocation)
+	myMemory = memory.New()
 }
 
 // RegisterProcessor is called by the processor loader when the program starts
@@ -188,7 +189,7 @@ func Stop() error {
 		}
 	}
 
-	myMemory.close()
+	myMemory.Close()
 	myStore.Close()
 	return nil
 }
