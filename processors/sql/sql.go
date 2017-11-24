@@ -10,8 +10,8 @@ import (
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/vjeantet/bitfan/core/location"
 	"github.com/vjeantet/bitfan/processors"
+	"github.com/vjeantet/bitfan/processors/helper"
 )
 
 func New() processors.Processor {
@@ -87,7 +87,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.Logger.Warningln("No interval set")
 	}
 
-	loc, err := location.NewLocation(p.opt.Statement, p.ConfigWorkingLocation)
+	loc, err := helper.NewLocation(p.opt.Statement, p.ConfigWorkingLocation)
 	if err != nil {
 		return err
 	}

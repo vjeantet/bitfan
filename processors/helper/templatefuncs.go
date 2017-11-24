@@ -1,4 +1,4 @@
-package location
+package helper
 
 // Code comes from https://github.com/spf13/hugo/tree/master/tpl
 

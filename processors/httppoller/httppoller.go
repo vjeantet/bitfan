@@ -9,8 +9,8 @@ import (
 
 	"github.com/parnurzeal/gorequest"
 	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/core/location"
 	"github.com/vjeantet/bitfan/processors"
+	"github.com/vjeantet/bitfan/processors/helper"
 )
 
 func New() processors.Processor {
@@ -86,7 +86,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
 
 	if p.opt.Body != "" {
-		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
+		loc, err := helper.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
 		if err != nil {
 			return err
 		}

@@ -9,7 +9,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/codecs/lib"
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/processors/helper"
 )
 
 // doc encoder
@@ -57,7 +57,7 @@ func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 	if e.options.Format != "" {
 		//TODO : add a location.TemplateWithOptions to return golang text/template
 
-		loc, err := location.NewLocation(e.options.Format, cwl)
+		loc, err := helper.NewLocation(e.options.Format, cwl)
 		if err != nil {
 			return err
 		}
