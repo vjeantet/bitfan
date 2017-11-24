@@ -154,7 +154,6 @@ func (p *processor) filesToRead() ([]string, error) {
 	// find files
 	for _, currentPath := range fixedPaths {
 		if currentMatches, err := zglob.Glob(currentPath); err == nil {
-			// if currentMatches, err := filepath.Glob(currentPath); err == nil {
 			matches = append(matches, currentMatches...)
 			continue
 		}
@@ -244,7 +243,13 @@ func (p *processor) Start(e processors.IPacket) error {
 			if err := p.discoverFilesToRead(); err != nil {
 				p.Logger.Error(err)
 			}
-			<-ticker.C
+			select {
+			case <-ticker.C:
+				continue
+			case <-p.q:
+				return
+			}
+
 		}
 	}()
 
@@ -305,6 +310,10 @@ func (p *processor) tailFile(path string, q chan bool) error {
 
 	var dec codecs.Decoder
 	pr, pw := io.Pipe()
+	defer func() {
+		pr.Close()
+		pw.Close()
+	}()
 
 	if dec, err = p.opt.Codec.NewDecoder(pr); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
@@ -312,10 +321,15 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	}
 
 	go func() {
-		for {
+		for dec.More() {
 			var record interface{}
 			if err := dec.Decode(&record); err != nil {
-				p.Logger.Errorln("codec error : ", err.Error())
+				if err == io.EOF {
+					p.Logger.Debugf("codec EOF ")
+				} else {
+					p.Logger.Errorln("codec error : ", err.Error())
+				}
+
 				return
 			}
 			var e processors.IPacket
@@ -349,8 +363,6 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	for line := range t.Lines {
 		fmt.Fprintf(pw, "%s\n", line.Text)
 	}
-	pr.Close()
-	pw.Close()
 
 	return nil
 }

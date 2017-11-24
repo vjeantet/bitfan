@@ -163,7 +163,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		body = map[string]interface{}{}
 		if err = dec.Decode(&record); err != nil {
 			if err == io.EOF {
-				p.Logger.Warnln("error while http read docoding : ", err)
+				p.Logger.Debugln("error while http read docoding : ", err)
 			} else {
 				p.Logger.Errorln("error while http read docoding : ", err)
 				break

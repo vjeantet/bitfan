@@ -181,11 +181,11 @@ func (p *processor) Receive(e processors.IPacket) error {
 		var record interface{}
 		if err = dec.Decode(&record); err != nil {
 			if err == io.EOF {
-				p.Logger.Warnln("error while http read docoding : ", err)
+				p.Logger.Debugln("error while http read docoding : ", err)
 			} else {
 				p.Logger.Errorln("error while http read docoding : ", err)
-				break
 			}
+			return nil
 		}
 
 		e2 := e.Clone()
