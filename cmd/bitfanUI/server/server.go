@@ -15,7 +15,7 @@ import (
 	sessions "github.com/tommy351/gin-sessions"
 
 	"github.com/vjeantet/bitfan/api/client"
-	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/api/models"
 )
 
 var apiClient *client.RestClient

@@ -11,7 +11,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/api/models"
 	"github.com/vjeantet/bitfan/entrypoint"
 	"github.com/vjeantet/jodaTime"
 )

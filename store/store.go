@@ -10,7 +10,7 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/timshannon/bolthold"
-	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/api/models"
 )
 
 type Store struct {
