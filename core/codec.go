@@ -1,4 +1,4 @@
-package config
+package core
 
 type Codec struct {
 	Name    string
@@ -16,4 +16,16 @@ func NewCodec(name string) *Codec {
 
 func (c *Codec) String() string {
 	return c.Name
+}
+
+func (c *Codec) GetName() string {
+	return c.Name
+}
+
+func (c *Codec) GetRole() string {
+	return c.Role
+}
+
+func (c *Codec) GetOptions() map[string]interface{} {
+	return c.Options
 }

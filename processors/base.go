@@ -3,7 +3,6 @@ package processors
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/processors/doc"
 	"gopkg.in/go-playground/validator.v8"
 )
@@ -76,18 +75,18 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	if v, ok := conf["codecs"]; ok {
 		codecCollection := &codecs.CodecCollection{}
 		for _, v := range v.(map[int]interface{}) {
-			switch vcodec := v.(type) {
-			case *config.Codec:
-				c := codecs.New(vcodec.Name, vcodec.Options, ctx.Log(), ctx.ConfigWorkingLocation())
-				switch vcodec.Role {
-				case "encoder":
-					codecCollection.Enc = c
-				case "decoder":
-					codecCollection.Dec = c
-				default:
-					codecCollection.Default = c
-				}
+			vcodec := v.(ICodec)
+
+			c := codecs.New(vcodec.GetName(), vcodec.GetOptions(), ctx.Log(), ctx.ConfigWorkingLocation())
+			switch vcodec.GetRole() {
+			case "encoder":
+				codecCollection.Enc = c
+			case "decoder":
+				codecCollection.Dec = c
+			default:
+				codecCollection.Default = c
 			}
+
 		}
 		conf["codec"] = codecCollection
 		delete(conf, "codecs")

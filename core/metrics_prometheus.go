@@ -29,20 +29,20 @@ func NewPrometheus() Metrics {
 
 		agent_packet_in: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: namespace,
-			Subsystem: "agent",
+			Subsystem: "Agent",
 			Name:      "packet_consumption",
 			Help:      "packets consumed by processors",
 		},
-			[]string{"pipeline", "agent"},
+			[]string{"pipeline", "Agent"},
 		),
 
 		agent_packet_out: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: namespace,
-			Subsystem: "agent",
+			Subsystem: "Agent",
 			Name:      "packet_production",
 			Help:      "packets produced by processors",
 		},
-			[]string{"pipeline", "agent"},
+			[]string{"pipeline", "Agent"},
 		),
 
 		connection_packet_transit: prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -51,7 +51,7 @@ func NewPrometheus() Metrics {
 			Name:      "transit",
 			Help:      "packets in transit to processors",
 		},
-			[]string{"pipeline", "agent"},
+			[]string{"pipeline", "Agent"},
 		),
 	}
 

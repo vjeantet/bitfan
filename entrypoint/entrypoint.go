@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/vjeantet/bitfan/core/config"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/entrypoint/parser"
 )
 
@@ -107,37 +107,78 @@ func (e *EntrypointList) AddEntrypoint(loc *Entrypoint) error {
 	return nil
 }
 
-// ConfigPipeline returns a core Pipeline from entrypoint's definition
-func (e *Entrypoint) ConfigPipeline() config.Pipeline {
-	var pipeline *config.Pipeline
+func (e *Entrypoint) Pipeline() (*core.Pipeline, error) {
+	pipeline := core.NewPipeline()
 
-	switch e.Kind {
-	case CONTENT_INLINE:
-		pipeline = config.NewPipeline("inline", "nodescription", "inline")
-	case CONTENT_REF_URL:
-		uriSegments := strings.Split(e.Path, "/")
-		pipelineName := strings.Join(uriSegments[2:], ".")
-		pipeline = config.NewPipeline(pipelineName, "nodescription", e.Path)
-	case CONTENT_REF_FS:
-		filename := filepath.Base(e.Path)
-		extension := filepath.Ext(filename)
-		pipelineName := filename[0 : len(filename)-len(extension)]
-		pipeline = config.NewPipeline(pipelineName, "nodescription", e.Path)
-	}
-
-	if e.PipelineName != "" {
-		pipeline.Name = e.PipelineName
-	}
 	if e.PipelineUuid != "" {
 		pipeline.Uuid = e.PipelineUuid
 	}
 
-	return *pipeline
+	if e.PipelineName != "" {
+		pipeline.Label = e.PipelineName
+	}
+
+	switch e.Kind {
+	case CONTENT_INLINE:
+		pipeline.Label = "inline"
+		pipeline.ConfigLocation = "inline"
+	case CONTENT_REF_URL:
+		uriSegments := strings.Split(e.Path, "/")
+		pipelineName := strings.Join(uriSegments[2:], ".")
+		pipeline.Label = pipelineName
+		pipeline.ConfigLocation = e.Path
+	case CONTENT_REF_FS:
+		filename := filepath.Base(e.Path)
+		extension := filepath.Ext(filename)
+		pipelineName := filename[0 : len(filename)-len(extension)]
+		pipeline.Label = pipelineName
+		pipeline.ConfigLocation = e.Path
+	}
+
+	agents, err := e.agents()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range agents {
+		pipeline.AddAgent(a)
+	}
+
+	// pipeline.Dagents()
+	return pipeline, nil
 }
 
+// ConfigPipeline returns a core Pipeline from entrypoint's definition
+// func (e *Entrypoint) ConfigPipeline() config.Pipeline {
+// 	var pipeline *config.Pipeline
+
+// 	switch e.Kind {
+// 	case CONTENT_INLINE:
+// 		pipeline = config.NewPipeline("inline", "nodescription", "inline")
+// 	case CONTENT_REF_URL:
+// 		uriSegments := strings.Split(e.Path, "/")
+// 		pipelineName := strings.Join(uriSegments[2:], ".")
+// 		pipeline = config.NewPipeline(pipelineName, "nodescription", e.Path)
+// 	case CONTENT_REF_FS:
+// 		filename := filepath.Base(e.Path)
+// 		extension := filepath.Ext(filename)
+// 		pipelineName := filename[0 : len(filename)-len(extension)]
+// 		pipeline = config.NewPipeline(pipelineName, "nodescription", e.Path)
+// 	}
+
+// 	if e.PipelineName != "" {
+// 		pipeline.Name = e.PipelineName
+// 	}
+// 	if e.PipelineUuid != "" {
+// 		pipeline.Uuid = e.PipelineUuid
+// 	}
+
+// 	return *pipeline
+// }
+
 // ConfigPipeline returns core agents from entrypoint's definition
-func (e *Entrypoint) ConfigAgents() ([]config.Agent, error) {
-	var agents []config.Agent
+func (e *Entrypoint) agents() ([]core.Agent, error) {
+	var agents []core.Agent
 	var content []byte
 	var err error
 	var cwd string

@@ -6,13 +6,12 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/processors"
 )
 
 type ProcessorFactory func() processors.Processor
 
-type agent struct {
+type Agent struct {
 	ID               int
 	Label            string
 	processor        processors.Processor
@@ -20,53 +19,68 @@ type agent struct {
 	outputs          map[int][]chan *event
 	Done             chan bool
 	concurentProcess int
-	conf             config.Agent
+	// conf             config.Agent
+
+	Sources         []string `json:"sources"`
+	AgentSources    PortList
+	AgentRecipients PortList
+	Type            string `json:"type"`
+	Schedule        string `json:"schedule"`
+	Trace           bool   `json:"trace"`
+	PoolSize        int    `json:"pool_size"`
+	PipelineName    string
+	PipelineUUID    string
+	Buffer          int `json:"buffer_size"`
+	Options         map[string]interface{}
+	Wd              string
 }
 
-func NewAgent(conf config.Agent) (*agent, error) {
-	return newAgent(conf)
+var agentIndex int = 0
+
+func NewAgent() Agent {
+	agentIndex++
+	return Agent{
+		ID: agentIndex,
+	}
 }
 
 // build an agent and return its input chan
-func newAgent(conf config.Agent) (*agent, error) {
+func buildAgent(conf *Agent) error {
 	// Check that the agent's processor type is supported
 	if _, ok := availableProcessorsFactory[conf.Type]; !ok {
-		return nil, fmt.Errorf("Processor %s not found", conf.Type)
+		return fmt.Errorf("Processor %s not found", conf.Type)
 	}
 
 	// Create a new Processor processor
 	proc := availableProcessorsFactory[conf.Type]()
 	if proc == nil {
-		return nil, fmt.Errorf("Can not start processor %s", conf.Type)
+		return fmt.Errorf("Can not start processor %s", conf.Type)
 	}
 
-	a := &agent{
-		packetChan: make(chan *event, conf.Buffer),
-		outputs:    map[int][]chan *event{},
-		processor:  proc,
-		Done:       make(chan bool),
-		conf:       conf,
-	}
+	conf.packetChan = make(chan *event, conf.Buffer)
+	conf.outputs = map[int][]chan *event{}
+	conf.processor = proc
+	conf.Done = make(chan bool)
+	conf.Options = conf.Options
 
 	// Configure the agent (and its processor)
-	if err := a.configure(&conf); err != nil {
-		return nil, fmt.Errorf("Can not configure agent %s : %v", conf.Type, err)
+	if err := conf.configure(); err != nil {
+		return fmt.Errorf("Can not configure agent %s : %v", conf.Type, err)
 	}
 
-	return a, nil
+	return nil
 }
 
-func (a *agent) configure(conf *config.Agent) error {
-	a.ID = conf.ID
-	a.Label = conf.Label
-	a.processor.SetPipelineUUID(a.conf.PipelineUUID)
+func (a *Agent) configure() error {
+
+	a.processor.SetPipelineUUID(a.PipelineUUID)
 
 	ctx := processorContext{}
 	ctx.logger = NewLogger("pipeline",
 		map[string]interface{}{
-			"processor_type":  conf.Type,
-			"pipeline_uuid":   conf.PipelineUUID,
-			"processor_label": conf.Label,
+			"processor_type":  a.Type,
+			"pipeline_uuid":   a.PipelineUUID,
+			"processor_label": a.Label,
 		},
 	)
 
@@ -74,13 +88,13 @@ func (a *agent) configure(conf *config.Agent) error {
 	// 	data["pipeline_uuid"] = pipelineUUID
 	// 	data["processor_label"] = proc_label
 	ctx.packetBuilder = newPacket
-	ctx.dataLocation = filepath.Join(dataLocation, conf.Type)
-	ctx.configWorkingLocation = conf.Wd
-	ctx.memory = myMemory.Space(conf.Type)
-	ctx.webHook = newWebHook(conf.PipelineName, conf.Label)
+	ctx.dataLocation = filepath.Join(dataLocation, a.Type)
+	ctx.configWorkingLocation = a.Wd
+	ctx.memory = myMemory.Space(a.Type)
+	ctx.webHook = newWebHook(a.PipelineName, a.Label)
 
 	var err error
-	ctx.store, err = Storage().NewProcessorStorage(conf.Type)
+	ctx.store, err = Storage().NewProcessorStorage(a.Type)
 	if err != nil {
 		Log().Errorf("Storage error : %s", err.Error())
 	}
@@ -92,32 +106,32 @@ func (a *agent) configure(conf *config.Agent) error {
 		}
 	}
 
-	return a.processor.Configure(ctx, conf.Options)
+	return a.processor.Configure(ctx, a.Options)
 }
 
-func (a *agent) traceEvent(way string, packet processors.IPacket, portNumbers ...int) {
+func (a *Agent) traceEvent(way string, packet processors.IPacket, portNumbers ...int) {
 	verb := "received"
 	if way == "OUT" {
 		verb = "sent"
 	}
 	Log().e.WithFields(
 		map[string]interface{}{
-			"processor_type":  a.conf.Type,
-			"pipeline_uuid":   a.conf.PipelineUUID,
-			"processor_label": a.conf.Label,
+			"processor_type":  a.Type,
+			"pipeline_uuid":   a.PipelineUUID,
+			"processor_label": a.Label,
 			"event":           packet.Fields().Old(),
 			"ports":           portNumbers,
 			"trace":           way,
 		},
-	).Info(verb + " event by " + a.conf.Label + " on pipeline '" + a.conf.PipelineName + "'")
+	).Info(verb + " event by " + a.Label + " on pipeline '" + a.PipelineName + "'")
 }
 
-func (a *agent) send(packet processors.IPacket, portNumbers ...int) bool {
+func (a *Agent) send(packet processors.IPacket, portNumbers ...int) bool {
 	if len(portNumbers) == 0 {
 		portNumbers = []int{0}
 	}
 
-	if a.conf.Trace {
+	if a.Trace {
 		a.traceEvent("OUT", packet, portNumbers...)
 	}
 
@@ -126,32 +140,32 @@ func (a *agent) send(packet processors.IPacket, portNumbers ...int) bool {
 	for _, portNumber := range portNumbers {
 		if len(a.outputs[portNumber]) == 1 {
 			a.outputs[portNumber][0] <- packet.(*event)
-			metrics.increment(METRIC_PROC_OUT, a.conf.PipelineName, a.Label)
+			metrics.increment(METRIC_PROC_OUT, a.PipelineName, a.Label)
 		} else {
 			// do not use go routine nor waitgroup as it slow down the processing
 			for _, out := range a.outputs[portNumber] {
 				// Clone() is a time killer
 				// TODO : failback if out does not take out packet on x ms (share on a bitfanSlave)
 				out <- packet.Clone().(*event)
-				metrics.increment(METRIC_PROC_OUT, a.conf.PipelineName, a.Label)
+				metrics.increment(METRIC_PROC_OUT, a.PipelineName, a.Label)
 			}
 		}
 	}
 	return true
 }
 
-func (a *agent) addOutput(in chan *event, portNumber int) error {
+func (a *Agent) addOutput(in chan *event, portNumber int) error {
 	a.outputs[portNumber] = append(a.outputs[portNumber], in)
 	return nil
 }
 
 // Start agent
-func (a *agent) start() error {
+func (a *Agent) start() error {
 	// Start processor
 	a.processor.Start(newPacket("start", map[string]interface{}{}))
 
 	// Maximum number of concurent packet consumption ?
-	var maxConcurentPackets = a.conf.PoolSize
+	var maxConcurentPackets = a.PoolSize
 
 	if a.processor.MaxConcurent() > 0 && maxConcurentPackets > a.processor.MaxConcurent() {
 		maxConcurentPackets = a.processor.MaxConcurent()
@@ -171,22 +185,22 @@ func (a *agent) start() error {
 
 		Log().Debugf("processor (%d) - stopping (no more packets)", a.ID)
 		if err := a.processor.Stop(newPacket("", nil)); err != nil {
-			Log().Errorf("%s %d : %v", a.conf.Type, a.ID, err)
+			Log().Errorf("%s %d : %v", a.Type, a.ID, err)
 		}
 		close(a.Done)
 		Log().Debugf("processor (%d) - stopped", a.ID)
 	}(maxConcurentPackets)
 
 	// Register scheduler if needed
-	if a.conf.Schedule != "" {
-		Log().Debugf("agent %s : schedule=%s", a.Label, a.conf.Schedule)
-		err := myScheduler.Add(a.Label, a.conf.Schedule, func() {
+	if a.Schedule != "" {
+		Log().Debugf("agent %s : schedule=%s", a.Label, a.Schedule)
+		err := myScheduler.Add(a.Label, a.Schedule, func() {
 			go a.processor.Tick(newPacket("", nil))
 		})
 		if err != nil {
 			Log().Errorf("schedule start failed - %s : %v", a.Label, err)
 		} else {
-			Log().Debugf("agent %s(%s) scheduled with %s", a.Label, a.ID, a.conf.Schedule)
+			Log().Debugf("agent %s(%s) scheduled with %s", a.Label, a.ID, a.Schedule)
 		}
 	}
 
@@ -194,25 +208,25 @@ func (a *agent) start() error {
 }
 
 // listen plugs the agent processor to its event chan
-func (a *agent) listen(wg *sync.WaitGroup) {
+func (a *Agent) listen(wg *sync.WaitGroup) {
 	Log().Debugf("Starting EventLoop on %d-%s", a.ID, a.Label)
 	for e := range a.packetChan {
 		// Receive a work request.
-		metrics.set(METRIC_CONNECTION_TRANSIT, a.conf.PipelineName, a.Label, len(a.packetChan))
+		metrics.set(METRIC_CONNECTION_TRANSIT, a.PipelineName, a.Label, len(a.packetChan))
 
-		if a.conf.Trace {
+		if a.Trace {
 			a.traceEvent("IN", e, 0)
 		}
 
 		if err := a.processor.Receive(e); err != nil {
-			Log().Errorf("agent %s: %v", a.conf.Type, err)
+			Log().Errorf("agent %s: %v", a.Type, err)
 		}
-		metrics.increment(METRIC_PROC_IN, a.conf.PipelineName, a.Label)
+		metrics.increment(METRIC_PROC_IN, a.PipelineName, a.Label)
 	}
 	wg.Done()
 }
 
-func (a *agent) stop() {
+func (a *Agent) stop() {
 	myScheduler.Remove(a.Label)
 	Log().Debugf("agent %d schedule job removed", a.ID)
 
@@ -229,10 +243,10 @@ func (a *agent) stop() {
 	Log().Debugf("Processor %s stopped", a.Label)
 }
 
-func (a *agent) pause() {
+func (a *Agent) pause() {
 
 }
 
-func (a *agent) resume() {
+func (a *Agent) resume() {
 
 }

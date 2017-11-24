@@ -13,7 +13,6 @@ import (
 
 	"github.com/justinas/alice"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/core/store"
 )
 
@@ -153,24 +152,6 @@ func Start(opt Options) {
 	Log().Debugln("bitfan started")
 }
 
-// StartPipeline load all agents form a configPipeline and returns pipeline's ID
-func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent) (string, error) {
-	p, err := newPipeline(configPipeline, configAgents)
-	if err != nil {
-		return "", err
-	}
-	if _, ok := pipelines.Load(p.Uuid); ok {
-		// a pipeline with same uuid is already running
-		return "", fmt.Errorf("a pipeline with uuid %s is already running", p.Uuid)
-	}
-
-	pipelines.Store(p.Uuid, p)
-
-	err = p.start()
-
-	return p.Uuid, err
-}
-
 func StopPipeline(Uuid string) error {
 	var err error
 	if p, ok := pipelines.Load(Uuid); ok {
@@ -196,7 +177,12 @@ func Stop() error {
 	})
 
 	for _, Uuid := range Uuids {
-		err := StopPipeline(Uuid)
+		p, ok := GetPipeline(Uuid)
+		if !ok {
+			Log().Error("Stop Pipeline - pipeline " + Uuid + " not found")
+			continue
+		}
+		err := p.Stop()
 		if err != nil {
 			Log().Error(err)
 		}

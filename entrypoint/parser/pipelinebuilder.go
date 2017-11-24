@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/vjeantet/bitfan/core/config"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/entrypoint/parser/logstash"
 )
 
-var entryPointContent func(string, string,map[string]interface{}) ([]byte, string, error)
+var entryPointContent func(string, string, map[string]interface{}) ([]byte, string, error)
 
-func parseConfigLocation(path string, options map[string]interface{}, pwd string, pickSections ...string) ([]config.Agent, error) {
+func parseConfigLocation(path string, options map[string]interface{}, pwd string, pickSections ...string) ([]core.Agent, error) {
 	if path == "" {
-		return []config.Agent{}, fmt.Errorf("no location provided to get content from ; options=%v ", options)
+		return []core.Agent{}, fmt.Errorf("no location provided to get content from ; options=%v ", options)
 	}
 
-	content, cwd, err := entryPointContent(path, pwd,options)
+	content, cwd, err := entryPointContent(path, pwd, options)
 
 	if err != nil {
 		return nil, err
@@ -26,14 +26,14 @@ func parseConfigLocation(path string, options map[string]interface{}, pwd string
 	return agents, err
 }
 
-func BuildAgents(content []byte, pwd string, contentProvider func(string, string, map[string]interface{}) ([]byte, string, error)) ([]config.Agent, error) {
+func BuildAgents(content []byte, pwd string, contentProvider func(string, string, map[string]interface{}) ([]byte, string, error)) ([]core.Agent, error) {
 	entryPointContent = contentProvider
 	return buildAgents(content, pwd)
 }
 
-func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.Agent, error) {
+func buildAgents(content []byte, pwd string, pickSections ...string) ([]core.Agent, error) {
 	var i int
-	agentConfList := []config.Agent{}
+	agentConfList := []core.Agent{}
 	if len(pickSections) == 0 {
 		pickSections = []string{"input", "filter", "output"}
 	}
@@ -46,7 +46,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 		return agentConfList, err
 	}
 
-	outPorts := []config.Port{}
+	outPorts := []core.Port{}
 
 	if _, ok := LSConfiguration.Sections["input"]; ok && isInSlice("input", pickSections) {
 		for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["input"].Plugins); pluginIndex++ {
@@ -65,7 +65,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 	if _, ok := LSConfiguration.Sections["filter"]; ok && isInSlice("filter", pickSections) {
 		if _, ok := LSConfiguration.Sections["filter"]; ok {
 			for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["filter"].Plugins); pluginIndex++ {
-				var agents []config.Agent
+				var agents []core.Agent
 				i++
 				plugin := LSConfiguration.Sections["filter"].Plugins[pluginIndex]
 				agents, outPorts, err = buildFilterAgents(plugin, outPorts, pwd)
@@ -80,7 +80,7 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 
 	if _, ok := LSConfiguration.Sections["output"]; ok && isInSlice("output", pickSections) {
 		for pluginIndex := 0; pluginIndex < len(LSConfiguration.Sections["output"].Plugins); pluginIndex++ {
-			var agents []config.Agent
+			var agents []core.Agent
 			i++
 			plugin := LSConfiguration.Sections["output"].Plugins[pluginIndex]
 			agents, err = buildOutputAgents(plugin, outPorts, pwd)
@@ -96,10 +96,10 @@ func buildAgents(content []byte, pwd string, pickSections ...string) ([]config.A
 }
 
 // TODO : this should return ports to be able to use multiple path use
-func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]config.Agent, []config.Port, error) {
+func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]core.Agent, []core.Port, error) {
 
-	var agent config.Agent
-	agent = config.NewAgent()
+	var agent core.Agent
+	agent = core.NewAgent()
 	agent.Type = "input_" + plugin.Name
 	if plugin.Label == "" {
 		agent.Label = plugin.Name
@@ -121,7 +121,7 @@ func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]config.Agent, []co
 		codecs := map[int]interface{}{}
 		for i, codec := range plugin.Codecs {
 			if codec.Name != "" {
-				pcodec := config.NewCodec(codec.Name)
+				pcodec := core.NewCodec(codec.Name)
 				for _, setting := range codec.Settings {
 					pcodec.Options[setting.K] = setting.V
 					if setting.K == "role" {
@@ -149,15 +149,15 @@ func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]config.Agent, []co
 				}
 
 				// add agent "use" - set use agent Source as last From FileConfigAgents
-				inPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
+				inPort := core.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
 				agent.AgentSources = append(agent.AgentSources, inPort)
-				fileConfigAgents = append([]config.Agent{agent}, fileConfigAgents...)
+				fileConfigAgents = append([]core.Agent{agent}, fileConfigAgents...)
 
-				outPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
-				return fileConfigAgents, []config.Port{outPort}, nil
+				outPort := core.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
+				return fileConfigAgents, []core.Port{outPort}, nil
 			case []interface{}:
-				CombinedFileConfigAgents := []config.Agent{}
-				newOutPorts := []config.Port{}
+				CombinedFileConfigAgents := []core.Agent{}
+				newOutPorts := []core.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
 					fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "input", "filter")
@@ -169,7 +169,7 @@ func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]config.Agent, []co
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
 
 					// add agent "use" - set use agent Source as last From FileConfigAgents
-					inPort := config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
+					inPort := core.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0}
 					newOutPorts = append(newOutPorts, inPort)
 				}
 
@@ -177,10 +177,10 @@ func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]config.Agent, []co
 				agent.AgentSources = append(agent.AgentSources, newOutPorts...)
 
 				// add "use" plugin to combined pipelines
-				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
+				CombinedFileConfigAgents = append([]core.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, []config.Port{{AgentID: agent.ID, PortNumber: 0}}, nil
+				return CombinedFileConfigAgents, []core.Port{{AgentID: agent.ID, PortNumber: 0}}, nil
 			}
 		}
 	}
@@ -221,15 +221,15 @@ func buildInputAgents(plugin *logstash.Plugin, pwd string) ([]config.Agent, []co
 		}
 	}
 
-	outPort := config.Port{AgentID: agent.ID, PortNumber: 0}
-	return []config.Agent{agent}, []config.Port{outPort}, nil
+	outPort := core.Port{AgentID: agent.ID, PortNumber: 0}
+	return []core.Agent{agent}, []core.Port{outPort}, nil
 }
 
-func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, error) {
-	agent_list := []config.Agent{}
+func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []core.Port, pwd string) ([]core.Agent, error) {
+	agent_list := []core.Agent{}
 
-	var agent config.Agent
-	agent = config.NewAgent()
+	var agent core.Agent
+	agent = core.NewAgent()
 	agent.Type = "output_" + plugin.Name
 	if plugin.Label == "" {
 		agent.Label = plugin.Name
@@ -251,7 +251,7 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 		codecs := map[int]interface{}{}
 		for i, codec := range plugin.Codecs {
 			if codec.Name != "" {
-				pcodec := config.NewCodec(codec.Name)
+				pcodec := core.NewCodec(codec.Name)
 				for _, setting := range codec.Settings {
 					pcodec.Options[setting.K] = setting.V
 					if setting.K == "role" {
@@ -285,7 +285,7 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
-					inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
+					inPort := core.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 					firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 				}
 
@@ -293,7 +293,7 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 				return fileConfigAgents, nil
 
 			case []interface{}:
-				CombinedFileConfigAgents := []config.Agent{}
+				CombinedFileConfigAgents := []core.Agent{}
 				for _, p := range v.([]interface{}) {
 					fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "filter", "output")
 					if err != nil {
@@ -302,7 +302,7 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
-						inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
+						inPort := core.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 						firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 					}
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
@@ -314,9 +314,9 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 	}
 
 	// Plugin Sources
-	agent.AgentSources = config.PortList{}
+	agent.AgentSources = core.PortList{}
 	for _, sourceport := range lastOutPorts {
-		inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
+		inPort := core.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 		agent.AgentSources = append(agent.AgentSources, inPort)
 	}
 
@@ -336,7 +336,7 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 			agent.Options["expressions"].(map[int]string)[expressionIndex] = when.Expression
 
 			// recupérer le outport associé (expressionIndex)
-			expressionOutPorts := []config.Port{
+			expressionOutPorts := []core.Port{
 				{AgentID: agent.ID, PortNumber: expressionIndex},
 			}
 
@@ -344,7 +344,7 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 			// en utilisant le expressionOutPorts
 			for pi := 0; pi < len(when.Plugins); pi++ {
 				p := when.Plugins[pi]
-				var agents []config.Agent
+				var agents []core.Agent
 				var err error
 				// récupérer le dernier outport du plugin créé il devient expressionOutPorts
 				agents, err = buildOutputAgents(p, expressionOutPorts, pwd)
@@ -369,16 +369,16 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 	}
 
 	// ajoute l'agent à la liste des agents
-	agent_list = append([]config.Agent{agent}, agent_list...)
+	agent_list = append([]core.Agent{agent}, agent_list...)
 	return agent_list, nil
 }
 
-func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd string) ([]config.Agent, []config.Port, error) {
+func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []core.Port, pwd string) ([]core.Agent, []core.Port, error) {
 
-	agent_list := []config.Agent{}
+	agent_list := []core.Agent{}
 
-	var agent config.Agent
-	agent = config.NewAgent()
+	var agent core.Agent
+	agent = core.NewAgent()
 	agent.Type = plugin.Name
 	if plugin.Label == "" {
 		agent.Label = plugin.Name
@@ -401,7 +401,7 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 		codecs := map[int]interface{}{}
 		for i, codec := range plugin.Codecs {
 			if codec.Name != "" {
-				pcodec := config.NewCodec(codec.Name)
+				pcodec := core.NewCodec(codec.Name)
 				for _, setting := range codec.Settings {
 					pcodec.Options[setting.K] = setting.V
 					if setting.K == "role" {
@@ -431,18 +431,18 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 
 				firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 				for _, sourceport := range lastOutPorts {
-					inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
+					inPort := core.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 					firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 				}
 
-				newOutPorts := []config.Port{
+				newOutPorts := []core.Port{
 					{AgentID: fileConfigAgents[0].ID, PortNumber: 0},
 				}
 				return fileConfigAgents, newOutPorts, nil
 
 			case []interface{}:
-				CombinedFileConfigAgents := []config.Agent{}
-				newOutPorts := []config.Port{}
+				CombinedFileConfigAgents := []core.Agent{}
+				newOutPorts := []core.Port{}
 				for _, p := range v.([]interface{}) {
 					// contruire le pipeline a
 					fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "filter")
@@ -453,28 +453,28 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 					// connect pipeline a first agent Xsource to lastOutPorts output
 					firstUsedAgent := &fileConfigAgents[len(fileConfigAgents)-1]
 					for _, sourceport := range lastOutPorts {
-						inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
+						inPort := core.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 						firstUsedAgent.AgentSources = append(firstUsedAgent.AgentSources, inPort)
 					}
 					// save pipeline a for later return
 					CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
 					// save pipeline a outputs for later return
-					newOutPorts = append(newOutPorts, config.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0})
+					newOutPorts = append(newOutPorts, core.Port{AgentID: fileConfigAgents[0].ID, PortNumber: 0})
 				}
 
 				// connect all collected newOutPorts to "use" agent
 				agent.AgentSources = append(agent.AgentSources, newOutPorts...)
-				CombinedFileConfigAgents = append([]config.Agent{agent}, CombinedFileConfigAgents...)
+				CombinedFileConfigAgents = append([]core.Agent{agent}, CombinedFileConfigAgents...)
 
 				// return  pipeline a b c ... with theirs respectives outputs
-				return CombinedFileConfigAgents, []config.Port{{AgentID: agent.ID, PortNumber: 0}}, nil
+				return CombinedFileConfigAgents, []core.Port{{AgentID: agent.ID, PortNumber: 0}}, nil
 			}
 		}
 	}
 
 	// route = set a pipeline, but do not reconnect it
 	if plugin.Name == "route" {
-		CombinedFileConfigAgents := []config.Agent{}
+		CombinedFileConfigAgents := []core.Agent{}
 		for _, p := range agent.Options["path"].([]interface{}) {
 			fileConfigAgents, err := parseConfigLocation(p.(string), agent.Options, pwd, "filter", "output")
 			if err != nil {
@@ -483,7 +483,7 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 
 			// connect pipeline a last agent Xsource to lastOutPorts output
 			lastUsedAgent := &fileConfigAgents[0]
-			lastUsedAgent.AgentSources = append(lastUsedAgent.AgentSources, config.Port{AgentID: agent.ID, PortNumber: 0})
+			lastUsedAgent.AgentSources = append(lastUsedAgent.AgentSources, core.Port{AgentID: agent.ID, PortNumber: 0})
 
 			CombinedFileConfigAgents = append(CombinedFileConfigAgents, fileConfigAgents...)
 		}
@@ -491,10 +491,10 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 		// connect route to lastOutPorts
 		agent.AgentSources = append(agent.AgentSources, lastOutPorts...)
 		// add route to routeedpipelines
-		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []config.Agent{agent}...)
+		CombinedFileConfigAgents = append(CombinedFileConfigAgents, []core.Agent{agent}...)
 
 		// return untouched outputsPorts
-		return CombinedFileConfigAgents, []config.Port{{AgentID: agent.ID, PortNumber: 1}}, nil
+		return CombinedFileConfigAgents, []core.Port{{AgentID: agent.ID, PortNumber: 1}}, nil
 	}
 
 	// interval can be a number, a string number or a cron string pattern
@@ -534,20 +534,20 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 	}
 
 	// Plugin Sources
-	agent.AgentSources = config.PortList{}
+	agent.AgentSources = core.PortList{}
 	for _, sourceport := range lastOutPorts {
-		inPort := config.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
+		inPort := core.Port{AgentID: sourceport.AgentID, PortNumber: sourceport.PortNumber}
 		agent.AgentSources = append(agent.AgentSources, inPort)
 	}
 
 	// By Default Agents output to port 0
-	newOutPorts := []config.Port{
+	newOutPorts := []core.Port{
 		{AgentID: agent.ID, PortNumber: 0},
 	}
 
 	// Is this Plugin has conditional expressions ?
 	if len(plugin.When) > 0 {
-		outPorts_when := []config.Port{}
+		outPorts_when := []core.Port{}
 		// le plugin WHEn est $plugin
 		agent.Options["expressions"] = map[int]string{}
 		elseOK := false
@@ -560,7 +560,7 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 				elseOK = true
 			}
 			// recupérer le outport associé (expressionIndex)
-			expressionOutPorts := []config.Port{
+			expressionOutPorts := []core.Port{
 				{AgentID: agent.ID, PortNumber: expressionIndex},
 			}
 
@@ -568,7 +568,7 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 			// en utilisant le outportA
 			for pi := 0; pi < len(when.Plugins); pi++ {
 				p := when.Plugins[pi]
-				var agents []config.Agent
+				var agents []core.Agent
 				var err error
 				// récupérer le dernier outport du plugin créé il devient outportA
 				agents, expressionOutPorts, err = buildFilterAgents(p, expressionOutPorts, pwd)
@@ -587,7 +587,7 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 		// If no else expression was found, insert one
 		if elseOK == false {
 			agent.Options["expressions"].(map[int]string)[len(agent.Options["expressions"].(map[int]string))] = "true"
-			elseOutPorts := []config.Port{
+			elseOutPorts := []core.Port{
 				{AgentID: agent.ID, PortNumber: len(agent.Options["expressions"].(map[int]string)) - 1},
 			}
 			newOutPorts = append(elseOutPorts, newOutPorts...)
@@ -595,7 +595,7 @@ func buildFilterAgents(plugin *logstash.Plugin, lastOutPorts []config.Port, pwd 
 	}
 
 	// ajoute l'agent à la liste des agents
-	agent_list = append([]config.Agent{agent}, agent_list...)
+	agent_list = append([]core.Agent{agent}, agent_list...)
 	return agent_list, newOutPorts, nil
 }
 
