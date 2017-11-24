@@ -13,7 +13,7 @@ import (
 
 	"github.com/justinas/alice"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/vjeantet/bitfan/core/store"
+	"github.com/vjeantet/bitfan/store"
 )
 
 var (
