@@ -35,7 +35,7 @@
           "x-go-name": "Uuid"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     },
     "Error": {
       "description": "A Error is ....\n\nA Error can have.....",
@@ -47,7 +47,7 @@
           "x-go-name": "Message"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     },
     "Pipeline": {
       "description": "A Pipeline is ....\n\nA Pipeline can have.....",
@@ -100,7 +100,7 @@
           "x-go-name": "Uuid"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     },
     "processorDoc": {
       "description": "A Doc is ....\n\nA Doc can have.....",
@@ -198,7 +198,7 @@
           "x-go-name": "Ports"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/core/models"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     }
   }
 }
