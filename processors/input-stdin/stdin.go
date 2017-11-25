@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -85,7 +84,8 @@ func (p *processor) Start(e processors.IPacket) error {
 				if err == io.EOF {
 					p.Logger.Debugf("codec end of file", err.Error())
 					if p.opt.EofExit {
-						core.Stop()
+						// TODO core.Stop()
+						p.Logger.Fatalln("IMPLEMENT THIS")
 						p, _ := os.FindProcess(os.Getpid())
 						p.Signal(os.Interrupt)
 					}

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 	gomail "gopkg.in/gomail.v2"
 )
@@ -158,7 +158,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	// pp.Println("subject-->", subject)
 
 	if p.opt.Subject != "" {
-		loc, err := location.NewLocation(p.opt.Subject, p.ConfigWorkingLocation)
+		loc, err := commons.NewLocation(p.opt.Subject, p.ConfigWorkingLocation)
 		if err != nil {
 			p.Logger.Errorf("email subject template error : %v", err)
 			return err
@@ -174,7 +174,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if p.opt.HTMLBody != "" {
-		loc, err := location.NewLocation(p.opt.HTMLBody, p.ConfigWorkingLocation)
+		loc, err := commons.NewLocation(p.opt.HTMLBody, p.ConfigWorkingLocation)
 		if err != nil {
 			p.Logger.Errorf("email subject template error : %v", err)
 			return err
@@ -191,7 +191,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if p.opt.Body != "" {
-		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
+		loc, err := commons.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
 		if err != nil {
 			p.Logger.Errorf("email subject template error : %v", err)
 			return err

@@ -1,30 +1,4 @@
-package config
-
-type Agent struct {
-	ID              int      `json:"id"`
-	Label           string   `json:"label"`
-	Sources         []string `json:"sources"`
-	PipelineName    string
-	PipelineUUID    string
-	AgentSources    PortList
-	AgentRecipients PortList
-	Type            string                 `json:"type"`
-	Schedule        string                 `json:"schedule"`
-	Trace           bool                   `json:"trace"`
-	PoolSize        int                    `json:"pool_size"`
-	Buffer          int                    `json:"buffer_size"`
-	Options         map[string]interface{} `json:"options"`
-	Wd              string
-}
-
-var agentIndex int = 0
-
-func NewAgent() Agent {
-	agentIndex++
-	return Agent{
-		ID: agentIndex,
-	}
-}
+package core
 
 // Sort will return a sorted list of config.Agent,
 // it sorts agents by computing links dependencies between them
@@ -32,8 +6,8 @@ func NewAgent() Agent {
 // use sortOrder param config.SortInputsFirst to get agents which are not waiting events (no sources) firstly (like inputs)
 //
 // use sortOrder param config.SortOutputsFirst to get agents which are not sources of any other agents firstly (like outputs)
-func Sort(agentConflist []Agent, sortOrder int) []Agent {
-	sac := []Agent{}
+func Sort(agentConflist map[int]*Agent, sortOrder int) []*Agent {
+	sac := []*Agent{}
 	// sac = append(sac, agentConflist...)
 
 	var agentsDependencyGraph = graph{}
@@ -65,15 +39,8 @@ func Sort(agentConflist []Agent, sortOrder int) []Agent {
 	return sac
 }
 
-func Normalize(agentConf []Agent) []Agent {
-	for k := range agentConf {
-		agentConf[k].AgentRecipients = whoWaitForThisAgentID(agentConf[k].ID, agentConf)
-	}
-	return agentConf
-}
-
 // WhoWaitForThisAgentName returns agents recipients as portList
-func whoWaitForThisAgentID(ID int, agentConfigurations []Agent) PortList {
+func whoWaitForThisAgentID(ID int, agentConfigurations map[int]*Agent) PortList {
 	var recipentAgents = PortList{}
 
 	for _, agentConfiguration := range agentConfigurations {

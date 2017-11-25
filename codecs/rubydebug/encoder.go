@@ -7,7 +7,7 @@ import (
 
 	"github.com/k0kubun/pp"
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 	"gopkg.in/go-playground/validator.v8"
 )
 
@@ -16,7 +16,7 @@ type encoder struct {
 	w       io.Writer
 	options encoderOptions
 
-	log lib.Logger
+	log commons.Logger
 }
 
 // Encode options
@@ -30,7 +30,7 @@ func NewEncoder(w io.Writer) *encoder {
 	}
 }
 
-func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+func (e *encoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
 	e.log = logger
 
 	if err := mapstructure.Decode(conf, &e.options); err != nil {

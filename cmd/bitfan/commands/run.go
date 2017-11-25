@@ -58,8 +58,9 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 		if !viper.GetBool("no-network") {
 			opt.HttpHandlers = append(opt.HttpHandlers, core.HTTPHandler("/api/v2/", api.Handler("api/v2")))
+
 			if viper.IsSet("prometheus") {
-				opt.HttpHandlers = append(opt.HttpHandlers, core.PrometheusServer(viper.GetString("prometheus.path")))
+				opt.Prometheus = viper.GetString("prometheus.path")
 			}
 		}
 
@@ -116,20 +117,32 @@ When no configuration is passed to the command, bitfan use the config set in glo
 			}
 		}
 
-		for _, loc := range entrypoints.Items {
-			agt, err := loc.ConfigAgents()
-
+		for _, ep := range entrypoints.Items {
+			ppl, err := ep.Pipeline()
 			if err != nil {
-				core.Log().Errorf("Error : %s %v", loc.Path, err)
-				os.Exit(2)
+				core.Log().Fatalln(err)
 			}
-			ppl := loc.ConfigPipeline()
-			_, err = core.StartPipeline(&ppl, agt)
+
+			nUUID, err := ppl.Start()
 			if err != nil {
 				core.Log().Errorf("error: %v", err)
 				os.Exit(1)
 			}
-			core.Log().Infof("Pipeline started %s (%s)", ppl.Name, ppl.Uuid)
+			core.Log().Infof("Pipeline started %s (%s)(%s)", ppl.Label, ppl.Uuid, nUUID)
+
+			// agt, err := ep.ConfigAgents()
+
+			// if err != nil {
+			// 	core.Log().Errorf("Error : %s %v", ep.Path, err)
+			// 	os.Exit(2)
+			// }
+			// ppl := ep.ConfigPipeline()
+			// _, err = core.StartPipeline(&ppl, agt)
+			// if err != nil {
+			// 	core.Log().Errorf("error: %v", err)
+			// 	os.Exit(1)
+			// }
+			// core.Log().Infof("Pipeline started %s (%s)", ppl.Name, ppl.Uuid)
 		}
 
 		if service.Interactive() {

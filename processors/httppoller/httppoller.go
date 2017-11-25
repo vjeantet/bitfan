@@ -9,7 +9,7 @@ import (
 
 	"github.com/parnurzeal/gorequest"
 	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -86,7 +86,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
 
 	if p.opt.Body != "" {
-		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
+		loc, err := commons.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
 		if err != nil {
 			return err
 		}
@@ -181,11 +181,11 @@ func (p *processor) Receive(e processors.IPacket) error {
 		var record interface{}
 		if err = dec.Decode(&record); err != nil {
 			if err == io.EOF {
-				p.Logger.Warnln("error while http read docoding : ", err)
+				p.Logger.Debugln("error while http read docoding : ", err)
 			} else {
 				p.Logger.Errorln("error while http read docoding : ", err)
-				break
 			}
+			return nil
 		}
 
 		e2 := e.Clone()

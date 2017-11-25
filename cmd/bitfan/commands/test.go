@@ -6,8 +6,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/vjeantet/bitfan/core"
-	config "github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/entrypoint"
 )
 
@@ -58,17 +56,18 @@ var testCmd = &cobra.Command{
 }
 
 func testConfigContent(loc *entrypoint.Entrypoint) error {
-	configAgents, err := loc.ConfigAgents()
-	if err != nil {
-		return err
-	}
+	// TODO : refactor with pipeline
+	// configAgents, err := loc.ConfigAgents()
+	// if err != nil {
+	// 	return err
+	// }
 
-	configAgentsOrdered := config.Sort(configAgents, config.SortInputsFirst)
-	for _, configAgent := range configAgentsOrdered {
-		if _, err := core.NewAgent(configAgent); err != nil {
-			return err
-		}
-	}
+	// configAgentsOrdered := config.Sort(configAgents, config.SortInputsFirst)
+	// for _, configAgent := range configAgentsOrdered {
+	// 	if _, err := core.NewAgent(configAgent); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }

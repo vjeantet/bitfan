@@ -52,30 +52,6 @@ func Dynamic(str *string, fields *mxj.Map) {
 	}
 }
 
-func processCommonFields(data *mxj.Map,
-	add_fields map[string]interface{},
-	tags []string,
-	typevalue string,
-	remove_field []string,
-	remove_tag []string) {
-
-	if len(add_fields) > 0 {
-		AddFields(add_fields, data)
-	}
-	if len(tags) > 0 {
-		AddTags(tags, data)
-	}
-	if typevalue != "" {
-		SetType(typevalue, data)
-	}
-	if len(remove_field) > 0 {
-		RemoveFields(remove_field, data)
-	}
-	if len(remove_tag) > 0 {
-		RemoveTags(remove_tag, data)
-	}
-}
-
 func SetType(typevalue string, data *mxj.Map) {
 	Dynamic(&typevalue, data)
 	data.SetValueForPath(typevalue, "type")

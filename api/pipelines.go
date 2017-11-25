@@ -11,7 +11,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/core/models"
+	"github.com/vjeantet/bitfan/api/models"
 	"github.com/vjeantet/bitfan/entrypoint"
 	"github.com/vjeantet/jodaTime"
 )
@@ -108,16 +108,15 @@ func (p *PipelineApiController) startPipelineByUUID(UUID string) error {
 		return err
 	}
 
-	ppl := loc.ConfigPipeline()
-	ppl.Name = tPipeline.Label
-	ppl.Uuid = tPipeline.Uuid
-
-	agt, err := loc.ConfigAgents()
+	ppl, err := loc.Pipeline()
 	if err != nil {
 		return err
 	}
 
-	nUUID, err := core.StartPipeline(&ppl, agt)
+	ppl.Label = tPipeline.Label
+	ppl.Uuid = tPipeline.Uuid
+
+	nUUID, err := ppl.Start()
 	if err != nil {
 		return err
 	}

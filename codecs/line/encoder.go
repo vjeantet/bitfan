@@ -8,8 +8,7 @@ import (
 	"text/template"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/codecs/lib"
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 // doc encoder
@@ -18,7 +17,7 @@ type encoder struct {
 	options   encoderOptions
 	formatTpl *template.Template
 
-	log lib.Logger
+	log commons.Logger
 }
 
 // doc encoderOptions
@@ -50,7 +49,7 @@ func NewEncoder(w io.Writer) *encoder {
 	return e
 }
 
-func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+func (e *encoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
 	e.log = logger
 
 	if err := mapstructure.Decode(conf, &e.options); err != nil {
@@ -61,7 +60,7 @@ func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 
 		//TODO : add a location.TemplateWithOptions to return golang text/template
 
-		loc, err := location.NewLocation(e.options.Format, cwl)
+		loc, err := commons.NewLocation(e.options.Format, cwl)
 		if err != nil {
 			return err
 		}

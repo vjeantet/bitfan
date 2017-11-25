@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"text/template"
 
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -57,7 +57,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
-	loc, err := location.NewLocation(p.opt.Location, p.ConfigWorkingLocation)
+	loc, err := commons.NewLocation(p.opt.Location, p.ConfigWorkingLocation)
 	if err != nil {
 		return err
 	}

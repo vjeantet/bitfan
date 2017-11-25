@@ -4,23 +4,21 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
 	"golang.org/x/sync/syncmap"
 
-	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/spf13/viper"
 
-	"github.com/justinas/alice"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/vjeantet/bitfan/core/config"
-	"github.com/vjeantet/bitfan/core/store"
+	"github.com/vjeantet/bitfan/core/memory"
+	"github.com/vjeantet/bitfan/core/metrics"
+	"github.com/vjeantet/bitfan/core/webhook"
+	"github.com/vjeantet/bitfan/store"
 )
 
 var (
-	metrics     Metrics
+	myMetrics   metrics.Metrics
 	myScheduler *scheduler
-	myMemory    *memory
+	myMemory    *memory.Memory
 	myStore     *store.Store
 
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
@@ -31,12 +29,22 @@ var (
 
 type fnMux func(sm *http.ServeMux)
 
+type Options struct {
+	Host         string
+	HttpHandlers []fnMux
+	Debug        bool
+	VerboseLog   bool
+	LogFile      string
+	DataLocation string
+	Prometheus   string
+}
+
 func init() {
-	metrics = &MetricsVoid{}
+	myMetrics = metrics.New()
 	myScheduler = newScheduler()
 	myScheduler.Start()
 	//Init Store
-	myMemory = newMemory(dataLocation)
+	myMemory = memory.New()
 }
 
 // RegisterProcessor is called by the processor loader when the program starts
@@ -44,10 +52,6 @@ func init() {
 func RegisterProcessor(name string, procFact ProcessorFactory) {
 	Log().Debugf("%s processor registered", name)
 	availableProcessorsFactory[name] = procFact
-}
-
-func setMetrics(s Metrics) {
-	metrics = s
 }
 
 func setDataLocation(location string) error {
@@ -78,18 +82,6 @@ func setDataLocation(location string) error {
 	return err
 }
 
-func webHookServer() fnMux {
-	whPrefixURL = "/"
-	commonHandlers := alice.New(loggingHandler, recoverHandler)
-	return HTTPHandler("/", commonHandlers.ThenFunc(routerHandler))
-}
-
-// TODO : should be unexported
-func PrometheusServer(path string) fnMux {
-	setMetrics(NewPrometheus())
-	return HTTPHandler(path, prometheus.Handler())
-}
-
 // TODO : should be unexported
 func Storage() *store.Store {
 	return myStore
@@ -107,14 +99,7 @@ func listenAndServe(addr string, hs ...fnMux) {
 		h(httpServerMux)
 	}
 	go http.ListenAndServe(addr, httpServerMux)
-
-	addrSpit := strings.Split(addr, ":")
-	if addrSpit[0] == "0.0.0.0" {
-		addrSpit[0] = fqdn.Get()
-	}
-
-	baseURL = fmt.Sprintf("http://%s:%s", addrSpit[0], addrSpit[1])
-	Log().Infof("Ready to serve on %s", baseURL)
+	Log().Infof("Ready to serve on %s", addr)
 }
 
 func Start(opt Options) {
@@ -135,31 +120,20 @@ func Start(opt Options) {
 		panic(err.Error())
 	}
 
+	if opt.Prometheus != "" {
+		m := metrics.NewPrometheus(opt.Prometheus)
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler(m.Path, m.HTTPHandler()))
+		myMetrics = m
+	}
+
 	if len(opt.HttpHandlers) > 0 {
-		opt.HttpHandlers = append(opt.HttpHandlers, webHookServer())
+		webhook.Log = logger
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/", webhook.Handler(opt.Host)))
 
 		listenAndServe(opt.Host, opt.HttpHandlers...)
 	}
 
 	Log().Debugln("bitfan started")
-}
-
-// StartPipeline load all agents form a configPipeline and returns pipeline's ID
-func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent) (string, error) {
-	p, err := newPipeline(configPipeline, configAgents)
-	if err != nil {
-		return "", err
-	}
-	if _, ok := pipelines.Load(p.Uuid); ok {
-		// a pipeline with same uuid is already running
-		return "", fmt.Errorf("a pipeline with uuid %s is already running", p.Uuid)
-	}
-
-	pipelines.Store(p.Uuid, p)
-
-	err = p.start()
-
-	return p.Uuid, err
 }
 
 func StopPipeline(Uuid string) error {
@@ -187,13 +161,18 @@ func Stop() error {
 	})
 
 	for _, Uuid := range Uuids {
-		err := StopPipeline(Uuid)
+		p, ok := GetPipeline(Uuid)
+		if !ok {
+			Log().Error("Stop Pipeline - pipeline " + Uuid + " not found")
+			continue
+		}
+		err := p.Stop()
 		if err != nil {
 			Log().Error(err)
 		}
 	}
 
-	myMemory.close()
+	myMemory.Close()
 	myStore.Close()
 	return nil
 }

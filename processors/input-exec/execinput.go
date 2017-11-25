@@ -73,6 +73,10 @@ func (p *processor) Tick(e processors.IPacket) error {
 
 	var dec codecs.Decoder
 	pr, pw := io.Pipe()
+	defer func() {
+		pr.Close()
+		pw.Close()
+	}()
 
 	if dec, err = p.opt.Codec.NewDecoder(pr); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
@@ -88,7 +92,13 @@ func (p *processor) Tick(e processors.IPacket) error {
 		for dec.More() {
 			var record interface{}
 			if err := dec.Decode(&record); err != nil {
-				return err
+				if err == io.EOF {
+					p.Logger.Debugln("error while exec docoding : ", err)
+					return nil
+				} else {
+					p.Logger.Errorln("error while exec docoding : ", err)
+					return err
+				}
 			} else {
 				ne := p.NewPacket(data, map[string]interface{}{
 					"host": p.host,
@@ -111,8 +121,6 @@ func (p *processor) Tick(e processors.IPacket) error {
 	}()
 
 	err = cmd.Wait()
-	pw.Close()
-
 	// -----
 
 	if err != nil {

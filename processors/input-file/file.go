@@ -9,6 +9,7 @@ package file
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -289,7 +290,13 @@ func (p *processor) readfile(pathfile string) error {
 
 		var record interface{}
 		if err := dec.Decode(&record); err != nil {
-			return err
+			if err == io.EOF {
+				p.Logger.Debugln("error while exec docoding : ", err)
+				return nil
+			} else {
+				p.Logger.Errorln("error while exec docoding : ", err)
+				return err
+			}
 		} else {
 			var e processors.IPacket
 			switch v := record.(type) {
