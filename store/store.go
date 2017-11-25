@@ -11,15 +11,16 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/timshannon/bolthold"
 	"github.com/vjeantet/bitfan/api/models"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 type Store struct {
 	db              *bolthold.Store
 	pipelineTmpPath string
-	log             Logger
+	log             commons.Logger
 }
 
-func New(location string, log Logger) (*Store, error) {
+func New(location string, log commons.Logger) (*Store, error) {
 	database, err := bolthold.Open(filepath.Join(location, "bitfan.bolt.db"), 0666, nil)
 	pipelineTmpPath := filepath.Join(location, "_pipelines")
 
