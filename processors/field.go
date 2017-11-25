@@ -21,7 +21,7 @@ var maskTimePattern *regexp.Regexp
 
 func init() {
 	maskTimePattern, _ = regexp.Compile(`%\{\+([^\}]+)\}`)
-	maskPattern, _ = regexp.Compile(`%\{\[?([^\}]+[^\]])\]?\}`)
+	maskPattern, _ = regexp.Compile(`%\{\[?([^\}]*[^\]])\]?\}`)
 }
 
 // Dynamic includes field value in place of %{key.path}
