@@ -2,5 +2,6 @@ coverage:
   ignore:
     - cmd/bitfanUI/server/assets.go
     - processors/**/docdoc.go
+
   status:
     patch: no
