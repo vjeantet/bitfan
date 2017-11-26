@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/k0kubun/pp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,7 +60,6 @@ func TestBuildAgentsComplexURL(t *testing.T) {
 func TestBuildAgentsUse(t *testing.T) {
 	f, err := os.Open("testdata/use/main.conf")
 	ewl, _ := filepath.Abs(filepath.Dir(f.Name()))
-	pp.Println(ewl)
 	defer f.Close()
 	responseData, _ := ioutil.ReadAll(f)
 
