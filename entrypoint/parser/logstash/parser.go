@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -327,38 +326,6 @@ func (p *Parser) parsePlugin(tok *token) (*Plugin, error) {
 	return plugin, err
 }
 
-func (p *Parser) parseCodecSettings(tok *token) (map[int]*Setting, error) {
-	var err error
-	settings := make(map[int]*Setting)
-
-	i := 0
-	for {
-		*tok, err = p.getToken(TokenComment, TokenString, TokenRCurlyBrace)
-		if err != nil {
-			return settings, err
-		}
-
-		if tok.Kind == TokenRCurlyBrace {
-			break
-		}
-
-		switch tok.Kind {
-		case TokenComment:
-			continue
-		case TokenString:
-			setting, err := p.parseSetting(tok)
-			if err != nil {
-				return settings, err
-			}
-			settings[i] = setting
-			i = i + 1
-			continue
-		}
-
-	}
-	return settings, err
-}
-
 func (p *Parser) parseCodec(tok *token) (*Codec, *token, error) {
 	var err error
 
@@ -448,40 +415,6 @@ func (p *Parser) parseSetting(tok *token) (*Setting, error) {
 
 }
 
-func (p *Parser) parseBool(txt string) interface{} {
-	var v interface{}
-	// var err error
-	if txt == "true" {
-		v = true
-	} else {
-		v = false
-	}
-	return v
-}
-
-func (p *Parser) parseNumber(txt string) (interface{}, error) {
-	var v interface{}
-	var err error
-	if strings.Contains(txt, ".") {
-		v, err = strconv.ParseFloat(txt, 64)
-	} else {
-		v, err = strconv.ParseInt(txt, 10, 64)
-	}
-	return v, err
-}
-
-func (p *Parser) parseString(txt string) string {
-	var v string
-	if strings.HasPrefix(txt, "\"") {
-		v = strings.Replace(txt, "\\", "", -1)
-		v = strings.TrimPrefix(v, "\"")
-		v = strings.TrimSuffix(v, "\"")
-	} else {
-		v = txt
-	}
-	return v
-}
-
 func (p *Parser) parseHash() (map[string]interface{}, error) {
 	hash := map[string]interface{}{}
 	for {
@@ -539,10 +472,6 @@ func (p *Parser) parseArray() ([]interface{}, error) {
 	}
 
 	return vals, nil
-}
-
-func (p *Parser) rewindToken() error {
-	return nil
 }
 
 func (p *Parser) getToken(types ...tokenKind) (token, error) {

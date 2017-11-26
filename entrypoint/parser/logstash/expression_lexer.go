@@ -235,6 +235,6 @@ func lexIdent(l *lexer.L) lexer.StateFunc {
 		return nil
 	}
 
-	l.Emit(FUNCTION)
+	l.Emit(FUNCTION) // Function can be anything else
 	return lexIdent
 }

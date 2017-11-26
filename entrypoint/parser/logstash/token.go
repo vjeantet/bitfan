@@ -15,7 +15,7 @@ type token struct {
 type tokenKind int
 
 const (
-	TokenIllegal     tokenKind = iota + 1
+	TokenIllegal tokenKind = iota + 1
 	TokenEOF
 	TokenAssignment
 	TokenLCurlyBrace
