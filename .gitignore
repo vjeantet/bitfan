@@ -64,3 +64,5 @@ releases
 /cmd/bitfan/notes.md
 
 /.idea/
+
+/coverage.txt
