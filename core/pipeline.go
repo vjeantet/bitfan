@@ -95,3 +95,7 @@ func (p *Pipeline) stop() error {
 	}
 	return nil
 }
+
+func (p *Pipeline) Agents() map[int]*Agent{
+	return p.agents
+}

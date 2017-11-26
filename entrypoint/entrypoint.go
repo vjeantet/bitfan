@@ -24,6 +24,7 @@ const (
 
 // Entrypoint is a the pipeline's definition ressource
 type Entrypoint struct {
+	FullPath     string
 	Path         string
 	Kind         int // Kind of content
 	Workingpath  string
@@ -57,24 +58,29 @@ func New(contentValue string, cwl string, contentKind int) (*Entrypoint, error) 
 	if v, _ := url.Parse(contentValue); v.Scheme == "http" || v.Scheme == "https" {
 		loc.Kind = CONTENT_REF_URL
 		loc.Path = contentValue
+		loc.FullPath = loc.Path
 	} else if _, err := os.Stat(contentValue); err == nil {
 		var err error
 		loc.Kind = CONTENT_REF_FS
 		loc.Path, err = filepath.Abs(contentValue)
+		loc.FullPath = loc.Path
 		if err != nil {
 			return loc, err
 		}
 	} else if _, err := os.Stat(filepath.Join(cwl, contentValue)); err == nil {
 		loc.Kind = CONTENT_REF_FS
-		loc.Path = filepath.Join(cwl, contentValue)
+		loc.Path = contentValue
+		loc.FullPath, err = filepath.Abs(filepath.Join(cwl, contentValue))
 	} else if v, _ := url.Parse(cwl); v.Scheme == "http" || v.Scheme == "https" {
 		loc.Kind = CONTENT_REF_URL
 		loc.Path = cwl + contentValue
+		loc.FullPath = cwl + contentValue
 	} else {
 		return nil, fmt.Errorf("can not find any configuration contentValue=%s, cwl=%s", contentValue, cwl)
 	}
 
 	loc.Workingpath = cwl
+
 	return loc, nil
 }
 
@@ -114,10 +120,6 @@ func (e *Entrypoint) Pipeline() (*core.Pipeline, error) {
 		pipeline.Uuid = e.PipelineUuid
 	}
 
-	if e.PipelineName != "" {
-		pipeline.Label = e.PipelineName
-	}
-
 	switch e.Kind {
 	case CONTENT_INLINE:
 		pipeline.Label = "inline"
@@ -126,13 +128,18 @@ func (e *Entrypoint) Pipeline() (*core.Pipeline, error) {
 		uriSegments := strings.Split(e.Path, "/")
 		pipelineName := strings.Join(uriSegments[2:], ".")
 		pipeline.Label = pipelineName
-		pipeline.ConfigLocation = e.Path
+		pipeline.ConfigLocation = e.FullPath
 	case CONTENT_REF_FS:
 		filename := filepath.Base(e.Path)
 		extension := filepath.Ext(filename)
-		pipelineName := filename[0 : len(filename)-len(extension)]
-		pipeline.Label = pipelineName
-		pipeline.ConfigLocation = e.Path
+
+		if e.PipelineName != "" {
+			pipeline.Label = e.PipelineName
+		} else {
+			pipeline.Label = filename[0 : len(filename)-len(extension)]
+		}
+
+		pipeline.ConfigLocation = e.FullPath
 	}
 
 	agents, err := e.agents()
@@ -211,7 +218,7 @@ func (e *Entrypoint) content(options map[string]interface{}) ([]byte, string, er
 		cwl = e.Workingpath
 
 	case CONTENT_REF_URL:
-		response, err := http.Get(e.Path)
+		response, err := http.Get(e.FullPath)
 		if err != nil {
 			return content, cwl, err
 		} else {
@@ -226,17 +233,17 @@ func (e *Entrypoint) content(options map[string]interface{}) ([]byte, string, er
 		cwl = strings.Join(uriSegments[:len(uriSegments)-1], "/") + "/"
 
 	case CONTENT_REF_FS:
-
+		// tmpPath := e.FullPath
 		// relative .Path ?
-		if false == filepath.IsAbs(e.Path) {
-			e.Path = filepath.Join(e.Workingpath, e.Path)
-		}
+		// if false == filepath.IsAbs(e.FullPath) {
+		// 	tmpPath = filepath.Join(e.Workingpath, e.Path)
+		// }
 
-		content, err = ioutil.ReadFile(e.Path)
+		content, err = ioutil.ReadFile(e.FullPath)
 		if err != nil {
-			return content, cwl, fmt.Errorf(`Error while reading "%s" [%v]`, e.Path, err)
+			return content, cwl, fmt.Errorf(`Error while reading "%s" [%v]`, e.FullPath, err)
 		}
-		cwl = filepath.Dir(e.Path)
+		cwl = filepath.Dir(e.FullPath)
 	}
 
 	// find ${FOO:default value} and replace with
