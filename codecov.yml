@@ -1,3 +1,5 @@
 coverage:
+  ignore:
+    - cmd/bitfanUI/server/assets.go
   status:
     patch: no
