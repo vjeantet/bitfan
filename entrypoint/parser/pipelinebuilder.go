@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/entrypoint/parser/logstash"
 )
@@ -480,7 +479,6 @@ func buildWhenBranch(agent *core.Agent, Whens map[int]*logstash.When, sectionTyp
 				agents, expressionOutPorts, err = buildFilterAgents(p, expressionOutPorts, agent.Wd)
 			} else if sectionType == "output" {
 				agents, _, err = buildOutputAgents(p, expressionOutPorts, agent.Wd)
-				pp.Println("agents-->", agents)
 			}
 
 			if err != nil {
