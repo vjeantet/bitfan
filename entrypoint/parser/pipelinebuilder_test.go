@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -90,4 +91,17 @@ func entrypointContentFS(path string, cwl string, options map[string]interface{}
 	ewl = filepath.Dir(pathFix)
 
 	return content, ewl, err
+}
+
+func TestParseConfigLocationEmptyPath(t *testing.T) {
+	_, err := parseConfigLocation("", nil, "")
+	assert.Error(t, err)
+}
+
+func TestParseConfigLocationEntryPointContentError(t *testing.T) {
+	entryPointContent = func(string, string, map[string]interface{}) ([]byte, string, error) {
+		return nil, "", fmt.Errorf("error")
+	}
+	_, err := parseConfigLocation("null", nil, "")
+	assert.Error(t, err)
 }
