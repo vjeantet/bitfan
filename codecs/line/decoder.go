@@ -35,6 +35,18 @@ func NewDecoder(r io.Reader) *decoder {
 		},
 	}
 
+	d.r.Split(bufio.ScanLines)
+
+	return d
+}
+
+func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
+	d.log = logger
+
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
+	}
+
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		// Return nothing if at end of file and no data passed
 		if atEOF && len(data) == 0 {
@@ -55,19 +67,10 @@ func NewDecoder(r io.Reader) *decoder {
 		return 0, nil, nil
 	}
 
-	if d.options.Delimiter == "\n" {
-		d.r.Split(bufio.ScanLines)
-	} else {
+	if d.options.Delimiter != "\n" {
 		d.r.Split(split)
 	}
-
-	return d
-}
-
-func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
-	d.log = logger
-
-	return mapstructure.Decode(conf, &d.options)
+	return nil
 }
 
 func (d *decoder) Decode(v *interface{}) error {
