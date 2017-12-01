@@ -85,7 +85,6 @@ func readToken(stream *lexerStream) (token, error) {
 		if isNumeric(character) {
 
 			tokenString = readTokenUntilFalse(stream, isNumeric)
-
 			if strings.Contains(tokenString, ".") {
 				tokenValue, err = strconv.ParseFloat(tokenString, 64)
 			} else {
@@ -157,7 +156,12 @@ func readToken(stream *lexerStream) (token, error) {
 			tokenValue, completed = readUntilFalse(stream, true, false, true, isNotQuoteS(character))
 
 			if !completed {
-				return token{}, errors.New("Unclosed string literal")
+				ret.Kind = kind
+				ret.Value = tokenValue
+				ret.Pos = stream.position
+				ret.Line = stream.line
+				ret.Col = stream.position - stream.lastEOLPos
+				return ret, errors.New("Unclosed string literal")
 			}
 
 			// advance the stream one position, since reading until false assumes the terminator is a real token
@@ -266,15 +270,6 @@ func isNotQuoteS(character rune) func(rune) bool {
 
 func isNotQuote(character rune) bool {
 	return character != '\'' && character != '"'
-}
-
-func isNotAlphanumeric(character rune) bool {
-
-	return !(unicode.IsDigit(character) ||
-		unicode.IsLetter(character) ||
-		character == '(' ||
-		character == ')' ||
-		!isNotQuote(character))
 }
 
 func isString(character rune) bool {

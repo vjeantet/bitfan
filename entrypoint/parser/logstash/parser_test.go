@@ -140,3 +140,53 @@ func TestParseErrorWhenError(t *testing.T) {
 	assert.Equal(t, 38, err.(*ParseError).Line)
 	assert.Equal(t, 34, err.(*ParseError).Column)
 }
+
+func TestParseErrorIsNumericError(t *testing.T) {
+	_, err := parseTestCase("012")
+
+	assert.Error(t, err)
+
+	assert.IsType(t, &ParseError{}, err)
+	assert.Equal(t, 7, err.(*ParseError).Line)
+	assert.Equal(t, 0, err.(*ParseError).Column)
+}
+
+func TestParseErrorAssignement(t *testing.T) {
+	_, err := parseTestCase("013")
+
+	assert.Error(t, err)
+
+	assert.IsType(t, &ParseError{}, err)
+	assert.Equal(t, 6, err.(*ParseError).Line)
+	assert.Equal(t, 14, err.(*ParseError).Column)
+}
+
+func TestParseErrorElseIf(t *testing.T) {
+	_, err := parseTestCase("014")
+
+	assert.Error(t, err)
+
+	assert.IsType(t, &ParseError{}, err)
+	assert.Equal(t, 7, err.(*ParseError).Line)
+	assert.Equal(t, 13, err.(*ParseError).Column)
+}
+
+func TestParseErrorFalse(t *testing.T) {
+	_, err := parseTestCase("015")
+
+	assert.Error(t, err)
+
+	assert.IsType(t, &ParseError{}, err)
+	assert.Equal(t, 12, err.(*ParseError).Line)
+	assert.Equal(t, 0, err.(*ParseError).Column)
+}
+
+func TestParseErrorUnkowTokken(t *testing.T) {
+	_, err := parseTestCase("016")
+
+	assert.Error(t, err)
+
+	assert.IsType(t, &ParseError{}, err)
+	assert.Equal(t, 6, err.(*ParseError).Line)
+	assert.Equal(t, 13, err.(*ParseError).Column)
+}

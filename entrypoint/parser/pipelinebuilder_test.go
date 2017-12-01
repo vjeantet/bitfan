@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -8,7 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/k0kubun/pp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,7 +61,6 @@ func TestBuildAgentsComplexURL(t *testing.T) {
 func TestBuildAgentsUse(t *testing.T) {
 	f, err := os.Open("testdata/use/main.conf")
 	ewl, _ := filepath.Abs(filepath.Dir(f.Name()))
-	pp.Println(ewl)
 	defer f.Close()
 	responseData, _ := ioutil.ReadAll(f)
 
@@ -92,4 +91,17 @@ func entrypointContentFS(path string, cwl string, options map[string]interface{}
 	ewl = filepath.Dir(pathFix)
 
 	return content, ewl, err
+}
+
+func TestParseConfigLocationEmptyPath(t *testing.T) {
+	_, err := parseConfigLocation("", nil, "")
+	assert.Error(t, err)
+}
+
+func TestParseConfigLocationEntryPointContentError(t *testing.T) {
+	entryPointContent = func(string, string, map[string]interface{}) ([]byte, string, error) {
+		return nil, "", fmt.Errorf("error")
+	}
+	_, err := parseConfigLocation("null", nil, "")
+	assert.Error(t, err)
 }
