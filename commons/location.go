@@ -2,6 +2,7 @@ package commons
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -9,7 +10,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"text/template"
 )
 
 const (
@@ -109,8 +109,11 @@ func (l *Location) Content() ([]byte, string, error) {
 
 func (l *Location) TemplateWithOptions(options map[string]string) (*template.Template, string, error) {
 	content, cwl, err := l.ContentWithOptions(options)
+	if err != nil {
+		return nil, cwl, err
+	}
 
-	// builtins - https://golang.org/src/text/template/funcs.go
+	// builtins - https://golang.org/src/html/template/funcs.go
 	// 		"and":      and,
 	//  	"call":     call,
 	//  	"html":     HTMLEscaper,
@@ -147,9 +150,8 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 		"markdown":     (*templateFunctions)(nil).toMarkdown,
 	}
 
-	tpl, errTpl := template.New("").Funcs(funcMap).Parse(string(content))
+	tpl, errTpl := template.New("").Option("missingkey=zero").Funcs(funcMap).Parse(string(content))
 	if errTpl != nil {
-		fmt.Printf("stdout Format tpl error : %v", err)
 		return tpl, cwl, errTpl
 	}
 	return tpl, cwl, errTpl

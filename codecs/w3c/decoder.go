@@ -83,6 +83,7 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger,
 }
 
 func (d *decoder) Decode(data *interface{}) error {
+	*data = nil
 	record, err := d.r.Read()
 
 	if err == io.EOF {
@@ -116,4 +117,8 @@ func (d *decoder) Decode(data *interface{}) error {
 
 func (d *decoder) More() bool {
 	return d.more
+}
+
+func (d *decoder) Buffer() []byte {
+	return []byte{}
 }

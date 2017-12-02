@@ -4,8 +4,8 @@ package plaincodec
 
 import (
 	"bytes"
+	"html/template"
 	"io"
-	"text/template"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/commons"
@@ -23,7 +23,7 @@ type encoder struct {
 // doc encoderOptions
 type encoderOptions struct {
 
-	// Format as a golang text/template
+	// Format as a golang html/template
 	// @Default "{{.message}}"
 	// @Type Location
 	Format string `mapstructure:"format"`
@@ -43,6 +43,9 @@ func NewEncoder(w io.Writer) *encoder {
 		},
 	}
 
+	loc, _ := commons.NewLocation(e.options.Format, "")
+	e.formatTpl, _, _ = loc.TemplateWithOptions(e.options.Var)
+
 	return e
 }
 
@@ -54,8 +57,6 @@ func (e *encoder) SetOptions(conf map[string]interface{}, logger commons.Logger,
 	}
 
 	if e.options.Format != "" {
-		//TODO : add a location.TemplateWithOptions to return golang text/template
-
 		loc, err := commons.NewLocation(e.options.Format, cwl)
 		if err != nil {
 			return err
@@ -72,7 +73,11 @@ func (e *encoder) SetOptions(conf map[string]interface{}, logger commons.Logger,
 
 func (e *encoder) Encode(data map[string]interface{}) error {
 	buff := bytes.NewBufferString("")
-	e.formatTpl.Execute(buff, data)
+
+	if err := e.formatTpl.Execute(buff, data); err != nil {
+		return err
+	}
+
 	e.w.Write(buff.Bytes())
 	return nil
 }

@@ -8,6 +8,19 @@ import (
 	"github.com/vjeantet/bitfan/commons"
 )
 
+func TestBuffer(t *testing.T) {
+	assert.Len(t, NewDecoder(strings.NewReader("")).Buffer(), 0)
+}
+
+func TestSetOptionsError(t *testing.T) {
+	d := NewDecoder(strings.NewReader("data"))
+	conf := map[string]interface{}{
+		"separator": 4,
+	}
+	err := d.SetOptions(conf, nil, "")
+	assert.Error(t, err)
+}
+
 func TestDefaultSettings(t *testing.T) {
 	data :=
 		`
@@ -187,4 +200,68 @@ func TestWithCustomColumns(t *testing.T) {
 
 	err = d.Decode(&m)
 	assert.EqualError(t, err, "EOF")
+}
+
+func TestMore(t *testing.T) {
+	data :=
+		`
+#Software: Microsoft Internet Information Services 8.5
+#Version: 1.0
+#Date: 2017-10-04 19:00:00
+#Fields: date time cs-uri-stem cs-username c-ip cs(User-Agent) sc-status
+2017-10-04 19:00:00 /Microsoft-Server-ActiveSync/default.eas domain/user 8.8.8.8 Android/5.0.2-EAS-2.0 200
+2017-10-04 22:12:13 /Microsoft-Server-ActiveSync/default.eas domain\iuser 44.44.88.88 Apple-iPhone6C2/1403.92 200
+2017-10-05 00:45:01 /EWS/Exchange.asmx - 22.11.22.11 MS-WebServices/1.0 401
+`
+
+	expectData := []map[string]interface{}{
+		map[string]interface{}{
+			"date":           "2017-10-04",
+			"time":           "19:00:00",
+			"cs-uri-stem":    "/Microsoft-Server-ActiveSync/default.eas",
+			"cs-username":    "domain/user",
+			"c-ip":           "8.8.8.8",
+			"cs(User-Agent)": "Android/5.0.2-EAS-2.0",
+			"sc-status":      "200",
+		},
+		map[string]interface{}{
+			"date":           "2017-10-04",
+			"time":           "22:12:13",
+			"cs-uri-stem":    "/Microsoft-Server-ActiveSync/default.eas",
+			"cs-username":    "domain\\iuser",
+			"c-ip":           "44.44.88.88",
+			"cs(User-Agent)": "Apple-iPhone6C2/1403.92",
+			"sc-status":      "200",
+		},
+		map[string]interface{}{
+			"date":           "2017-10-05",
+			"time":           "00:45:01",
+			"cs-uri-stem":    "/EWS/Exchange.asmx",
+			"cs-username":    "-",
+			"c-ip":           "22.11.22.11",
+			"cs(User-Agent)": "MS-WebServices/1.0",
+			"sc-status":      "401",
+		},
+	}
+
+	d := NewDecoder(strings.NewReader(data))
+	var l commons.Logger
+	err := d.SetOptions(map[string]interface{}{}, l, "")
+	assert.NoError(t, err)
+
+	var m interface{}
+
+	var i = 0
+	for d.More() {
+		err := d.Decode(&m)
+		if i+1 <= len(expectData) {
+			assert.NoError(t, err)
+			assert.Equal(t, expectData[i], m)
+			i = i + 1
+		} else {
+			assert.Error(t, err)
+		}
+
+	}
+	assert.Equal(t, 3, i)
 }
