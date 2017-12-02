@@ -95,7 +95,7 @@ type decoderOptions struct {
 	// @Default false
 	Negate bool `mapstructure:"negate"`
 
-	// The regular expression to match
+	// The regular expression to match with the line
 	// @ExampleLS pattern => "^\\s"
 	Pattern string `mapstructure:"pattern" validate:"required"`
 
@@ -112,19 +112,28 @@ func NewDecoder(r io.Reader) *decoder {
 		options: decoderOptions{
 			Delimiter: "\n",
 			Negate:    false,
-			Pattern:   "\\s",
-			What:      "dd",
+			Pattern:   `^\s`,
+			What:      "previous",
 		},
 	}
 
+	d.r.Split(bufio.ScanLines)
+
+	return d
+}
+func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
+	d.log = logger
+
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
+	}
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		// Return nothing if at end of file and no data passed
 		if atEOF && len(data) == 0 {
 			return 0, nil, nil
 		}
 
-		// Find the index of the input of a newline followed by a
-		// pound sign.
+		// Find the index of the input of a newline followed by Delimiter
 		if i := strings.Index(string(data), d.options.Delimiter); i >= 0 {
 			return i + 1, data[0:i], nil
 		}
@@ -138,20 +147,14 @@ func NewDecoder(r io.Reader) *decoder {
 		return 0, nil, nil
 	}
 
-	if d.options.Delimiter == "\n" {
-		d.r.Split(bufio.ScanLines)
-	} else {
+	if d.options.Delimiter != "\n" {
 		d.r.Split(split)
 	}
-	return d
-}
-func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
-	d.log = logger
-
-	return mapstructure.Decode(conf, &d.options)
+	return nil
 }
 
 func (d *decoder) Decode(v *interface{}) error {
+	*v = nil
 	for d.r.Scan() {
 		d.more = true
 		match, _ := regexp.MatchString(d.options.Pattern, d.r.Text())
@@ -198,4 +201,8 @@ func (d *decoder) Decode(v *interface{}) error {
 
 func (d *decoder) More() bool {
 	return d.more
+}
+
+func (d *decoder) Buffer() []byte {
+	return []byte(d.memory)
 }

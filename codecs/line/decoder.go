@@ -74,6 +74,7 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger,
 }
 
 func (d *decoder) Decode(v *interface{}) error {
+	*v = nil
 	if true == d.r.Scan() {
 		d.more = true
 		*v = d.r.Text()
@@ -86,4 +87,8 @@ func (d *decoder) Decode(v *interface{}) error {
 
 func (d *decoder) More() bool {
 	return d.more
+}
+
+func (d *decoder) Buffer() []byte {
+	return []byte{}
 }

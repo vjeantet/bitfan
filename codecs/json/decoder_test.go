@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBuffer(t *testing.T) {
+	assert.Len(t, NewDecoder(strings.NewReader("")).Buffer(), 0)
+}
+
 func TestDefaultSettings(t *testing.T) {
 	data := `{"name": "Gilbert", "wins": [["straight", "7♣"], ["one pair", "10♥"]]}
 {"name": "Alexa", "wins": [["two pair", "4♠"], ["two pair", "9♠"]]}`

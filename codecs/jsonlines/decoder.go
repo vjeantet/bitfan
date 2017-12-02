@@ -74,7 +74,7 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger,
 }
 
 func (d *decoder) Decode(v *interface{}) error {
-
+	*v = nil
 	if d.r.Scan() {
 		d.more = true
 		json.Unmarshal([]byte(d.r.Text()), v)
@@ -88,4 +88,8 @@ func (d *decoder) Decode(v *interface{}) error {
 
 func (d *decoder) More() bool {
 	return d.more
+}
+
+func (d *decoder) Buffer() []byte {
+	return []byte{}
 }

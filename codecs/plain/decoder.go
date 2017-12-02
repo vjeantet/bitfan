@@ -37,6 +37,7 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger,
 }
 
 func (d *decoder) Decode(v *interface{}) error {
+	*v = nil
 	d.more = false
 	bytes, err := ioutil.ReadAll(d.r)
 	if err != nil {
@@ -48,4 +49,8 @@ func (d *decoder) Decode(v *interface{}) error {
 
 func (d *decoder) More() bool {
 	return d.more
+}
+
+func (d *decoder) Buffer() []byte {
+	return []byte{}
 }

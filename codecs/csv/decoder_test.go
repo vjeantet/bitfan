@@ -8,6 +8,19 @@ import (
 	"github.com/vjeantet/bitfan/commons"
 )
 
+func TestBuffer(t *testing.T) {
+	assert.Len(t, NewDecoder(strings.NewReader("")).Buffer(), 0)
+}
+
+func TestSetOptionsError(t *testing.T) {
+	d := NewDecoder(strings.NewReader("data"))
+	conf := map[string]interface{}{
+		"columns": 4,
+	}
+	err := d.SetOptions(conf, nil, "")
+	assert.Error(t, err)
+}
+
 func TestDefaultSettings(t *testing.T) {
 	data := "column_one,column_two,column_three\n" +
 		"value   1,\"value2\",value 3\n" +
@@ -89,4 +102,43 @@ func TestWithCustomColumns(t *testing.T) {
 
 	err = d.Decode(&m)
 	assert.EqualError(t, err, "EOF")
+}
+
+func TestMore(t *testing.T) {
+	data := "column_one,column_two,column_three\n" +
+		"value   1,\"value2\",value 3\n" +
+		"# Commented line\n" +
+		"one, two , three,four \n"
+	expectData := []map[string]interface{}{
+		map[string]interface{}{
+			"column_one":   "value   1",
+			"column_two":   "value2",
+			"column_three": "value 3",
+		},
+		map[string]interface{}{
+			"column_one": "# Commented line",
+		},
+		map[string]interface{}{
+			"column_one":   "one",
+			"column_two":   " two ",
+			"column_three": " three",
+			"column4":      "four ",
+		},
+	}
+
+	d := NewDecoder(strings.NewReader(data))
+	var m interface{}
+	var i = 0
+	for d.More() {
+		err := d.Decode(&m)
+		if i+1 <= len(expectData) {
+			assert.NoError(t, err)
+			assert.Equal(t, expectData[i], m)
+			i = i + 1
+		} else {
+			assert.Error(t, err)
+		}
+
+	}
+	assert.Equal(t, 3, i)
 }

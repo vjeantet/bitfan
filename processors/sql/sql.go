@@ -5,8 +5,8 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"html/template"
 	"strings"
-	"text/template"
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	_ "github.com/go-sql-driver/mysql"

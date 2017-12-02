@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBuffer(t *testing.T) {
+	assert.Len(t, NewDecoder(strings.NewReader("")).Buffer(), 0)
+}
+
 func TestDefaultSettings(t *testing.T) {
 	data := `{"name": "Gilbert", "wins": [["straight", "7♣"], ["one pair", "10♥"]]}
 {"name": "Alexa", "wins": [["two pair", "4♠"], ["two pair", "9♠"]]}`
@@ -103,11 +107,12 @@ func TestMore(t *testing.T) {
 		if i+1 <= len(expectData) {
 			assert.NoError(t, err)
 			assert.Equal(t, expectData[i], m)
+			i = i + 1
 		} else {
 			assert.Error(t, err)
 		}
-		i = i + 1
+
 	}
-	assert.Equal(t, 3, i)
+	assert.Equal(t, 2, i)
 
 }

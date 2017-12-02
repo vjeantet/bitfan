@@ -2,7 +2,9 @@
 package jsoncodec
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/mitchellh/mapstructure"
@@ -47,9 +49,20 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger,
 }
 
 func (d *decoder) Decode(v *interface{}) error {
+	*v = nil
 	return d.d.Decode(v)
 }
 
 func (d *decoder) More() bool {
 	return d.d.More()
+}
+
+func (d *decoder) Buffer() []byte {
+	buf := &bytes.Buffer{}
+	_, err := io.Copy(buf, d.d.Buffered())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return buf.Bytes()
 }

@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBuffer(t *testing.T) {
+	assert.Len(t, NewDecoder(strings.NewReader("")).Buffer(), 0)
+}
+
 func TestDefaultSettings(t *testing.T) {
 	data := `Stimulate carbon sunglasses garage geodesic shanty town wristwatch
 skyscraper. Meta-shanty town vinyl rebar claymore mine bicycle plastic
@@ -91,11 +95,12 @@ skyscraper. Meta-shanty town vinyl rebar claymore mine bicycle plastic
 		if i+1 <= len(expectData) {
 			assert.NoError(t, err)
 			assert.Equal(t, expectData[i], m)
+			i = i + 1
 		} else {
 			assert.Error(t, err)
 		}
-		i = i + 1
+
 	}
-	assert.Equal(t, 4, i)
+	assert.Equal(t, 3, i)
 
 }

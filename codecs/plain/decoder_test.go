@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBuffer(t *testing.T) {
+	assert.Len(t, NewDecoder(strings.NewReader("")).Buffer(), 0)
+}
+
 func TestDefaultSettings(t *testing.T) {
 	data := `Stimulate carbon sunglasses garage geodesic shanty town wristwatch
 skyscraper. Meta-shanty town vinyl rebar claymore mine bicycle plastic
