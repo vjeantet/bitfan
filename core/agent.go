@@ -83,6 +83,7 @@ func (a *Agent) configure() error {
 			"processor_type":  a.Type,
 			"pipeline_uuid":   a.PipelineUUID,
 			"processor_label": a.Label,
+			"agent_id":        a.ID,
 		},
 	)
 

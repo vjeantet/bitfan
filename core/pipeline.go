@@ -47,8 +47,6 @@ func (p *Pipeline) Start() (string, error) {
 		return "", fmt.Errorf("a pipeline with uuid %s is already running", p.Uuid)
 	}
 
-	pipelines.Store(p.Uuid, p)
-
 	//normalize
 	for i, _ := range p.agents {
 		p.agents[i].AgentRecipients = whoWaitForThisAgentID(p.agents[i].ID, p.agents)
@@ -58,9 +56,10 @@ func (p *Pipeline) Start() (string, error) {
 	for _, agentConf := range orderedAgentConfList {
 		agentConf.PipelineUUID = p.Uuid
 		agentConf.PipelineName = p.Label
+		Log().Debugf("%s Agent '%-d' ", agentConf.Type, agentConf.ID)
 		err := buildAgent(agentConf)
 		if err != nil {
-			Log().Errorf("%s Agent '%-d' can not start", agentConf.Type, agentConf.ID)
+			Log().Errorf("%s Agent '%-d': %s", agentConf.Type, agentConf.ID, err.Error())
 			return "", err
 		}
 
@@ -72,6 +71,7 @@ func (p *Pipeline) Start() (string, error) {
 			// add a(in) to aSource outputs with port
 			aSource.addOutput(agentConf.packetChan, sourcePort.PortNumber)
 		}
+		Log().Debugf("%s Agent '%-d' configured", agentConf.Type, agentConf.ID)
 	}
 
 	orderedAgentConfList = Sort(p.agents, SortOutputsFirst)
@@ -80,6 +80,7 @@ func (p *Pipeline) Start() (string, error) {
 		p.agents[agentConf.ID].start()
 	}
 	p.StartedAt = time.Now()
+	pipelines.Store(p.Uuid, p)
 	return p.Uuid, nil
 }
 
@@ -96,6 +97,6 @@ func (p *Pipeline) stop() error {
 	return nil
 }
 
-func (p *Pipeline) Agents() map[int]*Agent{
+func (p *Pipeline) Agents() map[int]*Agent {
 	return p.agents
 }
