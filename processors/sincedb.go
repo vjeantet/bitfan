@@ -36,6 +36,7 @@ func NewSinceDB(sdboptions *SinceDBOptions) *SinceDB {
 		// Start the write looper
 		go func() {
 			tick := time.NewTicker(time.Duration(s.options.WriteInterval) * time.Second)
+			defer tick.Stop()
 			for {
 				select {
 				case <-tick.C:
