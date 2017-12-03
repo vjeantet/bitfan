@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/clbanning/mxj"
 	durationfmt "github.com/davidscholberg/go-durationfmt"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
@@ -197,6 +198,21 @@ func (t *templateFunctions) timeStampFormat(layout string, v map[string]interfac
 		return ""
 	}
 	return jodaTime.Format(layout, ti)
+}
+
+func (t *templateFunctions) mapValueStringOrEmpty(k string, dict interface{}) interface{} {
+	switch d := dict.(type) {
+	case map[string]interface{}:
+		return mxj.Map(d).ValueOrEmptyForPathString(k)
+	case []interface{}:
+		d2 := map[string]interface{}{}
+		for i, v := range d {
+			d2[strconv.Itoa(i)] = v
+		}
+		return mxj.Map(d2).ValueOrEmptyForPathString(k)
+	}
+
+	return ""
 }
 
 // AsTime converts the textual representation of the datetime string into

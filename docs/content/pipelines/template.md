@@ -21,6 +21,7 @@ weight = 20
 * <a href="#ago">Ago</a> - format durations according to a format string
 * <a href="#markdown">Markdown</a> - renders a markdown string value to html
 * <a href="#int">Int</a> - converts a numeric string value to int
+* <a href="#_">_</a> - returns a value by key for a given map, empty string on failure
 
 
 ## TS
@@ -87,6 +88,15 @@ converts a numeric string value to int
 renders a markdown string value to html
 
 	{{markdown .stringfield}}
+
+## _
+
+	city : {{_ "city" .location}}
+
+renders 
+
+	city : Paris
+
 
 ## Ago
 
