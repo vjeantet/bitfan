@@ -74,8 +74,8 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	//Codecs
 	if v, ok := conf["codecs"]; ok {
 		codecCollection := &codecs.CodecCollection{}
-		for _, v := range v.(map[int]interface{}) {
-			vcodec := v.(ICodec)
+		for _, vc := range v.(map[int]interface{}) {
+			vcodec := vc.(ICodec)
 
 			c := codecs.New(vcodec.GetName(), vcodec.GetOptions(), ctx.Log(), ctx.ConfigWorkingLocation())
 			switch vcodec.GetRole() {

@@ -54,20 +54,24 @@ func Dynamic(str *string, fields *mxj.Map) {
 
 func SetType(typevalue string, data *mxj.Map) {
 	Dynamic(&typevalue, data)
-	data.SetValueForPath(typevalue, "type")
+	if !data.Exists("type") {
+		data.SetValueForPath(typevalue, "type")
+	}
 }
 
 func AddFields(fields map[string]interface{}, data *mxj.Map) {
 	for k, v := range fields {
 		Dynamic(&k, data)
-		switch v.(type) {
-		case string:
-			d := v.(string)
-			Dynamic(&d, data)
-			v = d
-		}
+		if !data.Exists(k) {
+			switch v.(type) {
+			case string:
+				d := v.(string)
+				Dynamic(&d, data)
+				v = d
+			}
 
-		data.SetValueForPath(v, k)
+			data.SetValueForPath(v, k)
+		}
 	}
 }
 
@@ -88,13 +92,22 @@ func AddTags(tags []string, data *mxj.Map) {
 	tagsEval := []string{}
 	for _, t := range tags {
 		Dynamic(&t, data)
-		tagsEval = append(tagsEval, t)
+		if !isInSlice(t, currentTags) {
+			tagsEval = append(tagsEval, t)
+		}
 	}
 
 	newTags := append(currentTags, tagsEval...)
 	data.SetValueForPath(newTags, "tags")
 }
-
+func isInSlice(needle string, candidates []string) bool {
+	for _, symbolType := range candidates {
+		if needle == symbolType {
+			return true
+		}
+	}
+	return false
+}
 func RemoveTags(tags []string, data *mxj.Map) {
 	currenttags, err := data.ValueForPath("tags")
 	if err != nil {
