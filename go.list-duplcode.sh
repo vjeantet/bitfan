@@ -1,0 +1,1 @@
+find . -name "*docdoc.go" -type f -delete ;dupl -html -t 50 $(find . -path ./vendor -prune -o -name *.go) > dup.html

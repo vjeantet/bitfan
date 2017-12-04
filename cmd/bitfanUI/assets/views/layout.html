@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="/public/images/favicon.png" type="image/x-icon" />
+    <title>{{ template "title" . }}</title>
+    <!-- bootstrap -->
+    <script src="/public/vendor/jquery/jquery.min.js"></script>
+    <script src="/public/vendor/popper/popper.min.js"></script>
+    <script src="/public/vendor/bootstrap/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/public/vendor/bootstrap/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="/public/css/application.css">
+    <!-- Open Sans font -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet" type="text/css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+		  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+    <script src="/public/vendor/dropzone/dropzone.js"></script>
+    <link rel="stylesheet" href="/public/vendor/dropzone/dropzone.css">
+    <script src="/public/js/bitfan.js"></script>
+    <script src="/public/vendor/jsrender/jsrender.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/public/vendor/notie/notie.min.css">
+    <script src="/public/vendor/notie/notie.min.js"></script>
+    <script src="/public/vendor/momentjs/moment-with-locales.min.js"></script>
+</head>
+
+<body>
+    <script id="flash-template" type="text/x-jsrender">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <span>[[:message]]</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </script>
+    <header>
+        <div class="logo">
+            <img src="/public/images/open-fan.png" height="30" class="d-inline-block align-top" alt="">&nbsp;Bitfan
+        </div>
+        <div class="burger"><a href="javascript:void(0);" style="font-size:15px;">&#9776;</a></div>
+        <section>
+            <a href="/">
+                <li class="" role="">List pipelines</li>
+            </a>
+            <a href="/logs">
+                <li class="" role="">Logs</li>
+            </a>
+            <a href="http://{{.apiHost}}/api/v2/db.zip">
+                <li class="" role="">Export database</li>
+            </a>
+        </section>
+        <section id="bitfan-location">
+        	<div class="input-group" >
+                <span class="input-group-addon" id="basic-addon3">API</span>
+                <span class="input-group-addon">http://</span>
+                <input type="text" class="form-control" aria-describedby="basic-addon3" value="{{.apiHost}}" placeholder="hostname:port">
+                <span class="input-group-btn">
+        			<button class="btn btn-primary" href="/settings/api" type="button" >Connect !</button>
+      			</span>
+            </div>
+        </section>
+    </header>
+    <section class="flash">
+        {{ range $flash := .globalflashes }}
+        <div class="alert alert-success" role="alert">
+            {{$flash}}
+        </div>
+        {{end}}
+    </section>
+    <section class="main hbox space-between">
+        {{ template "sidebar" . }}
+        <section class="page">
+            <article>{{ template "content" . }}</article>
+        </section>
+    </section>
+    <footer>
+        <div>
+            <strong>Bitfan</strong>
+        </div>
+        <div>
+            <li class="" role="">
+                <a href="https://bitfan.io" target="_blank" rel="noopener">docs</a>
+            </li>
+            <li class="" role="">
+                <a href="https://github.com/vjeantet/bitfan" target="_blank" rel="noopener">github</a>
+            </li>
+            <li class="" role="">
+                <a href="https://godoc.org/github.com/vjeantet/bitfan" target="_blank" rel="noopener">godoc reference</a>
+            </li>
+        </div>
+        <div>
+            <small>Bitfan logo made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> <br>from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></small>
+        </div>
+    </footer>
+    {{with .error}}
+    <script type="text/javascript">
+    notie.alert({ type: 'error', stay: true, text: '{{hTMLEscape .Error}}' });
+    </script>
+    {{end}}
+</body>
+
+</html>
+{{ define "scripts" }}{{ end }} {{ define "sidebar" }}{{ end }}

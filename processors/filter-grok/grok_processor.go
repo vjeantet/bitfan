@@ -52,7 +52,7 @@ type options struct {
 	//       grok { match => { "message" => [ "Duration: %{NUMBER:duration}", "Speed: %{NUMBER:speed}" ] } }
 	//     }
 	// ```
-	Match map[string]interface{} `mapstructure:"match" validate:"required"`
+	Match map[string][]string `mapstructure:"match" validate:"required"`
 
 	// If true, only store named captures from grok.
 	// @default : true
@@ -70,6 +70,27 @@ type options struct {
 	TagOnFailure []string `mapstructure:"tag_on_failure"`
 }
 
+func (p *processor) fixGrokMatch(conf interface{}) (map[string][]string, error) {
+	fixMatch := make(map[string][]string)
+	switch m := conf.(type) {
+	case map[string]interface{}:
+		for fieldName, patterns := range m {
+			switch v := patterns.(type) {
+			case []string:
+				fixMatch[fieldName] = v
+			case string:
+				fixMatch[fieldName] = []string{v}
+			default:
+				return fixMatch, fmt.Errorf("unsupported match value format %V", reflect.TypeOf(v))
+			}
+		}
+	default:
+		return fixMatch, fmt.Errorf("unsupported match format : %s", reflect.TypeOf(m))
+	}
+
+	return fixMatch, nil
+}
+
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
 	defaults := options{
 		NamedCapturesOnly: true,
@@ -77,6 +98,11 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		TagOnFailure:      []string{"_grokparsefailure"},
 	}
 	p.opt = &defaults
+
+	conf["match"], err = p.fixGrokMatch(conf["match"])
+	if err != nil {
+		return err
+	}
 
 	if err = p.ConfigureAndValidate(ctx, conf, p.opt); err != nil {
 		return err
@@ -104,37 +130,19 @@ func (p *processor) Receive(e processors.IPacket) error {
 	groked := false
 	var values map[string]string
 
-	for fkey, pattern := range p.opt.Match {
+	for fkey, patterns := range p.opt.Match {
 
 		if p.opt.BreakOnMatch && len(values) > 0 {
 			break
 		}
 
-		switch reflect.TypeOf(pattern).Kind() {
-		case reflect.Slice:
-			s := reflect.ValueOf(pattern)
-			for i := 0; i < s.Len(); i++ {
-				patternStr := s.Index(i).Interface().(string)
-				values, _ = p.grok.Parse(patternStr, e.Fields().ValueOrEmptyForPathString(fkey))
-				if len(values) > 0 {
-					groked = true
-
-					if err := mapstructure.Decode(values, e.Fields()); err != nil {
-						return fmt.Errorf("Error while groking : %s", err.Error())
-					}
-					if p.opt.BreakOnMatch {
-						break
-					}
-				}
-			}
-
-		case reflect.String:
-			values, _ = p.grok.Parse(pattern.(string), e.Fields().ValueOrEmptyForPathString(fkey))
+		for i := 0; i < len(patterns); i++ {
+			values, _ = p.grok.Parse(patterns[i], e.Fields().ValueOrEmptyForPathString(fkey))
 			if len(values) > 0 {
 				groked = true
 
 				if err := mapstructure.Decode(values, e.Fields()); err != nil {
-					return fmt.Errorf("Error while groking : %s", err.Error())
+					return fmt.Errorf("Error while groking : %v", err)
 				}
 				if p.opt.BreakOnMatch {
 					break

@@ -3,7 +3,6 @@ package processors
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/core/config"
 	"github.com/vjeantet/bitfan/processors/doc"
 	"gopkg.in/go-playground/validator.v8"
 )
@@ -14,9 +13,10 @@ type Base struct {
 	Logger                Logger
 	Memory                Memory
 	WebHook               WebHook
+	Store                 IStore
 	ConfigWorkingLocation string
 	DataLocation          string
-	PipelineID            int
+	PipelineUUID          string
 }
 
 // B returns the Base Processor
@@ -28,8 +28,8 @@ func (b *Base) Doc() *doc.Processor {
 	return &doc.Processor{}
 }
 
-func (b *Base) SetPipelineID(ID int) {
-	b.PipelineID = ID
+func (b *Base) SetPipelineUUID(uuid string) {
+	b.PipelineUUID = uuid
 }
 
 func (b *Base) Configure(ctx ProcessorContext, conf map[string]interface{}) error { return nil }
@@ -69,12 +69,27 @@ func (b *Base) ConfigureAndValidate(ctx ProcessorContext, conf map[string]interf
 	// Datalocation
 	b.DataLocation = ctx.DataLocation()
 
+	b.Store = ctx.Store()
+
 	//Codecs
-	if v, ok := conf["codec"]; ok {
-		switch vcodec := v.(type) {
-		case *config.Codec:
-			conf["codec"] = codecs.New(vcodec.Name, vcodec.Options, ctx.Log(), ctx.ConfigWorkingLocation())
+	if v, ok := conf["codecs"]; ok {
+		codecCollection := &codecs.CodecCollection{}
+		for _, v := range v.(map[int]interface{}) {
+			vcodec := v.(ICodec)
+
+			c := codecs.New(vcodec.GetName(), vcodec.GetOptions(), ctx.Log(), ctx.ConfigWorkingLocation())
+			switch vcodec.GetRole() {
+			case "encoder":
+				codecCollection.Enc = c
+			case "decoder":
+				codecCollection.Dec = c
+			default:
+				codecCollection.Default = c
+			}
+
 		}
+		conf["codec"] = codecCollection
+		delete(conf, "codecs")
 	}
 
 	// Set processor's user options

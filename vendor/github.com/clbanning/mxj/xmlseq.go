@@ -126,17 +126,14 @@ func NewMapXmlSeqReaderRaw(xmlReader io.Reader, cast ...bool) (Map, []byte, erro
 		r = cast[0]
 	}
 	// create TeeReader so we can retrieve raw XML
-	buf := make([]byte, XmlWriterBufSize)
+	buf := make([]byte, 0)
 	wb := bytes.NewBuffer(buf)
 	trdr := myTeeReader(xmlReader, wb)
 
-	// build the node tree
 	m, err := xmlSeqReaderToMap(trdr, r)
 
 	// retrieve the raw XML that was decoded
-	b := make([]byte, wb.Len())
-	_, _ = wb.Read(b)
-	b = bytes.TrimSpace(b)
+	b := wb.Bytes()
 
 	// err may be NoRoot
 	return m, b, err
@@ -205,6 +202,13 @@ func xmlSeqToMapParser(skey string, a []xml.Attr, p *xml.Decoder, r bool) (map[s
 			na["#attr"] = aa
 		}
 	}
+
+	// Return XMPP <stream:stream> message.
+	if handleXMPPStreamTag && skey == "stream:stream" {
+		n[skey] = na
+		return n, nil
+	}
+
 	for {
 		t, err := p.RawToken()
 		if err != nil {
@@ -650,9 +654,7 @@ func mapToXmlSeqIndent(doIndent bool, s *string, key string, value interface{}, 
 		}
 		// something more complex
 		p.mapDepth++
-		// PrintElemListSeq(elemListSeq(kv))
 		sort.Sort(elemListSeq(kv))
-		// PrintElemListSeq(elemListSeq(kv))
 		i := 0
 		for _, v := range kv {
 			switch v.v.(type) {
@@ -693,7 +695,11 @@ func mapToXmlSeqIndent(doIndent bool, s *string, key string, value interface{}, 
 		return nil
 	case nil:
 		// terminate the tag
+		if doIndent {
+			*s += p.padding
+		}
 		*s += "<" + key
+		endTag, isSimple = true, true
 		break
 	default: // handle anything - even goofy stuff
 		elen = 0
@@ -811,12 +817,6 @@ func (e elemListSeq) Less(i, j int) bool {
 		return false
 	}
 	return true
-}
-
-func PrintElemListSeq(e elemListSeq) {
-	for n, v := range e {
-		fmt.Printf("%d: %v\n", n, v)
-	}
 }
 
 // =============== https://groups.google.com/forum/#!topic/golang-nuts/lHPOHD-8qio

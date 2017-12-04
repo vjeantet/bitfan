@@ -70,12 +70,12 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	var result bool = true
+	result := true
 	if p.opt.Condition != "" {
 		var err error
 		result, err = p.assertExpressionWithFields(p.opt.Condition, e)
 		if err != nil {
-			p.Logger.Errorf("When processor evaluation error : %s\n", err.Error())
+			p.Logger.Errorf("When processor evaluation error : %v", err)
 			return err
 		}
 	}
@@ -97,7 +97,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 func (p *processor) assertExpressionWithFields(expressionValue string, e processors.IPacket) (bool, error) {
 	expression, err := p.cacheExpression(expressionValue)
 	if err != nil {
-		return false, fmt.Errorf("conditional expression error : %s", err.Error())
+		return false, fmt.Errorf("conditional expression error : %v", err)
 	}
 	parameters := EvaluatedParameters{}
 	for _, v := range expression.Tokens() {

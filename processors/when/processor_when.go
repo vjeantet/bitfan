@@ -65,7 +65,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		expressionValue := p.opt.Expressions[order]
 		result, err := p.assertExpressionWithFields(order, expressionValue, e)
 		if err != nil {
-			p.Logger.Warnf("When processor evaluation '%s' error : %s\n", expressionValue, err.Error())
+			p.Logger.Warnf("When processor evaluation '%s' error : %v", expressionValue, err)
 			continue
 		}
 
@@ -80,18 +80,30 @@ func (p *processor) Receive(e processors.IPacket) error {
 func (p *processor) assertExpressionWithFields(index int, expressionValue string, e processors.IPacket) (bool, error) {
 	expression, err := p.cacheExpression(index, expressionValue)
 	if err != nil {
-		return false, fmt.Errorf("conditional expression error : %s", err.Error())
+		return false, fmt.Errorf("conditional expression error : %v", err)
 	}
 	parameters := EvaluatedParameters{}
 	for _, v := range expression.Tokens() {
 		if v.Kind == govaluate.VARIABLE {
-			paramValue, err := e.Fields().ValueForPath(v.Value.(string))
+			paramValues, err := e.Fields().ValuesForPath(v.Value.(string))
 			if err != nil {
 				continue
 			}
+
+			var paramValue interface{}
+			switch len(paramValues) {
+			case 0:
+				paramValue = false
+			case 1:
+				paramValue = paramValues[0]
+			default:
+				paramValue = paramValues
+			}
+
 			parameters[v.Value.(string)] = paramValue
 		}
 	}
+
 	resultRaw, err := expression.Eval(parameters)
 
 	var result bool
@@ -114,6 +126,9 @@ func (p *processor) cacheExpression(index int, expressionValue string) (*govalua
 	functions := map[string]govaluate.ExpressionFunction{
 
 		"bool": func(args ...interface{}) (interface{}, error) {
+			if len(args) == 0 {
+				return false, nil
+			}
 			switch args[0].(type) {
 			case bool:
 				return args[0].(bool), nil
@@ -123,6 +138,9 @@ func (p *processor) cacheExpression(index int, expressionValue string) (*govalua
 		},
 
 		"len": func(args ...interface{}) (interface{}, error) {
+			if len(args) == 0 {
+				return float64(0), nil
+			}
 			switch reflect.TypeOf(args[0]).Kind() {
 
 			case reflect.Slice:
@@ -143,6 +161,7 @@ func (p *processor) cacheExpression(index int, expressionValue string) (*govalua
 	if err != nil {
 		return nil, err
 	}
+
 	p.compiledExpressions.Store(index, expression)
 
 	return expression, nil

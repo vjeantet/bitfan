@@ -6,10 +6,10 @@
 
 |       SETTING       | TYPE  | REQUIRED | DEFAULT VALUE |
 |---------------------|-------|----------|---------------|
-| break_on_match      | bool  | false    | ?             |
-| keep_empty_captures | bool  | false    | ?             |
+| break_on_match      | bool  | false    | false         |
+| keep_empty_captures | bool  | false    | false         |
 | match               | hash  | true     | {}            |
-| named_capture_only  | bool  | false    | ?             |
+| named_capture_only  | bool  | false    | false         |
 | patterns_dir        | array | false    | []            |
 | tag_on_failure      | array | false    | []            |
 
@@ -18,7 +18,7 @@
 
 ### break_on_match
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Break on first match. The first successful match by grok will result in the filter being
 finished. If you want grok to try all patterns (maybe you are parsing different things),
@@ -26,7 +26,7 @@ then set this to false
 
 ### keep_empty_captures
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 If true, keep empty captures as event fields
 
@@ -53,7 +53,7 @@ If you need to match multiple patterns against a single field, the value can be 
 
 ### named_capture_only
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 If true, only store named captures from grok.
 

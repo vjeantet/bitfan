@@ -11,7 +11,7 @@ type Processor interface {
 	Stop(IPacket) error
 	Doc() *doc.Processor
 	MaxConcurent() int
-	SetPipelineID(int)
+	SetPipelineUUID(string)
 }
 
 type ProcessorContext interface {
@@ -22,4 +22,5 @@ type ProcessorContext interface {
 	WebHook() WebHook
 	ConfigWorkingLocation() string
 	DataLocation() string
+	Store() IStore
 }

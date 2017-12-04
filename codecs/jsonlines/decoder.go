@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 type decoder struct {
@@ -16,7 +16,7 @@ type decoder struct {
 	r       *bufio.Scanner
 	options decoderOptions
 
-	log lib.Logger
+	log commons.Logger
 }
 
 type decoderOptions struct {
@@ -32,6 +32,18 @@ func NewDecoder(r io.Reader) *decoder {
 		options: decoderOptions{
 			Delimiter: "\n",
 		},
+	}
+
+	d.r.Split(bufio.ScanLines)
+
+	return d
+}
+
+func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
+	d.log = logger
+
+	if err := mapstructure.Decode(conf, &d.options); err != nil {
+		return err
 	}
 
 	split := func(data []byte, atEOF bool) (advance int, token []byte, err error) {
@@ -55,22 +67,14 @@ func NewDecoder(r io.Reader) *decoder {
 		return 0, nil, nil
 	}
 
-	if d.options.Delimiter == "\n" {
-		d.r.Split(bufio.ScanLines)
-	} else {
+	if d.options.Delimiter != "\n" {
 		d.r.Split(split)
 	}
-	return d
-}
-
-func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
-	d.log = logger
-
-	return mapstructure.Decode(conf, &d.options)
+	return nil
 }
 
 func (d *decoder) Decode(v *interface{}) error {
-
+	*v = nil
 	if d.r.Scan() {
 		d.more = true
 		json.Unmarshal([]byte(d.r.Text()), v)
@@ -84,4 +88,8 @@ func (d *decoder) Decode(v *interface{}) error {
 
 func (d *decoder) More() bool {
 	return d.more
+}
+
+func (d *decoder) Buffer() []byte {
+	return []byte{}
 }

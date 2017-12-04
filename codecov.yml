@@ -1,0 +1,8 @@
+coverage:
+  ignore:
+    - cmd/bitfanUI/server/assets.go
+    - processors/**/docdoc.go
+    - codecs/**/docdoc.go
+
+  status:
+    patch: no

@@ -7,14 +7,14 @@ which are of the foo=bar variety.
 
 |        SETTING         |  TYPE  | REQUIRED | DEFAULT VALUE |
 |------------------------|--------|----------|---------------|
-| allow_duplicate_values | bool   | false    | ?             |
+| allow_duplicate_values | bool   | false    | false         |
 | default_keys           | hash   | false    | {}            |
 | exclude_keys           | array  | false    | []            |
 | field_split            | string | false    | ""            |
-| include_brackets       | bool   | false    | ?             |
+| include_brackets       | bool   | false    | false         |
 | include_keys           | array  | false    | []            |
 | Prefix                 | string | false    | ""            |
-| Recursive              | bool   | false    | ?             |
+| Recursive              | bool   | false    | false         |
 | Source                 | string | false    | ""            |
 | Target                 | string | false    | ""            |
 | Trim                   | string | false    | ""            |
@@ -26,7 +26,7 @@ which are of the foo=bar variety.
 
 ### allow_duplicate_values
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 A bool option for removing duplicate key/value pairs.
 When set to false, only one unique key/value pair will be preserved.
@@ -95,7 +95,7 @@ The above splits on both & and ? characters, giving you the following fields:
 
 ### include_brackets
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 A boolean specifying whether to include brackets as value wrappers (the default is true)
 ```
@@ -142,7 +142,7 @@ kv {
 
 ### Recursive
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 A boolean specifying whether to drill down into values and recursively get more key-value pairs from it. The extra key-value pairs will be stored as subkeys of the root key.
 

@@ -1,5 +1,8 @@
 # EVALPROCESSOR
-Modify or add event's field with the result of an expression (math or compare)
+Modify or add event's field with the result of
+
+* an expression (math or compare)
+* a go template
 
 **Operators and types supported in expression :**
 
@@ -21,17 +24,32 @@ Modify or add event's field with the result of an expression (math or compare)
 
 |   SETTING   | TYPE | REQUIRED | DEFAULT VALUE |
 |-------------|------|----------|---------------|
-| expressions | hash | true     | {}            |
+| expressions | hash | false    | {}            |
+| templates   | hash | false    | {}            |
+| var         | hash | false    | {}            |
 
 
 ## Details
 
 ### expressions
-* This is a required setting.
 * Value type is hash
 * Default value is `{}`
 
 list of field to set with expression's result
+
+### templates
+* Value type is hash
+* Default value is `{}`
+
+list of field to set with a go template location
+
+### var
+* Value type is hash
+* Default value is `{}`
+
+You can set variable to be used in template by using ${var}.
+each reference will be replaced by the value of the variable found in Template's content
+The replacement is case-sensitive.
 
 
 
@@ -40,5 +58,7 @@ list of field to set with expression's result
 ```
 evalprocessor{
 	expressions => { "usage" => "[usage] * 100" }
+	templates => { "count" => "{{len .data}}", "mail"=>"mytemplate.tpl" }
+	var => {"hostname"=>"myhost","varname"=>"varvalue"}
 }
 ```

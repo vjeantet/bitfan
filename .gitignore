@@ -25,7 +25,7 @@ _testmain.go
 
 tester
 examples.d/twitter.conf
-bitfan
+
 releases
 .DS_Store
 
@@ -42,3 +42,29 @@ releases
 /docs/public/
 
 /docs/themes/hugo-theme-docdock
+
+/.vscode/
+
+*.coverprofile
+
+*.css.map
+
+.sass-cache
+
+/ui/cmd/oo
+
+/ui/cmd/test.db
+
+/webui/webui
+
+/dist/
+
+/cmd/bitfan/.bitfan/
+
+/cmd/bitfan/notes.md
+
+/.idea/
+
+/coverage.txt
+
+/codecovRepport.sh

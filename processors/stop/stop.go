@@ -8,7 +8,6 @@ package stopprocessor
 import (
 	"os"
 
-	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -45,10 +44,12 @@ func (p *processor) Receive(e processors.IPacket) error {
 	p.opt.ProcessCommonOptions(e.Fields())
 	p.Send(e)
 
-	core.StopPipeline(p.PipelineID)
+	// TODO core.StopPipeline(p.PipelineUUID)
+	p.Logger.Fatalln("IMPLEMENT THIS")
 
 	if true == p.opt.ExitBitfan {
-		core.Stop()
+		// TODO core.Stop()
+		p.Logger.Fatalln("IMPLEMENT THIS")
 		p, _ := os.FindProcess(os.Getpid())
 		p.Signal(os.Interrupt)
 	}
@@ -61,7 +62,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	return nil
 }
 func (p *processor) Stop(e processors.IPacket) error {
-	p.Logger.Debug("stopping pipeline ID=", p.PipelineID)
+	p.Logger.Debug("stopping pipeline ID=", p.PipelineUUID)
 
 	return nil
 }

@@ -3,7 +3,8 @@ package testutils
 import (
 	"fmt"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/mock"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -14,6 +15,8 @@ type DummyProcessorContext struct {
 	sentPackets   map[int][]processors.IPacket
 	builtPackets  []processors.IPacket
 	memory        processors.Memory
+	store         processors.IStore
+	mock.Mock
 }
 
 func NewProcessorContext() *DummyProcessorContext {
@@ -24,6 +27,7 @@ func NewProcessorContext() *DummyProcessorContext {
 	dp.packetSender = newSender(dp)
 	dp.packetBuilder = newPacket(dp)
 	dp.memory = newMemory(dp)
+	dp.store = newStore(dp)
 	return dp
 }
 
@@ -81,9 +85,17 @@ func (d *DummyProcessorContext) Memory() processors.Memory {
 	return d.memory
 }
 
+func (d *DummyProcessorContext) Store() processors.IStore {
+	return d.store
+}
+
 var i = 0
 
 func newMemory(p *DummyProcessorContext) processors.Memory {
 	i += 1
 	return NewMemory("").Space(fmt.Sprintf("test_%d", i))
+}
+
+func (d *DummyProcessorContext) WebHook() processors.WebHook {
+	return nil
 }

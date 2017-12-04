@@ -3,10 +3,9 @@ package templateprocessor
 
 import (
 	"bytes"
-	"text/template"
+	"html/template"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -58,7 +57,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
-	loc, err := location.NewLocation(p.opt.Location, p.ConfigWorkingLocation)
+	loc, err := commons.NewLocation(p.opt.Location, p.ConfigWorkingLocation)
 	if err != nil {
 		return err
 	}
@@ -81,7 +80,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	buff := bytes.NewBufferString("")
 	err := p.Tpl.Execute(buff, e.Fields())
 	if err != nil {
-		p.Logger.Errorf("template error : %s", err)
+		p.Logger.Errorf("template error : %v", err)
 		return err
 	}
 

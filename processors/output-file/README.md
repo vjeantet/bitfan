@@ -7,7 +7,7 @@
 |      SETTING      |     TYPE      | REQUIRED | DEFAULT VALUE |
 |-------------------|---------------|----------|---------------|
 | codec             | string        | false    | ""            |
-| create_if_deleted | bool          | false    | ?             |
+| create_if_deleted | bool          | false    | false         |
 | dir_mode          | os.FileMode   | false    | ?             |
 | file_mode         | os.FileMode   | false    | ?             |
 | flush_interval    | time.Duration | false    |               |
@@ -24,7 +24,7 @@
 
 ### create_if_deleted
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 
 

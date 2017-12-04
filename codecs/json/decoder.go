@@ -2,18 +2,20 @@
 package jsoncodec
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 type decoder struct {
 	d       *json.Decoder
 	options decoderOptions
 
-	log lib.Logger
+	log commons.Logger
 }
 
 type decoderOptions struct {
@@ -33,7 +35,7 @@ func NewDecoder(r io.Reader) *decoder {
 		options: decoderOptions{},
 	}
 }
-func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+func (d *decoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
 	d.log = logger
 
 	err := mapstructure.Decode(conf, &d.options)
@@ -47,9 +49,20 @@ func (d *decoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl
 }
 
 func (d *decoder) Decode(v *interface{}) error {
+	*v = nil
 	return d.d.Decode(v)
 }
 
 func (d *decoder) More() bool {
 	return d.d.More()
+}
+
+func (d *decoder) Buffer() []byte {
+	buf := &bytes.Buffer{}
+	_, err := io.Copy(buf, d.d.Buffered())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return buf.Bytes()
 }

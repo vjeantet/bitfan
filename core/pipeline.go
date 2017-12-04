@@ -1,36 +1,66 @@
 package core
 
-import "github.com/vjeantet/bitfan/core/config"
+import (
+	"fmt"
+	"time"
+
+	fqdn "github.com/ShowMax/go-fqdn"
+	uuid "github.com/nu7hatch/gouuid"
+)
 
 type Pipeline struct {
-	ID                 int
+	Uuid               string
 	Label              string
-	agents             map[int]*agent
+	agents             map[int]*Agent
 	ConfigLocation     string
 	ConfigHostLocation string
+	StartedAt          time.Time
+
+	Description string
 }
 
-func newPipeline(conf *config.Pipeline, configAgents []config.Agent) (*Pipeline, error) {
-	p := &Pipeline{
-		ID:                 conf.ID,
-		Label:              conf.Name,
-		ConfigLocation:     conf.ConfigLocation,
-		ConfigHostLocation: conf.ConfigHostLocation,
-		agents:             map[int]*agent{},
+func NewPipeline() *Pipeline {
+	uid, _ := uuid.NewV4()
+
+	return &Pipeline{
+		Uuid:               uid.String(),
+		Label:              uid.String(),
+		Description:        "",
+		ConfigLocation:     "",
+		ConfigHostLocation: fqdn.Get(),
+		agents:             map[int]*Agent{},
+	}
+}
+
+func (p *Pipeline) AddAgent(a Agent) error {
+	a.PipelineName = p.Label
+	a.PipelineUUID = p.Uuid
+	p.agents[a.ID] = &a
+	return nil
+}
+
+// Start all agents, begin with last
+func (p *Pipeline) Start() (string, error) {
+
+	if _, ok := pipelines.Load(p.Uuid); ok {
+		// a pipeline with same uuid is already running
+		return "", fmt.Errorf("a pipeline with uuid %s is already running", p.Uuid)
 	}
 
 	//normalize
-	configAgents = config.Normalize(configAgents)
+	for i, _ := range p.agents {
+		p.agents[i].AgentRecipients = whoWaitForThisAgentID(p.agents[i].ID, p.agents)
+	}
 
-	// for each agents in configAgents (outputs first)
-	orderedAgentConfList := config.Sort(configAgents, config.SortInputsFirst)
+	orderedAgentConfList := Sort(p.agents, SortInputsFirst)
 	for _, agentConf := range orderedAgentConfList {
-		agentConf.PipelineID = p.ID
+		agentConf.PipelineUUID = p.Uuid
 		agentConf.PipelineName = p.Label
-		a, err := newAgent(agentConf)
+		Log().Debugf("%s Agent '%-d' ", agentConf.Type, agentConf.ID)
+		err := buildAgent(agentConf)
 		if err != nil {
-			Log().Errorf("%s agent '%-d' can not start", agentConf.Type, agentConf.ID)
-			return nil, err
+			Log().Errorf("%s Agent '%-d': %s", agentConf.Type, agentConf.ID, err.Error())
+			return "", err
 		}
 
 		// register input chan for futur reference and connecting
@@ -39,46 +69,34 @@ func newPipeline(conf *config.Pipeline, configAgents []config.Agent) (*Pipeline,
 			// find agent source.ID aSource
 			aSource := p.agents[sourcePort.AgentID]
 			// add a(in) to aSource outputs with port
-			aSource.addOutput(a.packetChan, sourcePort.PortNumber)
+			aSource.addOutput(agentConf.packetChan, sourcePort.PortNumber)
 		}
-		p.addAgent(a)
+		Log().Debugf("%s Agent '%-d' configured", agentConf.Type, agentConf.ID)
 	}
 
-	return p, nil
-}
-
-func (p *Pipeline) addAgent(a *agent) error {
-	a.conf.PipelineName = p.Label
-	a.conf.PipelineID = p.ID
-	p.agents[a.ID] = a
-
-	return nil
-}
-
-// Start all agents, begin with last
-func (p *Pipeline) start() error {
-	orderedAgentConfList := config.Sort(p.agentsConfiguration(), config.SortOutputsFirst)
+	orderedAgentConfList = Sort(p.agents, SortOutputsFirst)
 	for _, agentConf := range orderedAgentConfList {
 		Log().Debugf("start %d - %s", agentConf.ID, p.agents[agentConf.ID].Label)
 		p.agents[agentConf.ID].start()
 	}
-	return nil
+	p.StartedAt = time.Now()
+	pipelines.Store(p.Uuid, p)
+	return p.Uuid, nil
 }
 
-func (p *Pipeline) agentsConfiguration() []config.Agent {
-	agentsConf := []config.Agent{}
-	for _, a := range p.agents {
-		agentsConf = append(agentsConf, a.conf)
-	}
-	return agentsConf
+func (p *Pipeline) Stop() error {
+	return StopPipeline(p.Uuid)
 }
 
-// Stop all agents, begin with first
 func (p *Pipeline) stop() error {
-	orderedAgentConfList := config.Sort(p.agentsConfiguration(), config.SortInputsFirst)
+	orderedAgentConfList := Sort(p.agents, SortInputsFirst)
 	for _, agentConf := range orderedAgentConfList {
 		Log().Debugf("stop %d - %s", agentConf.ID, p.agents[agentConf.ID].Label)
 		p.agents[agentConf.ID].stop()
 	}
 	return nil
+}
+
+func (p *Pipeline) Agents() map[int]*Agent {
+	return p.agents
 }

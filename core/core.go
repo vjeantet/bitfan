@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
 	"golang.org/x/sync/syncmap"
 
-	fqdn "github.com/ShowMax/go-fqdn"
-	"github.com/justinas/alice"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/vjeantet/bitfan/core/config"
+	"github.com/spf13/viper"
+
+	"github.com/vjeantet/bitfan/core/memory"
+	"github.com/vjeantet/bitfan/core/metrics"
+	"github.com/vjeantet/bitfan/core/webhook"
+	"github.com/vjeantet/bitfan/store"
 )
 
 var (
-	metrics     Metrics
+	myMetrics   metrics.Metrics
 	myScheduler *scheduler
-	myStore     *memory
+	myMemory    *memory.Memory
+	myStore     *store.Store
 
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
 	dataLocation               string                      = "data"
@@ -25,14 +27,24 @@ var (
 	pipelines syncmap.Map = syncmap.Map{}
 )
 
-type FnMux func(sm *http.ServeMux)
+type fnMux func(sm *http.ServeMux)
+
+type Options struct {
+	Host         string
+	HttpHandlers []fnMux
+	Debug        bool
+	VerboseLog   bool
+	LogFile      string
+	DataLocation string
+	Prometheus   string
+}
 
 func init() {
-	metrics = &MetricsVoid{}
+	myMetrics = metrics.New()
 	myScheduler = newScheduler()
 	myScheduler.Start()
 	//Init Store
-	myStore = NewMemory(dataLocation)
+	myMemory = memory.New()
 }
 
 // RegisterProcessor is called by the processor loader when the program starts
@@ -42,128 +54,142 @@ func RegisterProcessor(name string, procFact ProcessorFactory) {
 	availableProcessorsFactory[name] = procFact
 }
 
-func SetMetrics(s Metrics) {
-	metrics = s
-}
-
-func SetDataLocation(location string) error {
+func setDataLocation(location string) error {
 	dataLocation = location
 	fileInfo, err := os.Stat(dataLocation)
 	if err != nil {
 		err = os.MkdirAll(dataLocation, os.ModePerm)
 		if err != nil {
-			Log().Errorf("%s - %s", dataLocation, err)
-		} else {
-			Log().Debugf("created folder %s", dataLocation)
+			Log().Errorf("%s - %v", dataLocation, err)
+			return err
 		}
+		Log().Debugf("created folder %s", dataLocation)
 	} else {
 		if !fileInfo.IsDir() {
 			Log().Errorf("data path %s is not a directory", dataLocation)
+			return err
 		}
 	}
 	Log().Debugf("data location : %s", location)
+
+	// DB
+	myStore, err = store.New(location, Log())
+	if err != nil {
+		Log().Errorf("failed to start store : %s", err.Error())
+		return err
+	}
+
 	return err
 }
 
-// DataLocation returns the bitfan's data filepath
-func DataLocation() string {
-	return dataLocation
+// TODO : should be unexported
+func Storage() *store.Store {
+	return myStore
 }
 
-func WebHookServer() FnMux {
-	whPrefixURL = "/"
+func HTTPHandler(path string, s http.Handler) fnMux {
 	return func(sm *http.ServeMux) {
-		commonHandlers := alice.New(loggingHandler, recoverHandler)
-		sm.Handle(whPrefixURL, commonHandlers.ThenFunc(routerHandler))
-		Log().Debugf("serving %s to webHooks", whPrefixURL)
+		sm.Handle(path, s)
 	}
 }
 
-func ApiServer(s http.Handler) FnMux {
-	return func(sm *http.ServeMux) {
-		sm.Handle("/api/v1/", s)
-		Log().Debugf("serving /api/v1/ to api")
-	}
-}
-
-func PrometheusServer(path string) FnMux {
-	SetMetrics(NewPrometheus())
-	return func(sm *http.ServeMux) {
-		sm.Handle(path, prometheus.Handler())
-		Log().Debugf("serving %s to prometheus", path)
-	}
-}
-
-func ListenAndServe(addr string, hs ...FnMux) {
+func listenAndServe(addr string, hs ...fnMux) {
 	httpServerMux := http.NewServeMux()
 	for _, h := range hs {
 		h(httpServerMux)
 	}
 	go http.ListenAndServe(addr, httpServerMux)
-
-	addrSpit := strings.Split(addr, ":")
-	if addrSpit[0] == "0.0.0.0" {
-		addrSpit[0] = fqdn.Get()
-	}
-
-	baseURL = fmt.Sprintf("http://%s:%s", addrSpit[0], addrSpit[1])
-
-	Log().Infof("Ready to serve on %s", baseURL)
+	Log().Infof("Ready to serve on %s", addr)
 }
 
-// StartPipeline load all agents form a configPipeline and returns pipeline's ID
-func StartPipeline(configPipeline *config.Pipeline, configAgents []config.Agent) (int, error) {
-	p, err := newPipeline(configPipeline, configAgents)
-	if err != nil {
-		return 0, err
+func Start(opt Options) {
+	if opt.VerboseLog {
+		setLogVerboseMode()
 	}
-	pipelines.Store(p.ID, p)
 
-	err = p.start()
+	if opt.Debug {
+		setLogDebugMode()
+	}
 
-	return p.ID, err
+	if opt.LogFile != "" {
+		setLogOutputFile(viper.GetString("log"))
+	}
+
+	if err := setDataLocation(opt.DataLocation); err != nil {
+		Log().Errorf("error with data location - %v", err)
+		panic(err.Error())
+	}
+
+	if opt.Prometheus != "" {
+		m := metrics.NewPrometheus(opt.Prometheus)
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler(m.Path, m.HTTPHandler()))
+		myMetrics = m
+	}
+
+	if len(opt.HttpHandlers) > 0 {
+		webhook.Log = logger
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/", webhook.Handler(opt.Host)))
+
+		listenAndServe(opt.Host, opt.HttpHandlers...)
+	}
+
+	Log().Debugln("bitfan started")
 }
 
-func StopPipeline(ID int) error {
+func StopPipeline(Uuid string) error {
 	var err error
-	if p, ok := pipelines.Load(ID); ok {
+	if p, ok := pipelines.Load(Uuid); ok {
 		err = p.(*Pipeline).stop()
 	} else {
-		err = fmt.Errorf("Pipeline %d not found", ID)
+		err = fmt.Errorf("Pipeline %s not found", Uuid)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	pipelines.Delete(ID)
+	pipelines.Delete(Uuid)
 	return nil
 }
 
 // Stop each pipeline
 func Stop() error {
-	var IDS = []int{}
+	var Uuids = []string{}
 	pipelines.Range(func(key, value interface{}) bool {
-		IDS = append(IDS, key.(int))
+		Uuids = append(Uuids, key.(string))
 		return true
 	})
 
-	for _, ID := range IDS {
-		err := StopPipeline(ID)
+	for _, Uuid := range Uuids {
+		p, ok := GetPipeline(Uuid)
+		if !ok {
+			Log().Error("Stop Pipeline - pipeline " + Uuid + " not found")
+			continue
+		}
+		err := p.Stop()
 		if err != nil {
 			Log().Error(err)
 		}
 	}
 
-	myStore.close()
-
+	myMemory.Close()
+	myStore.Close()
 	return nil
 }
 
-func Pipelines() map[int]*Pipeline {
-	pps := map[int]*Pipeline{}
+func GetPipeline(UUID string) (*Pipeline, bool) {
+	if i, found := pipelines.Load(UUID); found {
+		return i.(*Pipeline), found
+	} else {
+		return nil, found
+	}
+}
+
+// Pipelines returns running core.Pipeline
+func Pipelines() map[string]*Pipeline {
+	pps := map[string]*Pipeline{}
 	pipelines.Range(func(key, value interface{}) bool {
-		pps[key.(int)] = value.(*Pipeline)
+		pps[key.(string)] = value.(*Pipeline)
 		return true
 	})
 	return pps

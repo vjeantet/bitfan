@@ -5,12 +5,12 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"html/template"
 	"strings"
-	"text/template"
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -87,7 +87,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.Logger.Warningln("No interval set")
 	}
 
-	loc, err := location.NewLocation(p.opt.Statement, p.ConfigWorkingLocation)
+	loc, err := commons.NewLocation(p.opt.Statement, p.ConfigWorkingLocation)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 	p.StatementTmpl, err = template.New("statement").Parse(p.opt.Statement)
 	if err != nil {
-		p.Logger.Errorf("sql Statement tpl error : %s", err)
+		p.Logger.Errorf("sql Statement tpl error : %v", err)
 		return err
 	}
 

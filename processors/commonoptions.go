@@ -1,8 +1,6 @@
 package processors
 
-import (
-	"github.com/clbanning/mxj"
-)
+import "github.com/clbanning/mxj"
 
 type CommonOptions struct {
 	// If this filter is successful, add any arbitrary fields to this event.
@@ -28,8 +26,25 @@ type CommonOptions struct {
 	// ` }
 	// If the event has field "somefield" == "hello" this filter, on success, would remove the tag foo_hello if it is present. The second example would remove a sad, unwanted tag as well.
 	RemoveTag []string `mapstructure:"remove_tag"`
+
+	// Log each event produced by the processor (usefull while building or debugging a pipeline)
+	Trace bool `mapstructure:"trace"`
 }
 
 func (c *CommonOptions) ProcessCommonOptions(data *mxj.Map) {
-	processCommonFields(data, c.AddField, c.AddTag, c.Type, c.RemoveField, c.RemoveTag)
+	if len(c.AddField) > 0 {
+		AddFields(c.AddField, data)
+	}
+	if len(c.AddTag) > 0 {
+		AddTags(c.AddTag, data)
+	}
+	if c.Type != "" {
+		SetType(c.Type, data)
+	}
+	if len(c.RemoveField) > 0 {
+		RemoveFields(c.RemoveField, data)
+	}
+	if len(c.RemoveTag) > 0 {
+		RemoveTags(c.RemoveTag, data)
+	}
 }

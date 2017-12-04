@@ -1,0 +1,30 @@
+## This is a TOML document.
+
+# host = "127.0.0.1:5123"
+
+## path to pipelines configuration to load on start
+# config = [ "./examples.d/simple.conf"]
+
+
+## Where bitfan may store data, sincedb, remote configuration, etc...
+# data = "/var/bitfan"
+
+## Where to save logs ?
+## Default is stdout
+# log = "/var/log/bitfan-app.log"
+
+## Set log verbosity on core and/or processors
+# verbose = true (default)
+
+# # Debuging
+#debug = true
+
+# Default number of concurent packet processing for processor ?
+# Can be overided in pipeline configuration
+[plugin]
+workers = 2
+
+## Expose metrics to prometheus
+## metrics names start with "bitfan_"
+# [prometheus]
+# path ="/metrics"

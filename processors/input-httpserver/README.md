@@ -21,6 +21,8 @@ URL is available as http://webhookhost/pluginLabel/URI
 |---------|--------|----------|---------------|
 | Codec   | codec  | false    | "plain"       |
 | Uri     | string | false    | "events"      |
+| headers | hash   | false    | {}            |
+| body    | array  | false    | ["uuid"]      |
 
 
 ## Details
@@ -32,11 +34,27 @@ URL is available as http://webhookhost/pluginLabel/URI
 The codec used for input data. Input codecs are a convenient method for decoding
 your data before it enters the input, without needing a separate filter in your bitfan pipeline
 
+Default decode http request as plain data, response is json encoded.
+Set multiple codec with role to customize
+
 ### Uri
 * Value type is string
 * Default value is `"events"`
 
 URI path
+
+### headers
+* Value type is hash
+* Default value is `{}`
+
+Headers to send back into each outgoing response
+@LSExample {"X-Processor" => "bitfan"}
+
+### body
+* Value type is array
+* Default value is `["uuid"]`
+
+What to send back to client ?
 
 
 
@@ -46,5 +64,7 @@ URI path
 httpserverprocessor{
 	codec => "plain"
 	uri => "events"
+	headers => {}
+	body => ["uuid"]
 }
 ```

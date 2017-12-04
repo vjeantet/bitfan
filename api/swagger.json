@@ -1,254 +1,41 @@
 {
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
-  "schemes": [
-    "http"
-  ],
   "swagger": "2.0",
-  "info": {
-    "description": "the purpose of this api....\n\nThis should demonstrate all the possible comment annotations\nthat are available to turn go code into a fully compliant swagger 2.0 spec",
-    "title": "Bitfan API.",
-    "termsOfService": "there are no TOS",
-    "contact": {
-      "name": "Valere JEANTET",
-      "url": "http://vjeantet.fr",
-      "email": "valere.jeantet@gmail.com"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    },
-    "version": "0.0.1"
-  },
-  "host": "127.0.0.1:5123",
-  "basePath": "/api/v1",
-  "paths": {
-    "/docs": {
-      "get": {
-        "description": "This will show all avaialable plugins.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "doc"
-        ],
-        "summary": "Lists plugins.",
-        "operationId": "listDocs",
-        "responses": {
-          "200": {
-            "description": "processor doc response",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/processorDoc"
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/pipelines": {
-      "get": {
-        "description": "This will show all running pipelines.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "pipeline"
-        ],
-        "summary": "Lists pipelines.",
-        "operationId": "listPipelines",
-        "responses": {
-          "200": {
-            "description": "pipelines response",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Pipeline"
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "This will start pipeline.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "pipeline"
-        ],
-        "summary": "Start a pipeline.",
-        "operationId": "addPipeline",
-        "parameters": [
-          {
-            "description": "Pipeline object that needs to be started",
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Pipeline"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "pipeline response",
-            "schema": {
-              "$ref": "#/definitions/Pipeline"
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/pipelines/{id}": {
-      "get": {
-        "description": "This will show a running pipeline.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "pipeline"
-        ],
-        "summary": "Get a pipeline.",
-        "operationId": "getPipeline",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Pipeline ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "pipeline response",
-            "schema": {
-              "$ref": "#/definitions/Pipeline"
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "delete": {
-        "description": "This will stop pipeline by ID.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "pipeline"
-        ],
-        "summary": "Stop a running pipeline.",
-        "operationId": "stopPipeline",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Pipeline ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "pipelines response"
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/pipelines/{id}/assets": {
-      "get": {
-        "description": "This will show configuration assets from a running pipeline.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "pipeline"
-        ],
-        "summary": "Get pipeline's assets",
-        "operationId": "getPipeline",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Pipeline ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "assets response",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Asset"
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    }
-  },
+  "paths": {},
   "definitions": {
     "Asset": {
       "type": "object",
       "properties": {
-        "content": {
-          "description": "Base64 encoded content",
-          "type": "string",
-          "x-go-name": "Content"
+        "ContentType": {
+          "type": "string"
         },
-        "path": {
-          "description": "relative path of asset",
+        "CreatedAt": {},
+        "Name": {
+          "type": "string"
+        },
+        "PipelineUUID": {
+          "type": "string"
+        },
+        "Size": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "UpdatedAt": {},
+        "Value": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint8"
+          }
+        },
+        "uuid": {
           "type": "string",
-          "x-go-name": "Path"
+          "x-go-name": "Uuid"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     },
     "Error": {
       "description": "A Error is ....\n\nA Error can have.....",
@@ -260,13 +47,24 @@
           "x-go-name": "Message"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     },
     "Pipeline": {
       "description": "A Pipeline is ....\n\nA Pipeline can have.....",
       "type": "object",
       "title": "Pipeline represents a pipeline",
       "properties": {
+        "Active": {
+          "type": "boolean"
+        },
+        "CreatedAt": {},
+        "Description": {
+          "type": "string"
+        },
+        "LocationPath": {
+          "type": "string"
+        },
+        "UpdatedAt": {},
         "assets": {
           "description": "Assets",
           "type": "array",
@@ -275,9 +73,9 @@
           },
           "x-go-name": "Assets"
         },
-        "config_content": {
-          "type": "string",
-          "x-go-name": "Content"
+        "auto_start": {
+          "type": "boolean",
+          "x-go-name": "AutoStart"
         },
         "config_host_location": {
           "description": "the location's host",
@@ -289,20 +87,20 @@
           "type": "string",
           "x-go-name": "ConfigLocation"
         },
-        "id": {
-          "description": "the id for this pipeline",
-          "type": "integer",
-          "format": "int64",
-          "x-go-name": "ID"
-        },
         "label": {
           "description": "the Label",
           "type": "string",
-          "minLength": 3,
           "x-go-name": "Label"
+        },
+        "started_at": {
+          "x-go-name": "StartedAt"
+        },
+        "uuid": {
+          "type": "string",
+          "x-go-name": "Uuid"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     },
     "processorDoc": {
       "description": "A Doc is ....\n\nA Doc can have.....",
@@ -400,7 +198,7 @@
           "x-go-name": "Ports"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api"
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
     }
   }
 }

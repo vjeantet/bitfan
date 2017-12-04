@@ -1,16 +1,20 @@
 # HTTPPOLLER
-HTTPPoller allows you to call an HTTP Endpoint, decode the output into an event
+HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output into an event
 
 ## Synopsys
 
 
-| SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
-|----------|--------|----------|---------------|
-| codec    | codec  | false    | "plain"       |
-| interval | string | false    | ""            |
-| method   | string | false    | "GET"         |
-| url      | string | true     | ""            |
-| target   | string | false    | ""            |
+|    SETTING     |   TYPE   | REQUIRED | DEFAULT VALUE |
+|----------------|----------|----------|---------------|
+| codec          | codec    | false    | "plain"       |
+| interval       | string   | false    | ""            |
+| method         | string   | false    | "GET"         |
+| headers        | hash     | false    | {}            |
+| body           | location | false    | ?             |
+| url            | string   | true     | ""            |
+| target         | string   | false    | ""            |
+| ignore_failure | bool     | false    | true          |
+| var            | hash     | false    | {}            |
 
 
 ## Details
@@ -34,6 +38,18 @@ Use CRON or BITFAN notation
 
 Http Method
 
+### headers
+* Value type is hash
+* Default value is `{}`
+
+Define headers for the request.
+
+### body
+* Value type is location
+* Default value is `?`
+
+The request body (e.g. for an HTTP POST request). No default body is specified
+
 ### url
 * This is a required setting.
 * Value type is string
@@ -47,6 +63,22 @@ URL
 
 When data is an array it stores the resulting data into the given target field.
 
+### ignore_failure
+* Value type is bool
+* Default value is `true`
+
+When true, unsuccessful HTTP requests, like unreachable connections, will
+not raise an event, but a log message.
+When false an event is generated with a tag _http_request_failure
+
+### var
+* Value type is hash
+* Default value is `{}`
+
+You can set variable to be used in Body by using ${var}.
+each reference will be replaced by the value of the variable found in Body's content
+The replacement is case-sensitive.
+
 
 
 ## Configuration blueprint
@@ -56,7 +88,11 @@ httppoller{
 	codec => "plain"
 	interval => "every_10s"
 	method => "GET"
+	headers => {"User-Agent":"Bitfan","Accept":"application/json"}
+	body => location
 	url=> "http://google.fr"
 	target => ""
+	ignore_failure => true
+	var => {"hostname"=>"myhost","varname"=>"varvalue"}
 }
 ```

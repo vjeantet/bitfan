@@ -87,22 +87,7 @@ Value will be parsed as a go template.
 
 Theses functions are available to go templates
 
-
-| name | description | params | examples |
-| ----------   | ---------- | --------------  | -------------------------- |
-| TS | format event's @timestamp with [jodaTime layout](http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html) | params | examples |
-| DateFormat | format a time.Time with jodaTime layout | params | examples |
-| Time | converts the textual representation of the datetime string into a time.Time | params | examples |
-| Now | returns the current local time. | params | examples |
-| NumFmt | format a number | params | examples |
-| SafeHTML | use string as HTML | params | examples |
-| HTMLUnescape | unescape a html string | params | examples |
-| HTMLEscape | escape a html string | params | examples |
-| Lower | lowercase a string | params | examples |
-| Upper | uppercase a string | params | examples |
-| Trim | trim a string | params | examples |
-
-
+[list of available functions]({{%relref "pipelines/template.md"%}})
 
 ## Interval
 

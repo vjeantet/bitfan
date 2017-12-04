@@ -6,29 +6,29 @@
 
 |        SETTING         |    TYPE    | REQUIRED | DEFAULT VALUE |
 |------------------------|------------|----------|---------------|
-| ack                    | bool       | false    | ?             |
+| ack                    | bool       | false    | false         |
 | ack_batch_size         | uint64     | false    | ?             |
 | add_field              | hash       | false    | {}            |
 | arguments              | amqp.Table | false    | ?             |
-| auto_delete            | bool       | false    | ?             |
+| auto_delete            | bool       | false    | false         |
 | codec                  | string     | false    | ""            |
 | connect_retry_interval | uint64     | false    | ?             |
-| durable                | bool       | false    | ?             |
+| durable                | bool       | false    | false         |
 | exchange               | string     | false    | ""            |
-| exclusive              | bool       | false    | ?             |
+| exclusive              | bool       | false    | false         |
 | heartbeat              | int        | false    |             0 |
 | host                   | string     | false    | ""            |
 | key                    | string     | false    | ""            |
-| metadata_enabled       | bool       | false    | ?             |
-| passive                | bool       | false    | ?             |
+| metadata_enabled       | bool       | false    | false         |
+| passive                | bool       | false    | false         |
 | password               | string     | false    | ""            |
 | port                   | int        | false    |             0 |
 | prefetch_count         | int        | false    |             0 |
 | queue                  | string     | false    | ""            |
-| ssl                    | bool       | false    | ?             |
+| ssl                    | bool       | false    | false         |
 | tags                   | array      | false    | []            |
 | user                   | string     | false    | ""            |
-| verify_ssl             | bool       | false    | ?             |
+| verify_ssl             | bool       | false    | false         |
 | vhost                  | string     | false    | ""            |
 
 
@@ -36,7 +36,7 @@
 
 ### ack
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Enable message acknowledgements. Default value is true
 
@@ -67,7 +67,7 @@ E.g. to make a RabbitMQ queue mirrored, use: {"x-ha-policy" => "all"}
 
 ### auto_delete
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Should the queue be deleted on the broker when the last consumer disconnects? Default value is false
 
@@ -89,7 +89,7 @@ Time in seconds to wait before retrying a connection. Default value is 1
 
 ### durable
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Is this queue durable (a.k.a "Should it survive a broker restart?"")?  Default value is false
 
@@ -101,7 +101,7 @@ The name of the exchange to bind the queue to. There is no default value for thi
 
 ### exclusive
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Is the queue exclusive? Default value is false
 
@@ -129,7 +129,7 @@ This is only relevant for direct or topic exchanges.
 
 ### metadata_enabled
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Not implemented! Enable the storage of message headers and properties in @metadata. Default value is false
 
@@ -137,7 +137,7 @@ This may impact performance
 
 ### passive
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Use queue passively declared, meaning it must already exist on the server. Default value is false
 
@@ -172,7 +172,7 @@ The name of the queue BitFan will consume events from. If left empty, a transien
 
 ### ssl
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Enable or disable SSL. Default value is false
 
@@ -192,7 +192,7 @@ RabbitMQ username. Default value is "guest"
 
 ### verify_ssl
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Validate SSL certificate. Default value is false
 

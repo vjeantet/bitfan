@@ -52,14 +52,13 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Type Codec
 	// @Default "plain"
-	Codec codecs.Codec `mapstructure:"codec"`
+	Codec codecs.CodecCollection `mapstructure:"codec"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
 	defaults := options{
 		Target: "stdout",
 		Stdin:  false,
-		Codec:  codecs.New("plain", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
 	}
 	p.opt = &defaults
 
@@ -116,6 +115,7 @@ func (p *processor) doExec(inData []byte, e processors.IPacket) (data []byte, er
 		processors.Dynamic(&a, e.Fields())
 		args = append(args, a)
 	}
+	p.Logger.Debugf("command '%s', args=%s", p.opt.Command, args)
 	cmd = exec.Command(p.opt.Command, args...)
 	cmd.Stderr = &buferr
 	stdin, err := cmd.StdinPipe()

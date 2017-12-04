@@ -26,14 +26,13 @@ func New() processors.Processor {
 type processor struct {
 	processors.Base
 
-	opt                 *options
-	sinceDBInfos        map[string]*sinceDBInfo
-	sinceDBLastInfosRaw []byte
-	sinceDBLastSaveTime time.Time
-	q                   chan bool
-	wg                  sync.WaitGroup
-	sinceDBInfosMutex   *sync.Mutex
-	host                string
+	sinceDB *processors.SinceDB
+
+	opt        *options
+	q          chan bool
+	wg         sync.WaitGroup
+	host       string
+	watchFiles map[string]bool
 }
 
 type options struct {
@@ -53,7 +52,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Type Codec
 	// @Default "line"
-	Codec codecs.Codec `mapstructure:"codec"`
+	Codec codecs.CodecCollection `mapstructure:"codec"`
 
 	// Set the new line delimiter. Default value is "\n"
 	// @Default "\n"
@@ -125,17 +124,21 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		SincedbPath:          ".sincedb.json",
 		SincedbWriteInterval: 15,
 		StatInterval:         1,
-		Codec:                codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		DiscoverInterval:     15,
+		Codec: codecs.CodecCollection{
+			Dec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
 	}
 	p.opt = &defaults
 	p.host = fqdn.Get()
 
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
 
-	if false == filepath.IsAbs(p.opt.SincedbPath) {
-		p.opt.SincedbPath = filepath.Join(p.DataLocation, p.opt.SincedbPath)
-	}
+	return err
+}
 
+func (p *processor) filesToRead() ([]string, error) {
+	p.Logger.Debugf("Start discover files in : %v", p.opt.Path)
 	// Fix relative paths
 	fixedPaths := []string{}
 	for _, path := range p.opt.Path {
@@ -144,46 +147,111 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		}
 		fixedPaths = append(fixedPaths, path)
 	}
-	p.opt.Path = fixedPaths
 
-	return err
+	p.Logger.Debugf("fixedPaths = %v", fixedPaths)
+
+	var matches []string
+	// find files
+	for _, currentPath := range fixedPaths {
+		if currentMatches, err := zglob.Glob(currentPath); err == nil {
+			matches = append(matches, currentMatches...)
+			continue
+		}
+		return matches, fmt.Errorf("glob(%q) failed", currentPath)
+	}
+
+	// ignore excluded
+	if len(p.opt.Exclude) > 0 {
+		var matches_tmp []string
+		for _, pattern := range p.opt.Exclude {
+			for _, name := range matches {
+				if match, _ := filepath.Match(pattern, name); match == false {
+					matches_tmp = append(matches_tmp, name)
+				} else {
+					p.Logger.Debugf("scan ignore (exlude) %s", name)
+				}
+			}
+		}
+		matches = matches_tmp
+	}
+
+	// ignore already seen files
+	// var matches_tmp []string
+	// for _, name := range matches {
+	// 	if !p.sinceDBInfos.has(name) {
+	// 		matches_tmp = append(matches_tmp, name)
+	// 	} else {
+	// 		p.Logger.Debugf("scan ignore (sincedb) %s", name)
+	// 	}
+	// }
+	// matches = matches_tmp
+
+	var matches_tmp []string
+	for _, name := range matches {
+		info, err := os.Stat(name)
+		if err != nil {
+			p.Logger.Warnf("Error while stating " + name)
+			break
+		}
+		duration := time.Since(info.ModTime()).Seconds()
+		// ignore modified to soon
+		if duration > float64(p.opt.IgnoreOlder) {
+			// ignore  too old file
+			if p.opt.IgnoreOlder > 0 && duration < float64(p.opt.IgnoreOlder) {
+				p.Logger.Debugf("scan ignore (too old) %s", name)
+			} else {
+				matches_tmp = append(matches_tmp, name)
+			}
+		}
+	}
+	matches = matches_tmp
+	return matches, nil
+}
+
+func (p *processor) discoverFilesToRead() error {
+	files, err := p.filesToRead()
+	if err != nil {
+		return err
+	}
+	for _, name := range files {
+		if _, ok := p.watchFiles[name]; !ok {
+			p.watchFiles[name] = true
+			p.wg.Add(1)
+			go p.tailFile(name, p.q)
+			p.Logger.Debugf("Watch on file : %s", name)
+		}
+	}
+	return nil
 }
 
 func (p *processor) Start(e processors.IPacket) error {
 
 	watch.POLL_DURATION = time.Second * time.Duration(p.opt.StatInterval)
 	p.q = make(chan bool)
+	p.watchFiles = make(map[string]bool)
 
-	var matches []string
+	p.sinceDB = processors.NewSinceDB(&processors.SinceDBOptions{
+		Identifier:    p.opt.SincedbPath,
+		WriteInterval: p.opt.SincedbWriteInterval,
+		Storage:       p.Store,
+	})
 
-	for _, currentPath := range p.opt.Path {
-		if currentMatches, err := zglob.Glob(currentPath); err == nil {
-			matches = append(matches, currentMatches...)
-			continue
-		} else {
-			p.Logger.Warningf("%s : %s", err.Error(), currentPath)
-		}
-
-	}
-
-	if len(p.opt.Exclude) > 0 {
-		for i, name := range matches {
-			for _, pattern := range p.opt.Exclude {
-				if match, _ := filepath.Match(pattern, name); match == true {
-					matches = append(matches[:i], matches[i+1:]...)
-				}
+	go func() {
+		ticker := time.NewTicker(time.Duration(p.opt.DiscoverInterval) * time.Second)
+		defer ticker.Stop()
+		for {
+			if err := p.discoverFilesToRead(); err != nil {
+				p.Logger.Error(err)
 			}
+			select {
+			case <-ticker.C:
+				continue
+			case <-p.q:
+				return
+			}
+
 		}
-	}
-
-	p.loadSinceDBInfos()
-	p.Logger.Debugf("Files matches : %s", matches)
-	for _, filePath := range matches {
-		p.wg.Add(1)
-		go p.tailFile(filePath, p.q)
-	}
-
-	go p.checkSaveSinceDBInfosLoop()
+	}()
 
 	return nil
 }
@@ -191,7 +259,7 @@ func (p *processor) Start(e processors.IPacket) error {
 func (p *processor) Stop(e processors.IPacket) error {
 	close(p.q)
 	p.wg.Wait()
-	p.saveSinceDBInfos()
+	p.sinceDB.Close()
 	return nil
 }
 
@@ -201,36 +269,30 @@ func (p *processor) Stop(e processors.IPacket) error {
 func (p *processor) tailFile(path string, q chan bool) error {
 	defer p.wg.Done()
 	var (
-		since  *sinceDBInfo
-		ok     bool
+		offset int
 		whence int
+		err    error
 	)
 
-	p.sinceDBInfosMutex.Lock()
-	if since, ok = p.sinceDBInfos[path]; !ok {
-		p.sinceDBInfos[path] = &sinceDBInfo{}
-		since = p.sinceDBInfos[path]
-	}
-	p.sinceDBInfosMutex.Unlock()
-
-	if p.opt.StartPosition == "beginning" {
-		since.Offset = 0
+	offset, err = p.sinceDB.RessourceOffset(path)
+	if err != nil {
+		return err
 	}
 
-	if since.Offset == 0 {
-		if p.opt.StartPosition == "end" {
-			whence = os.SEEK_END
-		} else {
-			whence = os.SEEK_SET
-		}
-	} else {
+	// Default start reading at end
+	whence = os.SEEK_END
+	// if this is not the first contact with this file set cursor
+	if offset != 0 {
+		whence = os.SEEK_SET
+	} else if p.opt.StartPosition == "beginning" {
+		// if this is the first contact and use want to start at the beginning set cursor at 0
 		whence = os.SEEK_SET
 	}
 
 	t, err := tail.TailFile(path, tail.Config{
 		Logger: p.Logger,
 		Location: &tail.SeekInfo{
-			Offset: since.Offset,
+			Offset: int64(offset),
 			Whence: whence,
 		},
 		Follow: true,
@@ -248,6 +310,10 @@ func (p *processor) tailFile(path string, q chan bool) error {
 
 	var dec codecs.Decoder
 	pr, pw := io.Pipe()
+	defer func() {
+		pr.Close()
+		pw.Close()
+	}()
 
 	if dec, err = p.opt.Codec.NewDecoder(pr); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
@@ -255,43 +321,48 @@ func (p *processor) tailFile(path string, q chan bool) error {
 	}
 
 	go func() {
-		for {
+		for dec.More() {
 			var record interface{}
 			if err := dec.Decode(&record); err != nil {
-				p.Logger.Errorln("codec error : ", err.Error())
-				return
-			} else {
-				var e processors.IPacket
-				switch v := record.(type) {
-				case string:
-					e = p.NewPacket(v, map[string]interface{}{
-						"host": p.host,
-					})
-				case map[string]interface{}:
-					e = p.NewPacket("", v)
-					e.Fields().SetValueForPath(p.host, "host")
-				case []interface{}:
-					e = p.NewPacket("", map[string]interface{}{
-						"host": p.host,
-						"data": v,
-					})
-				default:
-					p.Logger.Errorf("Unknow structure %#v", v)
+				if err == io.EOF {
+					p.Logger.Debugf("codec EOF ")
+				} else {
+					p.Logger.Errorln("codec error : ", err.Error())
 				}
 
-				p.opt.ProcessCommonOptions(e.Fields())
-				p.Send(e)
-				since.Offset, _ = t.Tell()
-				p.checkSaveSinceDBInfos()
+				return
 			}
+			var e processors.IPacket
+			switch v := record.(type) {
+			case string:
+				e = p.NewPacket(v, map[string]interface{}{
+					"host": p.host,
+					"path": path,
+				})
+			case map[string]interface{}:
+				e = p.NewPacket("", v)
+				e.Fields().SetValueForPath(p.host, "host")
+				e.Fields().SetValueForPath(path, "path")
+			case []interface{}:
+				e = p.NewPacket("", map[string]interface{}{
+					"host": p.host,
+					"path": path,
+					"data": v,
+				})
+			default:
+				p.Logger.Errorf("Unknow structure %#v", v)
+			}
+
+			p.opt.ProcessCommonOptions(e.Fields())
+			p.Send(e)
+			offset64, _ := t.Tell()
+			p.sinceDB.SetRessourceOffset(path, int(offset64))
 		}
 	}()
 
 	for line := range t.Lines {
 		fmt.Fprintf(pw, "%s\n", line.Text)
 	}
-	pr.Close()
-	pw.Close()
 
 	return nil
 }

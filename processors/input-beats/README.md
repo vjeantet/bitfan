@@ -9,7 +9,7 @@
 | Congestion_threshold        | int    | false    |             0 |
 | Host                        | string | false    | ""            |
 | Port                        | int    | false    |             0 |
-| Ssl                         | bool   | false    | ?             |
+| Ssl                         | bool   | false    | false         |
 | Ssl_certificate             | string | false    | ""            |
 | Ssl_certificate_authorities | array  | false    | []            |
 | Ssl_key                     | string | false    | ""            |
@@ -41,7 +41,7 @@ The port to listen on (default 5044)
 
 ### Ssl
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Events are by default send in plain text,
 you can enable encryption by using ssl to true and

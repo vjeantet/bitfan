@@ -4,4 +4,4 @@ description = "Execute a command and use its stdout as event data"
 weight = 10
 +++
 
-{{% processordetails exec %}}
+{{% processordetails execinput %}}

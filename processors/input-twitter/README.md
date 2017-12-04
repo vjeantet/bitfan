@@ -13,8 +13,8 @@
 | Oauth_token_secret | string | false    | ""            |
 | Keywords           | array  | false    | []            |
 | Follows            | array  | false    | []            |
-| Full_tweet         | bool   | false    | ?             |
-| Ignore_retweets    | bool   | false    | ?             |
+| Full_tweet         | bool   | false    | false         |
+| Ignore_retweets    | bool   | false    | false         |
 | Languages          | array  | false    | []            |
 | Locations          | array  | false    | []            |
 | Tags               | array  | false    | []            |
@@ -71,13 +71,13 @@ See https://dev.twitter.com/streaming/overview/request-parameters#follow for mor
 
 ### Full_tweet
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Record full tweet object as given to us by the Twitter Streaming API
 
 ### Ignore_retweets
 * Value type is bool
-* Default value is `?`
+* Default value is `false`
 
 Lets you ingore the retweets coming out of the Twitter API. Default false
 

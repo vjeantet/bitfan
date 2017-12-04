@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -24,7 +23,7 @@ type options struct {
 	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
 	// @Default "line"
 	// @Type codec
-	Codec codecs.Codec
+	Codec codecs.CodecCollection
 
 	// Stop bitfan on stdin EOF ? (use it when you pipe data with |)
 	// @Default false
@@ -42,7 +41,9 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Codec:   codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		Codec: codecs.CodecCollection{
+			Dec: codecs.New("line", nil, ctx.Log(), ctx.ConfigWorkingLocation()),
+		},
 		EofExit: false,
 	}
 	p.opt = &defaults
@@ -52,7 +53,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	}
 
 	if p.host, err = os.Hostname(); err != nil {
-		p.Logger.Warnf("can not get hostname : %s", err.Error())
+		p.Logger.Warnf("can not get hostname : %v", err)
 	}
 
 	return err
@@ -73,7 +74,7 @@ func (p *processor) Start(e processors.IPacket) error {
 		defer func() {
 			if r := recover(); r != nil {
 				err := r.(error)
-				p.Logger.Errorf("Panic ! stdin - %s", err.Error())
+				p.Logger.Errorf("Panic ! stdin - %v", err)
 			}
 		}()
 
@@ -83,7 +84,8 @@ func (p *processor) Start(e processors.IPacket) error {
 				if err == io.EOF {
 					p.Logger.Debugf("codec end of file", err.Error())
 					if p.opt.EofExit {
-						core.Stop()
+						// TODO core.Stop()
+						p.Logger.Fatalln("IMPLEMENT THIS")
 						p, _ := os.FindProcess(os.Getpid())
 						p.Signal(os.Interrupt)
 					}

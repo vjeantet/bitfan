@@ -7,6 +7,21 @@
     "Doc": "",
     "Options": [
       {
+        "Alias": "codec",
+        "DefaultValue": "\"json\"",
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "PossibleValues": [
+          "\"json\"",
+          "\"line\"",
+          "\"pp\"",
+          "\"rubydebug\""
+        ],
+        "Required": false,
+        "Type": "codec"
+      },
+      {
         "Alias": "add_field",
         "DefaultValue": null,
         "Doc": "Add a field to an event. Default value is {}",
@@ -28,7 +43,7 @@
       },
       {
         "Alias": "headers",
-        "DefaultValue": null,
+        "DefaultValue": "{\"Content-Type\" =\u003e \"application/json\"}",
         "Doc": "Custom headers to use format is headers =\u003e {\"X-My-Header\", \"%{host}\"}. Default value is {}\nThis setting can be dynamic using the %{foo} syntax.",
         "ExampleLS": "",
         "Name": "Headers",
@@ -87,16 +102,6 @@
         "Type": "uint"
       },
       {
-        "Alias": "format",
-        "DefaultValue": "\"json_lines\"",
-        "Doc": "Set the format of the http body. Now supports only \"json_lines\"",
-        "ExampleLS": "",
-        "Name": "Format",
-        "PossibleValues": null,
-        "Required": false,
-        "Type": "string"
-      },
-      {
         "Alias": "retryable_codes",
         "DefaultValue": "[429, 500, 502, 503, 504]",
         "Doc": "If encountered as response codes this plugin will retry these requests",
@@ -132,6 +137,16 @@
         "Doc": "",
         "ExampleLS": "",
         "Name": "BatchSize",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "uint"
+      },
+      {
+        "Alias": "retry_interval",
+        "DefaultValue": "10",
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "RetryInterval",
         "PossibleValues": null,
         "Required": false,
         "Type": "uint"

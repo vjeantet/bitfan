@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/codecs/lib"
+	"github.com/vjeantet/bitfan/commons"
 )
 
 type encoder struct {
@@ -31,7 +31,7 @@ func NewEncoder(w io.Writer) *encoder {
 	return e
 }
 
-func (e *encoder) SetOptions(conf map[string]interface{}, logger lib.Logger, cwl string) error {
+func (e *encoder) SetOptions(conf map[string]interface{}, logger commons.Logger, cwl string) error {
 	if err := mapstructure.Decode(conf, &e.options); err != nil {
 		return err
 	}

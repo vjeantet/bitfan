@@ -21,7 +21,7 @@ var maskTimePattern *regexp.Regexp
 
 func init() {
 	maskTimePattern, _ = regexp.Compile(`%\{\+([^\}]+)\}`)
-	maskPattern, _ = regexp.Compile(`%\{\[?([^\}]+[^\]])\]?\}`)
+	maskPattern, _ = regexp.Compile(`%\{\[?([^\}]*[^\]])\]?\}`)
 }
 
 // Dynamic includes field value in place of %{key.path}
@@ -43,32 +43,12 @@ func Dynamic(str *string, fields *mxj.Map) {
 		for _, values := range maskPattern.FindAllStringSubmatch(*str, -1) {
 			values[1] = strings.Replace(values[1], `][`, `.`, -1)
 			// Search matching value, when not found use ""
-			*str = strings.Replace(*str, values[0], fields.ValueOrEmptyForPathString(values[1]), -1)
+			i, _ := fields.ValueForPath(values[1])
+			if i == nil {
+				i = ""
+			}
+			*str = strings.Replace(*str, values[0], fmt.Sprintf("%v", i), -1)
 		}
-	}
-}
-
-func processCommonFields(data *mxj.Map,
-	add_fields map[string]interface{},
-	tags []string,
-	typevalue string,
-	remove_field []string,
-	remove_tag []string) {
-
-	if len(add_fields) > 0 {
-		AddFields(add_fields, data)
-	}
-	if len(tags) > 0 {
-		AddTags(tags, data)
-	}
-	if typevalue != "" {
-		SetType(typevalue, data)
-	}
-	if len(remove_field) > 0 {
-		RemoveFields(remove_field, data)
-	}
-	if len(remove_tag) > 0 {
-		RemoveTags(remove_tag, data)
 	}
 }
 

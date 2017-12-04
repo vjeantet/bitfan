@@ -212,7 +212,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	if err != nil {
-		p.Logger.Errorf("while searching.. %s", err)
+		p.Logger.Errorf("while searching.. %v", err)
 	}
 
 	var records []map[string]interface{}

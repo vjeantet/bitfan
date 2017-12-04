@@ -4,10 +4,11 @@ package email
 
 import (
 	"bytes"
+	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/vjeantet/bitfan/core/location"
+	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 	gomail "gopkg.in/gomail.v2"
 )
@@ -76,23 +77,20 @@ type options struct {
 	Subjectfile string `mapstructure:"subjectfile"`
 
 	// HTML Body for the email, which may contain HTML markup
-	// @ExampleLS htmlbody => "<h1>Hello</h1> message received : {{.message}}"
-	Htmlbody string `mapstructure:"htmlbody"`
-
-	// Local path to HTML Body template file for the email, which may contain HTML markup
-	// can be relative to the configuration file
-	// TODO : use a Location Type like sql processor
-	Htmlbodyfile string `mapstructure:"htmlbodyfile"`
+	// @ExampleLS htmlBody => "<h1>Hello</h1> message received : {{.message}}"
+	// @Type Location
+	HTMLBody string `mapstructure:"htmlBody"`
 
 	// Body for the email - plain text only.
 	// @ExampleLS body => "message : {{.message}}. from {{.host}}."
+	// @Type Location
 	Body string `mapstructure:"body"`
-
-	// Path to Body template file for the email.
-	Bodyfile string `mapstructure:"bodyfile"`
 
 	// Attachments - specify the name(s) and location(s) of the files
 	Attachments []string `mapstructure:"attachments"`
+
+	// Images - specify the name(s) and location(s) of the images
+	Images []string `mapstructure:"images"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -107,13 +105,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
-	if p.opt.Htmlbodyfile != "" {
-		if !filepath.IsAbs(p.opt.Htmlbodyfile) {
-			// Set HtmlBodyFile full path (assuming a relative local path was given)
-			p.opt.Htmlbodyfile = filepath.Join(p.ConfigWorkingLocation, p.opt.Htmlbodyfile)
-		}
-	}
-
 	return nil
 }
 
@@ -126,17 +117,28 @@ func (p *processor) Start(e processors.IPacket) error {
 func (p *processor) Receive(e processors.IPacket) error {
 	// TODO use prepared template
 	// connnect only if needed
+	toStr := p.opt.To
+	processors.Dynamic(&toStr, e.Fields())
+	to := strings.Split(toStr, ",")
 
-	to := strings.Split(p.opt.To, ",")
-	cc := strings.Split(p.opt.Cc, ",")
-	bcc := strings.Split(p.opt.Bcc, ",")
+	ccStr := p.opt.Cc
+	processors.Dynamic(&ccStr, e.Fields())
+	cc := strings.Split(ccStr, ",")
+
+	bccStr := p.opt.Bcc
+	processors.Dynamic(&bccStr, e.Fields())
+	bcc := strings.Split(bccStr, ",")
 
 	m := gomail.NewMessage()
 
-	m.SetHeader("From", p.opt.From)
+	fromStr := p.opt.From
+	processors.Dynamic(&fromStr, e.Fields())
+	m.SetHeader("From", fromStr)
 
 	if p.opt.Replyto != "" {
-		m.SetHeader("Reply-To", p.opt.Replyto)
+		replyToStr := p.opt.Replyto
+		processors.Dynamic(&replyToStr, e.Fields())
+		m.SetHeader("Reply-To", replyToStr)
 	}
 
 	m.SetHeader("To", to...)
@@ -156,14 +158,14 @@ func (p *processor) Receive(e processors.IPacket) error {
 	// pp.Println("subject-->", subject)
 
 	if p.opt.Subject != "" {
-		loc, err := location.NewLocation(p.opt.Subject, p.ConfigWorkingLocation)
+		loc, err := commons.NewLocation(p.opt.Subject, p.ConfigWorkingLocation)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		buff := bytes.NewBufferString("")
@@ -171,71 +173,94 @@ func (p *processor) Receive(e processors.IPacket) error {
 		m.SetHeader("Subject", buff.String())
 	}
 
-	if p.opt.Htmlbody != "" {
-		loc, err := location.NewLocation(p.opt.Htmlbody, p.ConfigWorkingLocation)
+	if p.opt.HTMLBody != "" {
+		loc, err := commons.NewLocation(p.opt.HTMLBody, p.ConfigWorkingLocation)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
-			p.Logger.Errorf("email template error : %s", err)
+			p.Logger.Errorf("email template error : %v", err)
 			return err
 		}
 
 		buff := bytes.NewBufferString("")
-		tmpl.Execute(buff, e.Fields())
-		m.SetBody("text/html", buff.String())
-	}
-
-	if p.opt.Htmlbodyfile != "" {
-		loc, err := location.NewLocation(p.opt.Htmlbodyfile, p.ConfigWorkingLocation)
-		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
-			return err
-		}
-		tmpl, _, err := loc.TemplateWithOptions(nil)
-		if err != nil {
-			p.Logger.Errorf("email template error : %s", err)
-			return err
-		}
-
-		buff := bytes.NewBufferString("")
-
 		tmpl.Execute(buff, e.Fields())
 		m.SetBody("text/html", buff.String())
 	}
 
 	if p.opt.Body != "" {
-		loc, err := location.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
+		loc, err := commons.NewLocation(p.opt.Body, p.ConfigWorkingLocation)
 		if err != nil {
-			p.Logger.Errorf("email subject template error : %s", err)
+			p.Logger.Errorf("email subject template error : %v", err)
 			return err
 		}
 		tmpl, _, err := loc.TemplateWithOptions(nil)
 		if err != nil {
-			p.Logger.Errorf("email template error : %s", err)
+			p.Logger.Errorf("email template error : %v", err)
 			return err
 		}
 		buff := bytes.NewBufferString("")
 		tmpl.Execute(buff, e.Fields())
-		if p.opt.Htmlbody != "" || p.opt.Htmlbodyfile != "" {
+		if p.opt.HTMLBody != "" {
 			m.AddAlternative("text/plain", buff.String())
 		} else {
 			m.SetBody("text/plain", buff.String())
 		}
 	}
 
-	for _, f := range p.opt.Attachments {
-		// todo check if attachments exists
+	for _, ref := range p.opt.Images {
+		// todo build image from event data images{}
+		f := ""
+		if _, err := os.Stat(ref); err == nil {
+			if err != nil {
+				p.Logger.Errorf("Image file error %v", err)
+			}
+			var err error
+			f, err = filepath.Abs(ref)
+			if err != nil {
+				p.Logger.Errorf("Image file path error %v", err)
+				continue
+			}
+		} else if _, err := os.Stat(filepath.Join(p.ConfigWorkingLocation, ref)); err == nil {
+			f = filepath.Join(p.ConfigWorkingLocation, ref)
+		} else {
+			p.Logger.Errorf("Image file path unknow %v", ref)
+			continue
+		}
+
+		m.Embed(f)
+		// m.Embed(f, gomail.Rename("o.png"))
+	}
+
+	for _, ref := range p.opt.Attachments {
+
 		// todo build attachments from event data attachments{}
+		f := ""
+		if _, err := os.Stat(ref); err == nil {
+			if err != nil {
+				p.Logger.Errorf("Attachment file error %v", err)
+			}
+			var err error
+			f, err = filepath.Abs(ref)
+			if err != nil {
+				p.Logger.Errorf("Attachment file path error %v", err)
+				continue
+			}
+		} else if _, err := os.Stat(filepath.Join(p.ConfigWorkingLocation, ref)); err == nil {
+			f = filepath.Join(p.ConfigWorkingLocation, ref)
+		} else {
+			p.Logger.Errorf("Attachment file path unknow %s", ref)
+			continue
+		}
+
 		m.Attach(f)
-		// todo handle error
 	}
 
 	d := gomail.NewDialer(p.opt.Host, p.opt.Port, p.opt.Username, p.opt.Password)
 	if err := d.DialAndSend(m); err != nil {
-		p.Logger.Errorf("email send error : %s", err)
+		p.Logger.Errorf("email send error : %v", err)
 		return err
 	}
 

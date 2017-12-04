@@ -1,0 +1,75 @@
+{{ define "title"}}Pipelines{{ end }}
+
+{{ define "sidebar" }}
+    
+{{ end }}
+
+{{ define "content" }}
+
+
+<div class="row">
+<div class="col">
+	<h1>Pipelines</h1>
+</div>
+<div class="col">
+  <div class="float-right">
+	
+
+  <div id="asset-actions" class="btn-group btn-group" role="group" aria-label="assets">
+    <a href="/pipelines/0/new" class="btn btn-dark">Create new pipeline</a> 
+
+    <a class="btn btn-outline-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="sr-only">Toggle Dropdown</span>
+    </a>
+    <ul class="dropdown-menu">
+      <a href="http://{{.apiHost}}/api/v2/pipelines.zip" class="dropdown-item">
+        Download all
+      </a>
+    </ul>
+  </div> 
+  
+
+  </div>
+</div>
+</div>
+
+
+
+<div class='table-responsive'>
+  <table class='table table-striped'>
+    <tr>
+      <th>Name</th>
+      <th>Running since</th>
+      <th></th>
+    </tr>
+
+    {{range  $pipeline := .pipelines}}
+      <tr>
+        <td class=''>
+        	<a href="/pipelines/{{$pipeline.Uuid}}{{range $pipeline.Assets}}{{if eq "entrypoint" .Type}}/assets/{{.Uuid}}{{end}}{{end}}" class="">
+          {{if $pipeline.Label}}{{$pipeline.Label}}{{else}}noname{{end}}
+      </a>
+          <br/>
+          <small><span class='text-muted'>updated {{ago "%m" $pipeline.UpdatedAt}} minutes ago</span></small>
+        </td>
+        <td class=''>
+      {{if $pipeline.Active}}
+      {{dateFormat "dd/MM/YYYY HH:mm:ss" $pipeline.StartedAt }}
+      {{else}}    
+      Not started
+      {{end}}
+        </td>
+        <td>
+          {{ template "pipelineactions" $pipeline }}
+        </td>
+      </tr>
+    {{else}}
+    No pipelines ! <a href="/pipelines/0/new">create a first one</a>
+    {{end}}
+  </table>
+</div>
+
+
+
+{{ end }}
+
