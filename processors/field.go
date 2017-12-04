@@ -151,7 +151,13 @@ func RemoveAllButFields(fields []string, data *mxj.Map) {
 
 func UpdateFields(fields map[string]interface{}, data *mxj.Map) {
 	for k, v := range fields {
+		Dynamic(&k, data)
 		if data.Exists(k) {
+			switch t := v.(type) {
+			case string:
+				Dynamic(&t, data)
+				v = t
+			}
 			data.SetValueForPath(v, k)
 		}
 	}
@@ -159,7 +165,9 @@ func UpdateFields(fields map[string]interface{}, data *mxj.Map) {
 
 func RenameFields(fields map[string]string, data *mxj.Map) {
 	for k, v := range fields {
+		Dynamic(&k, data)
 		if data.Exists(k) {
+			Dynamic(&v, data)
 			data.RenameKey(k, v)
 		}
 	}

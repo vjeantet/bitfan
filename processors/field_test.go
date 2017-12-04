@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/clbanning/mxj"
+	"github.com/k0kubun/pp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -207,6 +208,94 @@ func TestFieldRemoveAllButFields(t *testing.T) {
 	assert.False(t, data.Exists("@timestamp"))
 	assert.Equal(t, "Valere", data.ValueOrEmptyForPathString("name"))
 	assert.Equal(t, "@vjeantet", data.ValueOrEmptyForPathString("twitter"))
+}
+
+// m := map[string]interface{}{
+// 	"name": "Valere",
+// 	"location": map[string]interface{}{
+// 		"city":    "Paris",
+// 		"country": "France",
+// 	},
+// 	"twitter":    "@vjeantet",
+// 	"@timestamp": t1,
+// }
+func TestFieldRenameFields(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("test", "foo@vjeantet")
+	data.SetValueForPath("test", "foo3Dyn")
+	data.SetValueForPath([]interface{}{"A", "B", "C"}, "test2")
+	data.SetValueForPath(map[string]interface{}{
+		"o": "A1",
+		"p": "B1",
+	}, "map")
+
+	options := map[string]string{
+		"name":          "nom",
+		"foo":           "bar",
+		"test2":         "test3",
+		"map":           "plan",
+		"foo3Dyn":       "%{location.city}-ok",
+		"foo%{twitter}": "twitOK",
+	}
+
+	RenameFields(options, &data)
+	pp.Println("data-->", data)
+
+	assert.False(t, data.Exists("name"))
+	assert.True(t, data.Exists("nom"))
+	assert.Equal(t, "Valere", data.ValueOrEmptyForPathString("nom"))
+
+	assert.False(t, data.Exists("foo"))
+
+	assert.False(t, data.Exists("test2"))
+	assert.True(t, data.Exists("test3"))
+
+	assert.False(t, data.Exists("map"))
+	assert.True(t, data.Exists("plan"))
+	v, _ := data.ValueForPath("plan")
+	assert.Equal(t, 2, len(v.(map[string]interface{})))
+
+	assert.False(t, data.Exists("foo3Dyn"))
+	assert.True(t, data.Exists("Paris-ok"))
+
+	assert.False(t, data.Exists("foo@vjeantet"))
+	assert.True(t, data.Exists("twitOK"))
+}
+
+func TestFieldUpdateFields(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("test", "foo@vjeantet")
+	data.SetValueForPath("test", "foo3Dyn")
+	data.SetValueForPath([]interface{}{"A", "B", "C"}, "test2")
+	data.SetValueForPath(map[string]interface{}{
+		"o": "A1",
+		"p": "B1",
+	}, "map")
+
+	options := map[string]interface{}{
+		"name":          "Alex",
+		"foo":           "bar",
+		"foo3Dyn":       "%{location.city}-ok",
+		"foo%{twitter}": "twitOK",
+		"map": map[string]interface{}{
+			"o": "B2",
+		},
+		"test2": []interface{}{"D", "E"},
+	}
+
+	UpdateFields(options, &data)
+
+	assert.False(t, data.Exists("foo"))
+	assert.Equal(t, "Alex", data.ValueOrEmptyForPathString("name"))
+	assert.Equal(t, "twitOK", data.ValueOrEmptyForPathString("foo@vjeantet"))
+	assert.Equal(t, "Paris-ok", data.ValueOrEmptyForPathString("foo3Dyn"))
+	assert.Equal(t, "Paris", data.ValueOrEmptyForPathString("location.city"))
+
+	v, _ := data.ValuesForPath("test2")
+	assert.Equal(t, []interface{}{"D", "E"}, v)
+
+	assert.False(t, data.Exists("map.p"))
+	assert.Equal(t, "B2", data.ValueOrEmptyForPathString("map.o"))
 }
 
 func BenchmarkDynamics(b *testing.B) {
