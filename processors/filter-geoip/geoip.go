@@ -112,6 +112,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	err = p.refresh()
 	ticker := time.NewTicker(p.opt.RefreshInterval * time.Minute)
 	go func() {
+		defer ticker.Stop()
 		for range ticker.C {
 			err := p.refresh()
 			if err != nil {

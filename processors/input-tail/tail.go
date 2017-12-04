@@ -211,7 +211,6 @@ func (p *processor) filesToRead() ([]string, error) {
 func (p *processor) discoverFilesToRead() error {
 	files, err := p.filesToRead()
 	if err != nil {
-		p.Logger.Error(err)
 		return err
 	}
 	for _, name := range files {
@@ -239,6 +238,7 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	go func() {
 		ticker := time.NewTicker(time.Duration(p.opt.DiscoverInterval) * time.Second)
+		defer ticker.Stop()
 		for {
 			if err := p.discoverFilesToRead(); err != nil {
 				p.Logger.Error(err)

@@ -1,10 +1,10 @@
 //go:generate bitfanDoc
 // Display on http the last received event
 //
-// URL is available as http://webhookhost/pluginLabel/URI
+// URL is available as http://webhookhost/pipelineName/pluginLabel/URI
 //
 // * webhookhost is defined by bitfan at startup
-// * pluginLabel is defined in pipeline configuration, it's the named processor if you put one, or `input_httpserver` by default
+// * pluginLabel is defined in pipeline configuration, it's the named processor if you put one, or `httpout` by default
 // * URI is defined in plugin configuration (see below)
 package httpoutprocessor
 

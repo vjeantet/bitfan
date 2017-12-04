@@ -137,6 +137,8 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 		"Now":        (*templateFunctions)(nil).now,
 		"isset":      (*templateFunctions)(nil).isSet,
 
+		"_": (*templateFunctions)(nil).mapValueStringOrEmpty,
+
 		"NumFmt": (*templateFunctions)(nil).numFmt,
 
 		"SafeHTML":     (*templateFunctions)(nil).safeHtml,
