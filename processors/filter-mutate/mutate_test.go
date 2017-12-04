@@ -2,7 +2,9 @@ package mutate
 
 import (
 	"testing"
+	"time"
 
+	"github.com/clbanning/mxj"
 	"github.com/stretchr/testify/assert"
 	"github.com/vjeantet/bitfan/processors/doc"
 	"github.com/vjeantet/bitfan/processors/testutils"
@@ -155,4 +157,172 @@ func TestReceiveRemoveAllBut(t *testing.T) {
 	assert.Equal(t, true, em.Fields().Exists("field1"), "field should exists")
 	assert.Equal(t, true, em.Fields().Exists("upfield3"), "field should exists")
 
+}
+
+func getTestFields() mxj.Map {
+
+	t1, _ := time.Parse(
+		time.RFC3339,
+		"2012-11-01T22:08:41+00:00")
+
+	m := map[string]interface{}{
+		"name": "Valere",
+		"location": map[string]interface{}{
+			"city":    "Paris",
+			"country": "France",
+		},
+		"twitter":    "@vjeantet",
+		"@timestamp": t1,
+	}
+	return mxj.Map(m)
+}
+
+func TestFieldRemoveAllButFields(t *testing.T) {
+	data := getTestFields()
+
+	but_fields := []string{"name", "unknow", "twitter"}
+
+	RemoveAllButFields(but_fields, &data)
+
+	assert.False(t, data.Exists("location"))
+	assert.False(t, data.Exists("@timestamp"))
+	assert.Equal(t, "Valere", data.ValueOrEmptyForPathString("name"))
+	assert.Equal(t, "@vjeantet", data.ValueOrEmptyForPathString("twitter"))
+}
+
+// m := map[string]interface{}{
+// 	"name": "Valere",
+// 	"location": map[string]interface{}{
+// 		"city":    "Paris",
+// 		"country": "France",
+// 	},
+// 	"twitter":    "@vjeantet",
+// 	"@timestamp": t1,
+// }
+func TestLowerCaseFields(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("TesT", "foo@vjeantet")
+	data.SetValueForPath(4, "number")
+	data.SetValueForPath([]interface{}{"a", "b", "c"}, "test2")
+	data.SetValueForPath(map[string]interface{}{
+		"o": "a1",
+		"p": "b1",
+	}, "map")
+
+	options := []string{
+		"name", "foo", "foo%{twitter}", "number",
+	}
+
+	LowerCaseFields(options, &data)
+
+	assert.False(t, data.Exists("foo"))
+	assert.Equal(t, "valere", data.ValueOrEmptyForPathString("name"))
+	assert.Equal(t, "test", data.ValueOrEmptyForPathString("foo@vjeantet"))
+
+	v, _ := data.ValueForPath("number")
+	assert.Equal(t, 4, v)
+
+}
+
+func TestUpperCaseFields(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("test", "foo@vjeantet")
+	data.SetValueForPath(4, "number")
+	data.SetValueForPath([]interface{}{"a", "b", "c"}, "test2")
+	data.SetValueForPath(map[string]interface{}{
+		"o": "a1",
+		"p": "b1",
+	}, "map")
+
+	options := []string{
+		"name", "foo", "foo%{twitter}", "number",
+	}
+
+	UpperCaseFields(options, &data)
+
+	assert.False(t, data.Exists("foo"))
+	assert.Equal(t, "VALERE", data.ValueOrEmptyForPathString("name"))
+	assert.Equal(t, "TEST", data.ValueOrEmptyForPathString("foo@vjeantet"))
+
+	v, _ := data.ValueForPath("number")
+	assert.Equal(t, 4, v)
+
+}
+
+func TestFieldRenameFields(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("test", "foo@vjeantet")
+	data.SetValueForPath("test", "foo3Dyn")
+	data.SetValueForPath([]interface{}{"A", "B", "C"}, "test2")
+	data.SetValueForPath(map[string]interface{}{
+		"o": "A1",
+		"p": "B1",
+	}, "map")
+
+	options := map[string]string{
+		"name":          "nom",
+		"foo":           "bar",
+		"test2":         "test3",
+		"map":           "plan",
+		"foo3Dyn":       "%{location.city}-ok",
+		"foo%{twitter}": "twitOK",
+	}
+
+	RenameFields(options, &data)
+
+	assert.False(t, data.Exists("name"))
+	assert.True(t, data.Exists("nom"))
+	assert.Equal(t, "Valere", data.ValueOrEmptyForPathString("nom"))
+
+	assert.False(t, data.Exists("foo"))
+
+	assert.False(t, data.Exists("test2"))
+	assert.True(t, data.Exists("test3"))
+
+	assert.False(t, data.Exists("map"))
+	assert.True(t, data.Exists("plan"))
+	v, _ := data.ValueForPath("plan")
+	assert.Equal(t, 2, len(v.(map[string]interface{})))
+
+	assert.False(t, data.Exists("foo3Dyn"))
+	assert.True(t, data.Exists("Paris-ok"))
+
+	assert.False(t, data.Exists("foo@vjeantet"))
+	assert.True(t, data.Exists("twitOK"))
+}
+
+func TestFieldUpdateFields(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("test", "foo@vjeantet")
+	data.SetValueForPath("test", "foo3Dyn")
+	data.SetValueForPath([]interface{}{"A", "B", "C"}, "test2")
+	data.SetValueForPath(map[string]interface{}{
+		"o": "A1",
+		"p": "B1",
+	}, "map")
+
+	options := map[string]interface{}{
+		"name":          "Alex",
+		"foo":           "bar",
+		"foo3Dyn":       "%{location.city}-ok",
+		"foo%{twitter}": "twitOK",
+		"map": map[string]interface{}{
+			"o": "B2",
+		},
+		"test2": []interface{}{"D", "E"},
+	}
+
+	UpdateFields(options, &data)
+
+	assert.False(t, data.Exists("foo"))
+	assert.Equal(t, "Alex", data.ValueOrEmptyForPathString("name"))
+	assert.Equal(t, "twitOK", data.ValueOrEmptyForPathString("foo@vjeantet"))
+	assert.Equal(t, "Paris-ok", data.ValueOrEmptyForPathString("foo3Dyn"))
+	assert.Equal(t, "Paris", data.ValueOrEmptyForPathString("location.city"))
+
+	v, _ := data.ValuesForPath("test2")
+	assert.Equal(t, []interface{}{"D", "E"}, v)
+
+	assert.False(t, data.Exists("map.p"))
+	assert.Equal(t, "B2", data.ValueOrEmptyForPathString("map.o"))
 }
