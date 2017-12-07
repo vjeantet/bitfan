@@ -60,69 +60,76 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
 }
 
+// Inputs:
+// - F: first packet
+// - M: missing field
+// - I: ignoring missing fields
+// - V: current value differs from previous value
+// Outputs:
+// - S: send event
+// - R: reset timer
+
 func (p *processor) Receive(e processors.IPacket) error {
 	eValue, err := e.Fields().ValueForPathString(p.opt.CompareField)
 	if err != nil { // path not found
+		p.Logger.Debugf("missing field [%s]", p.opt.CompareField)
 		if p.opt.IgnoreMissing == true {
 			return nil
+		} else {
+			eValue = ""
 		}
-		p.Logger.Debugf("missing field [%s]", p.opt.CompareField)
-	} else {
-		p.mu.Lock()
-
-		if p.lastValue == eValue {
-			p.mu.Unlock()
-			return nil
-		}
-
-		p.Logger.Debugf("[%s] value change from '%s' to '%s'", p.opt.CompareField, p.lastValue, eValue)
-		p.lastValue = eValue
-
-		if p.first == true {
-			p.Logger.Debugf("ignore first change on field [%s]", p.opt.CompareField)
-			p.first = false
-			p.mu.Unlock()
-			return nil
-		}
-
-		// Change occurred !
-
-		if p.opt.Timeframe > 0 {
-			if p.hop == nil { // Initiate timer
-				p.Logger.Debugf("Timer inited")
-				p.hop = time.AfterFunc(time.Second*time.Duration(p.opt.Timeframe), func() { // when timeframe expires, reset old value
-					p.Logger.Debugf("expired !")
-					p.mu.Lock()
-					p.lastValue = ""
-					p.hop = nil
-					p.mu.Unlock()
-				})
-			} else { // Change occurred before timeout -> reset timeframe
-				p.Logger.Debugf("change before timeout")
-				if !p.hop.Stop() {
-					<-p.hop.C
-					p.Logger.Debugf("expired ! B")
-					p.lastValue = ""
-				}
-				p.Logger.Debugf("reset")
-				p.hop.Reset(time.Second * time.Duration(p.opt.Timeframe))
-			}
-		}
-
-		p.mu.Unlock()
-
 	}
 
-	p.opt.ProcessCommonOptions(e.Fields())
-	p.Send(e, 0)
+	p.mu.Lock()
+	lastValue := p.lastValue
+	p.lastValue = eValue
+	defer p.mu.Unlock()
+	p.ResetTimer()
+
+	if p.first == true {
+		p.Logger.Debugf("ignore first change on field [%s]", p.opt.CompareField)
+		p.first = false
+	} else if lastValue != eValue {
+		p.Logger.Debugf("[%s] value change from '%s' to '%s'", p.opt.CompareField, p.lastValue, eValue)
+		p.opt.ProcessCommonOptions(e.Fields())
+		p.Send(e, 0)
+	}
 
 	return nil
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
 	if p.hop != nil {
-		p.hop.Stop()
+		if !p.hop.Stop() {
+			<-p.hop.C
+		}
 	}
 
 	return nil
+}
+
+// Reset the timer
+func (p *processor) ResetTimer() {
+	if p.opt.Timeframe > 0 {
+		if p.hop == nil { // Initiate timer
+			p.Logger.Debugf("Timer inited")
+			p.hop = time.AfterFunc(time.Second*time.Duration(p.opt.Timeframe), func() { // when timeframe expires, reset old value
+				p.Logger.Debugf("expired !")
+				p.mu.Lock()
+				p.lastValue = ""
+				p.first = true
+				p.hop = nil
+				p.mu.Unlock()
+			})
+		} else { // Change occurred before timeout -> reset timeframe
+			p.Logger.Debugf("change before timeout")
+			if !p.hop.Stop() {
+				<-p.hop.C
+				p.Logger.Debugf("expired ! B")
+				p.lastValue = ""
+			}
+			p.Logger.Debugf("reset")
+			p.hop.Reset(time.Second * time.Duration(p.opt.Timeframe))
+		}
+	}
 }
