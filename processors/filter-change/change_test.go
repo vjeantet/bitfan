@@ -92,7 +92,7 @@ func TestReceiveIgnoreMissingFalse(t *testing.T) {
 	p.Receive(testutils.NewPacket("test", nil))
 	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 2")
 	p.Receive(testutils.NewPacket("test", nil))
-	assert.Equal(t, 2, ctx.SentPacketsCount(0), "changed ! 3")
+	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 3")
 	p.Receive(testutils.NewPacket("test", map[string]interface{}{"toto": "A"}))
 	assert.Equal(t, 2, ctx.SentPacketsCount(0), "changed ! 4")
 	p.Receive(testutils.NewPacket("test", map[string]interface{}{"toto": "A"}))
@@ -156,37 +156,109 @@ func TestReceiveMatchWithTimeframe(t *testing.T) {
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
 
 	p.Receive(testutils.NewPacket("test1", nil))
-	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0")
+	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0") {
+		assert.Equal(t, "test1", ctx.SentPackets(0)[0].Message())
+	}
 
 	p.Receive(testutils.NewPacket("test1", nil))
-	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0")
+	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0") {
+		assert.Equal(t, "test1", ctx.SentPackets(0)[0].Message())
+	}
 
 	p.Receive(testutils.NewPacket("test1", nil))
-	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0")
+	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0") {
+		assert.Equal(t, "test1", ctx.SentPackets(0)[0].Message())
+	}
 
 	time.Sleep(time.Second * 2)
 	p.Receive(testutils.NewPacket("test1", nil))
-	assert.Equal(t, 2, ctx.SentPacketsCount(0), "changed ! 0")
+	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0") {
+		assert.Equal(t, "test1", ctx.SentPackets(0)[0].Message())
+	}
 
 	time.Sleep(time.Second * 2)
 	p.Receive(testutils.NewPacket("test1", nil))
 	p.Receive(testutils.NewPacket("test1", nil))
-	assert.Equal(t, 3, ctx.SentPacketsCount(0), "changed ! 0")
+	assert.Equal(t, 1, ctx.SentPacketsCount(0), "changed ! 0")
 
 	p.Receive(testutils.NewPacket("A", nil))
+	assert.Equal(t, 2, ctx.SentPacketsCount(0), "changed ! 0")
+
+	p.Receive(testutils.NewPacket("B", nil))
+	assert.Equal(t, 3, ctx.SentPacketsCount(0), "changed ! 0")
+
+	time.Sleep(time.Second * 2)
+	p.Receive(testutils.NewPacket("B", nil))
+	assert.Equal(t, 3, ctx.SentPacketsCount(0), "changed ! 0")
+
+	p.Receive(testutils.NewPacket("B", nil))
+	p.Receive(testutils.NewPacket("test", nil))
+	time.Sleep(time.Second * 2)
+	p.Receive(testutils.NewPacket("test", nil))
 	assert.Equal(t, 4, ctx.SentPacketsCount(0), "changed ! 0")
 
-	p.Receive(testutils.NewPacket("B", nil))
-	assert.Equal(t, 5, ctx.SentPacketsCount(0), "changed ! 0")
+}
+
+func TestReceiveRepetitionsWithinTimeFrameDoNotMatch(t *testing.T) {
+	p := New().(*processor)
+	ctx := testutils.NewProcessorContext()
+	p.Configure(
+		ctx,
+		map[string]interface{}{
+			"Compare_Field": "message",
+			"timeframe":     3,
+		},
+	)
+
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+
+	// 3 repetitions in a row
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+
+	// 1 repetition per second
+	time.Sleep(time.Second * 1)
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+
+	time.Sleep(time.Second * 1)
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+
+	time.Sleep(time.Second * 1)
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+}
+
+func TestReceiveChangesOutOfTimeFrameDoNotMatch(t *testing.T) {
+	p := New().(*processor)
+	ctx := testutils.NewProcessorContext()
+	p.Configure(
+		ctx,
+		map[string]interface{}{
+			"Compare_Field": "message",
+			"timeframe":     1,
+		},
+	)
+
+	p.Receive(testutils.NewPacket("test", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
+
+	// Changes happen out of time frame
+	time.Sleep(time.Second * 2)
+	p.Receive(testutils.NewPacket("test2", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
 
 	time.Sleep(time.Second * 2)
-	p.Receive(testutils.NewPacket("B", nil))
-	assert.Equal(t, 6, ctx.SentPacketsCount(0), "changed ! 0")
+	p.Receive(testutils.NewPacket("test3", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
 
-	p.Receive(testutils.NewPacket("B", nil))
-	p.Receive(testutils.NewPacket("test", nil))
 	time.Sleep(time.Second * 2)
-	p.Receive(testutils.NewPacket("test", nil))
-	assert.Equal(t, 8, ctx.SentPacketsCount(0), "changed ! 0")
-
+	p.Receive(testutils.NewPacket("test4", nil))
+	assert.Equal(t, 0, ctx.SentPacketsCount(0), "changed ! 0")
 }
