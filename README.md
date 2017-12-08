@@ -58,3 +58,4 @@ Icon made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://w
 * @vjeantet - Valere JEANTET
 * @mirdhyn - Merlin Gaillard
 * @AlexAkulov - Alexander AKULOV
+* @lor00x - Thomas GUILLIER
