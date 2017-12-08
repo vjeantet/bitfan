@@ -32,6 +32,10 @@ func NewSinceDB(sdboptions *SinceDBOptions) *SinceDB {
 		s.dryrun = true
 	}
 
+	if s.options.WriteInterval == 0 {
+		s.options.WriteInterval = 15
+	}
+
 	if s.dryrun == false {
 		// Start the write looper
 		go func() {
