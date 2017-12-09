@@ -106,6 +106,9 @@ func Handler(baseURL string, debug bool) http.Handler {
 	// Delete asset
 	r.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
+	// Playgrounds
+	r.GET("/playgrounds/filter", playgroundsFilters)
+
 	// Replace asset
 	r.PUT("/settings/api", changeBitfanApiURL)
 
@@ -161,6 +164,12 @@ func flash(c *gin.Context, message string) {
 	session := sessions.Get(c)
 	session.AddFlash(message)
 	session.Save()
+}
+
+func playgroundsFilters(c *gin.Context) {
+
+	c.HTML(200, "playgrounds/filters", withCommonValues(c, gin.H{}))
+
 }
 
 func editPipeline(c *gin.Context) {
@@ -294,7 +303,7 @@ func showAsset(c *gin.Context) {
 	p, _ := apiClient.Pipeline(pipelineUUID)
 	a, _ := apiClient.Asset(assetUUID)
 
-	c.HTML(200, "assets/edit", withCommonValues(c, gin.H{
+	c.HTML(200, "pipelines/assets/edit", withCommonValues(c, gin.H{
 		"asset":    a,
 		"pipeline": p,
 	}))

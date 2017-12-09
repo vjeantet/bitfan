@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin/render"
 	"github.com/k0kubun/pp"
+	zglob "github.com/mattn/go-zglob"
 )
 
 type Render struct {
@@ -45,8 +46,6 @@ func NewRender() Render {
 		TemplateFuncMap: nil,
 		// Debug enables debug mode
 		Debug: false,
-
-		UseFS: false,
 	}
 
 	return r
@@ -55,10 +54,10 @@ func NewRender() Render {
 func (r Render) Glob(pattern string) ([]string, error) {
 	var matches []string
 	if r.UseFS == true {
-		return filepath.Glob(pattern)
+		return zglob.Glob(pattern)
 	} else {
 		for _, key := range AssetNames() {
-			if ok, err := filepath.Match(pattern, key); ok && err == nil {
+			if ok, err := zglob.Match(pattern, key); ok && err == nil {
 				matches = append(matches, key)
 			}
 		}
@@ -68,25 +67,42 @@ func (r Render) Glob(pattern string) ([]string, error) {
 
 func (r Render) Init() Render {
 	pathSeparator := string(os.PathSeparator)
-	if _, err := os.Stat(r.TemplatesDir); !os.IsNotExist(err) {
-		// assets exists on disk, UseFS
-		r.UseFS = true
-	} else {
-		// assets from bindData
-		r.UseFS = false
+	if _, err := os.Stat(r.TemplatesDir); os.IsNotExist(err) {
 		pathSeparator = "/"
 	}
 
 	layout := r.TemplatesDir + r.Layout
-	viewDirs, _ := r.Glob(r.TemplatesDir + "**" + pathSeparator + "*" + r.Ext)
 	partials, _ := r.Glob(r.TemplatesDir + "_*" + r.Ext)
+	viewDirs, _ := r.Glob(r.TemplatesDir + "**" + pathSeparator + "*" + r.Ext)
 
 	for _, view := range viewDirs {
 		renderName := r.getRenderName(view)
+		names := strings.Split(renderName, "/")
+
+		if strings.HasPrefix(names[len(names)-1], "_") {
+			continue
+		}
+		if renderName+r.Ext == r.Layout {
+			continue
+		}
+
+		views := append(partials, layout, view)
+
+		// find intermediate partials
+		namespath := ""
+		for i := 0; i < len(names)-1; i++ {
+			if namespath != "" {
+				namespath = namespath + pathSeparator
+			}
+			namespath = namespath + names[i]
+			partialsForView, _ := r.Glob(r.TemplatesDir + namespath + pathSeparator + "_*" + r.Ext)
+			views = append(views, partialsForView...)
+		}
+
 		if r.Debug {
 			log.Printf("[GIN-debug] %-6s %-25s --> %s\n", "LOAD", view, renderName)
 		}
-		views := append(partials, layout, view)
+
 		r.AddFromFiles(renderName, views...)
 	}
 
