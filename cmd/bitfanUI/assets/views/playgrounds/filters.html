@@ -22,62 +22,24 @@
 
   	 <form id="bitfan-playground-form">
        <div class="form-group">
-        <label for="label">Input Event to pass to the first filter processor</label>
-        <textarea class="form-control" rows=5 name="event" id="event" placeholder="json">
-{
-  "type":       "tester",
+        <label for="label">Input Event to pass to the first filter processor (as json)</label>
+        <textarea class="form-control" rows=5 name="event" id="event" placeholder='{
+  "message":    "test message"  ,
   "number":     1,
-  "message":    "test message"  
-}
-        </textarea>
+  "type":       "tester"
+}'>{"message":"Hello world"}</textarea>
               
-        <button type="button" name="sendEvent" class="btn btn-success" style="display: none;">Send</button>
+        <button type="button" name="sendEvent" class="btn btn-success" style="display: none;">Send to current pipeline</button>
       
       </div>
       <div class="form-group">
-        <label for="description">Filters</label>
-        <textarea class="form-control" rows=5 name="filter" id="filter" placeholder="mutate {}">
-  grok {
-    match => { "message" => "%{COMBINEDAPACHELOG}" }
-  }
-
-  date {
-    match => [ "timestamp" ,  "02/Jan/2006:15:04:05 -0700", "dd/MMM/yyyy:HH:mm:ss Z"]
-  }
-
-
-  if [test] == "atrue" {
-    uuid {
-      target => "AA"
-      overwrite => true
-    }
-    if [test] == "btrue" {
-      uuid {
-        target => "BB"
-        overwrite => true
-      }
-    } 
-    
-    if [test] == "ctrue" {
-      uuid {
-        target => "CC"
-        overwrite => true
-      }
-    } 
-  } else {
-    uuid {
-      target => "DD"
-      overwrite => true
-    }
-  }
-
-  
-        </textarea>
+        <label for="description">filter{</label>
+        <textarea class="form-control" rows=5 name="filter" id="filter" placeholder="mutate {}"></textarea>}
         <div id="playground-error"></div>
       </div>
       <div class="form-group">
 
-        <button type="submit" name="play" class="btn btn-primary">Play</button>
+        <button type="submit" name="play" class="btn btn-primary">Play (build a new pipeline)</button>
       </div>
       <div class="form-group">
         <label for="description">Output</label>
