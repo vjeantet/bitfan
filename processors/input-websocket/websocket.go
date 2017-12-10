@@ -15,6 +15,20 @@ import (
 	"github.com/vjeantet/bitfan/processors"
 )
 
+const (
+	// Time allowed to write a message to the peer.
+	writeWait = 10 * time.Second
+
+	// Time allowed to read the next pong message from the peer.
+	pongWait = 60 * time.Second
+
+	// Send pings to peer with this period. Must be less than pongWait.
+	pingPeriod = (pongWait * 9) / 10
+
+	// Maximum message size allowed from peer.
+	maxMessageSize = 512
+)
+
 // Receive event on a ws connection
 func New() processors.Processor {
 	return &processor{opt: &options{}}
@@ -41,9 +55,9 @@ type processor struct {
 	q    chan bool
 	host string
 
-	Hub *Hub
+	wsupgrader websocket.Upgrader
 
-	receiver chan []byte
+	Hub *Hub
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -63,64 +77,26 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.Logger.Warnf("can not get hostname : %v", err)
 	}
 
+	p.wsupgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
+
 	return err
 }
 
 func (p *processor) Start(e processors.IPacket) error {
-	p.receiver = make(chan []byte, 256)
+
 	p.Hub = newHub(p.wellcome)
 	go p.Hub.run()
 	p.WebHook.Add(p.opt.Uri, p.HttpHandler)
 
-	go p.processMessage()
+	// go p.processMessage()
 
 	return nil
-}
-
-func (p *processor) processMessage() {
-
-	// Create a reader
-	for m := range p.receiver {
-		r := bytes.NewReader(m)
-
-		var dec codecs.Decoder
-		var err error
-		if dec, err = p.opt.Codec.NewDecoder(r); err != nil {
-			p.Logger.Errorln("decoder error : ", err.Error())
-			return
-		}
-
-		for dec.More() {
-			var record interface{}
-			if err = dec.Decode(&record); err != nil {
-				if err == io.EOF {
-					p.Logger.Debugln("error while decoding : ", err)
-				} else {
-					p.Logger.Errorln("error while decoding : ", err)
-					break
-				}
-			}
-
-			var e processors.IPacket
-			switch v := record.(type) {
-			case nil:
-				e = p.NewPacket(string(m), map[string]interface{}{})
-			case string:
-				e = p.NewPacket(v, map[string]interface{}{})
-			case map[string]interface{}:
-				e = p.NewPacket("", v)
-			case []interface{}:
-				e = p.NewPacket("", map[string]interface{}{
-					"request": v,
-				})
-			default:
-				p.Logger.Errorf("Unknow structure %#v", v)
-			}
-
-			p.opt.ProcessCommonOptions(e.Fields())
-			p.Send(e)
-		}
-	}
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
@@ -128,55 +104,71 @@ func (p *processor) Stop(e processors.IPacket) error {
 	return nil
 }
 
-func (p *processor) wellcome() [][]byte {
-	return [][]byte{}
+func (p *processor) processMessage(m []byte) {
+	r := bytes.NewReader(m)
+
+	var dec codecs.Decoder
+	var err error
+	if dec, err = p.opt.Codec.NewDecoder(r); err != nil {
+		p.Logger.Errorln("decoder error : ", err.Error())
+		return
+	}
+
+	for dec.More() {
+		var record interface{}
+		if err = dec.Decode(&record); err != nil {
+			if err == io.EOF {
+				p.Logger.Debugln("error while decoding : ", err)
+			} else {
+				p.Logger.Errorln("error while decoding : ", err)
+				break
+			}
+		}
+
+		var e processors.IPacket
+		switch v := record.(type) {
+		case nil:
+			e = p.NewPacket(string(m), map[string]interface{}{})
+		case string:
+			e = p.NewPacket(v, map[string]interface{}{})
+		case map[string]interface{}:
+			e = p.NewPacket("", v)
+		case []interface{}:
+			e = p.NewPacket("", map[string]interface{}{
+				"request": v,
+			})
+		default:
+			p.Logger.Errorf("Unknow structure %#v", v)
+		}
+
+		p.opt.ProcessCommonOptions(e.Fields())
+		p.Send(e)
+	}
 }
-
-var wsupgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
-
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
-
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
-
-	// Maximum message size allowed from peer.
-	maxMessageSize = 512
-)
-
-var (
-	newline = []byte{'\n'}
-	space   = []byte{' '}
-)
 
 // Handle Request received by bitfan for this agent (url hook should be registered during p.Start)
 func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := wsupgrader.Upgrade(w, r, nil)
+	conn, err := p.wsupgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		log.Println(err)
+		p.Logger.Errorf("websocket upgrade - %s", err.Error())
 		return
 	}
+
 	client := &Client{
-		hub:     p.Hub,
-		conn:    conn,
-		send:    make(chan []byte, 256),
-		receive: p.receiver,
+		hub:       p.Hub,
+		conn:      conn,
+		send:      make(chan []byte, 256),
+		onMessage: p.processMessage,
 	}
 	p.Hub.register <- client
 
 	go client.writePump()
 	go client.readPump()
+}
+
+func (p *processor) wellcome() [][]byte {
+	return [][]byte{}
 }
 
 // Client is a middleman between the websocket connection and the hub.
@@ -189,7 +181,15 @@ type Client struct {
 	// Buffered channel of outbound messages.
 	send chan []byte
 
-	receive chan []byte
+	onMessage func([]byte)
+
+	done chan struct{}
+}
+
+func (c *Client) close() {
+	c.conn.Close()
+	close(c.done)
+	c.hub.unregister <- c
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -199,8 +199,7 @@ type Client struct {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		c.hub.unregister <- c
-		c.conn.Close()
+		c.close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -213,11 +212,11 @@ func (c *Client) readPump() {
 			}
 			break
 		}
-		// message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 
 		// Build PACKET
-		c.receive <- message
+		c.onMessage(message)
 	}
+
 }
 
 // writePump pumps messages from the hub to the websocket connection.
@@ -238,6 +237,8 @@ func (c *Client) writePump() {
 			if err := c.conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
 				return
 			}
+		case <-c.done:
+			return
 		}
 	}
 }
@@ -248,35 +249,27 @@ type Hub struct {
 	// Registered clients.
 	clients map[*Client]bool
 
-	// Inbound messages from the clients.
-	Broadcast chan []byte
-
 	// Register requests from the clients.
 	register chan *Client
 
 	// Unregister requests from clients.
 	unregister chan *Client
 
-	Wellcome func() [][]byte
-
 	done chan struct{}
 }
 
 func newHub(wellcomeMessage func() [][]byte) *Hub {
 	return &Hub{
-		Broadcast:  make(chan []byte),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
-		Wellcome:   wellcomeMessage,
 		done:       make(chan struct{}),
 	}
 }
 
 func (h *Hub) stop() {
 	for c, _ := range h.clients {
-		h.unregister <- c
-		c.conn.Close()
+		c.close()
 	}
 	close(h.done)
 }
@@ -287,20 +280,12 @@ func (h *Hub) run() {
 		case <-h.done:
 			return
 		case client := <-h.register:
+			client.done = make(chan struct{}, 1)
 			h.clients[client] = true
+
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
-				close(client.send)
-			}
-		case message := <-h.Broadcast:
-			for client := range h.clients {
-				select {
-				case client.send <- message:
-				default:
-					close(client.send)
-					delete(h.clients, client)
-				}
 			}
 		}
 	}
