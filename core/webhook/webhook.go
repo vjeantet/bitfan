@@ -21,7 +21,7 @@ type webHook struct {
 
 var webHookMap = syncmap.Map{}
 var baseURL = ""
-var whPrefixURL = "/"
+var whPrefixURL = "/h/"
 var Log commons.Logger
 
 func New(pipelineLabel, nameSpace string) *webHook {
@@ -29,7 +29,7 @@ func New(pipelineLabel, nameSpace string) *webHook {
 }
 
 func (w *webHook) buildURL(hookName string) string {
-	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(w.namespace) + "/" + slug.Make(hookName))
+	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
 }
 
 // Add a new route to a given http.HandlerFunc

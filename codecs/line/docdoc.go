@@ -46,7 +46,7 @@ func Doc() *doc.Codec {
         &doc.CodecOption{
           Name:           "Format",
           Alias:          "format",
-          Doc:            "Format as a golang text/template",
+          Doc:            "Format as a golang html/template",
           Required:       false,
           Type:           "string",
           DefaultValue:   "\"{{TS \"dd/MM/yyyy:HH:mm:ss\" .}} {{.host}} {{.message}}\"",

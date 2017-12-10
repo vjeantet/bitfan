@@ -1,0 +1,32 @@
+{
+  "Doc": "Send event received over a ws connection to connected clients",
+  "DocShort": "Reads events from standard input",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/websocket",
+  "Name": "websocket",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "",
+        "DefaultValue": "\"json\"",
+        "Doc": "The codec used for outputed data.",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "codec"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": "\"wsout\"",
+        "Doc": "URI path",
+        "ExampleLS": "",
+        "Name": "Uri",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      }
+    ]
+  },
+  "Ports": []
+}

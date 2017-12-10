@@ -27,7 +27,7 @@
         {
           "Alias": "pattern",
           "DefaultValue": null,
-          "Doc": "The regular expression to match",
+          "Doc": "The regular expression to match with the line",
           "ExampleLS": "pattern =\u003e \"^\\\\s\"",
           "Name": "Pattern",
           "PossibleValues": null,

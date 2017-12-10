@@ -1,7 +1,7 @@
 {{ define "title"}}Filter playground{{ end }}
 
 {{ define "sidebar" }}
-{{ template "pipelinesidebar" . }}
+{{ template "playgroundsidebar" . }}
 {{ end }}
 
 {{ define "content" }}
@@ -20,23 +20,83 @@
 <div class="row">
   <div class="col-12">
 
-  	 
+  	 <form id="bitfan-playground-form">
        <div class="form-group">
         <label for="label">Input Event to pass to the first filter processor</label>
-        <textarea class="form-control" rows=10 name="event" id="event" placeholder="json"></textarea>
+        <textarea class="form-control" rows=5 name="event" id="event" placeholder="json">
+{
+  "type":       "tester",
+  "number":     1,
+  "message":    "test message"  
+}
+        </textarea>
+              
+        <button type="button" name="sendEvent" class="btn btn-success">Send</button>
+      
       </div>
       <div class="form-group">
         <label for="description">Filters</label>
-        <textarea class="form-control" rows=10 name="filters" id="filters" placeholder="mutate {}"></textarea>
+        <textarea class="form-control" rows=5 name="filter" id="filter" placeholder="mutate {}">
+  grok {
+    match => { "message" => "%{COMBINEDAPACHELOG}" }
+  }
+
+  date {
+    match => [ "timestamp" ,  "02/Jan/2006:15:04:05 -0700", "dd/MMM/yyyy:HH:mm:ss Z"]
+  }
+
+
+  if [test] == "atrue" {
+    uuid {
+      target => "AA"
+      overwrite => true
+    }
+    if [test] == "btrue" {
+      uuid {
+        target => "BB"
+        overwrite => true
+      }
+    } 
+    
+    if [test] == "ctrue" {
+      uuid {
+        target => "CC"
+        overwrite => true
+      }
+    } 
+  } else {
+    uuid {
+      target => "DD"
+      overwrite => true
+    }
+  }
+
+  
+        </textarea>
+        <div id="playground-error"></div>
+      </div>
+      <div class="form-group">
+
+        <button type="submit" name="play" class="btn btn-primary">Play</button>
       </div>
       <div class="form-group">
         <label for="description">Output</label>
-        <textarea class="form-control" rows=10 name="output" id="output" placeholder="event produced by last filter processor will be printed here"></textarea>
+        <textarea class="form-control" rows=5 name="output" id="output" placeholder="event produced by last filter processor will be printed here"></textarea>
       </div>
       
-    
+    <style type="text/css">
+      
+      #bitfan-playground-form textarea.error {
+        border:2px solid red;
+        background-color: #EFB5B3 ;
+      }
+      #bitfan-playground-form textarea.success {
+        border:2px solid #408002;
+      }
+      #playground-error.error {color:red;}
+    </style>
 
-
+</form>
 
   </div>
 </div>

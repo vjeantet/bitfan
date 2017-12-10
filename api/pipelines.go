@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/api/models"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/entrypoint"
 	"github.com/vjeantet/jodaTime"
 )
@@ -70,8 +70,11 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 		return
 	}
 
-	uid, _ := uuid.NewV4()
-	pipeline.Uuid = uid.String()
+	if pipeline.Uuid == "" {
+		uid, _ := uuid.NewV4()
+		pipeline.Uuid = uid.String()
+	}
+
 	for i, _ := range pipeline.Assets {
 		uid, _ := uuid.NewV4()
 		pipeline.Assets[i].Uuid = uid.String()

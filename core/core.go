@@ -128,7 +128,7 @@ func Start(opt Options) {
 
 	if len(opt.HttpHandlers) > 0 {
 		webhook.Log = logger
-		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/", webhook.Handler(opt.Host)))
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/h/", webhook.Handler(opt.Host)))
 
 		listenAndServe(opt.Host, opt.HttpHandlers...)
 	}

@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "httpoutprocessor",
   ImportPath: "github.com/vjeantet/bitfan/processors/httpout",
-  Doc:        "Display on http the last received event\n\nURL is available as http://webhookhost/pluginLabel/URI\n\n* webhookhost is defined by bitfan at startup\n* pluginLabel is defined in pipeline configuration, it's the named processor if you put one, or `input_httpserver` by default\n* URI is defined in plugin configuration (see below)",
+  Doc:        "Display on http the last received event\n\nURL is available as http://webhookhost/pipelineName/pluginLabel/URI\n\n* webhookhost is defined by bitfan at startup\n* pluginLabel is defined in pipeline configuration, it's the named processor if you put one, or `httpout` by default\n* URI is defined in plugin configuration (see below)",
   DocShort:   "Reads events from standard input",
   Options:    &doc.ProcessorOptions{
     Doc:     "",

@@ -64,6 +64,9 @@
         "LocationPath": {
           "type": "string"
         },
+        "Playground": {
+          "type": "boolean"
+        },
         "UpdatedAt": {},
         "assets": {
           "description": "Assets",
