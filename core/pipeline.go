@@ -6,6 +6,7 @@ import (
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	uuid "github.com/nu7hatch/gouuid"
+	"github.com/vjeantet/bitfan/core/webhook"
 )
 
 type Pipeline struct {
@@ -18,7 +19,7 @@ type Pipeline struct {
 
 	Description string
 
-	Webhooks []string
+	Webhooks []webhook.Hook
 }
 
 func NewPipeline() *Pipeline {

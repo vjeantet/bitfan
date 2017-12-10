@@ -50,7 +50,7 @@ func playgroundsFilterDo(c *gin.Context) {
   httpserver{
 	codec => ` + pgReq.EventType + ` 		
   }
-  websocket {
+  websocket wsin{
   	codec => ` + pgReq.EventType + ` 
   	uri => "wsin"
   }
@@ -59,7 +59,7 @@ filter{
 ` + pgReq.FilterPart + `
 } 
 output{
-  websocket {
+  websocket wsout{
   	codec => json {indent => "    "}
   	uri => "wsout"
   }
@@ -86,7 +86,6 @@ output{
 	}
 
 	tp, err := apiClient.NewPipeline(&p)
-	pp.Println("tp-->", tp)
 	if err != nil {
 		c.JSON(500, err.Error())
 		log.Printf("error : %v\n", err)
@@ -96,9 +95,18 @@ output{
 	// get its UUID
 	// build its WS IN and OUT
 	// returns WS adresses to client
-	wsout := "/h/" + pgReq.UUID + "/wsout"
-	wsin := "/h/" + pgReq.UUID + "/wsin"
-	httpin := "/h/" + pgReq.UUID + "/events"
+	var wsout, wsin, httpin string
+	for _, wh := range tp.Webhooks {
+		switch wh.Namespace {
+		case "wsin":
+			wsin = wh.Url
+		case "wsout":
+			wsout = wh.Url
+		case "httpserver":
+			httpin = wh.Url
+		}
+	}
+
 	c.JSON(200, withCommonValues(c, gin.H{
 		"wsin":   wsin,
 		"wsout":  wsout,

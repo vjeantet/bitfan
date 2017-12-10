@@ -37,5 +37,5 @@ type Pipeline struct {
 
 	AutoStart bool `json:"auto_start" mapstructure:"auto_start"`
 
-	Webhooks []string
+	Webhooks []Webhook
 }
