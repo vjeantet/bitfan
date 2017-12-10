@@ -31,16 +31,21 @@ func (s *Store) Close() {
 	s.db.Close()
 }
 
-func (s *Store) PipelineTmpPath(uuid string) string {
-	uidString := fmt.Sprintf("%s_%d", uuid, time.Now().Unix())
+func (s *Store) PipelineTmpPath(tPipeline *models.Pipeline) string {
+	uidString := fmt.Sprintf("%s_%d", tPipeline.Uuid, time.Now().Unix())
 	pipelinePath := filepath.Join(s.pipelineTmpPath, uidString)
+
+	if tPipeline.Playground == true {
+		pipelinePath = filepath.Join(os.TempDir(), "bitfan-playground", tPipeline.Uuid)
+	}
+
 	os.MkdirAll(pipelinePath, os.ModePerm)
 	return pipelinePath
 }
 
 func (s *Store) PreparePipelineExecutionStage(tPipeline *models.Pipeline) (string, error) {
 	//Save assets to cwd
-	cwd := s.PipelineTmpPath(tPipeline.Uuid)
+	cwd := s.PipelineTmpPath(tPipeline)
 	for _, asset := range tPipeline.Assets {
 		dest := filepath.Join(cwd, asset.Name)
 		dir := filepath.Dir(dest)

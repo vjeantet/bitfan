@@ -80,11 +80,13 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 		pipeline.Assets[i].Uuid = uid.String()
 	}
 
-	core.Storage().CreatePipeline(&pipeline)
+	if pipeline.Playground == false {
+		core.Storage().CreatePipeline(&pipeline)
+	}
 
 	// Handle optinal Start
 	if pipeline.Active == true {
-		err = p.startPipelineByUUID(pipeline.Uuid)
+		err = p.startPipeline(&pipeline)
 		if err != nil {
 			c.JSON(500, models.Error{Message: err.Error()})
 			return
@@ -100,7 +102,11 @@ func (p *PipelineApiController) startPipelineByUUID(UUID string) error {
 		return err
 	}
 
-	entryPointPath, err := core.Storage().PreparePipelineExecutionStage(&tPipeline)
+	return p.startPipeline(&tPipeline)
+}
+
+func (p *PipelineApiController) startPipeline(tPipeline *models.Pipeline) error {
+	entryPointPath, err := core.Storage().PreparePipelineExecutionStage(tPipeline)
 	if err != nil {
 		return err
 	}

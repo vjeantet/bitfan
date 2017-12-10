@@ -81,12 +81,7 @@ output{
 		}},
 	}
 
-	_, err = apiClient.NewPipeline(&p)
-	if err != nil {
-		c.JSON(500, err.Error())
-		log.Printf("error : %v\n", err)
-		return
-	}
+	_, _ = apiClient.NewPipeline(&p)
 
 	// get its UUID
 	// build its WS IN and OUT
