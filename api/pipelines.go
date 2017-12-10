@@ -155,8 +155,14 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid, false)
 	if err != nil {
-		c.JSON(404, models.Error{Message: err.Error()})
-		return
+
+		if _, active := core.GetPipeline(uuid); !active {
+			c.JSON(404, models.Error{Message: err.Error()})
+			return
+		}
+
+		mPipeline.Playground = true
+
 	}
 
 	runningPipeline, found := core.GetPipeline(uuid)
@@ -171,11 +177,15 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 
 func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
-
 	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid, false)
 	if err != nil {
-		c.JSON(404, models.Error{Message: err.Error()})
-		return
+
+		// Is pipline is not running -> error
+		if _, active := core.GetPipeline(uuid); !active {
+			c.JSON(404, models.Error{Message: err.Error()})
+			return
+		}
+		mPipeline.Playground = true
 	}
 
 	data := map[string]interface{}{}
@@ -190,7 +200,9 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 		return
 	}
 
-	core.Storage().SavePipeline(&mPipeline)
+	if !mPipeline.Playground { // Ignore playground pipelines
+		core.Storage().SavePipeline(&mPipeline)
+	}
 
 	// handle Start / Stop / Restart
 	_, active := core.GetPipeline(uuid)
