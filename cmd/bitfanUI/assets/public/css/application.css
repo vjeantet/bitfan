@@ -247,6 +247,25 @@ article {
   article .table-responsive {
     overflow-y: visible;
     overflow-x: visible; }
+  article .bitfan-packet {
+    display: block;
+    unicode-bidi: embed;
+    font-family: monospace;
+    white-space: pre;
+    outline: 1px solid #ccc;
+    padding: 5px;
+    margin: 5px;
+    background-color: #E9EDF0; }
+    article .bitfan-packet .string {
+      color: green; }
+    article .bitfan-packet .number {
+      color: darkorange; }
+    article .bitfan-packet .boolean {
+      color: blue; }
+    article .bitfan-packet .null {
+      color: magenta; }
+    article .bitfan-packet .key {
+      color: red; }
   article #logs li.level5 {
     color: gray; }
   article #logs li.level4 {
@@ -267,24 +286,5 @@ article {
     content: "["; }
   article #logs li .component::after {
     content: "]"; }
-  article #logs li .event {
-    display: block;
-    unicode-bidi: embed;
-    font-family: monospace;
-    white-space: pre;
-    outline: 1px solid #ccc;
-    padding: 5px;
-    margin: 5px;
-    background-color: #E9EDF0; }
-    article #logs li .event .string {
-      color: green; }
-    article #logs li .event .number {
-      color: darkorange; }
-    article #logs li .event .boolean {
-      color: blue; }
-    article #logs li .event .null {
-      color: magenta; }
-    article #logs li .event .key {
-      color: red; }
 
 /*# sourceMappingURL=application.css.map */

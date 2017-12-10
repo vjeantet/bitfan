@@ -9,7 +9,8 @@ import (
 )
 
 type playgroundRequest struct {
-	Event      string
+	Event      string `json:"event"`
+	EventType  string `json:"event_type"`
 	FilterPart string `json:"filter"`
 	UUID       string `json:"uuid"`
 }
@@ -47,7 +48,7 @@ func playgroundsFilterDo(c *gin.Context) {
 	// - with output as WS
 	pgFullConfig := `input{
   websocket {
-  	codec => json 
+  	codec => ` + pgReq.EventType + ` 
   	uri => "wsin"
   }
 }

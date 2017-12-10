@@ -11,6 +11,13 @@
 <div class="row" >
   <div class="col">
   <h1>Filter Playground</h1>
+  <small>
+  <p>
+      <li>Write down an event as json in the first editor</li>
+      <li>Write your filter part</li>
+      <li>While you type, the last produced event or parse error will be diplayed live</li>
+  </p>
+  </small>
   </div>
 </div>
 
@@ -23,7 +30,11 @@
 
   	 <form id="bitfan-playground-form">
        <div class="form-group">
-        <label for="label">Input Event to pass to the first filter processor (as json)</label>
+        <label for="label">Input Event to pass to the first filter processor</label>
+        <select name="event_type">
+          <option value="json">json</option>
+          <option value="plain">plain</option>
+        </select>
         <textarea  style="display: none" class="form-control" rows=5 name="event" id="event" placeholder='{
   "message":    "test message"  ,
   "number":     1,
@@ -34,7 +45,7 @@
 
 
 
-        <button type="button" name="sendEvent" class="btn btn-success" style="display: none;">Send to current pipeline</button>
+        <button type="button" name="sendEvent" class="btn btn-success" style="display: none;">Send again</button>
       
       </div>
       <div class="form-group">
@@ -107,11 +118,9 @@
       <div class="form-group">
         <label for="description">Last event produced : </label>
         <!-- <textarea class="form-control" rows=5 name="output" id="output" placeholder="event produced by last filter processor will be printed here"></textarea> -->
-        <div id="logs" >
-          <li>
-            <div name="output" class="event"></div>
-          </li>
-        </div>
+        
+        <div name="output" class="bitfan-packet"></div>
+        
       </div>
       
     <style type="text/css">
@@ -120,7 +129,7 @@
       }
       #bitfan-playground-form .error {
         border:2px solid red;
-        background-color: #EFB5B3 ;
+        background-color: #F1E6FF ;
       }
       #bitfan-playground-form .success {
         border:2px solid #408002;

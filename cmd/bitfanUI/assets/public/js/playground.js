@@ -5,7 +5,7 @@ var websocketIN;
 $(document).ready(function() {
 
     UUID = guid();
-    
+
 
 
     $('#bitfan-playground-form').on('submit', function(e) { //use on if jQuery 1.7+
@@ -14,23 +14,43 @@ $(document).ready(function() {
         return false;
     });
 
-    // var timeoutId = 0;
-    // $("#bitfan-playground-form textarea[name='filter']").on('keyup', function(e) { //use on if jQuery 1.7+
-    //     clearTimeout(timeoutId); // doesn't matter if it's 0
-    //     timeoutId = setTimeout(play, 500);
-    // });
-
-
     $("#bitfan-playground-form button[name='sendEvent']").on('click', function(e) { //use on if jQuery 1.7+
         websocketIN.send($("#bitfan-playground-form textarea[name='event']").val());
+    });
+    
+    $("#bitfan-playground-form select[name='event_type']").on('change', function(e) { //use on if jQuery 1.7+
+        play();
+    });
+
+
+    $(window).on('beforeunload', function() {
+        var dataObject = {
+            'event': "",
+            'event_type': "",
+            'filter': "",
+            'uuid': "playground-" + UUID,
+        };
+
+        $.ajax({
+            url: window.location.href,
+            type: 'DELETE',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(dataObject),
+            success: function(result) {
+
+            }
+        });
     });
 
 });
 
 
+
 function play() {
     var dataObject = {
         'event': $("#bitfan-playground-form textarea[name='event']").val(),
+        'event_type': $("#bitfan-playground-form select[name='event_type']").val(),
         'filter': $("#bitfan-playground-form textarea[name='filter']").val(),
         'uuid': "playground-" + UUID,
     };
@@ -43,20 +63,6 @@ function play() {
         url: window.location.href,
         beforeSend: function() {},
         success: function(settings) {
-
-            $(window).on('beforeunload', function() {
-                $.ajax({
-                    url: window.location.href,
-                    type: 'DELETE',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: 'json',
-                    data: JSON.stringify(dataObject),
-                    success: function(result) {
-
-                    }
-                })
-            });
-
             console.log(settings)
             console.log("success");
             playErrorReset();
@@ -95,6 +101,10 @@ function play() {
     });
 
 }
+
+
+
+
 
 
 function playErrorReset() {
