@@ -3,6 +3,7 @@ package json
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/vjeantet/bitfan/processors"
 )
@@ -23,11 +24,11 @@ type options struct {
 	processors.CommonOptions `mapstructure:",squash"`
 
 	// The configuration for the JSON filter
-	Source string
+	Source string `mapstructure:"source" validate:"required"`
 
 	// Define the target field for placing the parsed data. If this setting is omitted,
 	// the JSON data will be stored at the root (top level) of the event
-	Target string
+	Target string `mapstructure:"target"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -38,7 +39,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	json_string, err := e.Fields().ValueForPathString(p.opt.Source)
 	if err != nil {
-		return err
+		return fmt.Errorf("error while looking for `%s` field : %s", p.opt.Source, err.Error())
 	}
 
 	byt := []byte(json_string)
