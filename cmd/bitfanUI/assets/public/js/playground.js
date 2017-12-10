@@ -18,7 +18,7 @@ $(document).ready(function() {
         clearTimeout(timeoutId); // doesn't matter if it's 0
         timeoutId = setTimeout(play, 500);
     });
-    
+
 
     $("#bitfan-playground-form button[name='sendEvent']").on('click', function(e) { //use on if jQuery 1.7+
         websocketIN.send($("#bitfan-playground-form textarea[name='event']").val());
@@ -40,9 +40,22 @@ function play() {
         data: JSON.stringify(dataObject),
         dataType: 'json',
         url: window.location.href,
-        beforeSend: function() {
-        },
+        beforeSend: function() {},
         success: function(settings) {
+
+            $(window).on('beforeunload', function() {
+                $.ajax({
+                    url: window.location.href,
+                    type: 'DELETE',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(dataObject),
+                    success: function(result) {
+
+                    }
+                })
+            });
+
             console.log(settings)
             console.log("success");
             playErrorReset();
@@ -84,14 +97,14 @@ function play() {
 
 function playErrorReset() {
     $("#playground-error").text("");
-    $("#bitfan-playground-form button[name='sendEvent']").show() ;
+    $("#bitfan-playground-form button[name='sendEvent']").show();
     $("#playground-error").removeClass("error");
     $("#bitfan-playground-form textarea[name='output']").removeClass("error");
 }
 
 function playError(errorTxt) {
     $("#playground-error").text(errorTxt);
-    $("#bitfan-playground-form button[name='sendEvent']").hide() ;
+    $("#bitfan-playground-form button[name='sendEvent']").hide();
     $("#playground-error").addClass("error");
     $("#bitfan-playground-form textarea[name='output']").addClass("error");
 }

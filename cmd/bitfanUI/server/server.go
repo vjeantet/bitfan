@@ -109,6 +109,7 @@ func Handler(baseURL string, debug bool) http.Handler {
 	// Playgrounds
 	r.GET("/playgrounds/filter", playgroundsFilter)
 	r.PUT("/playgrounds/filter", playgroundsFilterDo)
+	r.DELETE("/playgrounds/filter", playgroundsFilterExit)
 
 	// Replace asset
 	r.PUT("/settings/api", changeBitfanApiURL)
@@ -144,88 +145,6 @@ func withCommonValues(c *gin.Context, h gin.H) gin.H {
 	h["flashes"] = session.Flashes()
 	session.Save()
 	return h
-}
-
-type playgroundRequest struct {
-	Event      string
-	FilterPart string `json:"filter"`
-	UUID       string `json:"uuid"`
-}
-
-func playgroundsFilterDo(c *gin.Context) {
-	pgReq := playgroundRequest{}
-	err := c.BindJSON(&pgReq)
-
-	if pgReq.UUID == "" {
-		c.JSON(400, err.Error())
-		log.Printf("error : no uuid provided\n")
-		return
-	}
-	if err != nil {
-		c.JSON(500, err.Error())
-		log.Printf("error : %v\n", err)
-		return
-	}
-
-	// Build a complete bitfan configuration
-	// - with input as WS
-	// - with output as WS
-	pgFullConfig := `input{
-  websocket {
-  	codec => json 
-  	uri => "wsin"
-  }
-}
-filter{
-` + pgReq.FilterPart + `
-} 
-output{
-  websocket {
-  	codec => json {indent => "    "}
-  	uri => "wsout"
-  }
-}`
-
-	// Check if a pipeline UUID "playground-1" is alreay running
-	_, _ = apiClient.StopPipeline(pgReq.UUID)
-
-	// start pipeline
-	defaultValue := []byte(pgFullConfig)
-	var p = models.Pipeline{
-		Playground:  true,
-		Uuid:        pgReq.UUID,
-		Active:      true,
-		Label:       "playground-filter " + pgReq.UUID,
-		Description: "",
-		Assets: []models.Asset{{
-			Name:        "play.conf",
-			Type:        "entrypoint",
-			ContentType: "text/plain",
-			Value:       defaultValue,
-			Size:        len(defaultValue),
-		}},
-	}
-
-	_, err = apiClient.NewPipeline(&p)
-	if err != nil {
-		c.JSON(500, err.Error())
-		log.Printf("error : %v\n", err)
-		return
-	}
-
-	// get its UUID
-	// build its WS IN and OUT
-	// returns WS adresses to client
-	wsout := "/h/" + pgReq.UUID + "/wsout"
-	wsin := "/h/" + pgReq.UUID + "/wsin"
-	c.JSON(200, withCommonValues(c, gin.H{
-		"wsin":  wsin,
-		"wsout": wsout,
-	}))
-}
-
-func playgroundsFilter(c *gin.Context) {
-	c.HTML(200, "playgrounds/filters", withCommonValues(c, gin.H{}))
 }
 
 func getLogs(c *gin.Context) {
