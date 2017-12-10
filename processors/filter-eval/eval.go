@@ -97,11 +97,19 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.compiledTemplates[key] = tpl
 	}
 
+	// Prepare expressions
+	for key, expressionString := range p.opt.Expressions {
+		if _, err = p.cacheExpression(key, expressionString.(string)); err != nil {
+			return err
+		}
+	}
+
 	return err
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
 	var countError int
+	var err error
 
 	if len(p.opt.Var) > 0 {
 		e.Fields().SetValueForPath(p.opt.Var, "var")
@@ -119,13 +127,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	}
 
 	// govaluate expressions
-	for key, expressionString := range p.opt.Expressions {
-		expression, err := p.cacheExpression(key, expressionString.(string))
-
-		if err != nil {
-			return fmt.Errorf("evaluation expression error : %v", err)
-		}
-
+	for key, expression := range p.compiledExpressions {
 		parameters := EvaluatedParameters{}
 		for _, v := range expression.Tokens() {
 			if v.Kind == govaluate.VARIABLE {
@@ -161,7 +163,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		resultRaw, err := expression.Eval(parameters)
 
 		if err != nil {
-			p.Logger.Errorf("error while evaluating `%s` with values `%s` ", expressionString, e.Fields())
+			p.Logger.Errorf("error while evaluating `%s` with values `%s` ", expression.String(), e.Fields())
 			countError++
 		} else {
 			e.Fields().SetValueForPath(resultRaw, key)
@@ -202,10 +204,6 @@ func (ep EvaluatedParameters) Get(key string) (interface{}, error) {
 }
 
 func (p *processor) cacheExpression(index string, expressionValue string) (*govaluate.EvaluableExpression, error) {
-	if e, ok := p.compiledExpressions[index]; ok {
-		return e, nil
-	}
-
 	functions := map[string]govaluate.ExpressionFunction{
 
 		"bool": func(args ...interface{}) (interface{}, error) {
