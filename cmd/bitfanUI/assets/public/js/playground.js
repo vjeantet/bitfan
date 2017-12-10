@@ -5,7 +5,7 @@ var websocketIN;
 $(document).ready(function() {
 
     UUID = guid();
-    var timeoutId = 0;
+    
 
 
     $('#bitfan-playground-form').on('submit', function(e) { //use on if jQuery 1.7+
@@ -14,10 +14,11 @@ $(document).ready(function() {
         return false;
     });
 
-    $("#bitfan-playground-form textarea[name='filter']").on('keyup', function(e) { //use on if jQuery 1.7+
-        clearTimeout(timeoutId); // doesn't matter if it's 0
-        timeoutId = setTimeout(play, 500);
-    });
+    // var timeoutId = 0;
+    // $("#bitfan-playground-form textarea[name='filter']").on('keyup', function(e) { //use on if jQuery 1.7+
+    //     clearTimeout(timeoutId); // doesn't matter if it's 0
+    //     timeoutId = setTimeout(play, 500);
+    // });
 
 
     $("#bitfan-playground-form button[name='sendEvent']").on('click', function(e) { //use on if jQuery 1.7+
@@ -68,8 +69,9 @@ function play() {
             websocketOUT.onmessage = function(event) {
                 // var Data = JSON.parse(event.data);
                 console.log(event.data);
-                $("#bitfan-playground-form textarea[name='output']").val(event.data);
-                $("#bitfan-playground-form textarea[name='output']").addClass("success");
+                // $("#bitfan-playground-form textarea[name='output']").val(event.data);
+                $("#bitfan-playground-form div[name='output']").html(syntaxHighlight(event.data));
+                $("#bitfan-playground-form div[name='output']").addClass("success");
             };
             websocketOUT.onerror = function(event) {
                 // notie.alert({ type: 'warning', stay: false, text: 'Problem due to some Error' });
@@ -99,14 +101,16 @@ function playErrorReset() {
     $("#playground-error").text("");
     $("#bitfan-playground-form button[name='sendEvent']").show();
     $("#playground-error").removeClass("error");
-    $("#bitfan-playground-form textarea[name='output']").removeClass("error");
+    $("#bitfan-playground-form div[name='output']").removeClass("error");
+    $("#bitfan-playground-form div[name='output']").removeClass("success");
 }
 
 function playError(errorTxt) {
     $("#playground-error").text(errorTxt);
     $("#bitfan-playground-form button[name='sendEvent']").hide();
     $("#playground-error").addClass("error");
-    $("#bitfan-playground-form textarea[name='output']").addClass("error");
+    $("#bitfan-playground-form div[name='output']").addClass("error");
+    $("#bitfan-playground-form div[name='output']").removeClass("success");
 }
 
 

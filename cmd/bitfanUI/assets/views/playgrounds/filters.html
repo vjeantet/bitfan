@@ -14,7 +14,8 @@
   </div>
 </div>
 
-
+<script src="/public/vendor/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/public/vendor/ace/ext-modelist.js"></script>
 
 
 <div class="row">
@@ -23,36 +24,105 @@
   	 <form id="bitfan-playground-form">
        <div class="form-group">
         <label for="label">Input Event to pass to the first filter processor (as json)</label>
-        <textarea class="form-control" rows=5 name="event" id="event" placeholder='{
+        <textarea  style="display: none" class="form-control" rows=5 name="event" id="event" placeholder='{
   "message":    "test message"  ,
   "number":     1,
   "type":       "tester"
 }'>{"message":"Hello world"}</textarea>
-              
+        <div style="height: 200px;" id="eventInput"></div>
+
+
+
+
         <button type="button" name="sendEvent" class="btn btn-success" style="display: none;">Send to current pipeline</button>
       
       </div>
       <div class="form-group">
-        <label for="description">filter{</label>
-        <textarea class="form-control" rows=5 name="filter" id="filter" placeholder="mutate {}"></textarea>}
+        <label for="description">filter {</label>
+        <textarea style="display: none" name="filter" id="bitfan-asset-content"></textarea>
+        <div style="height: 300px;" id="content"></div>
+      }
+          
+          <script>
+            
+            var timeoutId = 0;
+
+            $(document).ready(function () {
+
+              function getModeByFileExtension(path){
+                  var modelist = ace.require("ace/ext/modelist");
+                  return modelist.getModeForPath(path).mode;
+              }
+
+              var editorEventInput = ace.edit("eventInput");
+              editorEventInput.setAutoScrollEditorIntoView(true);
+              editorEventInput.setTheme("ace/theme/monokai");
+              editorEventInput.getSession().setMode("ace/mode/json");
+              var textareaInputEvent = $('textarea[name="event"]').hide();
+              editorEventInput.getSession().setValue(textareaInputEvent.val());
+              editorEventInput.getSession().on('change', function(){
+                textareaInputEvent.val(editorEventInput.getSession().getValue());
+              });
+
+              var editor = ace.edit("content");
+              editor.setAutoScrollEditorIntoView(true);
+              editor.setTheme("ace/theme/monokai");
+              editor.getSession().setMode("ace/mode/logstash");
+              var textarea = $('textarea[name="filter"]').hide();
+              editor.getSession().setValue(textarea.val());
+              editor.getSession().on('change', function(){
+                textarea.val(editor.getSession().getValue());
+                editor.getSession().clearAnnotations() ;
+                clearTimeout(timeoutId); // doesn't matter if it's 0
+                timeoutId = setTimeout(play, 500);
+              });
+              editor.setOption("firstLineNumber", 8)
+
+              // editor.commands.addCommand(
+              //   {
+              //     name: 'saveFile',
+              //     bindKey: {
+              //     win: 'Ctrl-S',
+              //     mac: 'Command-S',
+              //     sender: 'editor|cli'
+              //   },
+              //   exec: function(env, args, request) {
+              //    $("#bitfan-asset-form").submit() ;
+              //   }
+              // });
+
+
+            });
+          </script>
+
+
+
+
         <div id="playground-error"></div>
       </div>
       <div class="form-group">
 
-        <button type="submit" name="play" class="btn btn-primary">Play (build a new pipeline)</button>
+        <!-- <button type="submit" name="play" class="btn btn-primary">Play (build a new pipeline)</button> -->
       </div>
       <div class="form-group">
-        <label for="description">Output</label>
-        <textarea class="form-control" rows=5 name="output" id="output" placeholder="event produced by last filter processor will be printed here"></textarea>
+        <label for="description">Last event produced : </label>
+        <!-- <textarea class="form-control" rows=5 name="output" id="output" placeholder="event produced by last filter processor will be printed here"></textarea> -->
+        <div id="logs" >
+          <li>
+            <div name="output" class="event"></div>
+          </li>
+        </div>
       </div>
       
     <style type="text/css">
-      
-      #bitfan-playground-form textarea.error {
+      #bitfan-playground-form #logs li {
+        list-style: none;
+      }
+      #bitfan-playground-form .error {
         border:2px solid red;
         background-color: #EFB5B3 ;
       }
-      #bitfan-playground-form textarea.success {
+      #bitfan-playground-form .success {
         border:2px solid #408002;
       }
       #playground-error.error {color:red;}
