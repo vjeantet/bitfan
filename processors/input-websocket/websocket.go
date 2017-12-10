@@ -45,6 +45,9 @@ type options struct {
 	// URI path
 	// @Default "wsin"
 	Uri string
+
+	// Maximum message size allowed from peer.
+	MaxMessageSize int `mapstructure:"max_message_size"`
 }
 
 // Reads events from standard input
@@ -125,7 +128,7 @@ func (p *processor) processMessage(m []byte) {
 		var e processors.IPacket
 		switch v := record.(type) {
 		case nil:
-			e = p.NewPacket(string(m), map[string]interface{}{})
+			continue
 		case string:
 			e = p.NewPacket(v, map[string]interface{}{})
 		case map[string]interface{}:
@@ -161,7 +164,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 	p.Hub.register <- client
 
 	go client.writePump()
-	go client.readPump()
+	go client.readPump(int64(p.opt.MaxMessageSize))
 }
 
 func (p *processor) wellcome() [][]byte {
@@ -185,13 +188,16 @@ type Client struct {
 // The application runs readPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
 // reads from this goroutine.
-func (c *Client) readPump() {
+func (c *Client) readPump(maxMessageSize int64) {
 	defer func() {
 		c.conn.Close()
 		close(c.done)
 		c.hub.unregister <- c
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
+	if maxMessageSize > 0 {
+		c.conn.SetReadLimit(maxMessageSize)
+	}
+
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
