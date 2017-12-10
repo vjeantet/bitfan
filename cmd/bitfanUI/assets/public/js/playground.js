@@ -84,12 +84,14 @@ function play() {
 
 function playErrorReset() {
     $("#playground-error").text("");
+    $("#bitfan-playground-form button[name='sendEvent']").show() ;
     $("#playground-error").removeClass("error");
     $("#bitfan-playground-form textarea[name='output']").removeClass("error");
 }
 
 function playError(errorTxt) {
     $("#playground-error").text(errorTxt);
+    $("#bitfan-playground-form button[name='sendEvent']").hide() ;
     $("#playground-error").addClass("error");
     $("#bitfan-playground-form textarea[name='output']").addClass("error");
 }
