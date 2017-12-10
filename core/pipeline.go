@@ -17,6 +17,8 @@ type Pipeline struct {
 	StartedAt          time.Time
 
 	Description string
+
+	Webhooks []string
 }
 
 func NewPipeline() *Pipeline {

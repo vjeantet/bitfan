@@ -25,6 +25,10 @@
 <script src="/public/vendor/ace/ext-modelist.js"></script>
 
 
+<script id="httpin-template" type="text/x-jsrender">
+  <label >use this url to send event by http : <a href="[[:ev.url]]">[[:ev.url]]</a> </label>
+</script>
+
 <div class="row">
   <div class="col-12">
 
@@ -32,22 +36,21 @@
        <div class="form-group">
         <label for="label">Input Event to pass to the first filter processor</label>
         <select name="event_type">
-          <option value="json">json</option>
           <option value="plain">plain</option>
+          <option value="json">json</option>
         </select>
+         <div style="display: nsone" id="bitfan-http-input-url" class="form-group">
+        
+      </div>
         <textarea  style="display: none" class="form-control" rows=5 name="event" id="event" placeholder='{
   "message":    "test message"  ,
   "number":     1,
   "type":       "tester"
 }'>{"message":"Hello world"}</textarea>
         <div style="height: 200px;" id="eventInput"></div>
-
-
-
-
         <button type="button" name="sendEvent" class="btn btn-success" style="display: none;">Send again</button>
-      
       </div>
+      
       <div class="form-group">
         <label for="description">filter {</label>
         <textarea style="display: none" name="filter" id="bitfan-asset-content"></textarea>
@@ -87,7 +90,7 @@
                 clearTimeout(timeoutId); // doesn't matter if it's 0
                 timeoutId = setTimeout(play, 500);
               });
-              editor.setOption("firstLineNumber", 8)
+              editor.setOption("firstLineNumber", 11)
 
               // editor.commands.addCommand(
               //   {

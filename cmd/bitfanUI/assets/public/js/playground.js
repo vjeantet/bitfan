@@ -67,6 +67,14 @@ function play() {
             console.log("success");
             playErrorReset();
 
+            httpin_url = "http://" + settings.apiHost + settings.httpin;
+            $("#bitfan-playground-form #bitfan-http-input-url").show();
+            var httpInTmpl = $.templates("#httpin-template");
+            $('#bitfan-http-input-url').html(httpInTmpl.render({
+                ev: {"url":httpin_url}, 
+            }));
+
+
             new_uri = "ws://" + settings.apiHost + settings.wsout;
             websocketOUT = new WebSocket(new_uri);
             websocketOUT.onopen = function(event) {
@@ -118,6 +126,7 @@ function playErrorReset() {
 function playError(errorTxt) {
     $("#playground-error").text(errorTxt);
     $("#bitfan-playground-form button[name='sendEvent']").hide();
+    $("#bitfan-playground-form #bitfan-http-input-url").hide();
     $("#playground-error").addClass("error");
     $("#bitfan-playground-form div[name='output']").addClass("error");
     $("#bitfan-playground-form div[name='output']").removeClass("success");

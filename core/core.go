@@ -179,6 +179,7 @@ func Stop() error {
 
 func GetPipeline(UUID string) (*Pipeline, bool) {
 	if i, found := pipelines.Load(UUID); found {
+		i.(*Pipeline).Webhooks = webhook.WebHooks(UUID)
 		return i.(*Pipeline), found
 	} else {
 		return nil, found
@@ -190,6 +191,7 @@ func Pipelines() map[string]*Pipeline {
 	pps := map[string]*Pipeline{}
 	pipelines.Range(func(key, value interface{}) bool {
 		pps[key.(string)] = value.(*Pipeline)
+		pps[key.(string)].Webhooks = webhook.WebHooks(key.(string))
 		return true
 	})
 	return pps

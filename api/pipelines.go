@@ -144,6 +144,7 @@ func (p *PipelineApiController) Find(c *gin.Context) {
 			pipelines[i].Active = true
 			pipelines[i].LocationPath = pup.ConfigLocation
 			pipelines[i].StartedAt = pup.StartedAt
+			pipelines[i].Webhooks = pup.Webhooks
 		}
 	}
 
@@ -170,6 +171,8 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 		mPipeline.StartedAt = runningPipeline.StartedAt
 		mPipeline.Active = true
 		mPipeline.LocationPath = runningPipeline.ConfigLocation
+		mPipeline.Webhooks = runningPipeline.Webhooks
+
 	}
 
 	c.JSON(200, mPipeline)

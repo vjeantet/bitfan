@@ -28,6 +28,15 @@ func New(pipelineLabel, nameSpace string) *webHook {
 	return &webHook{pipelineLabel: pipelineLabel, namespace: nameSpace, Hooks: []string{}}
 }
 
+func WebHooks(uuid string) []string {
+	urls := []string{}
+	webHookMap.Range(func(key, value interface{}) bool {
+		urls = append(urls, key.(string))
+		return true
+	})
+	return urls
+}
+
 func (w *webHook) buildURL(hookName string) string {
 	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
 }

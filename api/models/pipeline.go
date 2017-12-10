@@ -36,4 +36,6 @@ type Pipeline struct {
 	StartedAt time.Time `json:"started_at"`
 
 	AutoStart bool `json:"auto_start" mapstructure:"auto_start"`
+
+	Webhooks []string
 }
