@@ -93,9 +93,6 @@ func (p *processor) Start(e processors.IPacket) error {
 	p.Hub = newHub(p.wellcome)
 	go p.Hub.run()
 	p.WebHook.Add(p.opt.Uri, p.HttpHandler)
-
-	// go p.processMessage()
-
 	return nil
 }
 
@@ -139,6 +136,7 @@ func (p *processor) processMessage(m []byte) {
 			})
 		default:
 			p.Logger.Errorf("Unknow structure %#v", v)
+			continue
 		}
 
 		p.opt.ProcessCommonOptions(e.Fields())
@@ -158,7 +156,6 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 	client := &Client{
 		hub:       p.Hub,
 		conn:      conn,
-		send:      make(chan []byte, 256),
 		onMessage: p.processMessage,
 	}
 	p.Hub.register <- client
@@ -178,18 +175,9 @@ type Client struct {
 	// The websocket connection.
 	conn *websocket.Conn
 
-	// Buffered channel of outbound messages.
-	send chan []byte
-
 	onMessage func([]byte)
 
 	done chan struct{}
-}
-
-func (c *Client) close() {
-	c.conn.Close()
-	close(c.done)
-	c.hub.unregister <- c
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -199,7 +187,9 @@ func (c *Client) close() {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		c.close()
+		c.conn.Close()
+		close(c.done)
+		c.hub.unregister <- c
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -269,7 +259,7 @@ func newHub(wellcomeMessage func() [][]byte) *Hub {
 
 func (h *Hub) stop() {
 	for c, _ := range h.clients {
-		c.close()
+		h.unregister <- c
 	}
 	close(h.done)
 }
@@ -285,6 +275,7 @@ func (h *Hub) run() {
 
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
+				client.conn.Close()
 				delete(h.clients, client)
 			}
 		}
