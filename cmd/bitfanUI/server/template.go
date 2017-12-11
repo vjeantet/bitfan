@@ -69,6 +69,8 @@ func (r Render) Init() Render {
 	pathSeparator := string(os.PathSeparator)
 	if _, err := os.Stat(r.TemplatesDir); os.IsNotExist(err) {
 		pathSeparator = "/"
+	} else {
+		r.TemplatesDir = strings.Replace(r.TemplatesDir, "/", pathSeparator, -1)
 	}
 
 	layout := r.TemplatesDir + r.Layout
@@ -123,6 +125,7 @@ func (r Render) Add(name string, tmpl *template.Template) {
 	if len(name) == 0 {
 		panic("template name cannot be empty")
 	}
+	name = strings.Replace(name, "\\", "/", -1)
 	r.Templates[name] = tmpl
 }
 
