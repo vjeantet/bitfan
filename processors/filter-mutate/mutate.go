@@ -195,8 +195,15 @@ func Split(fields map[string]string, data *mxj.Map) {
 			continue
 		}
 		value := data.ValueOrEmptyForPathString(path)
+
 		newValue := strings.Split(value, separator)
-		data.SetValueForPath(newValue, path)
+
+		s := make([]interface{}, len(newValue))
+		for i, v := range newValue {
+			s[i] = v
+		}
+
+		data.SetValueForPath(s, path)
 	}
 }
 
