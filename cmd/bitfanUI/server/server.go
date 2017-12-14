@@ -107,9 +107,9 @@ func Handler(baseURL string, debug bool) http.Handler {
 	r.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
 	// Playgrounds
-	r.GET("/playgrounds/filter", playgroundsFilter)
-	r.PUT("/playgrounds/filter", playgroundsFilterDo)
-	r.DELETE("/playgrounds/filter", playgroundsFilterExit)
+	r.GET("/playgrounds/play", playgroundsPlay)
+	r.PUT("/playgrounds/play", playgroundsPlayDo)
+	r.DELETE("/playgrounds/play", playgroundsPlayExit)
 
 	// Replace asset
 	r.PUT("/settings/api", changeBitfanApiURL)

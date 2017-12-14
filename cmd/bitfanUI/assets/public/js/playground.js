@@ -15,10 +15,10 @@ $(document).ready(function() {
     });
 
     $("#bitfan-playground-form button[name='sendEvent']").on('click', function(e) { //use on if jQuery 1.7+
-        websocketIN.send($("#bitfan-playground-form textarea[name='event']").val());
+        websocketIN.send($("#section-input-raw").val());
     });
-    
-    $("#bitfan-playground-form select[name='event_type']").on('change', function(e) { //use on if jQuery 1.7+
+
+    $("#section-input-codec").on('change', function(e) { //use on if jQuery 1.7+
         play();
     });
 
@@ -43,17 +43,38 @@ $(document).ready(function() {
         });
     });
 
+
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      play();
+    });
+
+
 });
 
 
 
 function play() {
+    var input_mode = $('#pan-input .nav-pills .active').attr("bitfan-section-type");
+    var input_value = $("#section-input-" + input_mode).val()
+    var input_codec = $("#section-input-codec").val()
+    var filter_mode = $('#pan-filter .nav-pills .active').attr("bitfan-section-type");
+    var filter_value = $("#section-filter-" + filter_mode).val()
+    var output_mode = $('#pan-output .nav-pills .active').attr("bitfan-section-type");
+    var output_value = $("#section-output-" + output_mode).val()
+
     var dataObject = {
-        'event': $("#bitfan-playground-form textarea[name='event']").val(),
-        'event_type': $("#bitfan-playground-form select[name='event_type']").val(),
-        'filter': $("#bitfan-playground-form textarea[name='filter']").val(),
         'uuid': "playground-" + UUID,
+        'input_value': input_value,
+        'input_mode': input_mode,
+        'input_codec': input_codec,
+        'filter_value': filter_value,
+        'filter_mode': filter_mode,
+        'output_value': output_value,
+        'output_mode': output_mode,
     };
+
+    console.log(dataObject);
 
     $.ajax({
         type: 'PUT',
@@ -67,39 +88,35 @@ function play() {
             console.log("success");
             playErrorReset();
 
-            httpin_url = "http://" + settings.apiHost + settings.httpin;
-            $("#bitfan-playground-form #bitfan-http-input-url").show();
-            var httpInTmpl = $.templates("#httpin-template");
-            $('#bitfan-http-input-url').html(httpInTmpl.render({
-                ev: {"url":httpin_url}, 
-            }));
+            if (settings.wsout != "") {
+                new_uri = "ws://" + settings.apiHost + settings.wsout;
+                websocketOUT = new WebSocket(new_uri);
+                websocketOUT.onopen = function(event) {
+                    console.log("Connection is established!");
+                }
+                websocketOUT.onmessage = function(event) {
+                    // var Data = JSON.parse(event.data);
+                    console.log(event.data);
+                    // $("#bitfan-playground-form textarea[name='output']").val(event.data);
+                    $("#bitfan-playground-form div[name='output']").html(syntaxHighlight(event.data));
+                    $("#bitfan-playground-form div[name='output']").addClass("success");
+                };
+                websocketOUT.onerror = function(event) {
+                    // notie.alert({ type: 'warning', stay: false, text: 'Problem due to some Error' });
+                    console.log(event);
+                };
+                websocketOUT.onclose = function(event) {
 
-
-            new_uri = "ws://" + settings.apiHost + settings.wsout;
-            websocketOUT = new WebSocket(new_uri);
-            websocketOUT.onopen = function(event) {
-                console.log("Connection is established!");
+                };
             }
-            websocketOUT.onmessage = function(event) {
-                // var Data = JSON.parse(event.data);
-                console.log(event.data);
-                // $("#bitfan-playground-form textarea[name='output']").val(event.data);
-                $("#bitfan-playground-form div[name='output']").html(syntaxHighlight(event.data));
-                $("#bitfan-playground-form div[name='output']").addClass("success");
-            };
-            websocketOUT.onerror = function(event) {
-                // notie.alert({ type: 'warning', stay: false, text: 'Problem due to some Error' });
-                console.log(event);
-            };
-            websocketOUT.onclose = function(event) {
 
-            };
-
-            new_uri = "ws://" + settings.apiHost + settings.wsin;
-            websocketIN = new WebSocket(new_uri);
-            websocketIN.onopen = function(event) {
-                websocketIN.send(dataObject.event);
-            };
+            if (settings.wsin != "") {
+                new_uri = "ws://" + settings.apiHost + settings.wsin;
+                websocketIN = new WebSocket(new_uri);
+                websocketIN.onopen = function(event) {
+                    websocketIN.send(dataObject.input_value);
+                };
+            }
         },
         error: function(output) {
             console.log(output);

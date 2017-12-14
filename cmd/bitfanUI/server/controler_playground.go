@@ -9,16 +9,20 @@ import (
 )
 
 type playgroundRequest struct {
-	Event      string `json:"event"`
-	EventType  string `json:"event_type"`
-	FilterPart string `json:"filter"`
-	UUID       string `json:"uuid"`
+	UUID        string `json:"uuid"`
+	InputValue  string `json:"input_value"`
+	InputMode   string `json:"input_mode"`
+	InputCodec  string `json:"input_codec"`
+	FilterValue string `json:"filter_value"`
+	FilterMode  string `json:"filter_mode"`
+	OutputValue string `json:"output_value"`
+	OutputMode  string `json:"output_mode"`
 }
 
-func playgroundsFilter(c *gin.Context) {
-	c.HTML(200, "playgrounds/filters", withCommonValues(c, gin.H{}))
+func playgroundsPlay(c *gin.Context) {
+	c.HTML(200, "playgrounds/play", withCommonValues(c, gin.H{}))
 }
-func playgroundsFilterExit(c *gin.Context) {
+func playgroundsPlayExit(c *gin.Context) {
 	pgReq := playgroundRequest{}
 	_ = c.BindJSON(&pgReq)
 	pp.Println("bye-->", pgReq.UUID)
@@ -28,7 +32,7 @@ func playgroundsFilterExit(c *gin.Context) {
 	c.JSON(200, gin.H{"ok": "ok"})
 }
 
-func playgroundsFilterDo(c *gin.Context) {
+func playgroundsPlayDo(c *gin.Context) {
 	pgReq := playgroundRequest{}
 	err := c.BindJSON(&pgReq)
 
@@ -46,24 +50,29 @@ func playgroundsFilterDo(c *gin.Context) {
 	// Build a complete bitfan configuration
 	// - with input as WS
 	// - with output as WS
-	pgFullConfig := `input{
-  httpserver{
-	codec => ` + pgReq.EventType + ` 		
-  }
-  websocket wsin{
-  	codec => ` + pgReq.EventType + ` 
-  	uri => "wsin"
-  }
-}
-filter{
-` + pgReq.FilterPart + `
-} 
-output{
-  websocket wsout{
-  	codec => json {indent => "    "}
-  	uri => "wsout"
-  }
-}`
+	pgFullConfig := "input{\n"
+
+	if pgReq.InputMode == "raw" {
+		pgFullConfig = pgFullConfig + "\n  websocket wsin{ codec => " + pgReq.InputCodec + " uri => wsin}\n"
+	} else {
+		pgFullConfig = pgFullConfig + pgReq.InputValue
+	}
+
+	pgFullConfig = pgFullConfig + "\n} filter{\n"
+
+	if pgReq.FilterMode == "configuration" {
+		pgFullConfig = pgFullConfig + pgReq.FilterValue
+	}
+
+	pgFullConfig = pgFullConfig + "\n} output{\n"
+
+	if pgReq.OutputMode == "raw" {
+		pgFullConfig = pgFullConfig + "  websocket wsout{ codec => json {indent => '    '} uri => wsout  }\n"
+	} else {
+		pgFullConfig = pgFullConfig + pgReq.OutputValue
+	}
+
+	pgFullConfig = pgFullConfig + "\n}"
 
 	// Stop pipeline if running
 	_, _ = apiClient.StopPipeline(pgReq.UUID)
@@ -74,7 +83,7 @@ output{
 		Playground:  true,
 		Uuid:        pgReq.UUID,
 		Active:      true,
-		Label:       "playground-filter " + pgReq.UUID,
+		Label:       "playground-" + pgReq.UUID,
 		Description: "",
 		Assets: []models.Asset{{
 			Name:        "play.conf",
@@ -102,14 +111,11 @@ output{
 			wsin = wh.Url
 		case "wsout":
 			wsout = wh.Url
-		case "httpserver":
-			httpin = wh.Url
 		}
 	}
 
 	c.JSON(200, withCommonValues(c, gin.H{
-		"wsin":   wsin,
-		"wsout":  wsout,
-		"httpin": httpin,
+		"wsin":  wsin,
+		"wsout": wsout,
 	}))
 }

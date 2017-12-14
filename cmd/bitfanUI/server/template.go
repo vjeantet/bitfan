@@ -68,8 +68,10 @@ func (r Render) Glob(pattern string) ([]string, error) {
 func (r Render) Init() Render {
 	pathSeparator := string(os.PathSeparator)
 	if _, err := os.Stat(r.TemplatesDir); os.IsNotExist(err) {
+		r.UseFS = false
 		pathSeparator = "/"
 	} else {
+		r.UseFS = true
 		r.TemplatesDir = strings.Replace(r.TemplatesDir, "/", pathSeparator, -1)
 	}
 
