@@ -104,7 +104,7 @@ func playgroundsPlayDo(c *gin.Context) {
 	// get its UUID
 	// build its WS IN and OUT
 	// returns WS adresses to client
-	var wsout, wsin, httpin string
+	var wsout, wsin string
 	for _, wh := range tp.Webhooks {
 		switch wh.Namespace {
 		case "wsin":
