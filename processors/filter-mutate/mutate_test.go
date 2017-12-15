@@ -121,8 +121,8 @@ func TestReceive(t *testing.T) {
 
 	assert.Equal(t, "abc _dEF_GHJ-K_", em.Fields().ValueOrEmptyForPathString("fngsub1"), "fngsub1 should be abc _dEF_GHJ-K_")
 	assert.Equal(t, "abc _dEF_GHJ-K_", em.Fields().ValueOrEmptyForPathString("fngsub1"), "fngsub1 should be abc _dEF_GHJ-K_")
-	value, _ := em.Fields().ValueForPath("splitme")
-	assert.Equal(t, []string{"hello", "my", "name", "is", "yow"}, value, "split ")
+	values, _ := em.Fields().ValuesForPath("splitme")
+	assert.Equal(t, []interface{}{"hello", "my", "name", "is", "yow"}, values, "split ")
 
 	array, _ := em.Fields().ValueForPath("array_dst")
 	assert.Equal(t, []string{"apple", "banana", "200", "500"}, array, "array merge")
