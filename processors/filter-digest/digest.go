@@ -56,12 +56,19 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	if p.opt.Interval == "" && p.opt.Count == 0 {
 		return fmt.Errorf("no interval and no Count settings set")
 	}
-
+	//
+	//if p.opt.Interval != "" {
+	//	c := cron.New()
+	//	c.AddFunc().Add(a.Label, a.Schedule, func() {
+	//		go a.processor.Tick(newPacket("", nil))
+	//	})
+	//}
 	return nil
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
 	if p.opt.KeyMap == "" {
+		// No key map: merge the event fields with the current data
 		for k, v := range *e.Fields() {
 			p.values[k] = v
 		}
@@ -74,7 +81,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		p.values[k] = e.Fields().Old()
 	}
 
-	// When no interval, flush event when Count events where digested
+	// When no interval, flush event when 'Count' events are digested
 	if p.opt.Interval == "" {
 		if len(p.values) >= p.opt.Count {
 			p.Logger.Debugf("Flush digester ! %d/%d events digested", len(p.values), p.opt.Count)
@@ -89,7 +96,7 @@ func (p *processor) Tick(e processors.IPacket) error {
 	// When Interval is set, and total digested events < Count : ignore
 	if p.opt.Interval != "" {
 		if len(p.values) < p.opt.Count {
-			p.Logger.Debugf("Ignore tick interval, %d/%s events digested", len(p.values), p.opt.Count)
+			p.Logger.Errorf("Ignore tick interval, %d/%s events digested", len(p.values), p.opt.Count)
 			return nil
 		}
 	}
