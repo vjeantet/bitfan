@@ -124,8 +124,8 @@ func TestReceive(t *testing.T) {
 	values, _ := em.Fields().ValuesForPath("splitme")
 	assert.Equal(t, []interface{}{"hello", "my", "name", "is", "yow"}, values, "split ")
 
-	array, _ := em.Fields().ValueForPath("array_dst")
-	assert.Equal(t, []string{"apple", "banana", "200", "500"}, array, "array merge")
+	array, _ := em.Fields().ValuesForPath("array_dst")
+	assert.Equal(t, []interface{}{"apple", "banana", "200", "500"}, array, "array merge")
 
 }
 
@@ -605,6 +605,64 @@ func TestConvertBoolean(t *testing.T) {
 	for _, f := range fixtures {
 		assert.Equal(t, M(f.expected, nil), M(data.ValueForPath(f.path)), "convert bool "+f.path)
 	}
+}
+
+func TestMerge(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("A", "foo0")
+	data.SetValueForPath([]string{"B", "C"}, "foo1")
+	data.SetValueForPath([]string{"A", "B", "C"}, "foo2")
+	data.SetValueForPath([]interface{}{"B", "C"}, "foo4")
+	data.SetValueForPath([]interface{}{"A", "B", "C"}, "foo5")
+	data.SetValueForPath([]interface{}{"D", "E"}, "foo6")
+	data.SetValueForPath([]interface{}{"D", "E"}, "foo7")
+	data.SetValueForPath([]interface{}{"C", "D", "E"}, "foo8")
+	data.SetValueForPath([]string{"B", "C"}, "foo9")
+	data.SetValueForPath([]int{1, 2, 3}, "foo10")
+	data.SetValueForPath([]int{3, 4}, "foo11")
+	data.SetValueForPath([]int{1, 2}, "foo12")
+	data.SetValueForPath(3, "foo13")
+	data.SetValueForPath([]int{1, 2}, "foo14")
+
+	options := map[string]string{
+		"foo1":  "foo0",
+		"foo2":  "foo0",
+		"foo4":  "foo0",
+		"foo5":  "foo0",
+		"foo6":  "foo5",
+		"foo7":  "foo9",
+		"foo8":  "foo2",
+		"foo10": "foo9",
+		"foo12": "foo11",
+		"foo14": "foo13",
+		"fooZ":  "foo13",
+		"foo15": "fooY",
+	}
+
+	fixtures := []struct {
+		path     string
+		expected interface{}
+	}{
+		{"foo0", []interface{}{"A"}},
+		{"foo1", []interface{}{"B", "C", "A"}},
+		{"foo2", []interface{}{"A", "B", "C"}},
+		{"foo4", []interface{}{"B", "C", "A"}},
+		{"foo5", []interface{}{"A", "B", "C"}},
+		{"foo6", []interface{}{"D", "E", "A", "B", "C"}},
+		{"foo7", []interface{}{"D", "E", "B", "C"}},
+		{"foo8", []interface{}{"C", "D", "E", "A", "B"}},
+		{"foo10", []interface{}{1, 2, 3, "B", "C"}},
+		{"foo12", []interface{}{1, 2, 3, 4}},
+		{"foo14", []interface{}{1, 2, 3}},
+	}
+
+	Merge(options, &data)
+
+	for _, f := range fixtures {
+		assert.Equal(t, M(f.expected, nil), M(data.ValuesForPath(f.path)), "convert merge "+f.path)
+	}
+	assert.False(t, false, data.Exists("foo15"))
+	assert.False(t, false, data.Exists("fooZ"))
 }
 
 //Shim for 2 param return values

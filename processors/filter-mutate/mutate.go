@@ -361,37 +361,59 @@ func Merge(fields map[string]string, data *mxj.Map) {
 		if !data.Exists(path_dst) || !data.Exists(path_src) {
 			continue
 		}
-		value_src, _ := data.ValueForPath(path_src)
-		value_dst, _ := data.ValueForPath(path_dst)
 
-		a := []string{}
-		b := []string{}
-
-		// newValue := append(value_dst, value_src...)
-		switch value_src.(type) {
-		case []string:
-			a = append(a, value_src.([]string)...)
-		default:
-			continue
+		a := []interface{}{}
+		values_src, _ := data.ValuesForPath(path_src)
+		for _, value_src := range values_src {
+			switch v := value_src.(type) {
+			case []string:
+				s := make([]interface{}, len(v))
+				for i, v1 := range v {
+					s[i] = v1
+				}
+				a = append(a, s...)
+			case []int:
+				s := make([]interface{}, len(v))
+				for i, v1 := range v {
+					s[i] = v1
+				}
+				a = append(a, s...)
+			case interface{}:
+				a = append(a, v)
+			}
 		}
 
-		// newValue := append(value_dst, value_src...)
-		switch value_dst.(type) {
-		case []string:
-			b = append(b, value_dst.([]string)...)
-		default:
-			continue
+		b := []interface{}{}
+		values_dst, _ := data.ValuesForPath(path_dst)
+		for _, value_dst := range values_dst {
+			switch v := value_dst.(type) {
+			case []string:
+				vi := make([]interface{}, len(v))
+				for i, v1 := range v {
+					vi[i] = v1
+				}
+				b = append(b, vi...)
+			case []int:
+				vi := make([]interface{}, len(v))
+				for i, v1 := range v {
+					vi[i] = v1
+				}
+				b = append(b, vi...)
+			case interface{}:
+				b = append(b, v)
+			}
 		}
 
-		a = append(b, a...)
+		// Add a to b
+		b = append(b, a...)
 
-		//Remove duplicates
-		result := []string{}
-		seen := map[string]string{}
-		for _, val := range a {
+		// Remove duplicates
+		result := []interface{}{}
+		seen := map[interface{}]bool{}
+		for _, val := range b {
 			if _, ok := seen[val]; !ok {
 				result = append(result, val)
-				seen[val] = val
+				seen[val] = true
 			}
 		}
 
