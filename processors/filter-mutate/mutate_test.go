@@ -326,3 +326,288 @@ func TestFieldUpdateFields(t *testing.T) {
 	assert.False(t, data.Exists("map.p"))
 	assert.Equal(t, "B2", data.ValueOrEmptyForPathString("map.o"))
 }
+
+func TestSplit(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("1 2 3 4", "message")
+	data.SetValueForPath("1 2 3 4 ", "fieldB")
+	data.SetValueForPath("1 2\t3 4 ", "fieldA")
+
+	options := map[string]string{
+		"message": " ",
+		"fieldA":  "\t",
+		"fieldB":  " ",
+		"fieldC":  "\n",
+	}
+
+	Split(options, &data)
+
+	v, _ := data.ValuesForPath("message")
+	assert.Equal(t, 4, len(v))
+
+	v, _ = data.ValuesForPath("fieldB")
+	assert.Equal(t, 5, len(v))
+
+	v, _ = data.ValuesForPath("fieldA")
+	assert.Equal(t, 2, len(v))
+	assert.Equal(t, "1 2", data.ValueOrEmptyForPathString("fieldA[0]"))
+	assert.Equal(t, "3 4 ", data.ValueOrEmptyForPathString("fieldA[1]"))
+
+	assert.False(t, data.Exists("fieldC"))
+}
+
+func TestJoin(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath([]string{"A", "B", "C", "D"}, "message")
+	data.SetValueForPath([]interface{}{"A", "B", "C", "D"}, "fieldA")
+	data.SetValueForPath([]interface{}{1, 2, 3, 4}, "fieldB")
+	data.SetValueForPath([]int{1, 2, 3, 4}, "fieldC")
+	data.SetValueForPath([]interface{}{1, "2", "O", 4}, "fieldD")
+
+	options := map[string]string{
+		"message": ",",
+		"fieldA":  ",",
+		"fieldB":  "|",
+		"fieldB1": "\t",
+		"fieldC":  "|",
+		"fieldD":  "",
+	}
+
+	Join(options, &data)
+
+	assert.Equal(t, "A,B,C,D", data.ValueOrEmptyForPathString("message"))
+	assert.Equal(t, "A,B,C,D", data.ValueOrEmptyForPathString("fieldA"))
+	assert.Equal(t, "1|2|3|4", data.ValueOrEmptyForPathString("fieldB"))
+	assert.Equal(t, "1|2|3|4", data.ValueOrEmptyForPathString("fieldC"))
+	assert.Equal(t, "12O4", data.ValueOrEmptyForPathString("fieldD"))
+
+	assert.False(t, data.Exists("fieldB1"))
+}
+
+func TestConvert(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("5", "intme")
+	data.SetValueForPath("5", "floatme")
+
+	options := map[string]string{
+		"intme":        "integer",
+		"floatme":      "float",
+		"floatmeSlice": "float",
+	}
+
+	Convert(options, &data)
+	assert.Equal(t, M(5, nil), M(data.ValueForPath("intme")))
+	assert.Equal(t, M(float64(5), nil), M(data.ValueForPath("floatme")))
+}
+
+func TestConvertBooleanToInteger(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath(false, "foo0")
+	data.SetValueForPath(true, "foo1")
+	data.SetValueForPath("0", "foo2")
+	data.SetValueForPath("1", "foo3")
+	data.SetValueForPath("2", "foo4")
+
+	options := map[string]string{
+		"foo0": "integer",
+		"foo1": "integer",
+		"foo2": "integer",
+		"foo3": "integer",
+		"foo4": "integer",
+	}
+
+	fixtures := []struct {
+		path     string
+		expected int
+	}{
+		{
+			"foo0",
+			0,
+		},
+		{
+			"foo1",
+			1,
+		},
+		{
+			"foo2",
+			0,
+		},
+		{
+			"foo3",
+			1,
+		},
+		{
+			"foo4",
+			2,
+		},
+	}
+
+	Convert(options, &data)
+
+	for _, f := range fixtures {
+		assert.Equal(t, M(f.expected, nil), M(data.ValueForPath(f.path)))
+	}
+}
+func TestConvertStringToBoolean(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("true", "true_field")
+	data.SetValueForPath("false", "false_field")
+	data.SetValueForPath("True", "true_upper")
+	data.SetValueForPath("False", "false_upper")
+	data.SetValueForPath("1", "true_one")
+	data.SetValueForPath("0", "false_zero")
+	data.SetValueForPath("yes", "true_yes")
+	data.SetValueForPath("no", "false_no")
+	data.SetValueForPath("Y", "true_y")
+	data.SetValueForPath("N", "false_n")
+	data.SetValueForPath("none of the above", "wrong_field")
+
+	options := map[string]string{
+		"true_field":  "boolean",
+		"false_field": "boolean",
+		"true_upper":  "boolean",
+		"false_upper": "boolean",
+		"true_one":    "boolean",
+		"false_zero":  "boolean",
+		"true_yes":    "boolean",
+		"false_no":    "boolean",
+		"true_y":      "boolean",
+		"false_n":     "boolean",
+		"wrong_field": "boolean",
+	}
+
+	Convert(options, &data)
+	assert.Equal(t, M(true, nil), M(data.ValueForPath("true_field")))
+	assert.Equal(t, M(false, nil), M(data.ValueForPath("false_field")))
+	assert.Equal(t, M(true, nil), M(data.ValueForPath("true_upper")))
+	assert.Equal(t, M(false, nil), M(data.ValueForPath("false_upper")))
+	assert.Equal(t, M(true, nil), M(data.ValueForPath("true_one")))
+	assert.Equal(t, M(false, nil), M(data.ValueForPath("false_zero")))
+	assert.Equal(t, M(true, nil), M(data.ValueForPath("true_yes")))
+	assert.Equal(t, M(false, nil), M(data.ValueForPath("false_no")))
+	assert.Equal(t, M(true, nil), M(data.ValueForPath("true_y")))
+	assert.Equal(t, M(false, nil), M(data.ValueForPath("false_n")))
+	assert.Equal(t, M("none of the above", nil), M(data.ValueForPath("wrong_field")))
+}
+
+func TestConvertNestedField(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath(map[string]interface{}{}, "foo")
+	data.SetValueForPath("1000", "foo.bar")
+	data.SetValueForPath(2000, "foo.bar2")
+
+	options := map[string]string{
+		"[foo][bar]": "integer",
+		"foo.bar2":   "string",
+	}
+
+	Convert(options, &data)
+	assert.Equal(t, M(1000, nil), M(data.ValueForPath("foo.bar")))
+	assert.Equal(t, M("2000", nil), M(data.ValueForPath("foo.bar2")))
+}
+
+func TestConvertInteger(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath(123, "foo0")
+	data.SetValueForPath(4203, "foo1")
+	data.SetValueForPath(43, "foo2")
+	data.SetValueForPath(0, "foo3")
+
+	options := map[string]string{
+		"foo0": "string",
+		"foo1": "float",
+		"foo2": "boolean",
+		"foo3": "boolean",
+	}
+
+	fixtures := []struct {
+		path     string
+		expected interface{}
+	}{
+		{"foo0", "123"},
+		{"foo1", float64(4203)},
+		{"foo2", true},
+		{"foo3", false},
+	}
+
+	Convert(options, &data)
+
+	for _, f := range fixtures {
+		assert.Equal(t, M(f.expected, nil), M(data.ValueForPath(f.path)), "convert integer "+f.path)
+	}
+}
+
+func TestConvertFloat(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath(float64(123.2), "foo0")
+	data.SetValueForPath(float64(4203.004), "foo1")
+	data.SetValueForPath(float64(43), "foo2")
+	data.SetValueForPath(float64(0), "foo3")
+
+	options := map[string]string{
+		"foo0": "string",
+		"foo1": "integer",
+		"foo2": "boolean",
+		"foo3": "boolean",
+	}
+
+	fixtures := []struct {
+		path     string
+		expected interface{}
+	}{
+		{"foo0", "123.200000"},
+		{"foo1", 4203},
+		{"foo2", true},
+		{"foo3", false},
+	}
+
+	Convert(options, &data)
+
+	for _, f := range fixtures {
+		assert.Equal(t, M(f.expected, nil), M(data.ValueForPath(f.path)), "convert float "+f.path)
+	}
+}
+
+func TestConvertBoolean(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath(true, "foo0")
+	data.SetValueForPath(true, "foo1")
+	data.SetValueForPath(true, "foo2")
+
+	data.SetValueForPath(false, "foo3")
+	data.SetValueForPath(false, "foo4")
+	data.SetValueForPath(false, "foo5")
+
+	options := map[string]string{
+		"foo0": "string",
+		"foo1": "integer",
+		"foo2": "float",
+		"foo3": "string",
+		"foo4": "integer",
+		"foo5": "float",
+	}
+
+	fixtures := []struct {
+		path     string
+		expected interface{}
+	}{
+		{"foo0", "true"},
+		{"foo1", 1},
+		{"foo2", float64(1)},
+
+		{"foo3", "false"},
+		{"foo4", 0},
+		{"foo5", float64(0)},
+	}
+
+	Convert(options, &data)
+
+	for _, f := range fixtures {
+		assert.Equal(t, M(f.expected, nil), M(data.ValueForPath(f.path)), "convert bool "+f.path)
+	}
+}
+
+//Shim for 2 param return values
+func M(a, b interface{}) []interface{} {
+	return []interface{}{a, b}
+}

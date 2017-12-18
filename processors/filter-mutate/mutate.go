@@ -175,14 +175,34 @@ func Join(fields map[string]string, data *mxj.Map) {
 		if !data.Exists(path) {
 			continue
 		}
-		value, _ := data.ValueForPath(path)
-
-		switch value.(type) {
-		case []string:
-			a := []string{}
-			for _, s := range value.([]interface{}) {
-				a = append(a, s.(string))
+		values, _ := data.ValuesForPath(path)
+		a := []string{}
+		for _, v := range values {
+			switch vu := v.(type) {
+			case []string:
+				as := []string{}
+				for _, s := range vu {
+					as = append(as, s)
+				}
+				newValue := strings.Join(as, glue)
+				data.SetValueForPath(newValue, path)
+			case []int:
+				as := []string{}
+				for _, i := range vu {
+					s := strconv.Itoa(int(i))
+					as = append(as, s)
+				}
+				newValue := strings.Join(as, glue)
+				data.SetValueForPath(newValue, path)
+			case string:
+				a = append(a, vu)
+			case int:
+				s := strconv.Itoa(int(vu))
+				a = append(a, s)
 			}
+		}
+
+		if len(a) > 0 {
 			newValue := strings.Join(a, glue)
 			data.SetValueForPath(newValue, path)
 		}
@@ -235,8 +255,9 @@ func Gsub(fields []string, data *mxj.Map) {
 }
 
 func Convert(fields map[string]string, data *mxj.Map) {
-
 	for path, kind := range fields {
+		path = processors.NormalizeNestedPath(path)
+
 		if !data.Exists(path) {
 			continue
 		}
@@ -262,14 +283,20 @@ func Convert(fields map[string]string, data *mxj.Map) {
 				}
 				data.SetValueForPath(newValue, path)
 			case "boolean":
-				newValue := false
 				value = strings.ToLower(value.(string))
 				for _, b := range []string{"true", "t", "yes", "y", "1"} {
 					if b == value {
-						newValue = true
+						data.SetValueForPath(true, path)
+						goto ENDLOOP
 					}
 				}
-				data.SetValueForPath(newValue, path)
+				for _, b := range []string{"false", "f", "no", "n", "0"} {
+					if b == value {
+						data.SetValueForPath(false, path)
+						goto ENDLOOP
+					}
+				}
+			ENDLOOP:
 			}
 		case int:
 			switch kind {
@@ -325,7 +352,6 @@ func Convert(fields map[string]string, data *mxj.Map) {
 				data.SetValueForPath(newValue, path)
 			}
 		}
-
 	}
 
 }

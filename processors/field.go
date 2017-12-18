@@ -17,10 +17,12 @@ const (
 
 var maskPattern *regexp.Regexp
 var maskTimePattern *regexp.Regexp
+var nestedPathPattern *regexp.Regexp
 
 func init() {
 	maskTimePattern, _ = regexp.Compile(`%\{\+([^\}]+)\}`)
 	maskPattern, _ = regexp.Compile(`%\{\[?([^\}]*[^\]])\]?\}`)
+	nestedPathPattern, _ = regexp.Compile(`\[([^0-9\]]+)\]`)
 }
 
 // Dynamic includes field value in place of %{key.path}
@@ -53,6 +55,13 @@ func Dynamic(str *string, fields *mxj.Map) {
 			*str = strings.Replace(*str, values[0], fmt.Sprintf("%v", i), -1)
 		}
 	}
+}
+
+func NormalizeNestedPath(path string) string {
+	if strings.Contains(path, "[") {
+		path = strings.TrimPrefix(nestedPathPattern.ReplaceAllString(path, ".$1"), ".")
+	}
+	return path
 }
 
 func SetType(typevalue string, data *mxj.Map) {
