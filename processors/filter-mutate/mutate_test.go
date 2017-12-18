@@ -568,6 +568,46 @@ func TestConvertFloat(t *testing.T) {
 	}
 }
 
+func TestConvertString(t *testing.T) {
+	data := getTestFields()
+	data.SetValueForPath("123.2", "foo0")
+	data.SetValueForPath("4203", "foo1")
+	data.SetValueForPath("43", "foo2")
+	data.SetValueForPath("0", "foo3")
+	data.SetValueForPath([]interface{}{"1", "3"}, "foo4")
+	data.SetValueForPath([]string{"1", "3"}, "foo5")
+	data.SetValueForPath([]interface{}{"1", 4, "lol"}, "foo6")
+
+	options := map[string]string{
+		"foo0": "float",
+		"foo1": "integer",
+		"foo2": "boolean",
+		"foo3": "boolean",
+		"foo4": "integer",
+		"foo5": "integer",
+		"foo6": "integer",
+	}
+
+	fixtures := []struct {
+		path     string
+		expected interface{}
+	}{
+		{"foo0", []interface{}{123.200000}},
+		{"foo1", []interface{}{int(4203)}},
+		{"foo2", []interface{}{"43"}},
+		{"foo3", []interface{}{false}},
+		{"foo4", []interface{}{1, 3}},
+		{"foo5", []interface{}{1, 3}},
+		{"foo6", []interface{}{1, 4, "lol"}},
+	}
+
+	Convert(options, &data)
+
+	for _, f := range fixtures {
+		assert.Equal(t, M(f.expected, nil), M(data.ValuesForPath(f.path)), "convert string "+f.path)
+	}
+}
+
 func TestConvertBoolean(t *testing.T) {
 	data := getTestFields()
 	data.SetValueForPath(true, "foo0")
@@ -577,6 +617,7 @@ func TestConvertBoolean(t *testing.T) {
 	data.SetValueForPath(false, "foo3")
 	data.SetValueForPath(false, "foo4")
 	data.SetValueForPath(false, "foo5")
+	data.SetValueForPath([]interface{}{false, true}, "foo6")
 
 	options := map[string]string{
 		"foo0": "string",
@@ -585,25 +626,28 @@ func TestConvertBoolean(t *testing.T) {
 		"foo3": "string",
 		"foo4": "integer",
 		"foo5": "float",
+		"foo6": "string",
 	}
 
 	fixtures := []struct {
 		path     string
 		expected interface{}
 	}{
-		{"foo0", "true"},
-		{"foo1", 1},
-		{"foo2", float64(1)},
+		{"foo0", []interface{}{"true"}},
+		{"foo1", []interface{}{1}},
+		{"foo2", []interface{}{float64(1)}},
 
-		{"foo3", "false"},
-		{"foo4", 0},
-		{"foo5", float64(0)},
+		{"foo3", []interface{}{"false"}},
+		{"foo4", []interface{}{0}},
+		{"foo5", []interface{}{float64(0)}},
+
+		{"foo6", []interface{}{"false", "true"}},
 	}
 
 	Convert(options, &data)
 
 	for _, f := range fixtures {
-		assert.Equal(t, M(f.expected, nil), M(data.ValueForPath(f.path)), "convert bool "+f.path)
+		assert.Equal(t, M(f.expected, nil), M(data.ValuesForPath(f.path)), "convert bool "+f.path)
 	}
 }
 

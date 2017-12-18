@@ -250,108 +250,144 @@ func Gsub(fields []string, data *mxj.Map) {
 			newValue := r.ReplaceAllString(value, replacement)
 			data.SetValueForPath(newValue, fieldname)
 		}
-
 	}
+}
+
+func convertValue(value interface{}, kind string) (interface{}, error) {
+	switch value.(type) {
+	case string:
+		switch kind {
+		case "integer":
+			newValue, err := strconv.Atoi(value.(string))
+			if err != nil {
+				return nil, err
+			}
+			return newValue, nil
+		case "float":
+			newValue, err := strconv.ParseFloat(value.(string), 64)
+			if err != nil {
+				return nil, err
+			}
+			return newValue, nil
+		case "boolean":
+			value = strings.ToLower(value.(string))
+			for _, b := range []string{"true", "t", "yes", "y", "1"} {
+				if b == value {
+					return true, nil
+				}
+			}
+			for _, b := range []string{"false", "f", "no", "n", "0"} {
+				if b == value {
+					return false, nil
+				}
+			}
+			return nil, fmt.Errorf("unknow boolean %v", value)
+		}
+	case int:
+		switch kind {
+		case "string":
+			newValue := fmt.Sprintf("%d", value.(int))
+			return newValue, nil
+		case "float":
+			newValue := float64(value.(int))
+			return newValue, nil
+		case "boolean":
+			newValue := false
+			if value.(int) > 0 {
+				newValue = true
+			}
+			return newValue, nil
+		}
+	case float64:
+		switch kind {
+		case "string":
+			newValue := fmt.Sprintf("%f", value.(float64))
+			return newValue, nil
+		case "integer":
+			newValue := int(value.(float64))
+			return newValue, nil
+		case "boolean":
+			newValue := false
+			if value.(float64) > 0 {
+				newValue = true
+			}
+			return newValue, nil
+		}
+	case bool:
+		switch kind {
+		case "string":
+			newValue := "false"
+			if value.(bool) == true {
+				newValue = "true"
+			}
+			return newValue, nil
+		case "integer":
+			var newValue int
+			newValue = 0
+			if value.(bool) == true {
+				newValue = 1
+			}
+			return newValue, nil
+		case "float":
+			var newValue float64
+			newValue = 0
+			if value.(bool) == true {
+				newValue = 1
+			}
+			return newValue, nil
+		}
+	}
+	return nil, fmt.Errorf("unconvertible to %s, value= %v", kind, value)
 }
 
 func Convert(fields map[string]string, data *mxj.Map) {
 	for path, kind := range fields {
 		path = processors.NormalizeNestedPath(path)
-
 		if !data.Exists(path) {
 			continue
 		}
 
-		value, err := data.ValueForPath(path)
+		values, err := data.ValuesForPath(path)
 		if err != nil {
 			continue
 		}
 
-		switch value.(type) {
-		case string:
-			switch kind {
-			case "integer":
-				newValue, err := strconv.Atoi(value.(string))
+		if len(values) > 1 {
+			newValue := []interface{}{}
+			for _, value := range values {
+				nValue, err := convertValue(value, kind)
 				if err != nil {
-					continue
+					nValue = value
 				}
-				data.SetValueForPath(newValue, path)
-			case "float":
-				newValue, err := strconv.ParseFloat(value.(string), 64)
-				if err != nil {
-					continue
-				}
-				data.SetValueForPath(newValue, path)
-			case "boolean":
-				value = strings.ToLower(value.(string))
-				for _, b := range []string{"true", "t", "yes", "y", "1"} {
-					if b == value {
-						data.SetValueForPath(true, path)
-						goto ENDLOOP
-					}
-				}
-				for _, b := range []string{"false", "f", "no", "n", "0"} {
-					if b == value {
-						data.SetValueForPath(false, path)
-						goto ENDLOOP
-					}
-				}
-			ENDLOOP:
+				newValue = append(newValue, nValue)
 			}
-		case int:
-			switch kind {
-			case "string":
-				newValue := fmt.Sprintf("%d", value.(int))
-				data.SetValueForPath(newValue, path)
-			case "float":
-				newValue := float64(value.(int))
-				data.SetValueForPath(newValue, path)
-			case "boolean":
-				newValue := false
-				if value.(int) > 0 {
-					newValue = true
-				}
-				data.SetValueForPath(newValue, path)
-			}
-		case float64:
-			switch kind {
-			case "string":
-				newValue := fmt.Sprintf("%f", value.(float64))
-				data.SetValueForPath(newValue, path)
-			case "integer":
-				newValue := int(value.(float64))
-				data.SetValueForPath(newValue, path)
-			case "boolean":
-				newValue := false
-				if value.(float64) > 0 {
-					newValue = true
-				}
-				data.SetValueForPath(newValue, path)
-			}
-		case bool:
-			switch kind {
-			case "string":
-				newValue := "false"
-				if value.(bool) == true {
-					newValue = "true"
-				}
-				data.SetValueForPath(newValue, path)
-			case "integer":
-				var newValue int
-				newValue = 0
-				if value.(bool) == true {
-					newValue = 1
-				}
-				data.SetValueForPath(newValue, path)
-			case "float":
-				var newValue float64
-				newValue = 0
-				if value.(bool) == true {
-					newValue = 1
-				}
-				data.SetValueForPath(newValue, path)
-			}
+			data.SetValueForPath(newValue, path)
+			continue
 		}
+
+		if len(values) == 1 {
+			switch v := values[0].(type) {
+			case []string:
+				newValue := []interface{}{}
+				for _, value := range v {
+					nValue, err := convertValue(value, kind)
+					if err != nil {
+						nValue = value
+					}
+					newValue = append(newValue, nValue)
+				}
+				data.SetValueForPath(newValue, path)
+			case interface{}:
+				newValue, err := convertValue(v, kind)
+				if err != nil {
+					newValue = v
+				}
+				data.SetValueForPath(newValue, path)
+			}
+
+			continue
+		}
+
 	}
 
 }
