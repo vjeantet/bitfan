@@ -24,6 +24,7 @@ type processor struct {
 	opt     *options
 	scan_re *regexp.Regexp
 	values  map[string]interface{}
+	packets int
 }
 
 type options struct {
@@ -56,6 +57,9 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	if p.opt.Interval == "" && p.opt.Count == 0 {
 		return fmt.Errorf("no interval and no Count settings set")
 	}
+	if p.opt.Count < 0 {
+		return fmt.Errorf("Negative count setting")
+	}
 	//
 	//if p.opt.Interval != "" {
 	//	c := cron.New()
@@ -67,6 +71,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
+	p.packets++
 	if p.opt.KeyMap == "" {
 		// No key map: merge the event fields with the current data
 		for k, v := range *e.Fields() {
@@ -83,8 +88,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 	// When no interval, flush event when 'Count' events are digested
 	if p.opt.Interval == "" {
-		if len(p.values) >= p.opt.Count {
-			p.Logger.Debugf("Flush digester ! %d/%d events digested", len(p.values), p.opt.Count)
+		if p.packets >= p.opt.Count {
+			p.Logger.Debugf("Flush digester ! %d/%d events digested", p.packets, p.opt.Count)
 			return p.Tick(e)
 		}
 	}
@@ -95,8 +100,8 @@ func (p *processor) Receive(e processors.IPacket) error {
 func (p *processor) Tick(e processors.IPacket) error {
 	// When Interval is set, and total digested events < Count : ignore
 	if p.opt.Interval != "" {
-		if len(p.values) < p.opt.Count {
-			p.Logger.Errorf("Ignore tick interval, %d/%s events digested", len(p.values), p.opt.Count)
+		if p.packets < p.opt.Count {
+			p.Logger.Errorf("Ignore tick interval, %d/%s events digested", p.packets, p.opt.Count)
 			return nil
 		}
 	}
@@ -105,5 +110,6 @@ func (p *processor) Tick(e processors.IPacket) error {
 	p.opt.ProcessCommonOptions(ne.Fields())
 	p.Send(ne, PORT_SUCCESS)
 	p.values = map[string]interface{}{}
+	p.packets = 0
 	return nil
 }
