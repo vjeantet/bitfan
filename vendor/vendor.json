@@ -639,6 +639,12 @@
 			"revisionTime": "2016-02-03T16:03:05Z"
 		},
 		{
+			"checksumSHA1": "ozRFnFdTG0IjkTE0RkZn71XO4gw=",
+			"path": "github.com/smartystreets/assertions",
+			"revision": "0b37b35ec7434b77e77a4bb29b79677cced992ea",
+			"revisionTime": "2017-09-25T17:21:51Z"
+		},
+		{
 			"checksumSHA1": "egeG/afVkrtqk62j86WS7ATVAbI=",
 			"path": "github.com/smartystreets/goconvey",
 			"revision": "e5b2b7c9111590d019a696c7800593f666e1a7f4",
