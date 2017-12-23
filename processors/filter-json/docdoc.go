@@ -5,45 +5,45 @@ import "github.com/vjeantet/bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "json",
-  ImportPath: "github.com/vjeantet/bitfan/processors/filter-json",
-  Doc:        "",
-  DocShort:   "Parses JSON events",
-  Options:    &doc.ProcessorOptions{
-    Doc:     "",
-    Options: []*doc.ProcessorOption{
-      &doc.ProcessorOption{
-        Name:           "processors.CommonOptions",
-        Alias:          ",squash",
-        Doc:            "",
-        Required:       false,
-        Type:           "processors.CommonOptions",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
-        Name:           "Source",
-        Alias:          "",
-        Doc:            "The configuration for the JSON filter",
-        Required:       false,
-        Type:           "string",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
-        Name:           "Target",
-        Alias:          "",
-        Doc:            "Define the target field for placing the parsed data. If this setting is omitted,\nthe JSON data will be stored at the root (top level) of the event",
-        Required:       false,
-        Type:           "string",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-    },
-  },
-  Ports: []*doc.ProcessorPort{},
-}
+		Name:       "json",
+		ImportPath: "github.com/vjeantet/bitfan/processors/filter-json",
+		Doc:        "",
+		DocShort:   "Parses JSON events",
+		Options: &doc.ProcessorOptions{
+			Doc: "",
+			Options: []*doc.ProcessorOption{
+				&doc.ProcessorOption{
+					Name:           "processors.CommonOptions",
+					Alias:          ",squash",
+					Doc:            "",
+					Required:       false,
+					Type:           "processors.CommonOptions",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+				&doc.ProcessorOption{
+					Name:           "Source",
+					Alias:          "",
+					Doc:            "The configuration for the JSON filter",
+					Required:       false,
+					Type:           "string",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+				&doc.ProcessorOption{
+					Name:           "Target",
+					Alias:          "",
+					Doc:            "Define the target field for placing the parsed data. If this setting is omitted,\nthe JSON data will be stored at the root (top level) of the event",
+					Required:       false,
+					Type:           "string",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+			},
+		},
+		Ports: []*doc.ProcessorPort{},
+	}
 }

@@ -633,6 +633,12 @@
 			"revisionTime": "2016-02-03T16:03:05Z"
 		},
 		{
+			"checksumSHA1": "egeG/afVkrtqk62j86WS7ATVAbI=",
+			"path": "github.com/smartystreets/goconvey",
+			"revision": "e5b2b7c9111590d019a696c7800593f666e1a7f4",
+			"revisionTime": "2017-08-25T22:14:26Z"
+		},
+		{
 			"checksumSHA1": "Sq0QP4JywTr7UM4hTK1cjCi7jec=",
 			"path": "github.com/spf13/cast",
 			"revision": "acbeb36b902d72a7a4c18e8f3241075e7ab763e4",
