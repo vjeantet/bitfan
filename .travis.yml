@@ -10,6 +10,7 @@ language: go
 install:
     - go get -v golang.org/x/tools/cmd/cover
     - go get -v github.com/stretchr/testify/assert
+    - go get -v github.com/smartystreets/goconvey
 script:
     - ./go.test.sh
 after_success:
