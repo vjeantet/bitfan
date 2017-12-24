@@ -1,0 +1,249 @@
+{{ define "title"}}Filter playground{{ end }}
+{{ define "sidebars" }} {{ template "playgroundsidebar" . }} {{ end }} 
+{{ define "sidebar" }}{{ end }}
+
+{{ define "content" }}
+<div class="row">
+    <div class="col">
+        <h1>Playground</h1>
+        <small>
+  <p>
+      <li>Test your input configuration, or provide a raw event as json or plain</li>
+      <li>Write your filter part<br/>While you type, the last produced event or parse error will be diplayed live</li>
+      <li>Display outputed raw event, or write an output configuration to test your output</li>
+  </p>
+  </small>
+    </div>
+</div>
+<script src="/public/vendor/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/public/vendor/ace/ext-modelist.js"></script>
+
+<form id="bitfan-playground-form">
+    <div>
+        <div class="row">
+            <div class="col-sm" id="pan-input">
+                <ul class="nav nav-pills mb-3" id="pills-input" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" bitfan-section-type="raw" data-toggle="tab" href="#pills-input-rawevent" role="tab">INPUT : raw event</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" bitfan-section-type="configuration" data-toggle="tab" href="#pills-input-configuration" role="tab">INPUT : configuration</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="pills-input-rawevent" role="tabpanel">
+                        <label for="label">Pass this event to filter part as
+                            <select name="section-input-codec" id="section-input-codec">
+                                <option value="plain">plain</option>
+                                <option value="json">json</option>
+                            </select>
+                            &nbsp;
+                            <button type="button" name="sendEvent" class="btn btn-success btn-sm" style="display: none;">Send again</button>
+                        </label>
+                        <textarea style="display: none" name="section-input-raw" id="section-input-raw">{"message":"Hello world"}</textarea>
+                        <div style="height: 380px;" id="section-input-raw-content"></div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-input-configuration" role="tabpanel" aria-labelledby="pills-profile-tab">
+                        <label for="">write input's part</label>
+                        <textarea style="display: none" name="section-input-configuration" id="section-input-configuration"></textarea>
+                        <div style="height: 380px;" id="section-input-configuration-content"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm" id="pan-filter">
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" bitfan-section-type="configuration" data-toggle="tab" href="#pills-filter-configuration" role="tab">FILTER : configuration</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-filter-configuration" role="tabpanel" aria-labelledby="pills-home-tab">
+                        <label for="description">write filter's part</label>
+                        <textarea style="display: none" name="section-filter-configuration" id="section-filter-configuration"></textarea>
+                        <div style="height: 380px;" id="section-filter-configuration-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div id="playground-error"></div>
+            <div id="logs" style="height: 100px !important; overflow: scroll;"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12" id="pan-output">
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" bitfan-section-type="raw" data-toggle="tab" href="#pills-output-rawevent" role="tab">OUTPUT : raw event</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" bitfan-section-type="configuration" data-toggle="tab" href="#pills-output-configuration" role="tab">OUTPUT : configuration</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-output-rawevent" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <label for="description">Last event produced : </label>
+                    <div name="output" class="bitfan-packet"></div>
+                </div>
+                <div class="tab-pane fade" id="pills-output-configuration" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <label for="">write output's part</label>
+                    <textarea style="display: none" name="section-output-configuration" id="section-output-configuration"></textarea>
+                    <div style="height: 380px;" id="section-output-configuration-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+var timeoutId = 0;
+
+$(document).ready(function() {
+
+    function getModeByFileExtension(path) {
+        var modelist = ace.require("ace/ext/modelist");
+        return modelist.getModeForPath(path).mode;
+    }
+
+    var editorEventInput = ace.edit("section-input-raw-content");
+    editorEventInput.setAutoScrollEditorIntoView(true);
+    editorEventInput.setTheme("ace/theme/eclipse");
+    editorEventInput.getSession().setMode("ace/mode/json");
+    var textareaInputEvent = $('textarea[name="section-input-raw"]').hide();
+    editorEventInput.getSession().setValue(textareaInputEvent.val());
+
+
+    var editor = ace.edit("section-input-configuration-content");
+    editor.setAutoScrollEditorIntoView(true);
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/logstash");
+    var textarea = $('textarea[name="section-input-configuration"]').hide();
+    editor.getSession().setValue(textarea.val());
+
+    var editorFilter = ace.edit("section-filter-configuration-content");
+    editorFilter.setAutoScrollEditorIntoView(true);
+    editorFilter.setTheme("ace/theme/monokai");
+    editorFilter.getSession().setMode("ace/mode/logstash");
+    var textareaFilter = $('textarea[name="section-filter-configuration"]').hide();
+    editorFilter.getSession().setValue(textareaFilter.val());
+
+
+
+
+
+
+    var editorOutput = ace.edit("section-output-configuration-content");
+    editorOutput.setAutoScrollEditorIntoView(true);
+    editorOutput.setTheme("ace/theme/monokai");
+    editorOutput.getSession().setMode("ace/mode/logstash");
+    var textareOutput = $('textarea[name="section-output-configuration"]').hide();
+    editorOutput.getSession().setValue(textareOutput.val());
+
+
+
+
+
+    editorEventInput.getSession().on('change', function() {
+        textareaInputEvent.val(editorEventInput.getSession().getValue());
+        editorFilter.setOption("firstLineNumber", 6)
+        editorOutput.setOption("firstLineNumber", editorFilter.getOption("firstLineNumber") + editorFilter.getSession().getLength() + 1)
+    });
+
+    editor.getSession().on('change', function() {
+        textarea.val(editor.getSession().getValue());
+        editor.getSession().clearAnnotations();
+        clearTimeout(timeoutId); // doesn't matter if it's 0
+        timeoutId = setTimeout(play, 500);
+
+        editorFilter.setOption("firstLineNumber", 1+editor.getSession().getLength()+2)
+        editorOutput.setOption("firstLineNumber", editorFilter.getOption("firstLineNumber")+editorFilter.getSession().getLength()+1)
+    });
+    editor.setOption("firstLineNumber", 2)
+
+    editorFilter.getSession().on('change', function() {
+        textareaFilter.val(editorFilter.getSession().getValue());
+        editorFilter.getSession().clearAnnotations();
+        clearTimeout(timeoutId); // doesn't matter if it's 0
+        timeoutId = setTimeout(play, 500);
+        editorOutput.setOption("firstLineNumber", editorFilter.getSession().getLength() + 6 + 1);
+    });
+    editorFilter.setOption("firstLineNumber", 6)
+
+    editorOutput.getSession().on('change', function() {
+        textareOutput.val(editorOutput.getSession().getValue());
+        editorOutput.getSession().clearAnnotations();
+        clearTimeout(timeoutId); // doesn't matter if it's 0
+        timeoutId = setTimeout(play, 500);
+    });
+    editorOutput.setOption("firstLineNumber", 8)
+
+
+    editorEventInput.commands.addCommand(
+      {
+        name: 'sendEvent',
+        bindKey: {
+        win: 'Ctrl-S',
+        mac: 'Command-S',
+        sender: 'editor|cli'
+      },
+      exec: function(env, args, request) {
+       // websocketIN.send($("#section-input-raw").val());
+       $("#bitfan-playground-form button[name='sendEvent']").click();
+      }
+    });
+
+
+});
+</script>
+<style type="text/css">
+#bitfan-playground-form #logs li {
+    list-style: none;
+}
+
+#bitfan-playground-form .error {
+    border: 2px solid red;
+    background-color: #F1E6FF;
+}
+
+#bitfan-playground-form .success {
+    border: 2px solid #408002;
+}
+
+#playground-error.error {
+    color: red;
+}
+</style>
+
+
+<script id="logmessage-template" type="text/x-jsrender">
+  <li class="level[[:ev.Level]] [[if eventHTML]]trace_[[:ev.Data.trace]][[/if]]">
+  <span class="message_header">
+    <span class="level">
+    [[if eventHTML]]
+      TRACE
+    [[else ev.Level == 5]]
+      DEBUG
+    [[else ev.Level == 4 ]]
+      INFO
+    [[else ev.Level == 3 ]]
+      WARN
+    [[else ev.Level == 2 ]]
+      ERROR
+    [[else ev.Level == 1 ]]
+      FATAL
+    [[/if]]
+    </span>
+    <span class="time">[[:timeString]]</span>
+    <span class="processor">[[:ev.Data.processor_label]]</span>
+  </span>
+  <span class="message_content">
+      <span class="message">[[:ev.Message]]</span>
+      [[if eventHTML]]
+      <span class="bitfan-packet">[[:eventHTML]]</span>
+      [[/if]]
+  </span>
+  
+  </li>
+</script>
+{{ end }}

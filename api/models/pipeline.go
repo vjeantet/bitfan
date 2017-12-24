@@ -12,6 +12,8 @@ import "time"
 type Pipeline struct {
 	Uuid string `json:"uuid"`
 
+	Playground bool
+
 	// the Label
 	Label string `json:"label"`
 
@@ -34,4 +36,6 @@ type Pipeline struct {
 	StartedAt time.Time `json:"started_at"`
 
 	AutoStart bool `json:"auto_start" mapstructure:"auto_start"`
+
+	Webhooks []Webhook
 }

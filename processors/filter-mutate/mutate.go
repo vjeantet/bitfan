@@ -175,14 +175,34 @@ func Join(fields map[string]string, data *mxj.Map) {
 		if !data.Exists(path) {
 			continue
 		}
-		value, _ := data.ValueForPath(path)
-
-		switch value.(type) {
-		case []string:
-			a := []string{}
-			for _, s := range value.([]interface{}) {
-				a = append(a, s.(string))
+		values, _ := data.ValuesForPath(path)
+		a := []string{}
+		for _, v := range values {
+			switch vu := v.(type) {
+			case []string:
+				as := []string{}
+				for _, s := range vu {
+					as = append(as, s)
+				}
+				newValue := strings.Join(as, glue)
+				data.SetValueForPath(newValue, path)
+			case []int:
+				as := []string{}
+				for _, i := range vu {
+					s := strconv.Itoa(int(i))
+					as = append(as, s)
+				}
+				newValue := strings.Join(as, glue)
+				data.SetValueForPath(newValue, path)
+			case string:
+				a = append(a, vu)
+			case int:
+				s := strconv.Itoa(int(vu))
+				a = append(a, s)
 			}
+		}
+
+		if len(a) > 0 {
 			newValue := strings.Join(a, glue)
 			data.SetValueForPath(newValue, path)
 		}
@@ -230,100 +250,142 @@ func Gsub(fields []string, data *mxj.Map) {
 			newValue := r.ReplaceAllString(value, replacement)
 			data.SetValueForPath(newValue, fieldname)
 		}
-
 	}
 }
 
-func Convert(fields map[string]string, data *mxj.Map) {
+func convertValue(value interface{}, kind string) (interface{}, error) {
+	switch value.(type) {
+	case string:
+		switch kind {
+		case "integer":
+			newValue, err := strconv.Atoi(value.(string))
+			if err != nil {
+				return nil, err
+			}
+			return newValue, nil
+		case "float":
+			newValue, err := strconv.ParseFloat(value.(string), 64)
+			if err != nil {
+				return nil, err
+			}
+			return newValue, nil
+		case "boolean":
+			value = strings.ToLower(value.(string))
+			for _, b := range []string{"true", "t", "yes", "y", "1"} {
+				if b == value {
+					return true, nil
+				}
+			}
+			for _, b := range []string{"false", "f", "no", "n", "0"} {
+				if b == value {
+					return false, nil
+				}
+			}
+			return nil, fmt.Errorf("unknow boolean %v", value)
+		}
+	case int:
+		switch kind {
+		case "string":
+			newValue := fmt.Sprintf("%d", value.(int))
+			return newValue, nil
+		case "float":
+			newValue := float64(value.(int))
+			return newValue, nil
+		case "boolean":
+			newValue := false
+			if value.(int) > 0 {
+				newValue = true
+			}
+			return newValue, nil
+		}
+	case float64:
+		switch kind {
+		case "string":
+			newValue := fmt.Sprintf("%f", value.(float64))
+			return newValue, nil
+		case "integer":
+			newValue := int(value.(float64))
+			return newValue, nil
+		case "boolean":
+			newValue := false
+			if value.(float64) > 0 {
+				newValue = true
+			}
+			return newValue, nil
+		}
+	case bool:
+		switch kind {
+		case "string":
+			newValue := "false"
+			if value.(bool) == true {
+				newValue = "true"
+			}
+			return newValue, nil
+		case "integer":
+			var newValue int
+			newValue = 0
+			if value.(bool) == true {
+				newValue = 1
+			}
+			return newValue, nil
+		case "float":
+			var newValue float64
+			newValue = 0
+			if value.(bool) == true {
+				newValue = 1
+			}
+			return newValue, nil
+		}
+	}
+	return nil, fmt.Errorf("unconvertible to %s, value= %v", kind, value)
+}
 
+func Convert(fields map[string]string, data *mxj.Map) {
 	for path, kind := range fields {
+		path = processors.NormalizeNestedPath(path)
 		if !data.Exists(path) {
 			continue
 		}
 
-		value, err := data.ValueForPath(path)
+		values, err := data.ValuesForPath(path)
 		if err != nil {
 			continue
 		}
 
-		switch value.(type) {
-		case string:
-			switch kind {
-			case "integer":
-				newValue, err := strconv.Atoi(value.(string))
+		if len(values) > 1 {
+			newValue := []interface{}{}
+			for _, value := range values {
+				nValue, err := convertValue(value, kind)
 				if err != nil {
-					continue
+					nValue = value
 				}
-				data.SetValueForPath(newValue, path)
-			case "float":
-				newValue, err := strconv.ParseFloat(value.(string), 64)
-				if err != nil {
-					continue
-				}
-				data.SetValueForPath(newValue, path)
-			case "boolean":
-				newValue := false
-				value = strings.ToLower(value.(string))
-				for _, b := range []string{"true", "t", "yes", "y", "1"} {
-					if b == value {
-						newValue = true
+				newValue = append(newValue, nValue)
+			}
+			data.SetValueForPath(newValue, path)
+			continue
+		}
+
+		if len(values) == 1 {
+			switch v := values[0].(type) {
+			case []string:
+				newValue := []interface{}{}
+				for _, value := range v {
+					nValue, err := convertValue(value, kind)
+					if err != nil {
+						nValue = value
 					}
+					newValue = append(newValue, nValue)
+				}
+				data.SetValueForPath(newValue, path)
+			case interface{}:
+				newValue, err := convertValue(v, kind)
+				if err != nil {
+					newValue = v
 				}
 				data.SetValueForPath(newValue, path)
 			}
-		case int:
-			switch kind {
-			case "string":
-				newValue := fmt.Sprintf("%d", value.(int))
-				data.SetValueForPath(newValue, path)
-			case "float":
-				newValue := float64(value.(int))
-				data.SetValueForPath(newValue, path)
-			case "boolean":
-				newValue := false
-				if value.(int) > 0 {
-					newValue = true
-				}
-				data.SetValueForPath(newValue, path)
-			}
-		case float64:
-			switch kind {
-			case "string":
-				newValue := fmt.Sprintf("%f", value.(float64))
-				data.SetValueForPath(newValue, path)
-			case "integer":
-				newValue := int(value.(float64))
-				data.SetValueForPath(newValue, path)
-			case "boolean":
-				newValue := false
-				if value.(float64) > 0 {
-					newValue = true
-				}
-				data.SetValueForPath(newValue, path)
-			}
-		case bool:
-			switch kind {
-			case "string":
-				newValue := "false"
-				if value.(bool) == true {
-					newValue = "true"
-				}
-				data.SetValueForPath(newValue, path)
-			case "integer":
-				var newValue int
-				newValue = 0
-				if value.(bool) == true {
-					newValue = 1
-				}
-				data.SetValueForPath(newValue, path)
-			case "float":
-				var newValue float64
-				newValue = 0
-				if value.(bool) == true {
-					newValue = 1
-				}
-				data.SetValueForPath(newValue, path)
-			}
+
+			continue
 		}
 
 	}
@@ -335,37 +397,59 @@ func Merge(fields map[string]string, data *mxj.Map) {
 		if !data.Exists(path_dst) || !data.Exists(path_src) {
 			continue
 		}
-		value_src, _ := data.ValueForPath(path_src)
-		value_dst, _ := data.ValueForPath(path_dst)
 
-		a := []string{}
-		b := []string{}
-
-		// newValue := append(value_dst, value_src...)
-		switch value_src.(type) {
-		case []string:
-			a = append(a, value_src.([]string)...)
-		default:
-			continue
+		a := []interface{}{}
+		values_src, _ := data.ValuesForPath(path_src)
+		for _, value_src := range values_src {
+			switch v := value_src.(type) {
+			case []string:
+				s := make([]interface{}, len(v))
+				for i, v1 := range v {
+					s[i] = v1
+				}
+				a = append(a, s...)
+			case []int:
+				s := make([]interface{}, len(v))
+				for i, v1 := range v {
+					s[i] = v1
+				}
+				a = append(a, s...)
+			case interface{}:
+				a = append(a, v)
+			}
 		}
 
-		// newValue := append(value_dst, value_src...)
-		switch value_dst.(type) {
-		case []string:
-			b = append(b, value_dst.([]string)...)
-		default:
-			continue
+		b := []interface{}{}
+		values_dst, _ := data.ValuesForPath(path_dst)
+		for _, value_dst := range values_dst {
+			switch v := value_dst.(type) {
+			case []string:
+				vi := make([]interface{}, len(v))
+				for i, v1 := range v {
+					vi[i] = v1
+				}
+				b = append(b, vi...)
+			case []int:
+				vi := make([]interface{}, len(v))
+				for i, v1 := range v {
+					vi[i] = v1
+				}
+				b = append(b, vi...)
+			case interface{}:
+				b = append(b, v)
+			}
 		}
 
-		a = append(b, a...)
+		// Add a to b
+		b = append(b, a...)
 
-		//Remove duplicates
-		result := []string{}
-		seen := map[string]string{}
-		for _, val := range a {
+		// Remove duplicates
+		result := []interface{}{}
+		seen := map[interface{}]bool{}
+		for _, val := range b {
 			if _, ok := seen[val]; !ok {
 				result = append(result, val)
-				seen[val] = val
+				seen[val] = true
 			}
 		}
 

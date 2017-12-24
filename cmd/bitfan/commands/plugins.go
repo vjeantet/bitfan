@@ -32,6 +32,7 @@ import (
 	twitter "github.com/vjeantet/bitfan/processors/input-twitter"
 	udpinput "github.com/vjeantet/bitfan/processors/input-udp"
 	unixinput "github.com/vjeantet/bitfan/processors/input-unix"
+	websocketinput "github.com/vjeantet/bitfan/processors/input-websocket"
 	elasticsearch "github.com/vjeantet/bitfan/processors/output-elasticsearch"
 	elasticsearch2 "github.com/vjeantet/bitfan/processors/output-elasticsearch2"
 	email "github.com/vjeantet/bitfan/processors/output-email"
@@ -44,6 +45,7 @@ import (
 	statsd "github.com/vjeantet/bitfan/processors/output-statsd"
 	route "github.com/vjeantet/bitfan/processors/route"
 	stdout "github.com/vjeantet/bitfan/processors/stdout"
+	websocket "github.com/vjeantet/bitfan/processors/websocket"
 
 	use "github.com/vjeantet/bitfan/processors/use"
 	when "github.com/vjeantet/bitfan/processors/when"
@@ -77,6 +79,7 @@ func init() {
 	initPlugin("input", "stop", stopprocessor.New)
 	initPlugin("input", "httpserver", inputhttpserverprocessor.New)
 	initPlugin("input", "event", inputeventprocessor.New)
+	initPlugin("input", "websocket", websocketinput.New)
 
 	initPlugin("filter", "eval", evalprocessor.New)
 	initPlugin("filter", "readfile", file.New)
@@ -122,6 +125,7 @@ func init() {
 	initPlugin("output", "sql", sqlprocessor.New)
 	initPlugin("output", "template", templateprocessor.New)
 	initPlugin("output", "httpout", httpoutprocessor.New)
+	initPlugin("output", "websocket", websocket.New)
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)

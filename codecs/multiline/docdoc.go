@@ -38,7 +38,7 @@ func Doc() *doc.Codec {
         &doc.CodecOption{
           Name:           "Pattern",
           Alias:          "pattern",
-          Doc:            "The regular expression to match",
+          Doc:            "The regular expression to match with the line",
           Required:       true,
           Type:           "string",
           DefaultValue:   nil,

@@ -39,7 +39,7 @@ type options struct {
 	// The date formats allowed are anything allowed by Joda time format.
 	// You can see the docs for this format http://www.joda.org/joda-time/key_format.html
 	// An array with field name first, and format patterns following, [ field, formats... ]
-	Match []string `mapstructure:"match"`
+	Match []string `mapstructure:"match" validate:"required"`
 
 	// Append values to the tags field when there has been no successful match
 	// Default value is ["_dateparsefailure"]

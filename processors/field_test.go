@@ -230,3 +230,36 @@ func BenchmarkDynamics(b *testing.B) {
 		Dynamic(&str, &fields)
 	}
 }
+
+func TestFieldNormalizeNestedPath(t *testing.T) {
+	fixtures := []struct {
+		path     string
+		expected string
+	}{
+		{
+			"[foo][bar]",
+			"foo.bar",
+		},
+		{
+			"foo.bar",
+			"foo.bar",
+		},
+		{
+			"[foo]",
+			"foo",
+		},
+		{
+			"[foo][990]",
+			"foo[990]",
+		},
+		{
+			"[foo][bar][0]",
+			"foo.bar[0]",
+		},
+	}
+
+	for _, f := range fixtures {
+		assert.Equal(t, f.expected, NormalizeNestedPath(f.path))
+	}
+
+}

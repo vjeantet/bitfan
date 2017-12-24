@@ -199,6 +199,21 @@ article {
         overflow-x: visible;
     }
 
+    .bitfan-packet{
+        display: block;
+        unicode-bidi: embed;
+        font-family: monospace;
+        white-space: pre;
+        outline: 1px solid #ccc; padding: 5px; margin: 5px; 
+        background-color: #E9EDF0 ;
+
+        .string { color: green; }
+        .number { color: darkorange; }
+        .boolean { color: blue; }
+        .null { color: magenta; }
+        .key { color: red; }
+    }
+
     #logs li {
        
         &.level5 {color: gray;} // DEBUG
@@ -213,21 +228,7 @@ article {
             &::after {content: "]";}
         }
 
-        .event{
-            display: block;
-            unicode-bidi: embed;
-            font-family: monospace;
-            white-space: pre;
 
-            outline: 1px solid #ccc; padding: 5px; margin: 5px; 
-            background-color: #E9EDF0 ;
-            
-            .string { color: green; }
-            .number { color: darkorange; }
-            .boolean { color: blue; }
-            .null { color: magenta; }
-            .key { color: red; }
-        }
 
     }
 }

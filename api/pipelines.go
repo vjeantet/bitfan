@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/api/models"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/entrypoint"
 	"github.com/vjeantet/jodaTime"
 )
@@ -70,18 +70,23 @@ func (p *PipelineApiController) Create(c *gin.Context) {
 		return
 	}
 
-	uid, _ := uuid.NewV4()
-	pipeline.Uuid = uid.String()
+	if pipeline.Uuid == "" {
+		uid, _ := uuid.NewV4()
+		pipeline.Uuid = uid.String()
+	}
+
 	for i, _ := range pipeline.Assets {
 		uid, _ := uuid.NewV4()
 		pipeline.Assets[i].Uuid = uid.String()
 	}
 
-	core.Storage().CreatePipeline(&pipeline)
+	if pipeline.Playground == false {
+		core.Storage().CreatePipeline(&pipeline)
+	}
 
 	// Handle optinal Start
 	if pipeline.Active == true {
-		err = p.startPipelineByUUID(pipeline.Uuid)
+		err = p.startPipeline(&pipeline)
 		if err != nil {
 			c.JSON(500, models.Error{Message: err.Error()})
 			return
@@ -97,7 +102,11 @@ func (p *PipelineApiController) startPipelineByUUID(UUID string) error {
 		return err
 	}
 
-	entryPointPath, err := core.Storage().PreparePipelineExecutionStage(&tPipeline)
+	return p.startPipeline(&tPipeline)
+}
+
+func (p *PipelineApiController) startPipeline(tPipeline *models.Pipeline) error {
+	entryPointPath, err := core.Storage().PreparePipelineExecutionStage(tPipeline)
 	if err != nil {
 		return err
 	}
@@ -135,6 +144,14 @@ func (p *PipelineApiController) Find(c *gin.Context) {
 			pipelines[i].Active = true
 			pipelines[i].LocationPath = pup.ConfigLocation
 			pipelines[i].StartedAt = pup.StartedAt
+			for _, h := range pup.Webhooks {
+				pipelines[i].Webhooks = append(pipelines[i].Webhooks, models.Webhook{
+					Description: h.Description,
+					Namespace:   h.Namespace,
+					Url:         h.Url,
+				})
+			}
+
 		}
 	}
 
@@ -146,8 +163,14 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
 	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid, false)
 	if err != nil {
-		c.JSON(404, models.Error{Message: err.Error()})
-		return
+
+		if _, active := core.GetPipeline(uuid); !active {
+			c.JSON(404, models.Error{Message: err.Error()})
+			return
+		}
+
+		mPipeline.Playground = true
+
 	}
 
 	runningPipeline, found := core.GetPipeline(uuid)
@@ -155,6 +178,15 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 		mPipeline.StartedAt = runningPipeline.StartedAt
 		mPipeline.Active = true
 		mPipeline.LocationPath = runningPipeline.ConfigLocation
+
+		for _, h := range runningPipeline.Webhooks {
+			mPipeline.Webhooks = append(mPipeline.Webhooks, models.Webhook{
+				Description: h.Description,
+				Namespace:   h.Namespace,
+				Url:         h.Url,
+			})
+		}
+
 	}
 
 	c.JSON(200, mPipeline)
@@ -162,11 +194,15 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 
 func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 	uuid := c.Param("uuid")
-
 	mPipeline, err := core.Storage().FindOnePipelineByUUID(uuid, false)
 	if err != nil {
-		c.JSON(404, models.Error{Message: err.Error()})
-		return
+
+		// Is pipline is not running -> error
+		if _, active := core.GetPipeline(uuid); !active {
+			c.JSON(404, models.Error{Message: err.Error()})
+			return
+		}
+		mPipeline.Playground = true
 	}
 
 	data := map[string]interface{}{}
@@ -181,7 +217,9 @@ func (p *PipelineApiController) UpdateByUUID(c *gin.Context) {
 		return
 	}
 
-	core.Storage().SavePipeline(&mPipeline)
+	if !mPipeline.Playground { // Ignore playground pipelines
+		core.Storage().SavePipeline(&mPipeline)
+	}
 
 	// handle Start / Stop / Restart
 	_, active := core.GetPipeline(uuid)

@@ -19,24 +19,51 @@ type webHook struct {
 	Hooks         []string
 }
 
+type Hook struct {
+	h           http.HandlerFunc
+	Description string
+	Namespace   string
+	Url         string
+}
+
 var webHookMap = syncmap.Map{}
 var baseURL = ""
-var whPrefixURL = "/"
+var whPrefixURL = "/h/"
 var Log commons.Logger
 
 func New(pipelineLabel, nameSpace string) *webHook {
 	return &webHook{pipelineLabel: pipelineLabel, namespace: nameSpace, Hooks: []string{}}
 }
 
+func WebHooks(uuid string) []Hook {
+	urls := []Hook{}
+	webHookMap.Range(func(key, value interface{}) bool {
+		urls = append(urls, Hook{
+			Description: value.(*Hook).Description,
+			Namespace:   value.(*Hook).Namespace,
+			Url:         value.(*Hook).Url,
+		})
+		return true
+	})
+	return urls
+}
+
 func (w *webHook) buildURL(hookName string) string {
-	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(w.namespace) + "/" + slug.Make(hookName))
+	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
 }
 
 // Add a new route to a given http.HandlerFunc
 func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
+
 	hUrl := w.buildURL(hookName)
 	w.Hooks = append(w.Hooks, hookName)
-	webHookMap.Store(hUrl, hf)
+
+	webHookMap.Store(hUrl, &Hook{
+		h:           hf,
+		Description: hookName,
+		Namespace:   w.namespace,
+		Url:         hUrl,
+	})
 	Log.Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }
 
@@ -67,9 +94,9 @@ func Handler(host string) http.Handler {
 
 func routerHandler(w http.ResponseWriter, r *http.Request) {
 	hUrl := strings.ToLower(r.URL.Path)
-	if hfi, ok := webHookMap.Load(hUrl); ok {
+	if tHook, ok := webHookMap.Load(hUrl); ok {
 		Log.Debugf("Webhook found for %s", hUrl)
-		hfi.(http.HandlerFunc)(w, r)
+		tHook.(*Hook).h(w, r)
 	} else {
 		Log.Warnf("Webhook not found for %s", hUrl)
 		w.WriteHeader(404)

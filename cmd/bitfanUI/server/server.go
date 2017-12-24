@@ -106,6 +106,11 @@ func Handler(baseURL string, debug bool) http.Handler {
 	// Delete asset
 	r.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
+	// Playgrounds
+	r.GET("/playgrounds/play", playgroundsPlay)
+	r.PUT("/playgrounds/play", playgroundsPlayDo)
+	r.DELETE("/playgrounds/play", playgroundsPlayExit)
+
 	// Replace asset
 	r.PUT("/settings/api", changeBitfanApiURL)
 
@@ -134,19 +139,19 @@ func changeBitfanApiURL(c *gin.Context) {
 	c.JSON(200, values)
 }
 
-func getLogs(c *gin.Context) {
-	// TODO : proxy WS:// github.com/koding/websocketproxy
-	c.HTML(200, "logs/logs", withCommonValues(c, gin.H{
-		"bitfanHost": apiBaseUrl,
-	}))
-}
-
 func withCommonValues(c *gin.Context, h gin.H) gin.H {
 	session := sessions.Get(c)
 	h["apiHost"] = apiBaseUrl
 	h["flashes"] = session.Flashes()
 	session.Save()
 	return h
+}
+
+func getLogs(c *gin.Context) {
+	// TODO : proxy WS:// github.com/koding/websocketproxy
+	c.HTML(200, "logs/logs", withCommonValues(c, gin.H{
+		"bitfanHost": apiBaseUrl,
+	}))
 }
 
 func getPipelines(c *gin.Context) {
@@ -294,7 +299,7 @@ func showAsset(c *gin.Context) {
 	p, _ := apiClient.Pipeline(pipelineUUID)
 	a, _ := apiClient.Asset(assetUUID)
 
-	c.HTML(200, "assets/edit", withCommonValues(c, gin.H{
+	c.HTML(200, "pipelines/assets/edit", withCommonValues(c, gin.H{
 		"asset":    a,
 		"pipeline": p,
 	}))
