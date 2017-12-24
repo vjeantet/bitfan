@@ -49,10 +49,52 @@ $(document).ready(function() {
       play();
     });
 
+// LOGS
 
+        new_uri = "ws://" + baseApiHost + "/api/v2/logs";
+        var websocketLOGS = new WebSocket(new_uri); 
+        websocketLOGS.onopen = function(event) { 
+            console.log("Connection LOG is established!");      
+        }
+
+
+        var logmessagetmpl = $.templates("#logmessage-template");
+        websocketLOGS.onmessage = function(event) {
+            var Data = JSON.parse(event.data);
+            if (Data.Data.pipeline_uuid == "playground-"+UUID) {
+                $('#logs').append(logmessagetmpl.render({
+                    ev: Data, 
+                    timeString:moment(Data.Time).format('LTS'),
+                    eventHTML: syntaxHighlightIfEvent(Data.Data.event),
+                }));
+                $('#logs').scrollTop($('#logs')[0].scrollHeight);
+            }
+        };
+        
+        websocketLOGS.onerror = function(event){
+            notie.alert({ type: 'warning', stay:false, text: 'Problem due to some Error' }) ;
+        };
+        websocketLOGS.onclose = function(event){
+            notie.alert({ type: 'warning', stay:false, text: 'Connection Closed' }) ;
+        }; 
+        
+        // $('#frmChat').on("submit",function(event){
+        //  event.preventDefault();
+        //  $('#chat-user').attr("type","hidden");      
+        //  var messageJSON = {
+        //      chat_user: $('#chat-user').val(),
+        //      chat_message: $('#chat-message').val()
+        //  };
+        //  websocket.send(JSON.stringify(messageJSON));
+        // });
+    
 });
 
-
+function syntaxHighlightIfEvent(data){
+    if (data) {
+        return syntaxHighlight(data)
+    }
+}
 
 function play() {
     var input_mode = $('#pan-input .nav-pills .active').attr("bitfan-section-type");
@@ -73,8 +115,8 @@ function play() {
         'output_value': output_value,
         'output_mode': output_mode,
     };
-
-    console.log(dataObject);
+    
+    // console.table(dataObject);
 
     $.ajax({
         type: 'PUT',
@@ -84,25 +126,24 @@ function play() {
         url: window.location.href,
         beforeSend: function() {},
         success: function(settings) {
-            console.log(settings)
-            console.log("success");
+            // console.log(settings)
+            // console.log("success");
             playErrorReset();
 
             if (settings.wsout != "") {
                 new_uri = "ws://" + settings.apiHost + settings.wsout;
                 websocketOUT = new WebSocket(new_uri);
                 websocketOUT.onopen = function(event) {
-                    console.log("Connection is established!");
+                    // console.log("Connection is established!");
                 }
                 websocketOUT.onmessage = function(event) {
-                    // var Data = JSON.parse(event.data);
-                    console.log(event.data);
-                    // $("#bitfan-playground-form textarea[name='output']").val(event.data);
+                    // console.log(event.data);
                     $("#bitfan-playground-form div[name='output']").html(syntaxHighlight(event.data));
                     $("#bitfan-playground-form div[name='output']").addClass("success");
                 };
                 websocketOUT.onerror = function(event) {
                     // notie.alert({ type: 'warning', stay: false, text: 'Problem due to some Error' });
+                    console.log("error on wsout");
                     console.log(event);
                 };
                 websocketOUT.onclose = function(event) {
@@ -119,8 +160,9 @@ function play() {
             }
         },
         error: function(output) {
-            console.log(output);
-            playError(output.responseText);
+            console.log("error playing");
+            
+            playError(output.responseJSON);
             return false;
         }
     });

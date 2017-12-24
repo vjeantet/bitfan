@@ -1,4 +1,8 @@
-{{ define "title"}}Filter playground{{ end }} {{ define "sidebar" }} {{ template "playgroundsidebar" . }} {{ end }} {{ define "content" }}
+{{ define "title"}}Filter playground{{ end }}
+{{ define "sidebars" }} {{ template "playgroundsidebar" . }} {{ end }} 
+{{ define "sidebar" }}{{ end }}
+
+{{ define "content" }}
 <div class="row">
     <div class="col">
         <h1>Playground</h1>
@@ -65,6 +69,7 @@
     <div class="row">
         <div class="col-12">
             <div id="playground-error"></div>
+            <div id="logs" style="height: 100px !important; overflow: scroll;"></div>
         </div>
     </div>
     <div class="row">
@@ -209,4 +214,36 @@ $(document).ready(function() {
     color: red;
 }
 </style>
+
+
+<script id="logmessage-template" type="text/x-jsrender">
+  <li class="level[[:ev.Level]] [[if eventHTML]]trace_[[:ev.Data.trace]][[/if]]">
+  <span class="message_header">
+    <span class="level">
+    [[if eventHTML]]
+      TRACE
+    [[else ev.Level == 5]]
+      DEBUG
+    [[else ev.Level == 4 ]]
+      INFO
+    [[else ev.Level == 3 ]]
+      WARN
+    [[else ev.Level == 2 ]]
+      ERROR
+    [[else ev.Level == 1 ]]
+      FATAL
+    [[/if]]
+    </span>
+    <span class="time">[[:timeString]]</span>
+    <span class="processor">[[:ev.Data.processor_label]]</span>
+  </span>
+  <span class="message_content">
+      <span class="message">[[:ev.Message]]</span>
+      [[if eventHTML]]
+      <span class="bitfan-packet">[[:eventHTML]]</span>
+      [[/if]]
+  </span>
+  
+  </li>
+</script>
 {{ end }}
