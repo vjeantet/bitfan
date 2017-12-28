@@ -107,7 +107,8 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	return err
 }
 
-func (p *processor) Receive(e processors.IPacket) error {
+func (p *processor) Receive(e processors.IPacket) (err error) {
+
 	var countError int
 	var err error
 
@@ -118,7 +119,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 	// go templates
 	for key, _ := range p.opt.Templates {
 		buff := bytes.NewBufferString("")
-		err := p.compiledTemplates[key].Execute(buff, e.Fields())
+		err = p.compiledTemplates[key].Execute(buff, e.Fields())
 		if err != nil {
 			p.Logger.Errorf("template %s error : %v", key, err)
 			return err

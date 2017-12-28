@@ -1,6 +1,9 @@
 package testutils
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/vjeantet/bitfan/processors"
 )
@@ -37,4 +40,11 @@ func (p *Processor) BuiltPackets() []processors.IPacket {
 }
 func (p *Processor) BuiltPacketsCount() int {
 	return p.ctx.BuiltPacketsCount()
+}
+func AssertValuesForPaths(t *testing.T, ctx *DummyProcessorContext, pathValues map[string]interface{}) {
+	for path, expectedVal := range pathValues {
+		value, err := ctx.SentPackets(0)[0].Fields().ValueForPath(path)
+		assert.Nil(t, err, "Unknown path: "+path)
+		assert.Equal(t, expectedVal, value, "Invalid value for path "+path)
+	}
 }
