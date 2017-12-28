@@ -26,7 +26,7 @@ func (p *processor) Doc() *doc.Processor {
         Name:           "Match",
         Alias:          "match",
         Doc:            "The date formats allowed are anything allowed by Joda time format.\nYou can see the docs for this format http://www.joda.org/joda-time/key_format.html\nAn array with field name first, and format patterns following, [ field, formats... ]",
-        Required:       false,
+        Required:       true,
         Type:           "array",
         DefaultValue:   nil,
         PossibleValues: []string{},

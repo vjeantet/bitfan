@@ -23,7 +23,7 @@
         "ExampleLS": "",
         "Name": "Match",
         "PossibleValues": null,
-        "Required": false,
+        "Required": true,
         "Type": "array"
       },
       {
