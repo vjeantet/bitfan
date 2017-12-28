@@ -110,7 +110,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 func (p *processor) Receive(e processors.IPacket) (err error) {
 
 	var countError int
-	var err error
 
 	if len(p.opt.Var) > 0 {
 		e.Fields().SetValueForPath(p.opt.Var, "var")
