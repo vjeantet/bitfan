@@ -30,7 +30,7 @@ type options struct {
 	Overwrite bool
 
 	// Add a UUID to a field
-	Target string
+	Target string `mapstructure:"target" validate:"required"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
