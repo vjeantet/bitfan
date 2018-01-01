@@ -39,6 +39,7 @@ type options struct {
 	//   allow_duplicate_values => false
 	// }
 	// ```
+	// @Default true
 	AllowDuplicateValues bool `mapstructure:"allow_duplicate_values"`
 
 	// A hash specifying the default keys and their values which should be added
@@ -152,16 +153,6 @@ type options struct {
 	// ```
 	Target string
 
-	// A string of characters to trim from the value. This is useful if your values are wrapped in brackets or are terminated with commas (like postfix logs).
-	//
-	// For example, to strip <, >, [, ] and , characters from values:
-	// ```
-	// kv {
-	//   trim => "<>[],"
-	// }
-	// ```
-	Trim string
-
 	// A string of characters to trim from the key. This is useful if your keys are wrapped in brackets or start with space.
 	//
 	// For example, to strip < > [ ] and , characters from keys:
@@ -170,7 +161,24 @@ type options struct {
 	//   trimkey => "<>[],"
 	// }
 	// ```
-	Trimkey string `mapstructure:"trimkey"`
+	Trimkey string `mapstructure:"trim_key"`
+
+	// Constants used for transform check A string of characters to trim from the value. This is useful if your values are wrapped in brackets or are terminated with commas (like postfix logs).
+	//
+	// These characters form a regex character class and thus you must escape special regex characters like [ or ] using \.
+	//
+	// Only leading and trailing characters are trimed from the value.
+	//
+	// For example, to trim <, >, [, ] and , characters from values:
+	//
+	// ```
+	// filter {
+	//   kv {
+	//     trim_value => "<>\[\],"
+	//   }
+	// }
+	// ```
+	TrimValue string `mapstructure:"trim_value"`
 
 	// A string of characters to use as delimiters for identifying key-value relations.
 	//
@@ -239,26 +247,40 @@ func (p *processor) parse(value string, e processors.IPacket, kv map[string]inte
 		value = fmt.Sprintf("%s%s", p.opt.Prefix, value)
 
 		// Trim Value
-		if p.opt.Trim != "" {
-			value = strings.Trim(value, p.opt.Trim)
+		if p.opt.TrimValue != "" {
+			value = strings.Trim(value, p.opt.TrimValue)
 		}
 
 		// handle multiples values for key
 		if _, ok := kv[key]; ok {
-			// handle allow_duplicate_values
-			if p.opt.AllowDuplicateValues == true {
-
-				switch kv[key].(type) {
-				case string:
-					kv[key] = []string{kv[key].(string), value}
-				case []string:
-					kv[key] = append(kv[key].([]string), value)
+			switch kv[key].(type) {
+			case string:
+				// handle allow_duplicate_values
+				if p.opt.AllowDuplicateValues == false {
+					if kv[key].(string) == value {
+						continue
+					}
 				}
+
+				kv[key] = []string{kv[key].(string), value}
+
+			case []string:
+				// handle allow_duplicate_values
+				if p.opt.AllowDuplicateValues == false {
+					for _, v := range kv[key].([]string) {
+						if v == value {
+							goto LOOP
+						}
+					}
+				}
+
+				kv[key] = append(kv[key].([]string), value)
 			}
 		} else {
 			kv[key] = value
 		}
 
+	LOOP:
 	}
 	return kv, nil
 }
