@@ -1,18 +1,88 @@
-
-{{define "scripts"}}
-<script src="/public/js/playground.js"></script>
-{{end}}
-
 {{define "playgroundsidebar"}}
-<nav>
 
-<section >
-  <h2>Docs</h2>
-  <h2>Snippets</h2>
-  <h2>Note</h2>
-</section>
-
-
-
-</nav>
+<script id="logmessage-template" type="text/x-jsrender">
+  <li class="level[[:ev.Level]] [[if eventHTML]]trace_[[:ev.Data.trace]][[/if]]">
+  <span class="message_header">
+    <span class="level">
+    [[if eventHTML]]
+      TRACE
+    [[else ev.Level == 5]]
+      DEBUG
+    [[else ev.Level == 4 ]]
+      INFO
+    [[else ev.Level == 3 ]]
+      WARN
+    [[else ev.Level == 2 ]]
+      ERROR
+    [[else ev.Level == 1 ]]
+      FATAL
+    [[/if]]
+    </span>
+    <span class="time">[[:timeString]]</span>
+    <span class="processor">[[:ev.Data.processor_label]]</span>
+  </span>
+  <span class="message_content">
+      <span class="message">[[:ev.Message]]</span>
+      [[if eventHTML]]
+      <span class="bitfan-packet">[[:eventHTML]]</span>
+      [[/if]]
+  </span>
+  
+  </li>
+</script>
 {{end}}
+
+{{ define "scripts" }}
+<script src="/public/vendor/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/public/vendor/ace/ext-modelist.js"></script>
+<script src="/public/js/playground.js"></script>
+<style type="text/css">
+    article{
+            padding: 0px 0px;
+    }
+
+
+.nav-tabs > li > a {padding-top:0px !important; padding-bottom:0px !important;}
+.nav-tabs {min-height:20px !important;    margin-bottom: 0rem!important;}
+
+	#pan-input{
+		/*background-color: red;*/
+	}
+	#pan-filter{
+		/*background-color: yellow;*/
+	}
+	#pan-output{
+		/*background-color: green;*/
+	}
+	#pan-logs-errors{
+
+	}
+
+
+    #pan-input, #pan-filter, #pan-output,#pan-logs-errors{
+     padding-right: 0px; 
+     padding-left: 0px; 
+    }
+    #bitfan-playground-form .row {
+        margin-right: 0px; 
+        margin-left: 0px; 
+    }
+#bitfan-playground-form #logs li {
+    list-style: none;
+}
+
+#bitfan-playground-form .error {
+    border: 2px solid red;
+    background-color: #F1E6FF;
+}
+
+#bitfan-playground-form .success {
+    border: 2px solid #408002;
+}
+
+#playground-error.error {
+    color: red;
+}
+</style>
+
+{{ end }} 

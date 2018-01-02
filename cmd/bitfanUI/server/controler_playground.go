@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/api/models"
 )
 
@@ -25,7 +24,6 @@ func playgroundsPlay(c *gin.Context) {
 func playgroundsPlayExit(c *gin.Context) {
 	pgReq := playgroundRequest{}
 	_ = c.BindJSON(&pgReq)
-	pp.Println("bye-->", pgReq.UUID)
 
 	// Stop pipeline if running
 	_, _ = apiClient.StopPipeline(pgReq.UUID)
