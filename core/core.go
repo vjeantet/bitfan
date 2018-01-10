@@ -12,6 +12,7 @@ import (
 	"github.com/vjeantet/bitfan/core/memory"
 	"github.com/vjeantet/bitfan/core/metrics"
 	"github.com/vjeantet/bitfan/core/webhook"
+	"github.com/vjeantet/bitfan/processors/doc"
 	"github.com/vjeantet/bitfan/store"
 )
 
@@ -195,4 +196,21 @@ func Pipelines() map[string]*Pipeline {
 		return true
 	})
 	return pps
+}
+
+// ProcessorsDocs returns available ProcessorDoc
+func ProcessorsDocs(code string) map[string]*doc.Processor {
+	docs := map[string]*doc.Processor{}
+	if code != "" {
+		if proc, ok := availableProcessorsFactory[code]; ok {
+			docs[code] = proc().Doc()
+		}
+
+	} else {
+		for code, proc := range availableProcessorsFactory {
+			docs[code] = proc().Doc()
+		}
+	}
+
+	return docs
 }

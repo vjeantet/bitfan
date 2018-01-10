@@ -30,28 +30,20 @@ function PgNewEditor(name,firstLineNumber,syntaxName,themeName, playWithKeyPress
     pgEditor.commands.addCommand({
         name: 'Help',
         bindKey: {
-            win: 'Ctrl-H',
-            mac: 'Command-H',
+            win: 'Ctrl-Shift-P',
+            mac: 'Command-Shift-P',
             sender: 'editor|cli'
             },
         exec: function(env, args, request) {
             console.log(pgEditor.container.id) ;
             console.log("cursor at row "+ pgEditor.getCursorPosition().row + ", column : "+pgEditor.getCursorPosition().column);
-            $('#exampleModal').on('shown.bs.modal', function () {
-                $('#bitbar-input').focus();
-            }) ; 
-            $('#exampleModal').modal({
-              keyboard: true
-            });
-            $(document).on("keydown", "#bitbar-input", function(event) { 
-                if(event.which==38 || event.which==40){
-                    console.log("UP DOWN") ;
-                    event.preventDefault();
-                }
-                if(event.which == 13) {
-                    console.log("ENTER") ;
-                }
-            });
+            // context = editorID, column, row, selection
+            var context = {
+                aceEditor: pgEditor
+            } ;
+
+            bitbar.show("doc filter ", context)
+
         }
     });
 
@@ -59,8 +51,64 @@ function PgNewEditor(name,firstLineNumber,syntaxName,themeName, playWithKeyPress
     return pgEditor
 }
 
+function bitfanProcessorShowDoc(c){
+    console.log("bitfanProcessorShowDoc of " +  c.selected[1])
+    // TODO: get doc from API and display it
+}
+function bitfanProcessorListptions(c){
+    console.log("bitfanProcessorListptions of " + c.selected[1])
+    // TODO: get options from API and display
+    // TODO: implement bitbar:item:active
+}
+function bitfanProcessorInsertTemplate(c){
+    console.log("bitfanProcessorInsertTemplate (" + c.selected[0] + ") of " + c.selected[1])
+    // TODO: get template from API and insert in editor
+}
+function bitfanProcessorMenu(c){
+    keys = [
+                { do: bitfanProcessorShowDoc, id: 'show_doc', label: "read the doc of "+c.selected[0] },
+                { do: bitfanProcessorListptions, id: 'list_options', label: "list options" },
+                { do: bitfanProcessorInsertTemplate, id: 'insert_full', label: "insert full blueprint" },
+                { do: bitfanProcessorInsertTemplate, id: 'insert_min', label: "insert with defaults only" },
+            ];
+    bitbar.showWith(keys,"",c)
+}
+
 $(document).ready(function() {
     UUID = guid();
+    
+    // ######## BITBAR
+    $.ajax({
+        type: 'GET',
+        dataType:"json",
+        processData: false,
+        url: 'http://'+baseApiHost+'/api/v2/docs/processors',
+        success: function(processors_docs) {
+            for(var key in processors_docs) {
+                    var labelStr = "doc filter " + key
+                    if (key.startsWith("input") || key.startsWith("output")) {
+                        labelStr = "doc " + key.replace("_", " ");
+                    }
+                    bitbar.items.push({ 
+                                    do: bitfanProcessorMenu, 
+                                    id: key, 
+                                    label: labelStr, 
+                                })
+            }
+            
+        },
+        error: function(output) {
+            console.log("error getting processor documentations");
+            return false;
+        }
+    });
+
+    
+
+    // Init Bitbar
+    // Load Data from api/docs
+    // Create labels
+    // bitbar.initWith(keys)
 
     // ######### EDITORS 
     // OUTPUT CONFIGURATION
@@ -73,43 +121,6 @@ $(document).ready(function() {
     editorFilter.getSession().on('change', function() {
         editorOutput.setOption("firstLineNumber", editorFilter.getSession().getLength() + 6 + 1);
     });
-
-
-
-    // Autocompletion - autocomplete processor names and their respectives options
-    // TODO:  to autocomplete reliably, api needs :
-    //   * all configuration before the cursor position
-    //   * API server side will calculate  
-    //     * what kind of token
-    //       * is currently written
-    //       * OR is to be written
-    //     * the list of previous token (processor name, option name)
-    //   * with this token list, bitfan can propose 
-    //      * some words.
-    //      * help, description, documentation.
-    // * OR
-    //   * section type
-    //   * processor context name (null, mutate, grok, etc....)
-    //   * option context name
-    //   * 
-    // var langTools = ace.require("ace/ext/language_tools");
-    // editorFilter.setOptions({enableBasicAutocompletion: true});
-    // // uses http://rhymebrain.com/api.html
-    // var bitfanCompleter = {
-    //     getCompletions: function(editor, session, pos, prefix, callback) {
-    //         if (prefix.length === 0) { callback(null, []); return }
-    //         console.log(pos,prefix ); 
-    //         $.getJSON(
-    //             "http://rhymebrain.com/talk?function=getRhymes&word=" + prefix,
-    //             function(wordList) {
-    //                 // wordList like [{"word":"flow","freq":24,"score":300,"flags":"bc","syllables":"1"}]
-    //                 callback(null, wordList.map(function(ea) {
-    //                     return {name: ea.word, value: ea.word, score: ea.score, meta: "rhyme"}
-    //                 }));
-    //             })
-    //     }
-    // }
-    // langTools.addCompleter(rhymeCompleter);
 
     // INPUT CONFIGURATION
     editorInput = PgNewEditor("input-configuration", 2,"logstash","monokai",true)
@@ -185,7 +196,7 @@ $(document).ready(function() {
         };
 
         $.ajax({
-            url: window.location.href,
+            url: 'http://'+baseApiHost+'/api/v2/docs/processors',
             type: 'DELETE',
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
@@ -302,7 +313,7 @@ function play() {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(dataObject),
         dataType: 'json',
-        url: window.location.href,
+        url: 'http://'+baseApiHost+'/api/v2/docs/processors',
         beforeSend: function() {},
         success: function(settings) {
             // console.log(settings)

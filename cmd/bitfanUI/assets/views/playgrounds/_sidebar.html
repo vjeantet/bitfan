@@ -5,6 +5,7 @@
 <script src="/public/vendor/ace/ext-modelist.js"></script>
 <script src="/public/vendor/ace/ext-language_tools.js"></script>
 <script src="/public/js/playground.js"></script>
+<script src="/public/js/bitbar.js"></script>
 <style type="text/css">
 article {
     padding: 0px 0px;
@@ -99,6 +100,26 @@ article {
 .bitbar-control {
     display: block;
     width: 100%;
+}
+
+#bitbar-results {
+    max-height: 300px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+#bitbar-results li {
+    list-style: none;
+    border-bottom: 1px solid gray ;
+    cursor: default;
+}
+
+#bitbar-results li.active {
+    color:white;
+    background-color: black;
+}
+
+#bitbar-results li b {
 }
 
 
