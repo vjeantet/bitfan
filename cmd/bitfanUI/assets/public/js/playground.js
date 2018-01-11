@@ -196,7 +196,7 @@ $(document).ready(function() {
         };
 
         $.ajax({
-            url: 'http://'+baseApiHost+'/api/v2/docs/processors',
+            url: window.location.href,
             type: 'DELETE',
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
@@ -313,7 +313,7 @@ function play() {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(dataObject),
         dataType: 'json',
-        url: 'http://'+baseApiHost+'/api/v2/docs/processors',
+        url: window.location.href,
         beforeSend: function() {},
         success: function(settings) {
             // console.log(settings)
