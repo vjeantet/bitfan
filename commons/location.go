@@ -2,7 +2,6 @@ package commons
 
 import (
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -10,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"text/template"
 )
 
 const (
@@ -113,7 +113,7 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 		return nil, cwl, err
 	}
 
-	// builtins - https://golang.org/src/html/template/funcs.go
+	// builtins - https://golang.org/src/text/template/funcs.go
 	// 		"and":      and,
 	//  	"call":     call,
 	//  	"html":     HTMLEscaper,
@@ -126,6 +126,14 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 	//  	"printf":   fmt.Sprintf,
 	//  	"println":  fmt.Sprintln,
 	//  	"urlquery": URLQueryEscaper,
+	//
+	// 		// Comparisons
+	// 		"eq": eq, // ==
+	// 		"ge": ge, // >=
+	// 		"gt": gt, // >
+	// 		"le": le, // <=
+	// 		"lt": lt, // <
+	// 		"ne": ne, // !=
 
 	funcMap := template.FuncMap{
 		"TS":         (*templateFunctions)(nil).timeStampFormat,

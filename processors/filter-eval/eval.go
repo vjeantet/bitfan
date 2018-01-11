@@ -24,10 +24,10 @@ package evalprocessor
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"reflect"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/Knetic/govaluate"
 	"github.com/vjeantet/bitfan/commons"

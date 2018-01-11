@@ -70,7 +70,7 @@ func TestEncoderMissingData(t *testing.T) {
 	d.SetOptions(conf, logrus.New(), "")
 	d.Encode(data)
 
-	assert.Equal(t, " - test", b.String())
+	assert.Equal(t, "<no value> - test", b.String())
 }
 
 func TestEncoderVars(t *testing.T) {

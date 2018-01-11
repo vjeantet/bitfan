@@ -3,7 +3,7 @@ package templateprocessor
 
 import (
 	"bytes"
-	"html/template"
+	"text/template"
 
 	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
