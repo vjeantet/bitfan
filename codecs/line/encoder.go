@@ -45,6 +45,8 @@ func NewEncoder(w io.Writer) *encoder {
 			Format:    `{{ TS "dd/MM/yyyy:HH:mm:ss" . }} {{.host}} {{.message}}`,
 		},
 	}
+	loc, _ := commons.NewLocation(e.options.Format, "")
+	e.formatTpl, _, _ = loc.TemplateWithOptions(e.options.Var)
 
 	return e
 }
