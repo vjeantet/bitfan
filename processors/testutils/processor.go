@@ -12,6 +12,19 @@ type Processor struct {
 	ctx *DummyProcessorContext
 }
 
+func StartNewProcessor(f func() processors.Processor, conf ...map[string]interface{}) (Processor, error) {
+	p, err := NewProcessor(f, conf...)
+	if err != nil {
+		return p, err
+	}
+	err = p.Start(nil)
+	if err != nil {
+		return p, err
+	}
+
+	return p, nil
+
+}
 func NewProcessor(f func() processors.Processor, conf ...map[string]interface{}) (Processor, error) {
 	var err error
 	p := newMockedProcessor(f)

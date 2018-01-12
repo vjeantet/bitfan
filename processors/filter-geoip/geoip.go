@@ -1,4 +1,10 @@
 //go:generate bitfanDoc
+// The GeoIP filter adds information about the geographical location of IP addresses,
+// based on data from the Maxmind GeoLite2 databases
+//
+// This processor use a GeoLite2 City database. From Maxmind’s description — "GeoLite2 databases are free IP geolocation databases comparable to, but less accurate than, MaxMind’s GeoIP2 databases". Please see GeoIP Lite2 license for more details.
+// Databae is not bundled in the processor,  you can download directly from Maxmind’s website and use the
+// database option to specify their location. The GeoLite2 databases can be downloaded from https://dev.maxmind.com/geoip/geoip2/geolite2.
 package geoip
 
 import (
@@ -39,6 +45,7 @@ type options struct {
 	// Path or URL to the MaxMind GeoIP2 database.
 	// Default value is "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
 	// Note that URL can point to gzipped database (*.mmdb.gz) but local path must point to an unzipped file.
+	// @Default "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
 	Database string `mapstructure:"database"`
 
 	// Type of GeoIP database. Default value is "city"
@@ -76,6 +83,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	defaults := options{
 		Fields: []string{
 			"city_name",
+			"metro_code",
 			"country_code",
 			"country_name",
 			"continent_code",
@@ -95,6 +103,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		},
 		Language:        "en",
 		LruCacheSize:    1000,
+		Source:          "",
 		Target:          "",
 		Database:        "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz",
 		DatabaseType:    "city",
@@ -105,21 +114,25 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	p.cache = lrucache.New(p.opt.LruCacheSize)
 
 	err = p.ConfigureAndValidate(ctx, conf, p.opt)
-	if err != nil {
-		return err
-	}
 
-	err = p.refresh()
-	ticker := time.NewTicker(p.opt.RefreshInterval * time.Minute)
-	go func() {
-		defer ticker.Stop()
-		for range ticker.C {
-			err := p.refresh()
-			if err != nil {
-				p.Logger.Error(err)
+	return err
+}
+
+func (p *processor) Start(e processors.IPacket) error {
+
+	err := p.refresh()
+	if p.opt.RefreshInterval > 0 {
+		ticker := time.NewTicker(p.opt.RefreshInterval * time.Minute)
+		go func() {
+			defer ticker.Stop()
+			for range ticker.C {
+				err := p.refresh()
+				if err != nil {
+					p.Logger.Error(err)
+				}
 			}
-		}
-	}()
+		}()
+	}
 
 	return err
 }
@@ -198,6 +211,22 @@ func (p *processor) Receive(e processors.IPacket) error {
 				data["isp"] = isp.ISP
 			}
 		}
+	case *geoip2.Country:
+		country := cache.(*geoip2.Country)
+		for _, field := range p.opt.Fields {
+			switch field {
+			case "country_code":
+				data["country_code"] = country.Country.IsoCode
+			case "country_name":
+				data["country_name"] = country.Country.Names[p.opt.Language]
+			case "continent_code":
+				data["continent_code"] = country.Continent.Code
+			case "continent_name":
+				data["continent_name"] = country.Continent.Names[p.opt.Language]
+			}
+		}
+	default:
+		p.Logger.Warn("Unsupported database type `%v`", cache)
 	}
 
 	if p.opt.Target != "" {
@@ -290,6 +319,7 @@ func (p *processor) refresh() error {
 		}
 
 		p.database, err = geoip2.FromBytes(db)
+
 		p.Logger.Infof("Geoip filter: %s database successfully downloaded.\n", p.opt.DatabaseType)
 		return err
 	}
@@ -298,6 +328,3 @@ func (p *processor) refresh() error {
 	p.database, err = geoip2.Open(p.opt.Database)
 	return err
 }
-
-func (p *processor) Tick(e processors.IPacket) error { return nil }
-func (p *processor) Stop(e processors.IPacket) error { return nil }
