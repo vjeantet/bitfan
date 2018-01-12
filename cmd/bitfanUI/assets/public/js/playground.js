@@ -2,20 +2,20 @@ var websocketOUT;
 var websocketIN;
 var UUID;
 var keyPressTimeoutId = 0;
-var editorInput ;
-var editorInputRaw ;
-var editorFilter ;
+var editorInput;
+var editorInputRaw;
+var editorFilter;
 var editorOutput;
-var editorOutputRaw ;
+var editorOutputRaw;
 
 
 
-function PgNewEditor(name,firstLineNumber,syntaxName,themeName, playWithKeyPress) {
-    var pgEditor = ace.edit("section-"+name+"-content");
+function PgNewEditor(name, firstLineNumber, syntaxName, themeName, playWithKeyPress) {
+    var pgEditor = ace.edit("section-" + name + "-content");
     pgEditor.setAutoScrollEditorIntoView(true);
-    pgEditor.setTheme("ace/theme/"+themeName);
-    pgEditor.getSession().setMode("ace/mode/"+syntaxName);
-    var textarea = $('textarea[name="section-'+name+'"]').hide();
+    pgEditor.setTheme("ace/theme/" + themeName);
+    pgEditor.getSession().setMode("ace/mode/" + syntaxName);
+    var textarea = $('textarea[name="section-' + name + '"]').hide();
     pgEditor.getSession().setValue(textarea.val());
 
     pgEditor.getSession().on('change', function() {
@@ -33,14 +33,14 @@ function PgNewEditor(name,firstLineNumber,syntaxName,themeName, playWithKeyPress
             win: 'Ctrl-Shift-P',
             mac: 'Command-Shift-P',
             sender: 'editor|cli'
-            },
+        },
         exec: function(env, args, request) {
-            console.log(pgEditor.container.id) ;
-            console.log("cursor at row "+ pgEditor.getCursorPosition().row + ", column : "+pgEditor.getCursorPosition().column);
+            console.log(pgEditor.container.id);
+            console.log("cursor at row " + pgEditor.getCursorPosition().row + ", column : " + pgEditor.getCursorPosition().column);
             // context = editorID, column, row, selection
             var context = {
                 aceEditor: pgEditor
-            } ;
+            };
 
             bitbar.show("doc filter ", context)
 
@@ -51,51 +51,148 @@ function PgNewEditor(name,firstLineNumber,syntaxName,themeName, playWithKeyPress
     return pgEditor
 }
 
-function bitfanProcessorShowDoc(c){
-    console.log("bitfanProcessorShowDoc of " +  c.selected[1])
-    // TODO: get doc from API and display it
+function bitfanProcessorSelectOption(c, item) {
+    c.aceEditor.session.insert(c.aceEditor.selection.getCursor(), item.value)
+    c.aceEditor.focus();
 }
-function bitfanProcessorListptions(c){
-    console.log("bitfanProcessorListptions of " + c.selected[1])
-    // TODO: get options from API and display
-    // TODO: implement bitbar:item:active
+
+function bitfanProcessorHoverOption(c, item) {
+    console.log(item)
+    //TODO : display Doc info in bitbarConsole
 }
-function bitfanProcessorInsertTemplate(c){
+
+function bitfanProcessorListptions(c) {
+    $.ajax({
+        type: 'GET',
+        dataType: "json",
+        processData: false,
+        url: 'http://' + baseApiHost + '/api/v2/docs/processors/' + c.selected[1],
+        success: function(processor_doc) {
+            var items = []
+            let proc = processor_doc[c.selected[1]]
+            console.log(proc.Options)
+            var optionsLen = proc.Options.Options.length;
+            for (var i = 0; i < optionsLen; i++) {
+                let option = proc.Options.Options[i]
+                console.log(option);
+
+                //Ignore common options
+                if (option.Type == "processors.CommonOptions") {
+                    continue
+                }
+
+                // When no alias set, use Name
+                var labelStr = option.Alias
+                if (labelStr == "") {
+                    labelStr = (option.Name.replace(/\.?([A-Z])/g, function(x, y) { return "_" + y.toLowerCase() }).replace(/^_/, ""));
+                }
+
+                var labelRequired = ""
+                if (option.Required == true) {
+                    labelRequired = " - (required)"
+                }
+                var value = labelStr + " => ";
+                switch (option.Type) {
+                    case "hash":
+                        if (option.DefaultValue != null) {
+                            value += option.DefaultValue;
+                        } else {
+                            value += "{}";
+                        }
+                        break;
+                    case "array":
+                        if (option.DefaultValue != null) {
+                            value += option.DefaultValue;
+                        } else {
+                            value += "[]";
+                        }
+                        break;
+                    case "string":
+                        if (option.DefaultValue != null) {
+                            value += option.DefaultValue;
+                        } else {
+                            value += '""';
+                        }
+                        break;
+                    case "int":
+                        if (option.DefaultValue != null) {
+                            value += option.DefaultValue;
+                        } else {
+                            value += "123";
+                        }
+                        break;
+                    case "bool":
+                        if (option.DefaultValue != null) {
+                            value += option.DefaultValue;
+                        } else {
+                            value += "true";
+                        }
+                        break;
+                    case "time.Duration":
+                        if (option.DefaultValue != null) {
+                            value += option.DefaultValue;
+                        } else {
+                            value += "30";
+                        }
+                        break;
+                }
+
+                items.push({
+                    do: bitfanProcessorSelectOption,
+                    focus: bitfanProcessorHoverOption,
+                    id: labelStr,
+                    label: labelStr + labelRequired,
+                    value: value,
+                })
+            }
+            bitbar.showWith(items, "", c)
+
+
+        },
+        error: function(output) {
+            console.log("error getting processor documentations");
+            return false;
+        }
+    });
+}
+
+function bitfanProcessorInsertTemplate(c) {
     console.log("bitfanProcessorInsertTemplate (" + c.selected[0] + ") of " + c.selected[1])
     // TODO: get template from API and insert in editor
 }
-function bitfanProcessorMenu(c){
+
+function bitfanProcessorMenu(c) {
     keys = [
-                { do: bitfanProcessorShowDoc, id: 'show_doc', label: "read the doc of "+c.selected[0] },
-                { do: bitfanProcessorListptions, id: 'list_options', label: "list options" },
-                { do: bitfanProcessorInsertTemplate, id: 'insert_full', label: "insert full blueprint" },
-                { do: bitfanProcessorInsertTemplate, id: 'insert_min', label: "insert with defaults only" },
-            ];
-    bitbar.showWith(keys,"",c)
+        // { do: bitfanProcessorShowDoc, id: 'show_doc', label: "read the doc of " + c.selected[0] },
+        { do: bitfanProcessorListptions, id: 'list_options', label: "list options" },
+        { do: bitfanProcessorInsertTemplate, id: 'insert_full', label: "insert full blueprint" },
+        { do: bitfanProcessorInsertTemplate, id: 'insert_min', label: "insert with defaults only" },
+    ];
+    bitbar.showWith(keys, "", c)
 }
 
 $(document).ready(function() {
     UUID = guid();
-    
-    // ######## BITBAR
+
+    // ######## BITBAR load with processors docs
     $.ajax({
         type: 'GET',
-        dataType:"json",
+        dataType: "json",
         processData: false,
-        url: 'http://'+baseApiHost+'/api/v2/docs/processors',
+        url: 'http://' + baseApiHost + '/api/v2/docs/processors',
         success: function(processors_docs) {
-            for(var key in processors_docs) {
-                    var labelStr = "doc filter " + key
-                    if (key.startsWith("input") || key.startsWith("output")) {
-                        labelStr = "doc " + key.replace("_", " ");
-                    }
-                    bitbar.items.push({ 
-                                    do: bitfanProcessorMenu, 
-                                    id: key, 
-                                    label: labelStr, 
-                                })
+            for (var key in processors_docs) {
+                var labelStr = "doc filter " + key
+                if (key.startsWith("input") || key.startsWith("output")) {
+                    labelStr = "doc " + key.replace("_", " ");
+                }
+                bitbar.items.push({
+                    do: bitfanProcessorMenu,
+                    id: key,
+                    label: labelStr,
+                })
             }
-            
+
         },
         error: function(output) {
             console.log("error getting processor documentations");
@@ -103,7 +200,7 @@ $(document).ready(function() {
         }
     });
 
-    
+
 
     // Init Bitbar
     // Load Data from api/docs
@@ -112,25 +209,25 @@ $(document).ready(function() {
 
     // ######### EDITORS 
     // OUTPUT CONFIGURATION
-    editorOutput = PgNewEditor("output-configuration", 8, "logstash","monokai",true)
+    editorOutput = PgNewEditor("output-configuration", 8, "logstash", "monokai", true)
 
-    editorOutputRaw = PgNewEditor("output-raw", 1, "json","eclipse",false)
-    
+    editorOutputRaw = PgNewEditor("output-raw", 1, "json", "eclipse", false)
+
     // FILTER CONFIGURATION
-    editorFilter = PgNewEditor("filter-configuration", 6,"logstash","monokai",true)
+    editorFilter = PgNewEditor("filter-configuration", 6, "logstash", "monokai", true)
     editorFilter.getSession().on('change', function() {
         editorOutput.setOption("firstLineNumber", editorFilter.getSession().getLength() + 6 + 1);
     });
 
     // INPUT CONFIGURATION
-    editorInput = PgNewEditor("input-configuration", 2,"logstash","monokai",true)
+    editorInput = PgNewEditor("input-configuration", 2, "logstash", "monokai", true)
     editorInput.getSession().on('change', function() {
-        editorFilter.setOption("firstLineNumber", 1+editorInput.getSession().getLength()+2)
-        editorOutput.setOption("firstLineNumber", editorFilter.getOption("firstLineNumber")+editorFilter.getSession().getLength()+1)
+        editorFilter.setOption("firstLineNumber", 1 + editorInput.getSession().getLength() + 2)
+        editorOutput.setOption("firstLineNumber", editorFilter.getOption("firstLineNumber") + editorFilter.getSession().getLength() + 1)
     });
-    
+
     // INPUT RAW
-    editorInputRaw = PgNewEditor("input-raw", 1,"json","eclipse",false)
+    editorInputRaw = PgNewEditor("input-raw", 1, "json", "eclipse", false)
     editorInputRaw.getSession().on('change', function() {
         editorFilter.setOption("firstLineNumber", 6)
         editorOutput.setOption("firstLineNumber", editorFilter.getOption("firstLineNumber") + editorFilter.getSession().getLength() + 1)
@@ -142,7 +239,7 @@ $(document).ready(function() {
             win: 'Ctrl-S',
             mac: 'Command-S',
             sender: 'editor|cli'
-            },
+        },
         exec: function(env, args, request) {
             $("#bitfan-playground-form button[name='sendEvent']").click();
         }
@@ -173,9 +270,9 @@ $(document).ready(function() {
     // #########
     // When user click on "Send again" button Then send the raw event to pipeline using its websocket input
     $("#bitfan-playground-form button[name='sendEvent']").on('click', function(e) { //use on if jQuery 1.7+
-        if (websocketIN != null){
+        if (websocketIN != null) {
             websocketIN.send($("#section-input-raw").val());
-        } 
+        }
     });
     // When codec selection change Then play playground
     $("#section-input-codec").on('change', function(e) { //use on if jQuery 1.7+
@@ -226,8 +323,8 @@ $(document).ready(function() {
         var LogMessage = JSON.parse(event.data);
         if (
             LogMessage.Data.pipeline_uuid == "playground-" + UUID ||
-            LogMessage.Message.indexOf(UUID)>0
-            ) {
+            LogMessage.Message.indexOf(UUID) > 0
+        ) {
             $('#logs').append(logmessagetmpl.render({
                 ev: LogMessage,
                 timeString: moment(LogMessage.Time).format('LTS'),
@@ -327,7 +424,7 @@ function play() {
                     // console.log("Connection is established!");
                 }
                 websocketOUT.onmessage = function(event) {
-                    editorOutputRaw.getSession().setValue(event.data) ;
+                    editorOutputRaw.getSession().setValue(event.data);
                     $("#section-output-raw-content").addClass("success");
                 };
                 websocketOUT.onerror = function(event) {
@@ -375,18 +472,18 @@ function playError(errorTxt) {
     $("#section-output-raw-content").addClass("error");
     $("#section-output-raw-content").removeClass("success");
 
-        var logmessagetmpl = $.templates("#logmessage-template");
-        LogMessage = {
-            Message: errorTxt,
-            Level: 2,
-            Data : {} 
-        }
-            $('#logs').append(logmessagetmpl.render({
-                ev: LogMessage,
-                timeString: moment(Date.now()).format('LTS'),
-                // eventHTML: syntaxHighlightIfEvent(LogMessage.Data.event),
-            }));
-            $('#logs').scrollTop($('#logs')[0].scrollHeight);
+    var logmessagetmpl = $.templates("#logmessage-template");
+    LogMessage = {
+        Message: errorTxt,
+        Level: 2,
+        Data: {}
+    }
+    $('#logs').append(logmessagetmpl.render({
+        ev: LogMessage,
+        timeString: moment(Date.now()).format('LTS'),
+        // eventHTML: syntaxHighlightIfEvent(LogMessage.Data.event),
+    }));
+    $('#logs').scrollTop($('#logs')[0].scrollHeight);
 
 
 

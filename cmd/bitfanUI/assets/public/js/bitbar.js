@@ -40,8 +40,6 @@
                 this.context = context
                 this.citems = items
 
-                // console.log(this.context)
-
                 // set input value with label
                 $('#bitbar-input').val(label);
                 this.search(label);
@@ -98,6 +96,21 @@
             renderItem: function(id, label, className) {
                 return '<li bid="' + id + '" class="' + className + '">' + label + '</li>';
             },
+            focus: function(id){
+                var result = $.grep(this.citems, function(e) { return e.id == id; });
+                if (result.length == 0) {
+                    console.log("id " + id + " not found")
+                } else if (result.length == 1) {
+                    if (isFunction(result[0].focus)) {
+                        result[0].focus(this.context,result[0])
+                    } else {
+                        console.log("no focus callback for item " + id)
+                    }
+                } else {
+                    // multiple items found
+                    console.log("crazy ids found for " + id)
+                }
+            },
             // Action Entry selection
             select: function(id) {
                 console.log("selected entry id = " + id)
@@ -110,7 +123,7 @@
                 } else if (result.length == 1) {
                     if (isFunction(result[0].do)) {
                         this.context.selected.unshift(id)
-                        result[0].do(this.context)
+                        result[0].do(this.context,result[0])
                     } else {
                         console.log("no callback for item " + id)
                     }
@@ -178,7 +191,8 @@
                         // if not first
                         active.prev().addClass("active");
                         active.removeClass("active");
-                        scrollToVisible(active.prev())
+                        bitbar.focus(active.prev().attr("bid"));    
+                        scrollToVisible(active.prev());
                     }
                 } else {
                     console.log("todo : use the last visible element");
@@ -199,6 +213,7 @@
                         // select next sibbling element
                         active.next().addClass("active");
                         active.removeClass("active");
+                        bitbar.focus(active.next().attr("bid"));    
                         scrollToVisible(active.next())
                     }
                 } else { // try to select first
