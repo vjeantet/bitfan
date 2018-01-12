@@ -15,7 +15,7 @@ In the absence of this filter, logstash will choose a timestamp based on the fir
 
 |    SETTING     |  TYPE  | REQUIRED | DEFAULT VALUE |
 |----------------|--------|----------|---------------|
-| match          | array  | false    | []            |
+| match          | array  | true     | []            |
 | tag_on_failure | array  | false    | []            |
 | target         | string | false    | ""            |
 | timezone       | string | false    | ""            |
@@ -24,6 +24,7 @@ In the absence of this filter, logstash will choose a timestamp based on the fir
 ## Details
 
 ### match
+* This is a required setting.
 * Value type is array
 * Default value is `[]`
 

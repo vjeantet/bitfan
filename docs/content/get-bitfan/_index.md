@@ -13,7 +13,7 @@ https://github.com/vjeantet/bitfan/releases
 
 ## From Source (golang)
 ```
-go get -u github.com/vjeantet/bitfan
+go get -u github.com/vjeantet/bitfan/cmd/...
 ```
 
 ## Docker

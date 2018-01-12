@@ -4,8 +4,8 @@ package plaincodec
 
 import (
 	"bytes"
-	"html/template"
 	"io"
+	"text/template"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/commons"
@@ -23,7 +23,7 @@ type encoder struct {
 // doc encoderOptions
 type encoderOptions struct {
 
-	// Format as a golang html/template
+	// Format as a golang text/template
 	// @Default "{{.message}}"
 	// @Type Location
 	Format string `mapstructure:"format"`

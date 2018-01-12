@@ -4,10 +4,11 @@ Receive event on a ws connection
 ## Synopsys
 
 
-| SETTING |  TYPE  | REQUIRED | DEFAULT VALUE |
-|---------|--------|----------|---------------|
-| Codec   | codec  | false    | "json"        |
-| Uri     | string | false    | "wsin"        |
+|     SETTING      |  TYPE  | REQUIRED | DEFAULT VALUE |
+|------------------|--------|----------|---------------|
+| Codec            | codec  | false    | "json"        |
+| Uri              | string | false    | "wsin"        |
+| max_message_size | int    | false    |             0 |
 
 
 ## Details
@@ -24,6 +25,12 @@ The codec used for outputed data.
 
 URI path
 
+### max_message_size
+* Value type is int
+* Default value is `0`
+
+Maximum message size allowed from peer.
+
 
 
 ## Configuration blueprint
@@ -32,5 +39,6 @@ URI path
 websocketinput{
 	codec => "json"
 	uri => "wsin"
+	max_message_size => 123
 }
 ```

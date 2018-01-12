@@ -4,8 +4,8 @@ package linecodec
 
 import (
 	"bytes"
-	"html/template"
 	"io"
+	"text/template"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/commons"
@@ -26,7 +26,7 @@ type encoderOptions struct {
 	// @Default "\\n"
 	Delimiter string
 
-	// Format as a golang html/template
+	// Format as a golang text/template
 	// @Default "{{TS "dd/MM/yyyy:HH:mm:ss" .}} {{.host}} {{.message}}"
 	Format string `mapstructure:"format"`
 
@@ -45,6 +45,8 @@ func NewEncoder(w io.Writer) *encoder {
 			Format:    `{{ TS "dd/MM/yyyy:HH:mm:ss" . }} {{.host}} {{.message}}`,
 		},
 	}
+	loc, _ := commons.NewLocation(e.options.Format, "")
+	e.formatTpl, _, _ = loc.TemplateWithOptions(e.options.Var)
 
 	return e
 }

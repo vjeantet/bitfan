@@ -27,6 +27,14 @@ func Handler(path string) http.Handler {
 		gin.Recovery(),
 		func(c *gin.Context) {
 			c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+
+			if c.Request.Method == "OPTIONS" {
+				c.Writer.Header().Add("Access-Control-Allow-Headers", "*")
+				c.JSON(http.StatusOK, struct{}{})
+				return
+			}
 			c.Next()
 		},
 	)
@@ -46,6 +54,8 @@ func Handler(path string) http.Handler {
 		}
 		logs.AddChan(logsCtrl.Hub.Broadcast)
 		go logsCtrl.Hub.run()
+
+		docsCtrl := &DocsController{}
 
 		v2.GET("/logs", logsCtrl.Stream) // Websocket
 
@@ -73,7 +83,8 @@ func Handler(path string) http.Handler {
 
 		v2.POST("/assets/:uuid/syntax-check", assetCtrl.CheckSyntax) // check syntax
 
-		// v1.GET("/docs", getDocs)
+		v2.GET("/docs/processors", docsCtrl.FindAllProcessors)
+		v2.GET("/docs/processors/:code", docsCtrl.FindOneProcessorByCode)
 		// v1.GET("/docs/inputs", getDocsInputs)
 		// v1.GET("/docs/inputs/:name", getDocsInputsByName)
 		// v1.GET("/docs/filters", getDocsFilters)

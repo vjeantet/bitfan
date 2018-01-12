@@ -19,7 +19,6 @@
 		  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 		<![endif]-->
     <script src="/public/js/bitfan.js"></script>
-    {{ template "scripts" . }}
     <script src="/public/vendor/dropzone/dropzone.js"></script>
     <link rel="stylesheet" href="/public/vendor/dropzone/dropzone.css">
     
@@ -27,9 +26,12 @@
     <link rel="stylesheet" type="text/css" href="/public/vendor/notie/notie.min.css">
     <script src="/public/vendor/notie/notie.min.js"></script>
     <script src="/public/vendor/momentjs/moment-with-locales.min.js"></script>
+    <script src="/public/vendor/fuzzysort/fuzzysort.js"></script>
+
     <script type="text/javascript">
         var baseApiHost = '{{.apiHost}}' ;
     </script>
+    {{ template "scripts" . }}
 </head>
 
 <body>

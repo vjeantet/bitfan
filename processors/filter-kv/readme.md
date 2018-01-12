@@ -7,7 +7,7 @@ which are of the foo=bar variety.
 
 |        SETTING         |  TYPE  | REQUIRED | DEFAULT VALUE |
 |------------------------|--------|----------|---------------|
-| allow_duplicate_values | bool   | false    | false         |
+| allow_duplicate_values | bool   | false    | true          |
 | default_keys           | hash   | false    | {}            |
 | exclude_keys           | array  | false    | []            |
 | field_split            | string | false    | ""            |
@@ -17,8 +17,8 @@ which are of the foo=bar variety.
 | Recursive              | bool   | false    | false         |
 | Source                 | string | false    | ""            |
 | Target                 | string | false    | ""            |
-| Trim                   | string | false    | ""            |
-| trimkey                | string | false    | ""            |
+| trim_key               | string | false    | ""            |
+| trim_value             | string | false    | ""            |
 | value_split            | string | false    | ""            |
 
 
@@ -26,7 +26,7 @@ which are of the foo=bar variety.
 
 ### allow_duplicate_values
 * Value type is bool
-* Default value is `false`
+* Default value is `true`
 
 A bool option for removing duplicate key/value pairs.
 When set to false, only one unique key/value pair will be preserved.
@@ -177,20 +177,7 @@ For example, to place all keys into the event field kv:
 kv { target => "kv" }
 ```
 
-### Trim
-* Value type is string
-* Default value is `""`
-
-A string of characters to trim from the value. This is useful if your values are wrapped in brackets or are terminated with commas (like postfix logs).
-
-For example, to strip <, >, [, ] and , characters from values:
-```
-kv {
-  trim => "<>[],"
-}
-```
-
-### trimkey
+### trim_key
 * Value type is string
 * Default value is `""`
 
@@ -200,6 +187,26 @@ For example, to strip < > [ ] and , characters from keys:
 ```
 kv {
   trimkey => "<>[],"
+}
+```
+
+### trim_value
+* Value type is string
+* Default value is `""`
+
+Constants used for transform check A string of characters to trim from the value. This is useful if your values are wrapped in brackets or are terminated with commas (like postfix logs).
+
+These characters form a regex character class and thus you must escape special regex characters like [ or ] using \.
+
+Only leading and trailing characters are trimed from the value.
+
+For example, to trim <, >, [, ] and , characters from values:
+
+```
+filter {
+  kv {
+    trim_value => "<>\[\],"
+  }
 }
 ```
 
@@ -222,7 +229,7 @@ For example, to identify key-values such as key1:value1 key2:value2:
 
 ```
 kv{
-	allow_duplicate_values => bool
+	allow_duplicate_values => true
 	default_keys => {}
 	exclude_keys => []
 	field_split => ""
@@ -232,8 +239,8 @@ kv{
 	recursive => bool
 	source => ""
 	target => ""
-	trim => ""
-	trimkey => ""
+	trim_key => ""
+	trim_value => ""
 	value_split => ""
 }
 ```

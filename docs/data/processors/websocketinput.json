@@ -35,6 +35,16 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "string"
+      },
+      {
+        "Alias": "max_message_size",
+        "DefaultValue": null,
+        "Doc": "Maximum message size allowed from peer.",
+        "ExampleLS": "",
+        "Name": "MaxMessageSize",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
       }
     ]
   },

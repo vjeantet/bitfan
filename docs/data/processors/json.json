@@ -17,17 +17,27 @@
         "Type": "processors.CommonOptions"
       },
       {
-        "Alias": "",
+        "Alias": "skip_on_invalid_json",
+        "DefaultValue": "false",
+        "Doc": "Allow to skip filter on invalid json",
+        "ExampleLS": "",
+        "Name": "SkipOnInvalidJson",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "source",
         "DefaultValue": null,
         "Doc": "The configuration for the JSON filter",
         "ExampleLS": "",
         "Name": "Source",
         "PossibleValues": null,
-        "Required": false,
+        "Required": true,
         "Type": "string"
       },
       {
-        "Alias": "",
+        "Alias": "target",
         "DefaultValue": null,
         "Doc": "Define the target field for placing the parsed data. If this setting is omitted,\nthe JSON data will be stored at the root (top level) of the event",
         "ExampleLS": "",
@@ -35,6 +45,16 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "string"
+      },
+      {
+        "Alias": "tag_on_failure",
+        "DefaultValue": "[\"_jsonparsefailure\"]",
+        "Doc": "Append values to the tags field when there has been no successful match",
+        "ExampleLS": "",
+        "Name": "TagOnFailure",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
       }
     ]
   },

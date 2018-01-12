@@ -27,13 +27,13 @@
         "Type": "bool"
       },
       {
-        "Alias": "",
+        "Alias": "target",
         "DefaultValue": null,
         "Doc": "Add a UUID to a field",
         "ExampleLS": "",
         "Name": "Target",
         "PossibleValues": null,
-        "Required": false,
+        "Required": true,
         "Type": "string"
       }
     ]

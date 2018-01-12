@@ -8,7 +8,10 @@
         "ContentType": {
           "type": "string"
         },
-        "CreatedAt": {},
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
         "Name": {
           "type": "string"
         },
@@ -22,7 +25,10 @@
         "Type": {
           "type": "string"
         },
-        "UpdatedAt": {},
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
         "Value": {
           "type": "array",
           "items": {
@@ -57,7 +63,10 @@
         "Active": {
           "type": "boolean"
         },
-        "CreatedAt": {},
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
         "Description": {
           "type": "string"
         },
@@ -67,7 +76,16 @@
         "Playground": {
           "type": "boolean"
         },
-        "UpdatedAt": {},
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Webhooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Webhook"
+          }
+        },
         "assets": {
           "description": "Assets",
           "type": "array",
@@ -96,11 +114,28 @@
           "x-go-name": "Label"
         },
         "started_at": {
+          "type": "string",
+          "format": "date-time",
           "x-go-name": "StartedAt"
         },
         "uuid": {
           "type": "string",
           "x-go-name": "Uuid"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+    },
+    "Webhook": {
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Namespace": {
+          "type": "string"
+        },
+        "Url": {
+          "type": "string"
         }
       },
       "x-go-package": "github.com/vjeantet/bitfan/api/models"

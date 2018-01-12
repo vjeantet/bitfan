@@ -30,6 +30,7 @@ func (e *event) SetMessage(s string) {
 
 func (e *event) Clone() processors.IPacket {
 	nf, _ := e.Fields().Copy()
+	nf["@timestamp"], _ = e.Fields().ValueForPath("@timestamp")
 	return NewPacket(e.Message(), nf)
 }
 

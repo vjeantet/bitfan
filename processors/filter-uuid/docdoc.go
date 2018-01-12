@@ -34,9 +34,9 @@ func (p *processor) Doc() *doc.Processor {
       },
       &doc.ProcessorOption{
         Name:           "Target",
-        Alias:          "",
+        Alias:          "target",
         Doc:            "Add a UUID to a field",
-        Required:       false,
+        Required:       true,
         Type:           "string",
         DefaultValue:   nil,
         PossibleValues: []string{},

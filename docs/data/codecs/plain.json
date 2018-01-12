@@ -16,7 +16,7 @@
         {
           "Alias": "format",
           "DefaultValue": "\"{{.message}}\"",
-          "Doc": "Format as a golang html/template",
+          "Doc": "Format as a golang text/template",
           "ExampleLS": "",
           "Name": "Format",
           "PossibleValues": null,
