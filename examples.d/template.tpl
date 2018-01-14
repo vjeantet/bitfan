@@ -1,1 +1,0 @@
-Talk {{.title}} available here : {{.link}}

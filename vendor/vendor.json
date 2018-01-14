@@ -375,6 +375,12 @@
 			"revisionTime": "2014-10-17T20:07:13Z"
 		},
 		{
+			"checksumSHA1": "PcuhcuC9KHkdK5nLfO+F4fgcy/8=",
+			"path": "github.com/jaytaylor/html2text",
+			"revision": "7cd445abb89c7dbb8220e616a1805fc904cc541b",
+			"revisionTime": "2017-12-14T19:37:48Z"
+		},
+		{
 			"checksumSHA1": "bXHP00GWjyGEna9Gh5lAhxE6dLA=",
 			"path": "github.com/jehiah/go-strftime",
 			"revision": "2efbe75097a505e2789f7e39cb9da067b5be8e3e",
@@ -397,6 +403,12 @@
 			"path": "github.com/jeromer/syslogparser/rfc5424",
 			"revision": "ff71fe7a7d5279df4b964b31f7ee4adf117277f6",
 			"revisionTime": "2015-07-17T04:28:40Z"
+		},
+		{
+			"checksumSHA1": "4uX8hNArGgOWke3uYc+2xwbAib0=",
+			"path": "github.com/jhillyerd/enmime",
+			"revision": "9d33ba6eca1894bd7fdece7fd9622621b5639f16",
+			"revisionTime": "2018-01-08T05:16:58Z"
 		},
 		{
 			"checksumSHA1": "Lc5CWD5nzSttJNateoWlPgFE3Vw=",
@@ -663,6 +675,12 @@
 			"revisionTime": "2015-10-26T22:52:14Z"
 		},
 		{
+			"checksumSHA1": "qErubHtC7DAFBnEQkMTuKDtfFTU=",
+			"path": "github.com/ssor/bom",
+			"revision": "6386211fdfcf24c0bfbdaceafd02849ed9a8a509",
+			"revisionTime": "2017-07-18T12:35:48Z"
+		},
+		{
 			"checksumSHA1": "rKV8YLkXpeNG1Oix8hlYqVsEFb4=",
 			"path": "github.com/streadway/amqp",
 			"revision": "2e25825abdbd7752ff08b270d313b93519a0a232",
@@ -685,6 +703,12 @@
 			"path": "github.com/stretchr/testify/mock",
 			"revision": "976c720a22c8eb4eb6a0b4348ad85ad12491a506",
 			"revisionTime": "2016-09-25T22:06:09Z"
+		},
+		{
+			"checksumSHA1": "DUin3zIQLXwudLUStcdqzdhoHpg=",
+			"path": "github.com/taknb2nch/go-pop3",
+			"revision": "72f6fae12d453328f06f9bc8a2b8c7c4d5e5e17c",
+			"revisionTime": "2014-04-07T02:20:49Z"
 		},
 		{
 			"checksumSHA1": "BI2wWTGWOdOWmgW0HCkXLydcIT4=",

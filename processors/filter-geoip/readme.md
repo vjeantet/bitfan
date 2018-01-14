@@ -1,27 +1,32 @@
 # GEOIP
+The GeoIP filter adds information about the geographical location of IP addresses,
+based on data from the Maxmind GeoLite2 databases
 
+This processor use a GeoLite2 City database. From Maxmind’s description — "GeoLite2 databases are free IP geolocation databases comparable to, but less accurate than, MaxMind’s GeoIP2 databases". Please see GeoIP Lite2 license for more details.
+Databae is not bundled in the processor,  you can download directly from Maxmind’s website and use the
+database option to specify their location. The GeoLite2 databases can be downloaded from https://dev.maxmind.com/geoip/geoip2/geolite2.
 
 ## Synopsys
 
 
-|     SETTING      |     TYPE      | REQUIRED | DEFAULT VALUE |
-|------------------|---------------|----------|---------------|
-| database         | string        | false    | ""            |
-| database_type    | string        | false    | ""            |
-| refresh_interval | time.Duration | false    |               |
-| fields           | array         | false    | []            |
-| lru_cache_size   | int64         | false    |             0 |
-| source           | string        | true     | ""            |
-| tag_on_failure   | array         | false    | []            |
-| target           | string        | false    | ""            |
-| language         | string        | false    | ""            |
+|     SETTING      |     TYPE      | REQUIRED |                               DEFAULT VALUE                                |
+|------------------|---------------|----------|----------------------------------------------------------------------------|
+| database         | string        | false    | "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz" |
+| database_type    | string        | false    | ""                                                                         |
+| refresh_interval | time.Duration | false    |                                                                            |
+| fields           | array         | false    | []                                                                         |
+| lru_cache_size   | int64         | false    |                                                                          0 |
+| source           | string        | true     | ""                                                                         |
+| tag_on_failure   | array         | false    | []                                                                         |
+| target           | string        | false    | ""                                                                         |
+| language         | string        | false    | ""                                                                         |
 
 
 ## Details
 
 ### database
 * Value type is string
-* Default value is `""`
+* Default value is `"http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"`
 
 Path or URL to the MaxMind GeoIP2 database.
 Default value is "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
@@ -88,7 +93,7 @@ Language to use for city/region/continent names
 
 ```
 geoip{
-	database => ""
+	database => "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
 	database_type => ""
 	refresh_interval => 30
 	fields => []

@@ -73,6 +73,28 @@ func (s *SinceDB) Close() error {
 	return nil
 }
 
+// Update a ressource's offset
+func (s *SinceDB) SetRessource(ressource string, v []byte) error {
+	s.offsets.Store(ressource, v)
+	return nil
+}
+
+func (s *SinceDB) Ressource(ressource string) ([]byte, error) {
+
+	// If a value not already stored exists
+	if value, ok := s.offsets.Load(ressource); ok {
+		return value.([]byte), nil
+	}
+
+	// Try to find value in storage
+	v, err := s.options.Storage.Get(ressource, s.options.Identifier)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return v, nil
+}
+
 // Retreive SinceDB ressource's offset from Storage
 func (s *SinceDB) RessourceOffset(ressource string) (int, error) {
 

@@ -8,10 +8,7 @@
         "ContentType": {
           "type": "string"
         },
-        "CreatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
+        "CreatedAt": {},
         "Name": {
           "type": "string"
         },
@@ -25,10 +22,7 @@
         "Type": {
           "type": "string"
         },
-        "UpdatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
+        "UpdatedAt": {},
         "Value": {
           "type": "array",
           "items": {
@@ -63,10 +57,7 @@
         "Active": {
           "type": "boolean"
         },
-        "CreatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
+        "CreatedAt": {},
         "Description": {
           "type": "string"
         },
@@ -76,10 +67,7 @@
         "Playground": {
           "type": "boolean"
         },
-        "UpdatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
+        "UpdatedAt": {},
         "Webhooks": {
           "type": "array",
           "items": {
@@ -114,8 +102,6 @@
           "x-go-name": "Label"
         },
         "started_at": {
-          "type": "string",
-          "format": "date-time",
           "x-go-name": "StartedAt"
         },
         "uuid": {

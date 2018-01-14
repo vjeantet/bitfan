@@ -1,0 +1,13 @@
+Exception in thread "main" java.lang.NullPointerException
+        at com.example.myproject.Book.getTitle(Book.java:16)
+        at com.example.myproject.Author.getBookTitles(Author.java:25)
+        at com.example.myproject.Bootstrap.main(Bootstrap.java:14)
+Exception in thread "main" java.lang.NullPointerException
+        at fr.example.myproject.Book.getTitle(Book.java:16)
+        at fr.example.myproject.Author.getBookTitles(Author.java:25)
+        at fr.example.myproject.Bootstrap.main(Bootstrap.java:14)
+Exception in thread "main" java.lang.NullPointerException
+        at de.example.myproject.Book.getTitle(Book.java:16)
+        at de.example.myproject.Author.getBookTitles(Author.java:25)
+        at de.example.myproject.Bootstrap.main(Bootstrap.java:14)
+Exception in thread "main" java.lang.NullPointerException

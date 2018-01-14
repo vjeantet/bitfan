@@ -43,6 +43,7 @@ import (
 	null "github.com/vjeantet/bitfan/processors/output-null"
 	rabbitmqoutput "github.com/vjeantet/bitfan/processors/output-rabbitmq"
 	statsd "github.com/vjeantet/bitfan/processors/output-statsd"
+	pop3processor "github.com/vjeantet/bitfan/processors/pop3"
 	route "github.com/vjeantet/bitfan/processors/route"
 	stdout "github.com/vjeantet/bitfan/processors/stdout"
 	websocket "github.com/vjeantet/bitfan/processors/websocket"
@@ -80,6 +81,7 @@ func init() {
 	initPlugin("input", "httpserver", inputhttpserverprocessor.New)
 	initPlugin("input", "event", inputeventprocessor.New)
 	initPlugin("input", "websocket", websocketinput.New)
+	initPlugin("input", "pop3", pop3processor.New)
 
 	initPlugin("filter", "eval", evalprocessor.New)
 	initPlugin("filter", "readfile", file.New)
@@ -107,6 +109,7 @@ func init() {
 	initPlugin("filter", "stdout", stdout.New)
 	initPlugin("filter", "http", httppoller.New)
 	initPlugin("filter", "httpout", httpoutprocessor.New)
+	initPlugin("filter", "pop3", pop3processor.New)
 
 	initPlugin("filter", "use", use.New)
 	initPlugin("filter", "route", route.New)

@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "geoip",
   ImportPath: "github.com/vjeantet/bitfan/processors/filter-geoip",
-  Doc:        "",
+  Doc:        "The GeoIP filter adds information about the geographical location of IP addresses,\nbased on data from the Maxmind GeoLite2 databases\n\nThis processor use a GeoLite2 City database. From Maxmind’s description\u2009—\u2009\"GeoLite2 databases are free IP geolocation databases comparable to, but less accurate than, MaxMind’s GeoIP2 databases\". Please see GeoIP Lite2 license for more details.\nDatabae is not bundled in the processor,  you can download directly from Maxmind’s website and use the\ndatabase option to specify their location. The GeoLite2 databases can be downloaded from https://dev.maxmind.com/geoip/geoip2/geolite2.",
   DocShort:   "Adds geographical information about an IP address",
   Options:    &doc.ProcessorOptions{
     Doc:     "",
@@ -28,7 +28,7 @@ func (p *processor) Doc() *doc.Processor {
         Doc:            "Path or URL to the MaxMind GeoIP2 database.\nDefault value is \"http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz\"\nNote that URL can point to gzipped database (*.mmdb.gz) but local path must point to an unzipped file.",
         Required:       false,
         Type:           "string",
-        DefaultValue:   nil,
+        DefaultValue:   "\"http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz\"",
         PossibleValues: []string{},
         ExampleLS:      "",
       },
