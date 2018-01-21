@@ -121,16 +121,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
-	// Convert dinamycs fields
-	url := p.opt.URL
-	processors.Dynamic(&url, e.Fields())
-	headers := make(map[string]string)
-	for k, v := range p.opt.Headers {
-		processors.Dynamic(&k, e.Fields())
-		processors.Dynamic(&v, e.Fields())
-		headers[k] = v
-	}
-	p.opt.Headers = headers
 	p.muster.Work <- e.Fields()
 	return nil
 }
@@ -167,11 +157,25 @@ func (p *processor) Stop(e processors.IPacket) error {
 }
 
 type batch struct {
-	p     *processor
-	Items []*mxj.Map
+	p       *processor
+	Items   []*mxj.Map
+	url     *string
+	headers map[string]string
 }
 
 func (b *batch) Add(item interface{}) {
+	fields := item.(*mxj.Map)
+	if b.url == nil {
+		url := b.p.opt.URL
+		processors.Dynamic(&url, fields)
+		b.url = &url
+		b.headers = make(map[string]string)
+		for k, v := range b.p.opt.Headers {
+			processors.Dynamic(&k, fields)
+			processors.Dynamic(&v, fields)
+			b.headers[k] = v
+		}
+	}
 	b.Items = append(b.Items, item.(*mxj.Map))
 }
 
@@ -195,8 +199,18 @@ func (b *batch) Fire(notifier muster.Notifier) {
 		b.p.Logger.Errorf("%d events lost with error: %v", len(b.Items), err)
 		return
 	}
+	req, err := http.NewRequest(b.p.opt.HTTPMethod, *b.url, bytes.NewBuffer(body.Bytes()))
+	if err != nil {
+		b.p.Logger.Errorf("Create request failed with: %v Lost %d messages", err, len(b.Items))
+		return
+	}
+	defer req.Body.Close()
+	for hName, hValue := range b.headers {
+		req.Header.Set(hName, hValue)
+	}
+
 	for {
-		retry, err := b.p.send(body.Bytes())
+		retry, err := b.p.send(req)
 		if err == nil {
 			b.p.Logger.Debugf("Successfully sent %d messages", len(b.Items))
 			return
@@ -216,15 +230,7 @@ func (b *batch) Fire(notifier muster.Notifier) {
 	}
 }
 
-func (p *processor) send(body []byte) (retry bool, err error) {
-	req, err := http.NewRequest(p.opt.HTTPMethod, p.opt.URL, bytes.NewBuffer(body))
-	if err != nil {
-		return false, fmt.Errorf("Create request failed with: %v", err)
-	}
-	defer req.Body.Close()
-	for hName, hValue := range p.opt.Headers {
-		req.Header.Set(hName, hValue)
-	}
+func (p *processor) send(req *http.Request) (retry bool, err error) {
 	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		return true, fmt.Errorf("Send request failed with: %v", err)
