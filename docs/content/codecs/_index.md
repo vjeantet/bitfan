@@ -16,4 +16,4 @@ codec => json {
 
 ```
 
-{{%children style="h2" description="true"%}}
+{{%children style="card" description="true"%}}

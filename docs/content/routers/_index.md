@@ -4,4 +4,4 @@ description = ""
 weight = 65
 +++
 
-{{%children style="h2" description="true"%}}
+{{%children style="card" description="true"%}}

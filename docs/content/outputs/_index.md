@@ -5,4 +5,4 @@ name = "Outputs"
 weight = 63
 +++
 
-{{%children style="h2" description="true"%}}
+{{%children style="card" description="true"%}}
