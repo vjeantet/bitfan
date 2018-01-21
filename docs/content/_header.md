@@ -1,1 +1,1 @@
-<img src="/open-fan.png" height=28px alt="Bitfan logo" align="absmiddle"> [**Bitfan Documentation**](/)
+<img src="/open-fan.png" height=28px alt="Bitfan logo" align="absmiddle"> [Bitfan Documentation](/)
