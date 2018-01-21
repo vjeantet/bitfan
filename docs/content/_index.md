@@ -43,10 +43,10 @@ I use it as a “Swiss Army Knife” to complete a wide variety of different tas
 ## Very QuickStart
 start a pipeline from a configuration file hosted on github.com.
 
-> this pipeline configuration ingests data from stdin and output a tranformation to stdout. have a look here : [see configuration file](https://raw.githubusercontent.com/vjeantet/bitfan/master/examples.d/simple.conf)
+> this pipeline configuration ingests data from stdin and output a tranformation to stdout. have a look here : [see configuration file](https://raw.githubusercontent.com/vjeantet/bitfan/master/cmd/bitfan/examples.d/simple.conf)
 
 ```
-$ bitfan run https://raw.githubusercontent.com/vjeantet/bitfan/master/examples.d/simple.conf
+$ bitfan run https://raw.githubusercontent.com/vjeantet/bitfan/master/cmd/bitfan/examples.d/simple.conf
 ```
 
 Feed the pipeline with a copy/paste of following lines in your console :

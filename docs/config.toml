@@ -5,6 +5,10 @@ theme = "hugo-theme-docdock"
 
 title = "Bitfan"
 
+pygmentsCodeFences = true
+pygmentsStyle = "monokailight"
+
+
 [params]
 editURL = "https://github.com/vjeantet/bitfan/edit/master/docs/content/"
 noHomeIcon = false # default is false
@@ -19,19 +23,17 @@ themeStyle = "flex"
 home = [ "HTML", "RSS", "JSON"]
 
 [[menu.shortcuts]]
-pre = "<h3>More</h3>"
-name = "<i class='fa fa-github'></i> Github repo"
+name = "<i class='fa fa-github'></i> <label>Github repo</label>"
 identifier = "repo"
 url = "https://github.com/vjeantet/bitfan"
 weight = 1
 
 [[menu.shortcuts]]
-name = "<i class='fa fa-bullhorn'></i> Credits & Contributors"
-url = "/credits"
+name = "<i class='fa fa-cloud-download'></i> <label>Download</label>"
+url = "https://github.com/vjeantet/bitfan/releases"
 weight = 3
 
 [[menu.shortcuts]]
-name = '<img src="https://godoc.org/github.com/vjeantet/bitfan?status.svg" alt="GoDoc" style="width: auto; height: auto;">'
-identifier = "godoc"
-url = "https://godoc.org/github.com/vjeantet/bitfan"
-weight = 200
+name = "<i class='fa fa-bullhorn'></i> <label>Credits & Contributors</label>"
+url = "/credits"
+weight = 4

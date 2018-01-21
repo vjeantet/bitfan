@@ -40,5 +40,5 @@ weight = 20
 * [Netlify](https://www.netlify.com) - Continuous deployement and hosting of this documentation
 
 ## Logo
-logo "hand fan" by lastspark from the Noun Project
+Icon made by [Freepik](http://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 

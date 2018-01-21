@@ -7,7 +7,7 @@ weight = 10
 
 A Bitfan config file has a separate section for each type of processor you want to add to the event processing pipeline. For example:
 
-```
+```ini
 # This is a comment. You should use comments to describe
 # parts of your configuration.
 input {
@@ -82,7 +82,7 @@ types are supported.
 
 Comments are the same as in perl, ruby, and python. A comment starts with a '#' character, and does not need to be at the beginning of a line. For example:
 
-```
+```ini
 # this is a comment
 
 input { # comments can appear at the end of a line, too
