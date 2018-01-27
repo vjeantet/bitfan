@@ -85,10 +85,10 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "Target",
         Alias:          "target",
-        Doc:            "When data is an array it stores the resulting data into the given target field.",
+        Doc:            "When data is an array it stores the resulting data into the given target field.\nWhen target is \"\" or \".\" it try to store retreived values at the root level of produced event\n(usefull with json content -> codec)",
         Required:       false,
         Type:           "string",
-        DefaultValue:   nil,
+        DefaultValue:   "\"output\"",
         PossibleValues: []string{},
         ExampleLS:      "",
       },

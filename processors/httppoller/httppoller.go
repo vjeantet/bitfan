@@ -47,6 +47,9 @@ type options struct {
 	Url string `mapstructure:"url" validate:"required"`
 
 	// When data is an array it stores the resulting data into the given target field.
+	// When target is "" or "." it try to store retreived values at the root level of produced event
+	// (usefull with json content -> codec)
+	// @Default "output"
 	Target string `mapstructure:"target"`
 
 	// When true, unsuccessful HTTP requests, like unreachable connections, will
@@ -190,7 +193,28 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 		e2 := e.Clone()
 		e2.Fields().SetValueForPath(res, "response")
-		e2.Fields().SetValueForPath(record, p.opt.Target)
+
+		if p.opt.Target == "" || p.opt.Target == "." {
+
+			switch v := record.(type) {
+			case nil:
+				break
+			case string:
+				e2.Fields().SetValueForPath(record, "output")
+			case []interface{}:
+				e2.Fields().SetValueForPath(record, "output")
+			case map[string]interface{}:
+				for k, v := range record.(map[string]interface{}) {
+					e2.Fields().SetValueForPath(v, k)
+				}
+			default:
+				p.Logger.Errorf("Unknow structure %#v", v)
+			}
+
+		} else {
+			e2.Fields().SetValueForPath(record, p.opt.Target)
+		}
+
 		p.opt.ProcessCommonOptions(e2.Fields())
 		p.Send(e2)
 		select {

@@ -78,8 +78,8 @@
       },
       {
         "Alias": "target",
-        "DefaultValue": null,
-        "Doc": "When data is an array it stores the resulting data into the given target field.",
+        "DefaultValue": "\"output\"",
+        "Doc": "When data is an array it stores the resulting data into the given target field.\nWhen target is \"\" or \".\" it try to store retreived values at the root level of produced event\n(usefull with json content -\u003e codec)",
         "ExampleLS": "",
         "Name": "Target",
         "PossibleValues": null,

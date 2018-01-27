@@ -12,7 +12,7 @@ HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output 
 | headers        | hash     | false    | {}            |
 | body           | location | false    | ?             |
 | url            | string   | true     | ""            |
-| target         | string   | false    | ""            |
+| target         | string   | false    | "output"      |
 | ignore_failure | bool     | false    | true          |
 | var            | hash     | false    | {}            |
 
@@ -59,9 +59,11 @@ URL
 
 ### target
 * Value type is string
-* Default value is `""`
+* Default value is `"output"`
 
 When data is an array it stores the resulting data into the given target field.
+When target is "" or "." it try to store retreived values at the root level of produced event
+(usefull with json content -> codec)
 
 ### ignore_failure
 * Value type is bool
@@ -91,7 +93,7 @@ httppoller{
 	headers => {"User-Agent":"Bitfan","Accept":"application/json"}
 	body => location
 	url=> "http://google.fr"
-	target => ""
+	target => "output"
 	ignore_failure => true
 	var => {"hostname"=>"myhost","varname"=>"varvalue"}
 }
