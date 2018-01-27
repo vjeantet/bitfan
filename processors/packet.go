@@ -12,6 +12,6 @@ type IPacket interface {
 	Clone() IPacket
 }
 
-type PacketBuilder func(string, map[string]interface{}) IPacket
+type PacketBuilder func(map[string]interface{}) IPacket
 
 type PacketSender func(IPacket, ...int) bool

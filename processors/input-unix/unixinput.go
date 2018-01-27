@@ -146,7 +146,7 @@ func (p *processor) parse(conn net.Conn) {
 			p.Logger.Errorf(err.Error())
 		}
 		message := strings.TrimSpace(string(buf[:buflen]))
-		event := p.NewPacket(message, mxj.Map{})
+		event := p.NewPacket(mxj.Map{"message": message})
 		p.opt.ProcessCommonOptions(event.Fields())
 		p.Send(event)
 
@@ -154,9 +154,9 @@ func (p *processor) parse(conn net.Conn) {
 		json, raw, err := mxj.NewMapJsonReaderRaw(conn)
 		if err != nil {
 			p.Logger.Errorf(err.Error())
-			event = p.NewPacket(string(raw), nil)
+			event = p.NewPacket(mxj.Map{"message": string(raw)})
 		} else {
-			event = p.NewPacket("", json)
+			event = p.NewPacket(json)
 		}
 		p.opt.ProcessCommonOptions(event.Fields())
 		p.Send(event)
@@ -165,9 +165,9 @@ func (p *processor) parse(conn net.Conn) {
 		xml, raw, err := mxj.NewMapXmlReaderRaw(conn)
 		if err != nil {
 			p.Logger.Errorf(err.Error())
-			event = p.NewPacket(string(raw), nil)
+			event = p.NewPacket(mxj.Map{"message": string(raw)})
 		} else {
-			event = p.NewPacket("", xml)
+			event = p.NewPacket(xml)
 		}
 		p.opt.ProcessCommonOptions(event.Fields())
 		p.Send(event)

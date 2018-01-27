@@ -82,7 +82,7 @@ func newTestEvent() processors.IPacket {
 		},
 	}
 
-	return testutils.NewPacket("test", m)
+	return testutils.NewPacketOld("test", m)
 }
 
 func checkError(t *testing.T, event processors.IPacket, expression string) {

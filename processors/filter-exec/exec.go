@@ -90,7 +90,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 		// recover @timestamp
 		dat["@timestamp"], _ = e.Fields().ValueForPath("@timestamp")
-		e = p.NewPacket("", dat)
+		e = p.NewPacket(dat)
 	} else {
 		value := strings.TrimSpace(string(d))
 		err := e.Fields().SetValueForPath(value, p.opt.Target)

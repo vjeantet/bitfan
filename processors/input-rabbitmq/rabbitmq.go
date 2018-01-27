@@ -255,13 +255,17 @@ func (p *processor) parse(message []byte) processors.IPacket {
 		fields, err := mxj.NewMapJson(message)
 		if err != nil {
 			p.Logger.Errorf(err.Error())
-			event = p.NewPacket(string(message), nil)
+			event = p.NewPacket(map[string]interface{}{
+				"message": string(message),
+			})
 		} else {
-			event = p.NewPacket("", fields)
+			event = p.NewPacket(fields)
 		}
 
 	default:
-		event = p.NewPacket(string(message), nil)
+		event = p.NewPacket(map[string]interface{}{
+			"message": string(message),
+		})
 	}
 
 	return event

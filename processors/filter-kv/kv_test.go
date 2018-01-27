@@ -52,7 +52,7 @@ func TestInvalidSource(t *testing.T) {
 				"source": "foo",
 			}
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("blababla", map[string]interface{}{
+			event := testutils.NewPacketOld("blababla", map[string]interface{}{
 				"foo": []string{
 					"hello=world foo=bar",
 					"hello2=world2 foo2=bar2",
@@ -83,7 +83,7 @@ func TestInvalidSource(t *testing.T) {
 				"source": "foo",
 			}
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("blababla", map[string]interface{}{
+			event := testutils.NewPacketOld("blababla", map[string]interface{}{
 				"foo": 43,
 			})
 			p.Receive(event)
@@ -104,7 +104,7 @@ func TestAllowDuplicateValues(t *testing.T) {
 				"allow_duplicate_values": false,
 			}
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("foo=yeah&foo=yeah&foo=bar", nil)
+			event := testutils.NewPacketOld("foo=yeah&foo=yeah&foo=bar", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -124,7 +124,7 @@ func TestAllowDuplicateValues(t *testing.T) {
 				"allow_duplicate_values": false,
 			}
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("foo=bar&foo=yeah&foo=yeah", nil)
+			event := testutils.NewPacketOld("foo=bar&foo=yeah&foo=yeah", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -145,7 +145,7 @@ func TestAllowDuplicateValues(t *testing.T) {
 				"allow_duplicate_values": true,
 			}
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("foo=yeah&foo=yeah&foo=yeah&foo=bar", nil)
+			event := testutils.NewPacketOld("foo=yeah&foo=yeah&foo=yeah&foo=bar", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -172,7 +172,7 @@ func TestDefaultKeys(t *testing.T) {
 
 		Convey("Then ...", func() {
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
+			event := testutils.NewPacketOld("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -193,7 +193,7 @@ func TestDefaultKeys(t *testing.T) {
 		Convey("Then with a specific target", func() {
 			conf["target"] = "kv"
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
+			event := testutils.NewPacketOld("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -221,7 +221,7 @@ func TestTarget(t *testing.T) {
 		p, _ := testutils.NewProcessor(New, conf)
 
 		Convey("Then ...", func() {
-			event := testutils.NewPacket("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
+			event := testutils.NewPacketOld("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -251,7 +251,7 @@ func TestTrimKey(t *testing.T) {
 		p, _ := testutils.NewProcessor(New, conf)
 
 		Convey("Then ...", func() {
-			event := testutils.NewPacket("key1= value1 with spaces | key2 with spaces =value2", nil)
+			event := testutils.NewPacketOld("key1= value1 with spaces | key2 with spaces =value2", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -275,7 +275,7 @@ func TestExcludeKeys(t *testing.T) {
 		p, _ := testutils.NewProcessor(New, conf)
 
 		Convey("Then the specified keys are not valued into the event", func() {
-			event := testutils.NewPacket("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
+			event := testutils.NewPacketOld("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -306,7 +306,7 @@ func TestIncludeKeys(t *testing.T) {
 		p, _ := testutils.NewProcessor(New, conf)
 
 		Convey("Then only then specified keys are valued into the event", func() {
-			event := testutils.NewPacket("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
+			event := testutils.NewPacketOld("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world'", nil)
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
 			em := p.SentPackets(0)[0]
@@ -337,7 +337,7 @@ func TestValueSplitUsingAlternateSplitter(t *testing.T) {
 				"value_split": ":",
 			}
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("hello:=world foo:bar baz=:fizz doublequoted:\"hello world\" singlequoted:'hello world' brackets:(hello world)", nil)
+			event := testutils.NewPacketOld("hello:=world foo:bar baz=:fizz doublequoted:\"hello world\" singlequoted:'hello world' brackets:(hello world)", nil)
 
 			p.Receive(event)
 			So(p.SentPacketsCount(0), ShouldEqual, 1)
@@ -363,7 +363,7 @@ func TestSpacesAttachedFields(t *testing.T) {
 	Convey("When spaces are arround key pair value", t, func() {
 		conf := map[string]interface{}{}
 		p, _ := testutils.NewProcessor(New, conf)
-		event := testutils.NewPacket("hello = world foo =bar baz= fizz doublequoted = \"hello world\" singlequoted= 'hello world' brackets =(hello world)", nil)
+		event := testutils.NewPacketOld("hello = world foo =bar baz= fizz doublequoted = \"hello world\" singlequoted= 'hello world' brackets =(hello world)", nil)
 		p.Receive(event)
 
 		So(p.SentPacketsCount(0), ShouldEqual, 1)
@@ -389,7 +389,7 @@ func TestSpacesAttachedFields(t *testing.T) {
 			"value_split": ":",
 		}
 		p, _ := testutils.NewProcessor(New, conf)
-		event := testutils.NewPacket(`IKE:=Quick\ Mode\ completion IKE\ IDs:=subnet:\ x.x.x.x\ (mask=\ 255.255.255.254)\ and\ host:\ y.y.y.y`, nil)
+		event := testutils.NewPacketOld(`IKE:=Quick\ Mode\ completion IKE\ IDs:=subnet:\ x.x.x.x\ (mask=\ 255.255.255.254)\ and\ host:\ y.y.y.y`, nil)
 
 		Convey("Then the produced event results in new fields/values for each keypair", func() {
 			p.Receive(event)
@@ -413,7 +413,7 @@ func TestDefaults(t *testing.T) {
 		conf := map[string]interface{}{}
 		Convey("When processor receive an event with a message containing key=value pairs", func() {
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world' bracketsone=(hello world) bracketstwo=[hello world] bracketsthree=<hello world>", nil)
+			event := testutils.NewPacketOld("hello=world foo=bar baz=fizz doublequoted=\"hello world\" singlequoted='hello world' bracketsone=(hello world) bracketstwo=[hello world] bracketsthree=<hello world>", nil)
 			p.Receive(event)
 
 			Convey("Then the produced event results in new fields/values for each keypair", func() {
@@ -438,7 +438,7 @@ func TestDefaults(t *testing.T) {
 		})
 		Convey("When processor receive an event with a invalid message", func() {
 			p, _ := testutils.NewProcessor(New, conf)
-			event := testutils.NewPacket("hree<hello world>", nil)
+			event := testutils.NewPacketOld("hree<hello world>", nil)
 			eventCopy := event.Clone()
 			p.Receive(event)
 

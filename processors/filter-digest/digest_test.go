@@ -3,10 +3,11 @@ package digest
 import (
 	"testing"
 
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/vjeantet/bitfan/processors/doc"
 	"github.com/vjeantet/bitfan/processors/testutils"
-	"time"
 )
 
 func TestNew(t *testing.T) {
@@ -23,8 +24,7 @@ func TestMaxConcurent(t *testing.T) {
 }
 func TestConfigureEmptyConfigIsInvalid(t *testing.T) {
 	p := New().(*processor)
-	conf := map[string]interface{}{
-	}
+	conf := map[string]interface{}{}
 	ctx := testutils.NewProcessorContext()
 	err := p.Configure(ctx, conf)
 	assert.EqualError(t, err, "no interval and no Count settings set")
@@ -60,13 +60,13 @@ func TestReceiveSimple(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "TEST"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "TEST"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "No match")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"type": "a random value"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"type": "a random value"}))
 	assert.Equal(t, 1, ctx.SentPacketsCount(0), "One match")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "azerty"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "azerty"}))
 	assert.Equal(t, 1, ctx.SentPacketsCount(0), "No match")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"type": "a random value"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"type": "a random value"}))
 	assert.Equal(t, 2, ctx.SentPacketsCount(0), "Two match")
 }
 
@@ -81,9 +81,9 @@ func TestReceiveMergeTwoEventsWithKeyMap(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"type": "first_value", "key": "value1"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"type": "first_value", "key": "value1"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "Not enough packets")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"type": "second_value", "key": "value2"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"type": "second_value", "key": "value2"}))
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "Two match") {
 		firstValue, err := ctx.SentPackets(0)[0].Fields().ValueForPath("first_value.key")
 		assert.Nil(t, err, "No error")
@@ -105,9 +105,9 @@ func TestReceiveMergeTwoEventsWithoutKeyMap(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"key1": "value1", "key2": "value2"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"key1": "value1", "key2": "value2"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "Not enough packets")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"key3": "value3", "key4": "value4"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"key3": "value3", "key4": "value4"}))
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "Two match") {
 		expected := map[string]interface{}{
 			"key1": "value1",
@@ -129,8 +129,8 @@ func TestReceiveNoMatchBeforeCount(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"key1": "value1", "key2": "value2"}))
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"key3": "value3", "key4": "value4"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"key1": "value1", "key2": "value2"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"key3": "value3", "key4": "value4"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "Two match")
 }
 
@@ -147,29 +147,29 @@ func TestReceiveTickEverySecond(t *testing.T) {
 	)
 
 	// RECEIVE
-	p.Receive(testutils.NewPacket("hello1", map[string]interface{}{"key1": "value1", "key2": "value2"}))
+	p.Receive(testutils.NewPacketOld("hello1", map[string]interface{}{"key1": "value1", "key2": "value2"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "No time elapsed and not enough packets")
 
 	// TICK !
 	time.Sleep(time.Second)
-	p.Tick(testutils.NewPacket("", map[string]interface{}{}))
+	p.Tick(testutils.NewPacketOld("", map[string]interface{}{}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "1 second elapsed but not enough packets")
 
 	// RECEIVE
-	p.Receive(testutils.NewPacket("hello2", map[string]interface{}{"key3": "value3", "key4": "value4"}))
+	p.Receive(testutils.NewPacketOld("hello2", map[string]interface{}{"key3": "value3", "key4": "value4"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "Enough packets but not enough time elapsed")
 
 	// TICK !
 	time.Sleep(time.Second)
-	p.Tick(testutils.NewPacket("", map[string]interface{}{}))
+	p.Tick(testutils.NewPacketOld("", map[string]interface{}{}))
 
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "Enough packets and enough time sleeping: Go !") {
 		expected := map[string]interface{}{
 			"message": "hello2",
-			"key1": "value1",
-			"key2": "value2",
-			"key3": "value3",
-			"key4": "value4",
+			"key1":    "value1",
+			"key2":    "value2",
+			"key3":    "value3",
+			"key4":    "value4",
 		}
 		testutils.AssertValuesForPaths(t, ctx, expected)
 	}

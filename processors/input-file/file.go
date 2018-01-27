@@ -301,18 +301,19 @@ func (p *processor) readfile(pathfile string) error {
 			var e processors.IPacket
 			switch v := record.(type) {
 			case string:
-				e = p.NewPacket(v, map[string]interface{}{
+				e = p.NewPacket(map[string]interface{}{
+					"message":  v,
 					"host":     p.host,
 					"basename": filepath.Base(pathfile),
 					"path":     pathfile,
 				})
 			case map[string]interface{}:
-				e = p.NewPacket("", v)
+				e = p.NewPacket(v)
 				e.Fields().SetValueForPath(p.host, "host")
 				e.Fields().SetValueForPath(filepath.Base(pathfile), "basename")
 				e.Fields().SetValueForPath(pathfile, "path")
 			case []interface{}:
-				e = p.NewPacket("", map[string]interface{}{
+				e = p.NewPacket(map[string]interface{}{
 					"host":       p.host,
 					"basename":   filepath.Base(pathfile),
 					"path":       pathfile,

@@ -335,16 +335,17 @@ func (p *processor) tailFile(path string, q chan bool) error {
 			var e processors.IPacket
 			switch v := record.(type) {
 			case string:
-				e = p.NewPacket(v, map[string]interface{}{
-					"host": p.host,
-					"path": path,
+				e = p.NewPacket(map[string]interface{}{
+					"message": v,
+					"host":    p.host,
+					"path":    path,
 				})
 			case map[string]interface{}:
-				e = p.NewPacket("", v)
+				e = p.NewPacket(v)
 				e.Fields().SetValueForPath(p.host, "host")
 				e.Fields().SetValueForPath(path, "path")
 			case []interface{}:
-				e = p.NewPacket("", map[string]interface{}{
+				e = p.NewPacket(map[string]interface{}{
 					"host": p.host,
 					"path": path,
 					"data": v,

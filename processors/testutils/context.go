@@ -44,8 +44,8 @@ func newSender(p *DummyProcessorContext) processors.PacketSender {
 }
 
 func newPacket(p *DummyProcessorContext) processors.PacketBuilder {
-	return func(message string, fields map[string]interface{}) processors.IPacket {
-		e := NewPacket(message, fields)
+	return func(fields map[string]interface{}) processors.IPacket {
+		e := NewPacket(fields)
 		p.builtPackets = append(p.builtPackets, e)
 		return e
 	}

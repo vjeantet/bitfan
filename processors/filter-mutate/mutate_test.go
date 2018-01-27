@@ -87,7 +87,7 @@ func TestReceive(t *testing.T) {
 
 	p.Configure(ctx, getExampleConfiguration())
 
-	em := testutils.NewPacket("test", nil)
+	em := testutils.NewPacketOld("test", nil)
 	em.Fields().SetValueForPath("VALUE", "field1")
 	em.Fields().SetValueForPath("loRem", "ucfield2")
 	em.Fields().SetValueForPath("newvalue", "upfield3")
@@ -139,7 +139,7 @@ func TestReceiveRemoveAllBut(t *testing.T) {
 	}
 	p.Configure(ctx, conf)
 
-	em := testutils.NewPacket("test", nil)
+	em := testutils.NewPacketOld("test", nil)
 	em.Fields().SetValueForPath("VALUE", "field1")
 	em.Fields().SetValueForPath("loRem", "ucfield2")
 	em.Fields().SetValueForPath("newvalue", "upfield3")
@@ -713,7 +713,7 @@ func TestMerge(t *testing.T) {
 // https://github.com/vjeantet/bitfan/issues/71
 func TestNoEmptyTags(t *testing.T) {
 	Convey("When no option about tags is involved", t, func() {
-		event := testutils.NewPacket("", map[string]interface{}{})
+		event := testutils.NewPacketOld("", map[string]interface{}{})
 		conf := map[string]interface{}{
 			"target": "name1",
 		}

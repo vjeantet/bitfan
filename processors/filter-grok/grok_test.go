@@ -68,7 +68,7 @@ func TestReceive(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 
 	p.Receive(em)
 	assert.Equal(t, "evita", em.Fields().ValueOrEmptyForPathString("logsource"), "field value not proprely groked")
@@ -86,7 +86,7 @@ func TestReceiveFailure(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("hello world", nil)
+	em := testutils.NewPacketOld("hello world", nil)
 	em.Fields().SetValueForPath("VALUE", "field1")
 
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
@@ -112,7 +112,7 @@ func TestRemoveTagNoTags(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 	// em.Fields().SetValueForPath([]string{"myTag", "field1", "myTag2"}, "notags")
 
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
@@ -134,7 +134,7 @@ func TestRemoveTag(t *testing.T) {
 
 	p.Configure(ctx, conf)
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 	em.Fields().SetValueForPath([]string{"myTag", "field1", "myTag2"}, "tags")
 	// em.Fields().SetValueForPath("newvalue", "upfield3")
 	// em.Fields().SetValueForPath("myValue", "rnfieldA")
@@ -163,7 +163,7 @@ func TestAddTagToNoTags(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
 	p.Receive(em)
@@ -185,7 +185,7 @@ func TestAddTag(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 	em.Fields().SetValueForPath([]string{"myTag", "field1", "myTag2"}, "tags")
 	// em.Fields().SetValueForPath("newvalue", "upfield3")
 	// em.Fields().SetValueForPath("myValue", "rnfieldA")
@@ -213,7 +213,7 @@ func TestRemoveField(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 	em.Fields().SetValueForPath("valueA", "field1")
 	em.Fields().SetValueForPath("valueB", "field2")
 	// em.Fields().SetValueForPath("newvalue", "upfield3")
@@ -240,7 +240,7 @@ func TestAddField(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 	em.Fields().SetValueForPath("valueB", "field2")
 	// em.Fields().SetValueForPath("newvalue", "upfield3")
 	// em.Fields().SetValueForPath("myValue", "rnfieldA")
@@ -281,7 +281,7 @@ func TestKeep_empty_captures(t *testing.T) {
 	})
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket(`128.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"`, nil)
+	em := testutils.NewPacketOld(`128.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"`, nil)
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
 	p.Receive(em)
 	// em.AssertExpectations(t)
@@ -298,7 +298,7 @@ func TestKeep_empty_capturesFalse(t *testing.T) {
 	})
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket(`127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"`, nil)
+	em := testutils.NewPacketOld(`127.0.0.1 - - [11/Dec/2013:00:01:45 -0800] "GET /xampp/status.php HTTP/1.1" 200 3891 "http://cadenza/xampp/navi.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:25.0) Gecko/20100101 Firefox/25.0"`, nil)
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
 	p.Receive(em)
 	// em.AssertExpectations(t)
@@ -324,7 +324,7 @@ func TestBreak_on_matchFalse(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
 	p.Receive(em)
 	// em.AssertExpectations(t)
@@ -348,7 +348,7 @@ func TestBreak_on_matchTrue(t *testing.T) {
 	p.Configure(ctx, conf)
 
 	//NewTestEvent(sourceAgentName string, message string, fields map[string]interface{}) Event {
-	em := testutils.NewPacket("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
+	em := testutils.NewPacketOld("Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3]", nil)
 	// em.On("Pipe", PORT_SUCCESS).Return(nil)
 	p.Receive(em)
 	// em.AssertExpectations(t)

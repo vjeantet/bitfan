@@ -144,7 +144,7 @@ func (p *processor) Start(e processors.IPacket) error {
 					fields["@timestamp"], _ = time.Parse("2006-01-02T15:04:05Z07:00", val.(string))
 				}
 
-				ev := p.NewPacket("", fields)
+				ev := p.NewPacket(fields)
 				p.opt.ProcessCommonOptions(ev.Fields())
 				p.Send(ev, 0)
 			}

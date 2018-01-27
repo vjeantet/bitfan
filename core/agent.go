@@ -165,7 +165,7 @@ func (a *Agent) addOutput(in chan *event, portNumber int) error {
 // Start agent
 func (a *Agent) start() error {
 	// Start processor
-	a.processor.Start(newPacket("start", map[string]interface{}{}))
+	a.processor.Start(newPacket(map[string]interface{}{"message": "start"}))
 
 	// Maximum number of concurent packet consumption ?
 	var maxConcurentPackets = a.PoolSize
@@ -187,7 +187,7 @@ func (a *Agent) start() error {
 		wg.Wait()
 
 		Log().Debugf("processor (%d) - stopping (no more packets)", a.ID)
-		if err := a.processor.Stop(newPacket("", nil)); err != nil {
+		if err := a.processor.Stop(newPacket(nil)); err != nil {
 			Log().Errorf("%s %d : %v", a.Type, a.ID, err)
 		}
 		close(a.Done)
@@ -198,7 +198,7 @@ func (a *Agent) start() error {
 	if a.Schedule != "" {
 		Log().Debugf("agent %s : schedule=%s", a.Label, a.Schedule)
 		err := myScheduler.Add(a.Label, a.Schedule, func() {
-			go a.processor.Tick(newPacket("", nil))
+			go a.processor.Tick(newPacket(nil))
 		})
 		if err != nil {
 			Log().Errorf("schedule start failed - %s : %v", a.Label, err)

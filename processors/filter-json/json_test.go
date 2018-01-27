@@ -45,7 +45,7 @@ func TestInvalidConfiguration(t *testing.T) {
 func TestJsonFilter(t *testing.T) {
 
 	Convey("Given an existing event source field contains JSON", t, func() {
-		event := testutils.NewPacket("", map[string]interface{}{
+		event := testutils.NewPacketOld("", map[string]interface{}{
 			"thejson": `{ "hello": "world", "list": [ 1, 2, 3 ], "hash": { "k": "v" } }`,
 		})
 		conf := map[string]interface{}{
@@ -117,7 +117,7 @@ func TestJsonFilter(t *testing.T) {
 
 func TestMissingSourceField(t *testing.T) {
 
-	event := testutils.NewPacket("", map[string]interface{}{
+	event := testutils.NewPacketOld("", map[string]interface{}{
 		"thejson": `{ "hello": "world", "list": [ 1, 2, 3 ], "hash": { "k": "v" } }`,
 	})
 	conf := map[string]interface{}{
@@ -144,7 +144,7 @@ func TestMissingSourceField(t *testing.T) {
 }
 
 func TestInvalidJsonData(t *testing.T) {
-	event := testutils.NewPacket("", map[string]interface{}{
+	event := testutils.NewPacketOld("", map[string]interface{}{
 		"thejson": `, 3 ], "hash": { "k": "v" } }`,
 	})
 	conf := map[string]interface{}{

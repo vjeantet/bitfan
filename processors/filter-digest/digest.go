@@ -106,7 +106,7 @@ func (p *processor) Tick(e processors.IPacket) error {
 		}
 	}
 
-	ne := p.NewPacket("", p.values)
+	ne := p.NewPacket(p.values)
 	p.opt.ProcessCommonOptions(ne.Fields())
 	p.Send(ne, PORT_SUCCESS)
 	p.values = map[string]interface{}{}

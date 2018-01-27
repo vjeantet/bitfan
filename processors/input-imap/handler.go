@@ -14,7 +14,9 @@ type toJsonHandler struct {
 
 func (hnd *toJsonHandler) Deliver(email string) error {
 	docJSON, _ := json.Marshal(getMsg(email))
-	e := hnd.packetFactory(string(docJSON), nil)
+	e := hnd.packetFactory(map[string]interface{}{
+		"message": string(docJSON),
+	})
 	hnd.send(e, 0)
 	return nil
 }

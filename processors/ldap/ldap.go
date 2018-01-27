@@ -229,7 +229,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 
 		if p.opt.EventBy == "row" {
-			e2 := p.NewPacket("", nil)
+			e2 := p.NewPacket(nil)
 			e2.Fields().SetValueForPath(p.opt.Host, "host")
 			if len(p.opt.Var) > 0 {
 				e2.Fields().SetValueForPath(p.opt.Var, "var")

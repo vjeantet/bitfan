@@ -173,18 +173,19 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		var e processors.IPacket
 		switch v := record.(type) {
 		case nil:
-			e = p.NewPacket("", map[string]interface{}{
+			e = p.NewPacket(map[string]interface{}{
 				"request": req,
 			})
 		case string:
-			e = p.NewPacket(v, map[string]interface{}{
+			e = p.NewPacket(map[string]interface{}{
+				"message": v,
 				"request": req,
 			})
 		case map[string]interface{}:
-			e = p.NewPacket("", v)
+			e = p.NewPacket(v)
 			e.Fields().SetValueForPath(req, "request")
 		case []interface{}:
-			e = p.NewPacket("", map[string]interface{}{
+			e = p.NewPacket(map[string]interface{}{
 				"request": req,
 				"data":    v,
 			})
