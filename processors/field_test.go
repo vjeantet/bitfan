@@ -173,6 +173,17 @@ func TestFieldAddTagsWithExistingOnes(t *testing.T) {
 	assert.Contains(t, tags, "foo")
 }
 
+// https://github.com/vjeantet/bitfan/issues/71
+func TestFieldAddTagsWithEmptyTags(t *testing.T) {
+	data := getTestFields()
+
+	add_tags := []string{}
+	AddTags(add_tags, &data)
+
+	exists := data.Exists("tags")
+	assert.False(t, exists)
+}
+
 func TestFieldRemoveTags(t *testing.T) {
 	data := getTestFields()
 	data.SetValueForPath([]string{"foo", "bar", "toto"}, "tags")
