@@ -3,6 +3,8 @@ package commons
 // Code comes from https://github.com/spf13/hugo/tree/master/tpl
 
 import (
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"html"
 	"html/template"
@@ -319,4 +321,17 @@ func (t *templateFunctions) numFmt(precision, number interface{}, options ...int
 	}
 
 	return string(b)
+}
+
+func (t *templateFunctions) jsonDecodeArray(jsondata string) ([]map[string]interface{}, error) {
+	m := []map[string]interface{}{}
+	if err := json.Unmarshal([]byte(jsondata), &m); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+func (t *templateFunctions) hexDecode(s string) ([]byte, error) {
+	return hex.DecodeString(s)
 }
