@@ -191,6 +191,9 @@ func Pipelines() map[string]*Pipeline {
 	pipelines.Range(func(key, value interface{}) bool {
 		pps[key.(string)] = value.(*Pipeline)
 		pps[key.(string)].Webhooks = webhook.WebHooks(key.(string))
+		if sjobs, ok := scheduleMap.Load(key.(string)); ok {
+			pps[key.(string)].Schedulers = sjobs.([]schedulerJob)
+		}
 		return true
 	})
 	return pps

@@ -20,10 +20,11 @@ type webHook struct {
 }
 
 type Hook struct {
-	h           http.HandlerFunc
-	Description string
-	Namespace   string
-	Url         string
+	h            http.HandlerFunc
+	Description  string
+	Namespace    string
+	PipelineUUID string
+	Url          string
 }
 
 var webHookMap = syncmap.Map{}
@@ -38,11 +39,13 @@ func New(pipelineLabel, nameSpace string) *webHook {
 func WebHooks(uuid string) []Hook {
 	urls := []Hook{}
 	webHookMap.Range(func(key, value interface{}) bool {
-		urls = append(urls, Hook{
-			Description: value.(*Hook).Description,
-			Namespace:   value.(*Hook).Namespace,
-			Url:         value.(*Hook).Url,
-		})
+		if uuid == value.(*Hook).PipelineUUID {
+			urls = append(urls, Hook{
+				Description: value.(*Hook).Description,
+				Namespace:   value.(*Hook).Namespace,
+				Url:         value.(*Hook).Url,
+			})
+		}
 		return true
 	})
 	return urls
@@ -59,10 +62,11 @@ func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
 	w.Hooks = append(w.Hooks, hookName)
 
 	webHookMap.Store(hUrl, &Hook{
-		h:           hf,
-		Description: hookName,
-		Namespace:   w.namespace,
-		Url:         hUrl,
+		h:            hf,
+		Description:  hookName,
+		Namespace:    w.namespace,
+		PipelineUUID: w.pipelineLabel,
+		Url:          hUrl,
 	})
 	Log.Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }

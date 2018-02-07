@@ -151,6 +151,13 @@ func (p *PipelineApiController) Find(c *gin.Context) {
 					Url:         h.Url,
 				})
 			}
+			for _, s := range pup.Schedulers {
+				pipelines[i].Schedulers = append(pipelines[i].Schedulers, models.Scheduler{
+					Description: s.Description,
+					Spec:        s.Spec,
+					AgentName:   s.AgentName,
+				})
+			}
 
 		}
 	}
@@ -184,6 +191,13 @@ func (p *PipelineApiController) FindOneByUUID(c *gin.Context) {
 				Description: h.Description,
 				Namespace:   h.Namespace,
 				Url:         h.Url,
+			})
+		}
+		for _, s := range runningPipeline.Schedulers {
+			mPipeline.Schedulers = append(mPipeline.Schedulers, models.Scheduler{
+				Description: s.Description,
+				Spec:        s.Spec,
+				AgentName:   s.AgentName,
 			})
 		}
 

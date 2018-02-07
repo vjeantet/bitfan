@@ -197,8 +197,9 @@ func (a *Agent) start() error {
 	// Register scheduler if needed
 	if a.Schedule != "" {
 		Log().Debugf("agent %s : schedule=%s", a.Label, a.Schedule)
-		err := myScheduler.Add(a.Label, a.Schedule, func() {
+		err := myScheduler.Add(a.PipelineUUID, a.Label, a.Schedule, func() {
 			go a.processor.Tick(newPacket(nil))
+			a.processor.B().Logger.Debugf("Scheduler ticked")
 		})
 		if err != nil {
 			Log().Errorf("schedule start failed - %s : %v", a.Label, err)
@@ -230,7 +231,7 @@ func (a *Agent) listen(wg *sync.WaitGroup) {
 }
 
 func (a *Agent) stop() {
-	myScheduler.Remove(a.Label)
+	myScheduler.Remove(a.PipelineUUID, a.Label)
 	Log().Debugf("agent %d schedule job removed", a.ID)
 
 	// unregister processor's webhooks URLs
