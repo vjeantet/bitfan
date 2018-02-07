@@ -7,8 +7,6 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
-	"github.com/spf13/viper"
-
 	"github.com/vjeantet/bitfan/core/memory"
 	"github.com/vjeantet/bitfan/core/metrics"
 	"github.com/vjeantet/bitfan/core/webhook"
@@ -113,7 +111,7 @@ func Start(opt Options) {
 	}
 
 	if opt.LogFile != "" {
-		setLogOutputFile(viper.GetString("log"))
+		setLogOutputFile(opt.LogFile)
 	}
 
 	if err := setDataLocation(opt.DataLocation); err != nil {
