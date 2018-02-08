@@ -179,6 +179,9 @@ func Stop() error {
 func GetPipeline(UUID string) (*Pipeline, bool) {
 	if i, found := pipelines.Load(UUID); found {
 		i.(*Pipeline).Webhooks = webhook.WebHooks(UUID)
+		if sjobs, ok := scheduleMap.Load(UUID); ok {
+			i.(*Pipeline).Schedulers = sjobs.([]schedulerJob)
+		}
 		return i.(*Pipeline), found
 	} else {
 		return nil, found

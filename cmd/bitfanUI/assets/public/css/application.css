@@ -190,28 +190,28 @@ header {
 
 nav {
   background: #e5e5e5; }
-  nav section.assets {
+  nav section {
     list-style: none;
     font-size: 12px;
     margin-bottom: 20px;
-    display: flex;
     flex-direction: column; }
-    nav section.assets li {
+    nav section li {
       display: flex;
       justify-content: space-between;
       margin-top: 5px; }
-      nav section.assets li > a:hover {
+      nav section li > a:hover {
         text-decoration: none; }
-      nav section.assets li span {
+      nav section li span {
         padding-left: 5px;
         align-items: center;
-        display: flex; }
-      nav section.assets li:hover {
+        display: flex;
+        text-align: right; }
+      nav section li:hover {
         background-color: white; }
-      nav section.assets li.active > a {
+      nav section li.active > a {
         font-weight: bold; }
-      nav section.assets li.asset_type_entrypoint a {
-        color: green; }
+    nav section.assets li.asset_type_entrypoint a {
+      color: green; }
 
 footer {
   background: #e5e5e5;

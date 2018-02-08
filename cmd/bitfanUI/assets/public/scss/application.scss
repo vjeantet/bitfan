@@ -82,9 +82,8 @@ header {
             justify-content: flex-end;
             margin: 10px;
         }
-        &#bitfan-location > div{
-         max-width: 350px;
-         // display: flex;
+        &#bitfan-location>div {
+            max-width: 350px; // display: flex;
         }
         &#bitfan-location * {
             font-size: 12px;
@@ -109,11 +108,11 @@ header {
 nav {
     background: #e5e5e5;
 
-    section.assets {
+    section {
         list-style: none;
         font-size: 12px;
         margin-bottom: 20px;
-        display: flex;
+        // display: flex;
         flex-direction: column;
         li {
             display: flex;
@@ -128,16 +127,20 @@ nav {
                 padding-left: 5px;
                 align-items: center;
                 display: flex;
+                text-align: right;
             }
 
             &:hover {
                 background-color: white;
             }
-            &.active >a {
+            &.active>a {
                 font-weight: bold;
             }
-            &.asset_type_entrypoint a {
-                color:green;
+        }
+
+        &.assets {
+            li.asset_type_entrypoint a {
+                color: green;
             }
         }
     }
@@ -199,36 +202,64 @@ article {
         overflow-x: visible;
     }
 
-    .bitfan-packet{
+    .bitfan-packet {
         display: block;
         unicode-bidi: embed;
         font-family: monospace;
         white-space: pre;
-        outline: 1px solid #ccc; padding: 5px; margin: 5px; 
-        background-color: #E9EDF0 ;
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+        background-color: #E9EDF0;
 
-        .string { color: green; }
-        .number { color: darkorange; }
-        .boolean { color: blue; }
-        .null { color: magenta; }
-        .key { color: red; }
+        .string {
+            color: green;
+        }
+        .number {
+            color: darkorange;
+        }
+        .boolean {
+            color: blue;
+        }
+        .null {
+            color: magenta;
+        }
+        .key {
+            color: red;
+        }
     }
 
     #logs li {
-       
-        &.level5 {color: gray;} // DEBUG
-        &.level4 {color: blue;} // INFO
-        &.level3 {color: orange;font-weight: bold} // WARN
-        &.level2 {color: red;font-weight: bold} // ERROR
-        &.level1 {color: red;font-weight: bold} // FATAL
-        &.level0 {color: blue;font-weight: bold} // PANIC
 
+        &.level5 {
+            color: gray;
+        } // DEBUG
+        &.level4 {
+            color: blue;
+        } // INFO
+        &.level3 {
+            color: orange;
+            font-weight: bold
+        } // WARN
+        &.level2 {
+            color: red;
+            font-weight: bold
+        } // ERROR
+        &.level1 {
+            color: red;
+            font-weight: bold
+        } // FATAL
+        &.level0 {
+            color: blue;
+            font-weight: bold
+        } // PANIC
         .component {
-            &::before {content: "[";}
-            &::after {content: "]";}
+            &::before {
+                content: "[";
+            }
+            &::after {
+                content: "]";
+            }
         }
-
-
-
     }
 }

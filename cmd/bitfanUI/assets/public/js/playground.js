@@ -42,8 +42,20 @@ function PgNewEditor(name, firstLineNumber, syntaxName, themeName, playWithKeyPr
                 aceEditor: pgEditor
             };
 
-            bitbar.show("doc filter ", context)
+            zone = ""
+            switch (name) {
+            case "input-configuration":
+                zone = "input" ;
+                break;
+            case "filter-configuration":
+                zone = "filter" ;
+                break;
+            case "output-configuration":
+                zone = "output" ;
+                break;
+            }
 
+            bitbar.show("doc "+ zone +" ", context)
         }
     });
 
@@ -70,11 +82,11 @@ function bitfanProcessorListptions(c) {
         success: function(processor_doc) {
             var items = []
             let proc = processor_doc[c.selected[1]]
-            console.log(proc.Options)
+            // console.log(proc.Options)
             var optionsLen = proc.Options.Options.length;
             for (var i = 0; i < optionsLen; i++) {
                 let option = proc.Options.Options[i]
-                console.log(option);
+                // console.log(option);
 
                 //Ignore common options
                 if (option.Type == "processors.CommonOptions") {
@@ -144,10 +156,9 @@ function bitfanProcessorListptions(c) {
                     label: labelStr + labelRequired,
                     value: value,
                 })
+
             }
             bitbar.showWith(items, "", c)
-
-
         },
         error: function(output) {
             console.log("error getting processor documentations");
