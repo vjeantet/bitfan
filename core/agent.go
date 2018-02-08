@@ -204,7 +204,7 @@ func (a *Agent) start() error {
 		if err != nil {
 			Log().Errorf("schedule start failed - %s : %v", a.Label, err)
 		} else {
-			Log().Debugf("agent %s(%s) scheduled with %s", a.Label, a.ID, a.Schedule)
+			Log().Debugf("agent %s(%d) scheduled with %s", a.Label, a.ID, a.Schedule)
 		}
 	}
 
