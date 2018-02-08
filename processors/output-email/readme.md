@@ -17,7 +17,7 @@ Send email when an output is received. Alternatively, you may include or exclude
 | bcc         | string   | false    | ""                   |
 | subject     | string   | false    | ""                   |
 | subjectfile | string   | false    | ""                   |
-| HTMLBody    | location | false    | ?                    |
+| htmlbody    | location | false    | ?                    |
 | body        | location | false    | ?                    |
 | attachments | array    | false    | []                   |
 | images      | array    | false    | []                   |
@@ -102,7 +102,7 @@ You can use template
 
 Path to Subject template file for the email
 
-### HTMLBody
+### htmlbody
 * Value type is location
 * Default value is `?`
 

@@ -117,7 +117,7 @@
         "Type": "string"
       },
       {
-        "Alias": "",
+        "Alias": "htmlbody",
         "DefaultValue": null,
         "Doc": "HTML Body for the email, which may contain HTML markup",
         "ExampleLS": "htmlBody =\u003e \"\u003ch1\u003eHello\u003c/h1\u003e message received : {{.message}}\"",

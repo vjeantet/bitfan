@@ -124,7 +124,7 @@ func (p *processor) Doc() *doc.Processor {
       },
       &doc.ProcessorOption{
         Name:           "HTMLBody",
-        Alias:          "",
+        Alias:          "htmlbody",
         Doc:            "HTML Body for the email, which may contain HTML markup",
         Required:       false,
         Type:           "location",

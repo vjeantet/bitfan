@@ -79,7 +79,7 @@ type options struct {
 	// HTML Body for the email, which may contain HTML markup
 	// @ExampleLS htmlBody => "<h1>Hello</h1> message received : {{.message}}"
 	// @Type Location
-	HTMLBody string `mapstructure:"htmlBody"`
+	HTMLBody string `mapstructure:"htmlbody"`
 
 	// Body for the email - plain text only.
 	// @ExampleLS body => "message : {{.message}}. from {{.host}}."
