@@ -67,6 +67,12 @@
         "Playground": {
           "type": "boolean"
         },
+        "Schedulers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Scheduler"
+          }
+        },
         "UpdatedAt": {},
         "Webhooks": {
           "type": "array",
@@ -107,6 +113,21 @@
         "uuid": {
           "type": "string",
           "x-go-name": "Uuid"
+        }
+      },
+      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+    },
+    "Scheduler": {
+      "type": "object",
+      "properties": {
+        "AgentName": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Spec": {
+          "type": "string"
         }
       },
       "x-go-package": "github.com/vjeantet/bitfan/api/models"
