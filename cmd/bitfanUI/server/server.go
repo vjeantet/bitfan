@@ -108,8 +108,8 @@ func Handler(baseURL string, debug bool) http.Handler {
 
 	//Pipeline Playground
 	r.GET("/pipelines/:id/play", playgroundPipeline)
-	r.PUT("/pipelines/:id/play", playgroundPipelineDo)
-	r.DELETE("/pipelines/:id/play", playgroundPipelineExit)
+	r.PUT("/pipelines/:id/play", playgroundsPlayDo)
+	r.DELETE("/pipelines/:id/play", playgroundsPlayExit)
 
 	// Playgrounds
 	r.GET("/playgrounds/play", playgroundsPlay)

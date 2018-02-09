@@ -22,6 +22,16 @@ type playgroundRequest struct {
 func playgroundsPlay(c *gin.Context) {
 	c.HTML(200, "playgrounds/play", withCommonValues(c, gin.H{}))
 }
+
+func playgroundPipeline(c *gin.Context) {
+	id := c.Param("id")
+	p, _ := apiClient.Pipeline(id)
+
+	c.HTML(200, "pipelines/play", withCommonValues(c, gin.H{
+		"pipeline": p,
+	}))
+}
+
 func playgroundsPlayExit(c *gin.Context) {
 	pgReq := playgroundRequest{}
 	_ = c.BindJSON(&pgReq)
@@ -34,6 +44,9 @@ func playgroundsPlayExit(c *gin.Context) {
 func playgroundsPlayDo(c *gin.Context) {
 	pgReq := playgroundRequest{}
 	err := c.BindJSON(&pgReq)
+
+	id := c.Param("id")
+	pgReq.BasePipelineUUID = id
 
 	if pgReq.UUID == "" {
 		c.JSON(400, err.Error())
@@ -79,11 +92,12 @@ func playgroundsPlayDo(c *gin.Context) {
 	// start pipeline
 	defaultValue := []byte(pgFullConfig)
 	var p = models.Pipeline{
-		Playground:  true,
-		Uuid:        pgReq.UUID,
-		Active:      true,
-		Label:       "playground-" + pgReq.UUID,
-		Description: "",
+		Playground:         true,
+		PlaygroundBaseUUID: pgReq.BasePipelineUUID,
+		Uuid:               pgReq.UUID,
+		Active:             true,
+		Label:              "playground-" + pgReq.UUID,
+		Description:        "",
 		Assets: []models.Asset{{
 			Name:        "play.conf",
 			Type:        "entrypoint",
