@@ -44,9 +44,14 @@
                 $('#bitbar-input').val(label);
                 this.search(label);
 
+                var lastActiveElement = document.activeElement;
+                
                 // Display modal and focus on input
                 $('#bitbar').on('shown.bs.modal', function() {
                     $('#bitbar-input').focus();
+                });
+                $('#bitbar').on('hidden.bs.modal', function() {
+                    lastActiveElement.focus();
                 });
                 $('#bitbar').modal({
                     keyboard: true

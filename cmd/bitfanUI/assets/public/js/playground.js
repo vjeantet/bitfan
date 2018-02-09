@@ -13,6 +13,7 @@ var autoStartPlayGround = false;
 function PgNewEditor(name, firstLineNumber, syntaxName, themeName, playWithKeyPress) {
     var pgEditor = ace.edit("section-" + name + "-content");
     pgEditor.setAutoScrollEditorIntoView(true);
+    pgEditor.$blockScrolling = Infinity
     pgEditor.setTheme("ace/theme/" + themeName);
     pgEditor.getSession().setMode("ace/mode/" + syntaxName);
     var textarea = $('textarea[name="section-' + name + '"]').hide();
@@ -94,11 +95,11 @@ function bitfanProcessorListptions(c) {
         success: function(processor_doc) {
             var items = []
             let proc = processor_doc[c.selected[1]]
-            console.log(proc.Options)
+            // console.log(proc.Options)
             var optionsLen = proc.Options.Options.length;
             for (var i = 0; i < optionsLen; i++) {
                 let option = proc.Options.Options[i]
-                console.log(option);
+                // console.log(option);
 
                 //Ignore common options
                 if (option.Type == "processors.CommonOptions") {
@@ -393,27 +394,6 @@ $(document).ready(function() {
     });
 
 
-    // editorFilter.commands.addCommand({
-    //     name: 'Help',
-    //     bindKey: {
-    //         win: 'Ctrl-H',
-    //         mac: 'Command-H',
-    //         sender: 'editor|cli'
-    //         },
-    //     exec: function(env, args, request) {
-    //         alert("GO") ;
-    //     }
-    // });
-    // ######### End editors
-
-
-    // On form submit, play...ground    
-    // $('#bitfan-playground-form').on('submit', function(e) { //use on if jQuery 1.7+
-    //     e.preventDefault(); //prevent form from submitting
-    //     play();
-    //     return false;
-    // });
-
     // #########
     // INPUT RAW EVENT
     // #########
@@ -429,12 +409,6 @@ $(document).ready(function() {
             play()    
         }
     });
-
-
-
-
-
-
 
     // #########
     // GLOBAL
@@ -506,7 +480,7 @@ $(document).ready(function() {
     //       var thisKeypressTime = new Date();
     //       if ( thisKeypressTime - lastKeypressTime <= delta )
     //       {
-            console.log("GO !");
+    //         console.log("GO !");
     //         // optional - if we'd rather not detect a triple-press
     //         // as a second double-press, reset the timestamp
     //         thisKeypressTime = 0;
@@ -598,15 +572,15 @@ function play() {
         url: window.location.href,
         beforeSend: function() {},
         success: function(settings) {
-            console.log(settings)
-            console.log("success");
+            // console.log(settings)
+            // console.log("success");
             playErrorReset();
 
             if (settings.wsout != "") {
                 new_uri = "ws://" + settings.apiHost + settings.wsout;
                 websocketOUT = new WebSocket(new_uri);
                 websocketOUT.onopen = function(event) {
-                    console.log("Connection is established!");
+                    // console.log("Connection is established!");
                 }
                 websocketOUT.onmessage = function(event) {
                     editorOutputRaw.getSession().setValue(event.data);
