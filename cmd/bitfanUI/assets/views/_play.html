@@ -1,0 +1,257 @@
+{{define "playground"}}
+<form id="bitfan-playground-form">
+    <div id="options">
+        <div id="play-actions" class="btn-group btn-group-sm" role="group" aria-label="action">
+            <button type="button" id="playground-play" class="btn btn-success">
+                Play !
+            </button>
+            <button type="button" id="playground-stop" class="btn btn-danger" style="display: none;">
+                Stop
+            </button>
+            <button notoggle="true" id="playground-replay" type="button" class="btn btn-success" style="display: none;">
+                Replay
+            </button>
+        </div>
+        <input type="checkbox" class="" id="play-options-autostart">
+        <label for="play-options-autostart">Autoplay on content change</label>
+        <hr>
+    </div>
+    <div id="pg-container">
+        <div class="item item-input">
+            <div class="col-sm" id="pan-input">
+                <ul class="nav nav-tabs mb-3" id="pills-input" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" bitfan-section-type="raw" data-toggle="tab" href="#pills-input-rawevent" role="tab">INPUT : raw event</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" bitfan-section-type="configuration" data-toggle="tab" href="#pills-input-configuration" role="tab">INPUT : configuration</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="pills-input-rawevent" role="tabpanel">
+                        <label for="label">Pass this event to filter part as
+                            <select name="section-input-codec" id="section-input-codec">
+                                <option value="plain">plain</option>
+                                <option value="json">json</option>
+                            </select>
+                            &nbsp;
+                            <button type="button" name="sendEvent" class="btn btn-success btn-sm" style="display: none;">Send again</button>
+                        </label>
+                        <textarea style="display: none" name="section-input-raw" id="section-input-raw">{"message":"Hello world"}</textarea>
+                        <div style="height: 300px;" id="section-input-raw-content"></div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-input-configuration" role="tabpanel" aria-labelledby="pills-profile-tab">
+                        <label for="">write input's part</label>
+                        <textarea style="display: none" name="section-input-configuration" id="section-input-configuration"></textarea>
+                        <div style="height: 300px;" id="section-input-configuration-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item item-filter">
+            <div class="col-sm" id="pan-filter">
+                <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" bitfan-section-type="configuration" data-toggle="tab" href="#pills-filter-configuration" role="tab">FILTER : configuration</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-filter-configuration" role="tabpanel" aria-labelledby="pills-home-tab">
+                        <label for="description">write filter's part</label>
+                        <textarea style="display: none" name="section-filter-configuration" id="section-filter-configuration"></textarea>
+                        <div style="height: 300px;" id="section-filter-configuration-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item item-output">
+            <div class="col-12" id="pan-output">
+                <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" bitfan-section-type="raw" data-toggle="tab" href="#pills-output-rawevent" role="tab">OUTPUT : raw event</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" bitfan-section-type="configuration" data-toggle="tab" href="#pills-output-configuration" role="tab">OUTPUT : configuration</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-output-rawevent" role="tabpanel" aria-labelledby="pills-home-tab">
+                        <label for="description">Last event produced : </label>
+                        <textarea style="display: snone" name="section-output-raw" id="section-output-raw"></textarea>
+                        <div style="height: 300px;" id="section-output-raw-content"></div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-output-configuration" role="tabpanel" aria-labelledby="pills-home-tab">
+                        <label for="">write output's part</label>
+                        <textarea style="display: none" name="section-output-configuration" id="section-output-configuration"></textarea>
+                        <div style="height: 300px;" id="section-output-configuration-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item item-console">
+            <div id="pan-logs-errors" class="col-12">
+                <ul class="nav nav-tabs mb-3" id="pills-s" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#pills-logs" role="tab">logs</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-logs" role="tabpanel">
+                        <div id="logs" style="height: 100px !important; overflow: scroll;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Modal -->
+<div class="modal " id="bitbar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+            <div class="modal-body">
+                <input type="text" class="bitbar-control" id="bitbar-input">
+                <div id="bitbar-results" class="bitbar-control">
+                </div>
+            </div>
+            <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+        </div>
+    </div>
+    <div id="bitbar-console" style="  position: fixed;
+    z-index: 100; 
+    bottom: 0; 
+    left: 0;
+    width: 100%;
+    background-color: black;
+    color:white;
+    max-height: 250px;
+    padding:5px;
+    border-top: 4px solid #316BFF;
+    overflow: scroll;
+    display: none;
+    ">
+        <div>
+        </div>
+    </div>
+</div>
+<script id="logmessage-template" type="text/x-jsrender">
+    <li class="level[[:ev.Level]] [[if eventHTML]]trace_[[:ev.Data.trace]][[/if]]">
+        <span class="message_header">
+    <span class="level">
+    [[if eventHTML]]
+      TRACE
+    [[else ev.Level == 5]]
+      DEBUG
+    [[else ev.Level == 4 ]]
+      INFO
+    [[else ev.Level == 3 ]]
+      WARN
+    [[else ev.Level == 2 ]]
+      ERROR
+    [[else ev.Level == 1 ]]
+      FATAL
+    [[/if]]
+    </span>
+        <span class="time">[[:timeString]]</span>
+        <span class="processor">[[:ev.Data.processor_label]]</span>
+        </span>
+        <span class="message_content">
+      <span class="message">[[:ev.Message]]</span> [[if eventHTML]]
+        <span class="bitfan-packet">[[:eventHTML]]</span> [[/if]]
+        </span>
+    </li>
+</script>
+<script src="/public/vendor/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/public/vendor/ace/ext-modelist.js"></script>
+<script src="/public/vendor/ace/ext-language_tools.js"></script>
+<script src="/public/js/playground.js"></script>
+<script src="/public/js/bitbar.js"></script>
+<style type="text/css">
+.nav-tabs>li>a {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+.nav-tabs {
+    min-height: 20px !important;
+    margin-bottom: 0rem!important;
+}
+
+#pan-input {
+    /*background-color: red;*/
+}
+
+#pan-filter {
+    /*background-color: yellow;*/
+}
+
+#pan-output {
+    /*background-color: green;*/
+}
+
+#pan-logs-errors {}
+
+
+#pan-input,
+#pan-filter,
+#pan-output,
+#pan-logs-errors {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+#bitfan-playground-form .row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+#bitfan-playground-form #logs li {
+    list-style: none;
+}
+
+#bitfan-playground-form .error {
+    border: 2px solid red;
+    background-color: #F1E6FF;
+}
+
+#bitfan-playground-form .success {
+    border: 2px solid #408002;
+}
+
+#logs {
+    font-size: 12px;
+}
+
+.bitbar-control {
+    display: block;
+    width: 100%;
+}
+
+#bitbar-results {
+    max-height: 300px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+#bitbar-results li {
+    list-style: none;
+    border-bottom: 1px solid gray;
+    cursor: default;
+}
+
+#bitbar-results li.active {
+    color: white;
+    background-color: black;
+}
+
+#bitbar-results li b {}
+</style>
+{{end}}

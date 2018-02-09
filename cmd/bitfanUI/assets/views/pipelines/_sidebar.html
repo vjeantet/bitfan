@@ -52,7 +52,25 @@
   </section>
 {{end}}
 
+<section class="playground">
+  <h2>PlayTest</h2>
+<div id="play-actions" class="btn-group btn-group-sm " role="group" aria-label="playground">
+    <a href="/pipelines/{{.pipeline.Uuid}}/play" class="btn btn-outline-success" >
+      Open Playground
+    </a>
+    <a class="btn btn-outline-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="sr-only">Toggle Dropdown</span>
+    </a>
+    <ul class="dropdown-menu">
+      {{ range $asset := .pipeline.Assets }}    
+      <a href="/pipelines/{{$.pipeline.Uuid}}/play?with={{$asset.Uuid}}" class="dropdown-item" >
+        {{$asset.Name}}
+      </a>
+      {{ end }}
+    </ul>
+</div> 
 
+</section>
 
 <section class="assets">
   <h2>Assets</h2>

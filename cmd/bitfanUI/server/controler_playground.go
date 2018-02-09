@@ -8,14 +8,15 @@ import (
 )
 
 type playgroundRequest struct {
-	UUID        string `json:"uuid"`
-	InputValue  string `json:"input_value"`
-	InputMode   string `json:"input_mode"`
-	InputCodec  string `json:"input_codec"`
-	FilterValue string `json:"filter_value"`
-	FilterMode  string `json:"filter_mode"`
-	OutputValue string `json:"output_value"`
-	OutputMode  string `json:"output_mode"`
+	UUID             string `json:"uuid"`
+	BasePipelineUUID string `json:"base_pipeline_uuid"`
+	InputValue       string `json:"input_value"`
+	InputMode        string `json:"input_mode"`
+	InputCodec       string `json:"input_codec"`
+	FilterValue      string `json:"filter_value"`
+	FilterMode       string `json:"filter_mode"`
+	OutputValue      string `json:"output_value"`
+	OutputMode       string `json:"output_mode"`
 }
 
 func playgroundsPlay(c *gin.Context) {

@@ -12,7 +12,8 @@ import "time"
 type Pipeline struct {
 	Uuid string `json:"uuid"`
 
-	Playground bool
+	Playground         bool
+	PlaygroundBaseUUID string `json:"playground_base_uuid"`
 
 	// the Label
 	Label string `json:"label"`

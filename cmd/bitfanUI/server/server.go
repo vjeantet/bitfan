@@ -106,6 +106,11 @@ func Handler(baseURL string, debug bool) http.Handler {
 	// Delete asset
 	r.GET("/pipelines/:id/assets/:assetID/delete", deleteAsset)
 
+	//Pipeline Playground
+	r.GET("/pipelines/:id/play", playgroundPipeline)
+	r.PUT("/pipelines/:id/play", playgroundPipelineDo)
+	r.DELETE("/pipelines/:id/play", playgroundPipelineExit)
+
 	// Playgrounds
 	r.GET("/playgrounds/play", playgroundsPlay)
 	r.PUT("/playgrounds/play", playgroundsPlayDo)
