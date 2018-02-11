@@ -68,3 +68,5 @@ releases
 /coverage.txt
 
 /codecovRepport.sh
+
+/cmd/bitfan/public/

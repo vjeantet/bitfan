@@ -15,6 +15,7 @@
 package commands
 
 import (
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -58,6 +59,9 @@ When no configuration is passed to the command, bitfan use the config set in glo
 
 		if !viper.GetBool("no-network") {
 			opt.HttpHandlers = append(opt.HttpHandlers, core.HTTPHandler("/api/v2/", api.Handler("api/v2")))
+			opt.HttpHandlers = append(opt.HttpHandlers, core.HTTPHandler("/public/",
+				http.StripPrefix("/public/", http.FileServer(http.Dir(viper.GetString("public")))),
+			))
 
 			if viper.IsSet("prometheus") {
 				opt.Prometheus = viper.GetString("prometheus.path")
@@ -172,6 +176,7 @@ func initRunConfig(cmd *cobra.Command) {
 	viper.BindPFlag("host", cmd.Flags().Lookup("host"))
 	viper.BindPFlag("no-network", cmd.Flags().Lookup("no-network"))
 	viper.BindPFlag("data", cmd.Flags().Lookup("data"))
+	viper.BindPFlag("public", cmd.Flags().Lookup("public"))
 }
 
 func initRunFlags(cmd *cobra.Command) {
@@ -180,6 +185,7 @@ func initRunFlags(cmd *cobra.Command) {
 	cmd.Flags().Bool("no-network", false, "Disable network (api and webhook)")
 	cwd, _ := os.Getwd()
 	cmd.Flags().String("data", filepath.Join(cwd, ".bitfan"), "Path to data dir")
+	cmd.Flags().String("public", filepath.Join(cwd, "public"), "Path to public dir with served as /public/")
 	cmd.Flags().Bool("api", true, "Expose REST Api")
 	cmd.Flags().Bool("prometheus", false, "Export stats using prometheus output")
 	cmd.Flags().String("prometheus.path", "/metrics", "Expose Prometheus metrics at specified path.")
