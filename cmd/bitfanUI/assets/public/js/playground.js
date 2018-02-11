@@ -47,18 +47,18 @@ function PgNewEditor(name, firstLineNumber, syntaxName, themeName, playWithKeyPr
 
             zone = "playground"
             switch (name) {
-            case "input-configuration":
-                zone = "doc input" ;
-                break;
-            case "filter-configuration":
-                zone = "doc filter" ;
-                break;
-            case "output-configuration":
-                zone = "doc output" ;
-                break;
+                case "input-configuration":
+                    zone = "doc input";
+                    break;
+                case "filter-configuration":
+                    zone = "doc filter";
+                    break;
+                case "output-configuration":
+                    zone = "doc output";
+                    break;
             }
 
-            bitbar.show(zone +" ", context)
+            bitbar.show(zone + " ", context)
         }
     });
 
@@ -116,7 +116,7 @@ function bitfanProcessorListptions(c) {
                 if (option.Required == true) {
                     labelRequired = " - (required)"
                 }
-                
+
                 value = bitfanOptionText(option, true)
 
                 items.push({
@@ -137,96 +137,96 @@ function bitfanProcessorListptions(c) {
     });
 }
 
-function bitfanOptionText(option, withDoc){
-                // When no alias set, use Name
-                var labelStr = option.Alias
-                if (labelStr == "") {
-                    labelStr = (option.Name.replace(/\.?([A-Z])/g, function(x, y) { return "_" + y.toLowerCase() }).replace(/^_/, ""));
-                }
-                
-                var value = labelStr + " => ";
+function bitfanOptionText(option, withDoc) {
+    // When no alias set, use Name
+    var labelStr = option.Alias
+    if (labelStr == "") {
+        labelStr = (option.Name.replace(/\.?([A-Z])/g, function(x, y) { return "_" + y.toLowerCase() }).replace(/^_/, ""));
+    }
 
-                switch (option.Type) {
-                    case "hash":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += "{}";
-                        }
-                        break;
-                    case "array":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += "[]";
-                        }
-                        break;
-                    case "string":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += '""';
-                        }
-                        break;
-                    case "int":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += "123";
-                        }
-                        break;
-                    case "bool":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += "false";
-                        }
-                        break;
-                    case "time.Duration":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += "";
-                        }
-                        break;
-                    case "location":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += '"" # a go template, as string or as path ';
-                        }
-                        break;
-                    case "interval":
-                        if (option.DefaultValue != null) {
-                            value += option.DefaultValue;
-                        } else {
-                            value += '"" # cron spec like * * * * *';
-                        }
-                        break;
-                }
-                
-                finalTxt = ""
+    var value = labelStr + " => ";
 
-                if (withDoc) {
-                    if (option.Doc != "") {
-                        finalTxt += "  # " + option.Doc.replace(/[\n\r]/g, "\n  # ") + "\n"    
-                    }
-                    if (option.Required == true) {
-                        finalTxt += "  # @Required option !\n"
-                    }
-                    if (option.ExampleLS != "") {
-                        finalTxt += "  # @Example : " + option.ExampleLS.replace(/[\n\r]/g, "\n  # ") + "\n"    
-                    }    
-                    finalTxt += "  " + value + "\n\n"
-                }else{
-                    finalTxt += "  " + value 
-                    if (option.Required == true) {
-                        finalTxt += " # required"
-                    }
-                    finalTxt += "\n"
-                }
+    switch (option.Type) {
+        case "hash":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += "{}";
+            }
+            break;
+        case "array":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += "[]";
+            }
+            break;
+        case "string":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += '""';
+            }
+            break;
+        case "int":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += "123";
+            }
+            break;
+        case "bool":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += "false";
+            }
+            break;
+        case "time.Duration":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += "";
+            }
+            break;
+        case "location":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += '"" # a go template, as string or as path ';
+            }
+            break;
+        case "interval":
+            if (option.DefaultValue != null) {
+                value += option.DefaultValue;
+            } else {
+                value += '"" # cron spec like * * * * *';
+            }
+            break;
+    }
 
-                return finalTxt ;
+    finalTxt = ""
+
+    if (withDoc) {
+        if (option.Doc != "") {
+            finalTxt += "  # " + option.Doc.replace(/[\n\r]/g, "\n  # ") + "\n"
+        }
+        if (option.Required == true) {
+            finalTxt += "  # @Required option !\n"
+        }
+        if (option.ExampleLS != "") {
+            finalTxt += "  # @Example : " + option.ExampleLS.replace(/[\n\r]/g, "\n  # ") + "\n"
+        }
+        finalTxt += "  " + value + "\n\n"
+    } else {
+        finalTxt += "  " + value
+        if (option.Required == true) {
+            finalTxt += " # required"
+        }
+        finalTxt += "\n"
+    }
+
+    return finalTxt;
 }
 
 function bitfanProcessorInsertTemplate(c) {
@@ -243,7 +243,7 @@ function bitfanProcessorInsertTemplate(c) {
 
             if (key.startsWith("input") || key.startsWith("output")) {
                 // key = key.replace("input_","")
-                key = key.replace("output_","").replace("input_","")
+                key = key.replace("output_", "").replace("input_", "")
             }
             finalTxt = key + " {\n"
 
@@ -257,17 +257,17 @@ function bitfanProcessorInsertTemplate(c) {
                 }
 
                 withDoc = false
-                if (c.selected[0]=="insert_full"){
+                if (c.selected[0] == "insert_full") {
                     withDoc = true
                 }
                 finalTxt += bitfanOptionText(option, withDoc)
-                
+
             }
             finalTxt = finalTxt + "}\n"
-            
+
             c.aceEditor.session.insert(c.aceEditor.selection.getCursor(), finalTxt)
             c.aceEditor.focus();
-            
+
         },
         error: function(output) {
             // console.log("error getting processor documentations");
@@ -291,21 +291,25 @@ function bitfanProcessorMenu(c) {
 $(document).ready(function() {
 
     var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('with') && urlParams.get('with') != null ){
-        contentUUID = urlParams.get('with') ;
+    if (urlParams.has('with') && urlParams.get('with') != null) {
+        contentUUID = urlParams.get('with');
         $.ajax({
             type: 'GET',
             dataType: "json",
             processData: false,
-            url: 'http://' + baseApiHost + '/api/v2/assets/'+contentUUID,
+            url: 'http://' + baseApiHost + '/api/v2/assets/' + contentUUID,
             success: function(asset) {
-                contentValueString = Base64.decode(asset.Value) ;
-                const myRegexp = /input[^{]*{(.*)}[^}]*filter[^{]*{(.*)}[^}]*output[^{]*{(.*)}[^}]*/gms;
-                var match = myRegexp.exec(contentValueString);
-                if (match != null && match.length == 4 ){
-                    editorInput.getSession().setValue(match[1]);
-                    editorFilter.getSession().setValue(match[2]);
-                    editorOutput.getSession().setValue(match[3]);    
+                contentValueString = Base64.decode(asset.Value);
+                try {
+                    const myRegexp = /input[^{]*{([\S\s.]*)}[^}]*filter[^{]*{([\S\s.]*)}[^}]*output[^{]*{([\S\s.]*)}[^}]*/gm;
+                    var match = myRegexp.exec(contentValueString);
+                    if (match != null && match.length == 4) {
+                        editorInput.getSession().setValue(match[1]);
+                        editorFilter.getSession().setValue(match[2]);
+                        editorOutput.getSession().setValue(match[3]);
+                    }
+                } catch (e) {
+
                 }
 
             },
@@ -314,7 +318,6 @@ $(document).ready(function() {
                 return false;
             }
         });
-
     }
 
 
@@ -351,15 +354,15 @@ $(document).ready(function() {
 
 
     bitbar.items.push({
-        onSelect: function(c,i){play()},
+        onSelect: function(c, i) { play() },
         id: "playground-play",
         label: "playground: play / replay",
         help: "Stop currently running playground's pipeline, Then Start it again",
-    },{
-       onSelect: function(c,i){stop()},
+    }, {
+        onSelect: function(c, i) { stop() },
         id: "playground-stop",
         label: "playground: stop",
-        help: "Stop currently running playground's pipeline", 
+        help: "Stop currently running playground's pipeline",
     })
 
     // Init Bitbar
@@ -406,7 +409,7 @@ $(document).ready(function() {
     // When codec selection change Then play playground
     $("#section-input-codec").on('change', function(e) { //use on if jQuery 1.7+
         if (autoStartPlayGround) {
-            play()    
+            play()
         }
     });
 
@@ -415,12 +418,12 @@ $(document).ready(function() {
     // #########
     // When leaving page Then delete currently running pipeline
     $(window).on('beforeunload', function() {
-       stop();
+        stop();
     });
     // When user toggle any tab Then play playground 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
         if (autoStartPlayGround) {
-            play() ;   
+            play();
         }
     });
 
@@ -499,47 +502,47 @@ $(document).ready(function() {
             return false;
         }
 
-        if ($(this).attr("id") == "playground-stop"){
+        if ($(this).attr("id") == "playground-stop") {
             stop();
         }
 
-        if ($(this).attr("id") == "playground-play" || $(this).attr("id") == "playground-replay"){
+        if ($(this).attr("id") == "playground-play" || $(this).attr("id") == "playground-replay") {
             play();
         }
     });
 
     $('#play-options-autostart').change(function() {
         autoStartPlayGround = $(this).is(":checked")
-    }) ;
-    
+    });
+
 
 });
 
 
 
-function stop(){
-        var dataObject = {
-            'event': "",
-            'event_type': "",
-            'filter': "",
-            'uuid': "playground-" + UUID,
-        };
+function stop() {
+    var dataObject = {
+        'event': "",
+        'event_type': "",
+        'filter': "",
+        'uuid': "playground-" + UUID,
+    };
 
-        $.ajax({
-            url: window.location.href,
-            type: 'DELETE',
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify(dataObject),
-            success: function(result) {
+    $.ajax({
+        url: window.location.href,
+        type: 'DELETE',
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        data: JSON.stringify(dataObject),
+        success: function(result) {
 
-            }
-        });
+        }
+    });
 
-        $("#bitfan-playground-form button[name='sendEvent']").hide();
-        $('#playground-play').show();
-        $('#playground-stop').hide();
-        $('#playground-replay').hide();
+    $("#bitfan-playground-form button[name='sendEvent']").hide();
+    $('#playground-play').show();
+    $('#playground-stop').hide();
+    $('#playground-replay').hide();
 }
 
 function play() {

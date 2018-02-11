@@ -70,3 +70,5 @@ releases
 /codecovRepport.sh
 
 /cmd/bitfan/public/
+
+/cmd/bitfanUI/build-windows.sh

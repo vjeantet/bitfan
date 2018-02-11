@@ -69,7 +69,14 @@
               <li>
                 [{{$scheduler.AgentName}}]
                 <span title="{{$scheduler.Spec}}">
-                <script type="text/javascript">document.write(cronstrue.toString("{{$scheduler.Spec}}"));</script>
+                <script type="text/javascript">
+                  try {
+                     document.write(cronstrue.toString("{{$scheduler.Spec}}")) ;
+                  }
+                  catch(e){
+                    document.write("{{$scheduler.Spec}}");  
+                  }  
+                </script>
                 </span>
               </li>
             {{end}}  
