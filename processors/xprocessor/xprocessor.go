@@ -1,15 +1,12 @@
 package xprocessor
 
 import (
-	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
-	"syscall"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/api/models"
@@ -17,12 +14,8 @@ import (
 	"github.com/vjeantet/bitfan/processors"
 )
 
-func New() processors.Processor {
-	return &processor{opt: &options{}}
-}
-
 func NewWithSpec(spec *models.XProcessor) processors.Processor {
-	p := &processor{opt: &options{
+	opt := &options{
 		Behavior: spec.Behavior,
 		Stream:   spec.Stream,
 		Command:  spec.Command,
@@ -30,17 +23,24 @@ func NewWithSpec(spec *models.XProcessor) processors.Processor {
 		Code:     spec.Code,
 		StdinAs:  spec.StdinAs,
 		StdoutAs: spec.StdoutAs,
-	}}
-
-	if p.opt.Command == "php" && len(p.opt.Args) == 0 {
-		if strings.HasPrefix(p.opt.Code, "<?php") {
-			p.opt.Code = p.opt.Code[5:]
-		}
-		p.opt.Args = []string{"-d", "display_errors=stderr", "-r", p.opt.Code, "--"}
-		//var_dump(getopt("",array("count:")));' -- --count=1
-
 	}
-	return p
+
+	if opt.Command == "php" && len(opt.Args) == 0 {
+		if strings.HasPrefix(opt.Code, "<?php") {
+			opt.Code = opt.Code[5:]
+		}
+		opt.Args = []string{"-d", "display_errors=stderr", "-r", opt.Code, "--"}
+	}
+
+	if spec.Stream == true {
+		p := &streamProcessor{}
+		p.opt = opt
+		return p
+	} else {
+		p := &noStreamProcessor{}
+		p.opt = opt
+		return p
+	}
 }
 
 const (
@@ -88,11 +88,6 @@ type processor struct {
 	processors.Base
 
 	opt *options
-
-	cmd    *exec.Cmd
-	stdin  io.WriteCloser
-	stdout io.ReadCloser
-	stderr io.ReadCloser
 
 	wg *sync.WaitGroup
 	q  chan bool
@@ -144,111 +139,45 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	return err
 }
 
-func (p *processor) Start(e processors.IPacket) error {
-	p.wg = new(sync.WaitGroup)
-	if p.opt.Stream == false {
-		return nil
+func buildCommandArgs(args []string, flags map[string]string, e processors.IPacket) []string {
+	finalArgs := []string{}
+	for _, v := range args {
+		finalArgs = append(finalArgs, v)
 	}
-	p.Logger.Infof("Start %s %s", p.opt.Behavior, p.opt.Stream)
-	var err error
-	p.cmd, p.stdin, p.stdout, p.stderr, err = p.startCommand(nil)
-
-	go func(s io.ReadCloser) {
-		scanner := bufio.NewScanner(s)
-		for scanner.Scan() {
-			p.Logger.Errorf("stderr : %s", scanner.Text())
-		}
-	}(p.stderr)
-
-	if p.opt.Behavior == PRODUCER || p.opt.Behavior == TRANSFORMER {
-		var dec codecs.Decoder
-		if dec, err = p.opt.Codec.NewDecoder(p.stdout); err != nil {
-			p.Logger.Errorln("decoder error : ", err.Error())
-			return err
-		}
-		// READ FROM PROC OUTPUT AND SEND EVENTS
-		go p.readAndSendEventsFromProcess(dec)
-	}
-
-	return nil
-}
-
-func (p *processor) Tick(e processors.IPacket) error {
-	if p.opt.Stream == false {
-		return p.Receive(e)
-	}
-	return nil
-}
-
-func (p *processor) Receive(e processors.IPacket) error {
-	// if p.opt.Behavior == PRODUCER {
-	// 	return nil
-	// }
-
-	if p.opt.Stream == true {
-		return p.writeEventToProcess(e)
-	} else {
-		p.wg.Add(1)
-		defer p.wg.Done()
-		return p.runProcess(e)
-	}
-
-	return nil
-}
-
-func (p *processor) Stop(e processors.IPacket) error {
-	if p.opt.Stream == true {
-		return p.stopStream(e)
-	}
-	p.wg.Wait()
-	return nil
-}
-
-func (p *processor) buildCommandArgs(e processors.IPacket) []string {
-	args := []string{}
-	for _, v := range p.opt.Args {
-		args = append(args, v)
-	}
-	for k, v := range p.opt.Flags {
+	for k, v := range flags {
 		if k == "_" {
 			continue
 		}
 		if v == "" {
-			args = append(args, "--"+k)
+			finalArgs = append(finalArgs, "--"+k)
 		} else {
 			if e != nil {
 				processors.Dynamic(&v, e.Fields())
 			}
-			args = append(args, "--"+k+"="+v)
+			finalArgs = append(finalArgs, "--"+k+"="+v)
 		}
 	}
-	if v, ok := p.opt.Flags["_"]; ok {
-		args = append(args, v)
+	if v, ok := flags["_"]; ok {
+		finalArgs = append(finalArgs, v)
 	}
-	return args
-}
-
-func (p *processor) buildEnv() []string {
-	env := os.Environ()
-	env = append(env,
-		fmt.Sprintf("BF_PIPELINE_UUID=%s", p.PipelineUUID),
-		fmt.Sprintf("BF_PIPELINE_WORKING_PATH=%s", p.ConfigWorkingLocation),
-		fmt.Sprintf("BF_PROCESSOR_DATA_PATH=%s", p.DataLocation),
-		fmt.Sprintf("BF_PROCESSOR_NAME=%s", p.B().Name),
-		fmt.Sprintf("BF_PROCESSOR_LABEL=%s", p.B().Label),
-	)
-	return env
+	return finalArgs
 }
 
 func (p *processor) startCommand(e processors.IPacket) (*exec.Cmd, io.WriteCloser, io.ReadCloser, io.ReadCloser, error) {
-	args := p.buildCommandArgs(e)
+	args := buildCommandArgs(p.opt.Args, p.opt.Flags, e)
 
 	var cmd *exec.Cmd
 
 	p.Logger.Debugf("command '%s', args=%s", p.opt.Command, args)
 	cmd = exec.Command(p.opt.Command, args...)
 	cmd.Dir = p.ConfigWorkingLocation
-	cmd.Env = p.buildEnv()
+	cmd.Env = append(os.Environ(),
+		fmt.Sprintf("BF_PIPELINE_UUID=%s", p.PipelineUUID),
+		fmt.Sprintf("BF_PIPELINE_WORKING_PATH=%s", p.ConfigWorkingLocation),
+		fmt.Sprintf("BF_PROCESSOR_DATA_PATH=%s", p.DataLocation),
+		fmt.Sprintf("BF_PROCESSOR_NAME=%s", p.B().Name),
+		fmt.Sprintf("BF_PROCESSOR_LABEL=%s", p.B().Label),
+	)
 
 	stdin, _ := cmd.StdinPipe()
 	stdout, _ := cmd.StdoutPipe()
@@ -262,38 +191,8 @@ func (p *processor) startCommand(e processors.IPacket) (*exec.Cmd, io.WriteClose
 	return cmd, stdin, stdout, stderr, nil
 }
 
-func (p *processor) runProcess(e processors.IPacket) error {
-
-	cmd, stdin, stdout, stderr, err := p.startCommand(e)
-
-	// Encode received event
-	var enc codecs.Encoder
-	enc, err = p.opt.Codec.NewEncoder(stdin)
-	if err != nil {
-		p.Logger.Errorln("codec error : ", err.Error())
-		return err
-	}
-	enc.Encode(e.Fields().Old())
-	stdin.Close()
-
-	// Decode resulting output
-	var dec codecs.Decoder
-	if dec, err = p.opt.Codec.NewDecoder(stdout); err != nil {
-		p.Logger.Errorln("decoder error : ", err.Error())
-		return err
-	}
-	p.readAndSendEventsFromProcess(dec)
-
-	b, _ := ioutil.ReadAll(stderr)
-	if len(b) > 0 {
-		p.Logger.Errorf("stderr : %s", b)
-	}
-	err = cmd.Wait()
-
-	return nil
-}
-
 func (p *processor) readAndSendEventsFromProcess(dec codecs.Decoder) error {
+	defer p.wg.Done()
 	for {
 		var record interface{}
 		if err := dec.Decode(&record); err != nil {
@@ -325,28 +224,6 @@ func (p *processor) readAndSendEventsFromProcess(dec codecs.Decoder) error {
 
 		p.opt.ProcessCommonOptions(ne.Fields())
 		p.Send(ne)
-	}
-	return nil
-}
-
-func (p *processor) writeEventToProcess(e processors.IPacket) error {
-	var err error
-	// Encode received event
-	var enc codecs.Encoder
-	enc, err = p.opt.Codec.NewEncoder(p.stdin)
-	if err != nil {
-		p.Logger.Errorln("codec error : ", err.Error())
-		return err
-	}
-	enc.Encode(e.Fields().Old())
-
-	return nil
-}
-
-func (p *processor) stopStream(e processors.IPacket) error {
-	if p.cmd != nil {
-		p.cmd.Process.Signal(syscall.SIGQUIT)
-		p.cmd.Wait()
 	}
 	return nil
 }
