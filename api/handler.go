@@ -44,6 +44,11 @@ func Handler(path string) http.Handler {
 		pipelineCtrl := &PipelineApiController{
 			path: path,
 		}
+
+		xprocessorCtrl := &XProcessorApiController{
+			path: path,
+		}
+
 		assetCtrl := &AssetApiController{
 			path: path,
 		}
@@ -61,6 +66,12 @@ func Handler(path string) http.Handler {
 
 		// curl -i -X POST http://localhost:5123/api/v2/pipelines
 		v2.POST("/pipelines", pipelineCtrl.Create) // créer pipeline
+
+		v2.GET("/xprocessors", xprocessorCtrl.Find)                  // list xprocessors
+		v2.POST("/xprocessors", xprocessorCtrl.Create)               // list xprocessors
+		v2.GET("/xprocessors/:uuid", xprocessorCtrl.FindOneByUUID)   // show xprocessors
+		v2.PATCH("/xprocessors/:uuid", xprocessorCtrl.UpdateByUUID)  // update xprocessors
+		v2.DELETE("/xprocessors/:uuid", xprocessorCtrl.DeleteByUUID) // delete xprocessors
 
 		// curl -i -X GET http://localhost:5123/api/v2/pipelines
 		v2.GET("/pipelines", pipelineCtrl.Find)            // list pipelines

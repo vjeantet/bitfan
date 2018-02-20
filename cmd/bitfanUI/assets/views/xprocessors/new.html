@@ -1,0 +1,75 @@
+{{ define "title"}}New X Processor{{ end }}
+
+{{ define "sidebar" }}
+    
+{{ end }}
+
+{{ define "content" }}
+
+
+
+<div class="row">
+  <div class="col">
+  <h1>X Processor - New</h1>
+  </div>
+</div>
+
+
+{{ range $flash := .flashes }}
+<div class="alert alert-warning" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+
+<div class="row">
+  <div class="col-10">
+
+<form method="POST" action="/xprocessors">
+
+  <div class="form-group">
+    <label for="behavior">Behavior :</label>
+    <select class="form-control" id="behavior" name="behavior">
+      <option value="producer" {{if eq .xprocessor.Behavior "producer"}}selected{{end}}>PRODUCER - (input, filter) Generate events to be handled by next processors </option>
+      <option value="transformer" {{if eq .xprocessor.Behavior "transformer"}}selected{{end}}>TRANSFORMER - (filter) Compute received events and generate new ones for the next processors</option>
+      <option value="consumer" {{if eq .xprocessor.Behavior "consumer"}}selected{{end}}>CONSUMER - (filter, output) Compute received events</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="label">Label</label>
+    <input type="text" class="form-control" name="label" id="label" placeholder="Enter processor's label">
+  </div>
+
+  <div class="form-group">
+    <label for="kind">Kind of XProcessor</label>
+    <select class="form-control" id="kind" name="kind">
+      <option value="bin" {{if eq .xprocessor.Kind "bin"}}selected{{end}}>Bin</option>
+      <option value="php" {{if eq .xprocessor.Kind "php"}}selected{{end}}>PHP</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="description">Description</label>
+    <textarea class="form-control" rows=6 name="description" id="description" placeholder="Enter processor's description, you can use markdown"></textarea>
+  </div>
+
+  <button type="submit" name="save" class="btn btn-primary">Save...</button>
+
+</form>
+
+
+  </div>
+  <div class="col">
+    
+    
+
+
+  </div>
+</div>
+
+
+
+
+{{ end }}
+

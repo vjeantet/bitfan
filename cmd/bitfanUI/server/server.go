@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gin-gonic/gin"
@@ -72,6 +73,19 @@ func Handler(baseURL string, debug bool) http.Handler {
 
 	// list pipelines
 	r.GET("/logs", getLogs)
+
+	// list xprocessors
+	r.GET("/xprocessors", getXProcessors)
+	// New xprocessor
+	r.GET("/xprocessors/:id/new", newXProcessor)
+	// Create xprocessor
+	r.POST("/xprocessors", createXProcessor)
+	// Show Xprocessor
+	r.GET("/xprocessors/:id", editXprocessor)
+	// Save Xprocessor
+	r.POST("/xprocessors/:id", updateXProcessor)
+	// Delete Xprocessor
+	r.GET("/xprocessors/:id/delete", deleteXProcessor)
 
 	// list pipelines
 	r.GET("/pipelines", getPipelines)
@@ -157,6 +171,106 @@ func getLogs(c *gin.Context) {
 	c.HTML(200, "logs/logs", withCommonValues(c, gin.H{
 		"bitfanHost": apiBaseUrl,
 	}))
+}
+
+func getXProcessors(c *gin.Context) {
+	producers, err := apiClient.XProcessors("producer")
+	transformers, err := apiClient.XProcessors("transformer")
+	consumers, err := apiClient.XProcessors("consumer")
+	c.HTML(200, "xprocessors/index", withCommonValues(c, gin.H{
+		"producers":    producers,
+		"transformers": transformers,
+		"consumers":    consumers,
+		"error":        err,
+	}))
+}
+
+func newXProcessor(c *gin.Context) {
+	c.HTML(200, "xprocessors/new", withCommonValues(c, gin.H{
+		"xprocessor": models.XProcessor{
+			Behavior: c.Query("behavior"),
+		},
+	}))
+}
+
+func createXProcessor(c *gin.Context) {
+	c.Request.ParseForm()
+
+	var p = models.XProcessor{
+		Label:       c.Request.PostFormValue("label"),
+		Behavior:    c.Request.PostFormValue("behavior"),
+		Kind:        c.Request.PostFormValue("kind"),
+		Description: c.Request.PostFormValue("description"),
+	}
+
+	if p.Kind == "php" {
+		p.Command = "php"
+	}
+
+	pnew, _ := apiClient.NewXProcessor(&p)
+	flash(c, fmt.Sprintf("XProcessor %s created", p.Label))
+	c.Redirect(302, fmt.Sprintf("/xprocessors/%s", pnew.Uuid))
+}
+func updateXProcessor(c *gin.Context) {
+	c.Request.ParseForm()
+	xprocessorUUID := c.Param("id")
+
+	var data = map[string]interface{}{
+		"stream": false,
+	}
+	if _, ok := c.Request.PostForm["behavior"]; ok {
+		data["behavior"] = c.Request.PostFormValue("behavior")
+	}
+	if _, ok := c.Request.PostForm["label"]; ok {
+		data["label"] = c.Request.PostFormValue("label")
+	}
+	if _, ok := c.Request.PostForm["description"]; ok {
+		data["description"] = c.Request.PostFormValue("description")
+	}
+	if _, ok := c.Request.PostForm["stream"]; ok {
+		data["stream"] = true
+	}
+	if _, ok := c.Request.PostForm["stdin_as"]; ok {
+		data["stdin_as"] = c.Request.PostFormValue("stdin_as")
+	}
+	if _, ok := c.Request.PostForm["stdout_as"]; ok {
+		data["stdout_as"] = c.Request.PostFormValue("stdout_as")
+	}
+	if _, ok := c.Request.PostForm["code"]; ok {
+		data["code"] = c.Request.PostFormValue("code")
+	}
+	if _, ok := c.Request.PostForm["command"]; ok {
+		data["command"] = c.Request.PostFormValue("command")
+	}
+
+	if _, ok := c.Request.PostForm["args"]; ok {
+		data["args"] = strings.Split(c.Request.PostFormValue("args"), "\n")
+	}
+
+	pnew, _ := apiClient.UpdateXProcessor(xprocessorUUID, &data)
+	c.JSON(200, pnew)
+}
+func editXprocessor(c *gin.Context) {
+	id := c.Param("id")
+
+	p, _ := apiClient.XProcessor(id)
+	c.HTML(200, "xprocessors/edit", withCommonValues(c, gin.H{
+		"xprocessor": p,
+	}))
+}
+
+func deleteXProcessor(c *gin.Context) {
+	uuid := c.Param("id")
+
+	err := apiClient.DeleteXProcessor(uuid)
+
+	if err != nil {
+		c.JSON(500, err.Error())
+		log.Printf("error : %v\n", err)
+		return
+	}
+
+	c.Redirect(302, "/xprocessors")
 }
 
 func getPipelines(c *gin.Context) {

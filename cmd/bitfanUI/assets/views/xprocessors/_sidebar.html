@@ -1,0 +1,76 @@
+{{define "xprocessorsidebar"}}
+
+<nav>
+
+<section class="pipeline">
+  <h2>{{.xprocessor.Label}} { }</h2>
+</section>
+
+
+
+<!-- <section class="playground">
+  <h2>PlayTest</h2>
+<div id="play-actions" class="btn-group btn-group-sm " role="group" aria-label="playground">
+    <a href="/pipelines/{{.xprocessor.Uuid}}/play" class="btn btn-outline-success" >
+      Open Playground
+    </a>
+</div>  -->
+
+
+
+    
+    <form method="POST" action="" name="bitfan-xprocessor-form" id="bitfan-xprocessor-form">  
+      <div class="form-group">
+        <label for="behavior">Behavior :</label>
+        <select class="form-control" id="behavior" name="behavior">
+          <option value="producer" {{if eq .xprocessor.Behavior "producer"}}selected{{end}}>PRODUCER - (input, filter) Generate events to be handled by next processors </option>
+          <option value="transformer" {{if eq .xprocessor.Behavior "transformer"}}selected{{end}}>TRANSFORMER - (filter) Compute received events and generate new ones for the next processors</option>
+          <option value="consumer" {{if eq .xprocessor.Behavior "consumer"}}selected{{end}}>CONSUMER - (filter, output) Compute received events</option>
+        </select>
+      </div>
+
+
+       <div class="form-group">
+        <label for="label">Label</label>
+        <input type="text" class="form-control" name="label" id="label" placeholder="Enter pipeline's label" value="{{.xprocessor.Label}}">
+       </div>
+
+     <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" rows=4 name="description" id="description" placeholder="Enter pipeline's description, you can use markdown">{{ string .xprocessor.Description }}</textarea>
+      </div>
+
+
+
+  <div class="form-group">
+    <input type="checkbox" name="stream" id="stream" value="true" {{if .xprocessor.Stream}}checked{{end}}>
+    <label for="stream" title="run process only once when pipeline start. All received events written to stdin and all generated events readed from stdout
+
+do not check if the process should be run for each event received
+    ">Stream events to I/O</label>
+  </div>
+
+
+<div class="form-group">
+    <label for="stdin_as">incoming event (stdin) received as </label>
+    <select class="form-control" id="stdin_as" name="stdin_as">
+      <option value="json" {{if eq .xprocessor.StdinAs "json"}}selected{{end}}>JSON</option>
+      <option value="line" {{if eq .xprocessor.StdinAs "line"}}selected{{end}}>line ("message" field's value)</option>
+    </select>
+  </div>
+
+
+<div class="form-group">
+    <label for="stdout_as">outgoing event (stdout) writted as </label>
+    <select class="form-control" id="stdout_as" name="stdout_as">
+      <option value="json" {{if eq .xprocessor.StdoutAs "json"}}selected{{end}}>JSON</option>
+      <option value="line" {{if eq .xprocessor.StdoutAs "line"}}selected{{end}}>line (will produce a event with line's value into "message" field)</option>
+    </select>
+  </div>
+
+</form>
+     
+
+
+</nav>
+{{end}}

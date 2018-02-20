@@ -41,7 +41,16 @@ func newPacket(fields map[string]interface{}) processors.IPacket {
 
 	if _, k := fields["@timestamp"]; !k {
 		fields["@timestamp"] = time.Now()
+	} else {
+		switch v := fields["@timestamp"].(type) {
+		case string:
+			var err error
+			if fields["@timestamp"], err = time.Parse(time.RFC3339, v); err != nil {
+				fields["@timestamp"] = v
+			}
+		}
 	}
+
 	return &event{
 		fields: fields,
 	}
