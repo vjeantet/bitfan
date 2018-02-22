@@ -22,6 +22,20 @@ func (r *RestClient) client() *sling.Sling {
 	return sling.New().Base(r.host)
 }
 
+func (r *RestClient) Envs() ([]models.Env, error) {
+	varenvs := []models.Env{}
+	apierror := new(models.Error)
+
+	resp, err := r.client().Get("env").Receive(&varenvs, apierror)
+
+	if err != nil {
+		return varenvs, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+	return varenvs, nil
+}
+
 func (r *RestClient) XProcessors(behavior string) ([]models.XProcessor, error) {
 	xprocessors := []models.XProcessor{}
 	apierror := new(models.Error)

@@ -125,6 +125,12 @@ func Start(opt Options) {
 		myMetrics = m
 	}
 
+	// Load env
+	envs := Storage().FindEnvs()
+	for _, v := range envs {
+		os.Setenv(v.Name, v.Value)
+	}
+
 	if len(opt.HttpHandlers) > 0 {
 		webhook.Log = logger
 		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/h/", webhook.Handler(opt.Host)))

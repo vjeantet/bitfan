@@ -74,6 +74,9 @@ func Handler(baseURL string, debug bool) http.Handler {
 	// list pipelines
 	r.GET("/logs", getLogs)
 
+	// list env
+	r.GET("/env", getEnv)
+
 	// list xprocessors
 	r.GET("/xprocessors", getXProcessors)
 	// New xprocessor
@@ -170,6 +173,12 @@ func getLogs(c *gin.Context) {
 	// TODO : proxy WS:// github.com/koding/websocketproxy
 	c.HTML(200, "logs/logs", withCommonValues(c, gin.H{
 		"bitfanHost": apiBaseUrl,
+	}))
+}
+
+func getEnv(c *gin.Context) {
+	c.HTML(200, "env/index", withCommonValues(c, gin.H{
+		"error": nil,
 	}))
 }
 

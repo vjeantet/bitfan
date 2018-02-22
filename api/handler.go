@@ -29,7 +29,6 @@ func Handler(path string) http.Handler {
 			c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-
 			if c.Request.Method == "OPTIONS" {
 				c.Writer.Header().Add("Access-Control-Allow-Headers", "*")
 				c.JSON(http.StatusOK, struct{}{})
@@ -52,6 +51,11 @@ func Handler(path string) http.Handler {
 		assetCtrl := &AssetApiController{
 			path: path,
 		}
+
+		envvariablesCtrl := &EnvApiController{
+			path: path,
+		}
+
 		dbCtrl := &DatabaseController{}
 
 		logsCtrl := &LogApiController{
@@ -102,6 +106,11 @@ func Handler(path string) http.Handler {
 		// v1.GET("/docs/filters/:name", getDocsFiltersByName)
 		// v1.GET("/docs/outputs", getDocsOutputs)
 		// v1.GET("/docs/outputs/:name", getDocsOutputsByName)
+
+		v2.GET("/env", envvariablesCtrl.Find)
+		v2.POST("/env", envvariablesCtrl.Create)
+		v2.GET("/env/:uuid", envvariablesCtrl.FindOneByUUID)
+		v2.DELETE("/env/:uuid", envvariablesCtrl.DeleteByUUID)
 
 		v2.GET("/db.zip", dbCtrl.Download)
 	}
