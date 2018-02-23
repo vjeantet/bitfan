@@ -246,9 +246,10 @@ func Gsub(fields []string, data *mxj.Map) {
 		replacement := fields[i]
 
 		if value, err := data.ValueForPathString(fieldname); err == nil {
-			r, _ := regexp.Compile(pattern)
-			newValue := r.ReplaceAllString(value, replacement)
-			data.SetValueForPath(newValue, fieldname)
+			if r, err := regexp.Compile(pattern); err == nil {
+				newValue := r.ReplaceAllString(value, replacement)
+				data.SetValueForPath(newValue, fieldname)
+			}
 		}
 	}
 }
