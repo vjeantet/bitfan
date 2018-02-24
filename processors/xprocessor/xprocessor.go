@@ -3,8 +3,10 @@ package xprocessor
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -20,19 +22,10 @@ func NewWithSpec(spec *models.XProcessor) processors.Processor {
 		Stream:   spec.Stream,
 		Command:  spec.Command,
 		Args:     spec.Args,
+		Kind:     spec.Kind,
 		Code:     spec.Code,
 		StdinAs:  spec.StdinAs,
 		StdoutAs: spec.StdoutAs,
-	}
-
-	if opt.Command == "php" && len(opt.Args) == 0 {
-		if strings.HasPrefix(opt.Code, "<?php") {
-			opt.Code = opt.Code[5:]
-		}
-		opt.Args = []string{"-d", "display_errors=stderr", "-r", opt.Code, "--"}
-	}
-	if opt.Command == "python" && len(opt.Args) == 0 {
-		opt.Args = []string{"-u", "-c", opt.Code}
 	}
 
 	if spec.Stream == true {
@@ -71,6 +64,8 @@ type options struct {
 	Command string   `mapstructure:"command" validate:"required"`
 	Args    []string `mapstructure:"args" `
 	Code    string   `mapstructure:"code"`
+
+	Kind string `mapstructure:"kind"`
 
 	// What is the value's format of stdinputed value
 	// @Default "json","none"
@@ -139,12 +134,38 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
+	switch p.opt.Kind {
+	case "php":
+		if strings.HasPrefix(p.opt.Code, "<?php") {
+			p.opt.Code = p.opt.Code[5:]
+		}
+		p.opt.Command = "php"
+		p.opt.Args = []string{"-d", "display_errors=stderr", "-r", p.opt.Code, "--"}
+	case "python":
+		p.opt.Command = "python"
+		p.opt.Args = []string{"-u", "-c", p.opt.Code}
+	case "golang":
+
+		// d1 := []byte(p.opt.Code)
+		// err := ioutil.WriteFile("/tmp/dat1", d1, 0644)
+		tmpGoFile := filepath.Join(p.DataLocation, "main.go")
+
+		err := ioutil.WriteFile(tmpGoFile, []byte(p.opt.Code), 0644)
+		if err != nil {
+			return err
+		}
+
+		p.opt.Command = "go"
+		p.opt.Args = []string{"run", tmpGoFile}
+	}
+
 	return err
 }
 
 func buildCommandArgs(args []string, flags map[string]string, e processors.IPacket) []string {
 	finalArgs := []string{}
 	for _, v := range args {
+		v := strings.TrimSpace(v)
 		finalArgs = append(finalArgs, v)
 	}
 	for k, v := range flags {

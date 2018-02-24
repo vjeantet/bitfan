@@ -66,9 +66,11 @@
               editor.setAutoScrollEditorIntoView(true);
               editor.setTheme("ace/theme/monokai");
 
-              // var mode = getModeByFileExtension("o.py");
+              // var mode = getModeByFileExtension("o.go");
+              // console.log(mode)
               // editor.getSession().setMode("ace/mode/python");
               //ace/mode/php
+              //ace/mode/golang
               //ace/mode/python
               editor.getSession().setMode("ace/mode/{{.xprocessor.Kind}}");
 

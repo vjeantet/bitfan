@@ -218,6 +218,9 @@ func createXProcessor(c *gin.Context) {
 	if p.Kind == "python" {
 		p.Command = "python"
 	}
+	if p.Kind == "golang" {
+		p.Command = "go"
+	}
 
 	pnew, _ := apiClient.NewXProcessor(&p)
 	flash(c, fmt.Sprintf("XProcessor %s created", p.Label))

@@ -56,7 +56,7 @@ func (p *streamProcessor) Start(e processors.IPacket) error {
 }
 
 func (p *streamProcessor) Tick(e processors.IPacket) error {
-	return nil
+	return p.Receive(e)
 }
 
 func (p *streamProcessor) Receive(e processors.IPacket) error {
