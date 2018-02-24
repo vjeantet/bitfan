@@ -215,6 +215,9 @@ func createXProcessor(c *gin.Context) {
 	if p.Kind == "php" {
 		p.Command = "php"
 	}
+	if p.Kind == "python" {
+		p.Command = "python"
+	}
 
 	pnew, _ := apiClient.NewXProcessor(&p)
 	flash(c, fmt.Sprintf("XProcessor %s created", p.Label))

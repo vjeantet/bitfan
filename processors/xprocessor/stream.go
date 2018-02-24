@@ -5,7 +5,6 @@ import (
 	"io"
 	"os/exec"
 	"sync"
-	"syscall"
 
 	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
@@ -70,13 +69,15 @@ func (p *streamProcessor) Receive(e processors.IPacket) error {
 		return err
 	}
 	enc.Encode(e.Fields().Old())
+	p.stdin.Write([]byte{'\n'})
 
 	return nil
 }
 
 func (p *streamProcessor) Stop(e processors.IPacket) error {
 	if p.cmd != nil {
-		p.cmd.Process.Signal(syscall.SIGQUIT)
+		p.stdin.Close()
+		// p.cmd.Process.Signal(syscall.SIGQUIT)
 		p.cmd.Wait()
 	}
 	return nil

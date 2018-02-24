@@ -31,6 +31,9 @@ func NewWithSpec(spec *models.XProcessor) processors.Processor {
 		}
 		opt.Args = []string{"-d", "display_errors=stderr", "-r", opt.Code, "--"}
 	}
+	if opt.Command == "python" && len(opt.Args) == 0 {
+		opt.Args = []string{"-u", "-c", opt.Code}
+	}
 
 	if spec.Stream == true {
 		p := &streamProcessor{}
@@ -154,7 +157,8 @@ func buildCommandArgs(args []string, flags map[string]string, e processors.IPack
 			if e != nil {
 				processors.Dynamic(&v, e.Fields())
 			}
-			finalArgs = append(finalArgs, "--"+k+"="+v)
+			finalArgs = append(finalArgs, "--"+k)
+			finalArgs = append(finalArgs, v)
 		}
 	}
 	if v, ok := flags["_"]; ok {

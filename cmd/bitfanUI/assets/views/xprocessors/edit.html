@@ -66,8 +66,11 @@
               editor.setAutoScrollEditorIntoView(true);
               editor.setTheme("ace/theme/monokai");
 
-              var mode = getModeByFileExtension("o.php");
-              editor.getSession().setMode(mode);
+              // var mode = getModeByFileExtension("o.py");
+              // editor.getSession().setMode("ace/mode/python");
+              //ace/mode/php
+              //ace/mode/python
+              editor.getSession().setMode("ace/mode/{{.xprocessor.Kind}}");
 
               var textarea = $('textarea[name="code"]').hide();
               editor.getSession().setValue(textarea.val());
