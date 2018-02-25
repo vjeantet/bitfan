@@ -41,14 +41,15 @@ func (p *streamProcessor) Start(e processors.IPacket) error {
 			return err
 		}
 		// READ FROM PROC OUTPUT AND SEND EVENTS
-		p.wg.Add(2)
-		go func(s io.ReadCloser) {
-			defer p.wg.Done()
-			fscanner := bufio.NewScanner(s)
-			for fscanner.Scan() {
-				p.Logger.Errorf("stderr : %s", fscanner.Text())
-			}
-		}(p.stderr)
+
+		// go func(s io.ReadCloser) {
+		// 	defer p.wg.Done()
+		// 	fscanner := bufio.NewScanner(s)
+		// 	for fscanner.Scan() {
+		// 		p.Logger.Errorf("stderr : %s", fscanner.Text())
+		// 	}
+		// }(p.stderr)
+		p.wg.Add(1)
 		go p.readAndSendEventsFromProcess(dec)
 	}
 

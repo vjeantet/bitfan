@@ -103,6 +103,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	delete(conf, "add_tag")
 	delete(conf, "trace")
 	delete(conf, "interval")
+	delete(conf, "workers")
 
 	// Set processor's user options
 	if err := mapstructure.WeakDecode(conf, &p.opt.Flags); err != nil {
@@ -178,8 +179,8 @@ func buildCommandArgs(args []string, flags map[string]string, e processors.IPack
 			if e != nil {
 				processors.Dynamic(&v, e.Fields())
 			}
-			finalArgs = append(finalArgs, "--"+k)
-			finalArgs = append(finalArgs, v)
+			finalArgs = append(finalArgs, "--"+k+"=\""+v+"\"")
+			// finalArgs = append(finalArgs, v)
 		}
 	}
 	if v, ok := flags["_"]; ok {
