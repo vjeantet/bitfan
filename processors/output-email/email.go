@@ -4,10 +4,15 @@ package email
 
 import (
 	"bytes"
+	"encoding/base64"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
+	"github.com/k0kubun/pp"
 	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 	gomail "gopkg.in/gomail.v2"
@@ -91,13 +96,16 @@ type options struct {
 
 	// Images - specify the name(s) and location(s) of the images
 	Images []string `mapstructure:"images"`
+
+	EmbedB64Images bool `mapstructure:"embed_b64_images"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Host: "localhost",
-		From: "bitfan@nowhere.com",
-		Port: 25,
+		Host:           "localhost",
+		From:           "bitfan@nowhere.com",
+		Port:           25,
+		EmbedB64Images: false,
 	}
 	p.opt = &defaults
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -187,7 +195,40 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 		buff := bytes.NewBufferString("")
 		tmpl.Execute(buff, e.Fields())
-		m.SetBody("text/html", buff.String())
+
+		if p.opt.EmbedB64Images == false {
+			m.SetBody("text/html", buff.String())
+		} else {
+			content := buff.String()
+			//find all <img src="(data:image/png;base64,[a-zA-Z0-9+=/]*)"/>
+			r, _ := regexp.Compile(`<img src="data:image/png;base64,([a-zA-Z0-9+=/]*)"/>`)
+
+			for i, match := range r.FindAllStringSubmatch(content, -1) {
+				imgTag := match[0]
+				b64Data := match[1]
+
+				imgUid := fmt.Sprintf("embed-%d.png", i)
+				content = strings.Replace(content, imgTag, `<img src='cid:`+imgUid+`'/>`, 1)
+				pp.Println("b64Data-->", b64Data)
+				imgPath := filepath.Join(os.TempDir(), imgUid)
+				pp.Println("imgPath-->", imgPath)
+
+				sDec, err := base64.StdEncoding.DecodeString(b64Data)
+				if err != nil {
+					p.Logger.Errorf("error while decoding base64 %s", err.Error())
+					continue
+				}
+
+				if err := ioutil.WriteFile(imgPath, sDec, 0644); err != nil {
+					p.Logger.Errorf("error while writing image to %s", imgPath)
+					continue
+				}
+
+				p.opt.Images = append(p.opt.Images, imgPath)
+			}
+			m.SetBody("text/html", content)
+		}
+
 	}
 
 	if p.opt.Body != "" {
