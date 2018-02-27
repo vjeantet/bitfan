@@ -1,6 +1,7 @@
 package xprocessor
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"text/template"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/api/models"
@@ -18,14 +20,15 @@ import (
 
 func NewWithSpec(spec *models.XProcessor) processors.Processor {
 	opt := &options{
-		Behavior: spec.Behavior,
-		Stream:   spec.Stream,
-		Command:  spec.Command,
-		Args:     spec.Args,
-		Kind:     spec.Kind,
-		Code:     spec.Code,
-		StdinAs:  spec.StdinAs,
-		StdoutAs: spec.StdoutAs,
+		Behavior:              spec.Behavior,
+		Stream:                spec.Stream,
+		Command:               spec.Command,
+		Args:                  spec.Args,
+		Kind:                  spec.Kind,
+		Code:                  spec.Code,
+		StdinAs:               spec.StdinAs,
+		StdoutAs:              spec.StdoutAs,
+		OptionsCompositionTpl: spec.OptionsCompositionTpl,
 	}
 
 	if spec.Stream == true {
@@ -76,6 +79,8 @@ type options struct {
 	// @Default "json"
 	StdoutAs string `mapstructure:"stdout_as" validate:"required"`
 
+	OptionsCompositionTpl string `mapstructure:"options_composition_tpl"`
+
 	// Flags for delegated processors (will be passed as args)
 	// @default {"Content-Type" => "application/json"}
 	Flags map[string]string
@@ -86,6 +91,8 @@ type processor struct {
 	processors.Base
 
 	opt *options
+
+	flagsTpl *template.Template
 
 	wg *sync.WaitGroup
 	q  chan bool
@@ -135,6 +142,16 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		return err
 	}
 
+	if p.opt.OptionsCompositionTpl != "" {
+		//Prepare templates
+		funcMap := template.FuncMap{}
+		tpl, err := template.New("").Option("missingkey=zero").Funcs(funcMap).Parse(string(p.opt.OptionsCompositionTpl))
+		if err != nil {
+			return err
+		}
+		p.flagsTpl = tpl
+	}
+
 	switch p.opt.Kind {
 	case "php":
 		if strings.HasPrefix(p.opt.Code, "<?php") {
@@ -146,9 +163,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		p.opt.Command = "python"
 		p.opt.Args = []string{"-u", "-c", p.opt.Code}
 	case "golang":
-
-		// d1 := []byte(p.opt.Code)
-		// err := ioutil.WriteFile("/tmp/dat1", d1, 0644)
 		tmpGoFile := filepath.Join(p.DataLocation, "main.go")
 
 		err := ioutil.WriteFile(tmpGoFile, []byte(p.opt.Code), 0644)
@@ -163,37 +177,47 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	return err
 }
 
-func buildCommandArgs(args []string, flags map[string]string, e processors.IPacket) []string {
+func (p *processor) buildCommandArgs(e processors.IPacket) []string {
 	finalArgs := []string{}
-	for _, v := range args {
+	for _, v := range p.opt.Args {
 		v := strings.TrimSpace(v)
 		if v == "" {
 			continue
 		}
 		finalArgs = append(finalArgs, v)
 	}
-	for k, v := range flags {
-		if k == "_" {
-			continue
-		}
-		if v == "" {
-			finalArgs = append(finalArgs, "--"+k)
-		} else {
-			if e != nil {
-				processors.Dynamic(&v, e.Fields())
+	if p.flagsTpl == nil {
+		for k, v := range p.opt.Flags {
+			if k == "_" {
+				continue
 			}
-			finalArgs = append(finalArgs, "--"+k+"=\""+v+"\"")
-			// finalArgs = append(finalArgs, v)
+			if v == "" {
+				finalArgs = append(finalArgs, "--"+k)
+			} else {
+				if e != nil {
+					processors.Dynamic(&v, e.Fields())
+				}
+				finalArgs = append(finalArgs, "--"+k+"="+v)
+			}
 		}
+		if v, ok := p.opt.Flags["_"]; ok {
+			finalArgs = append(finalArgs, v)
+		}
+	} else { // use template
+		buff := bytes.NewBufferString("")
+		err := p.flagsTpl.Execute(buff, struct{ Options map[string]string }{p.opt.Flags})
+		if err != nil {
+			p.Logger.Errorf("template error : %v", err)
+			return finalArgs
+		}
+		finalArgs = append(finalArgs, strings.TrimSpace(buff.String()))
 	}
-	if v, ok := flags["_"]; ok {
-		finalArgs = append(finalArgs, v)
-	}
+
 	return finalArgs
 }
 
 func (p *processor) startCommand(e processors.IPacket) (*exec.Cmd, io.WriteCloser, io.ReadCloser, io.ReadCloser, error) {
-	args := buildCommandArgs(p.opt.Args, p.opt.Flags, e)
+	args := p.buildCommandArgs(e)
 
 	var cmd *exec.Cmd
 

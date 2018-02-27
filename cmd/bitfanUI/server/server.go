@@ -261,6 +261,9 @@ func updateXProcessor(c *gin.Context) {
 	if _, ok := c.Request.PostForm["args"]; ok {
 		data["args"] = strings.Split(c.Request.PostFormValue("args"), "\n")
 	}
+	if _, ok := c.Request.PostForm["options_composition_tpl"]; ok {
+		data["options_composition_tpl"] = c.Request.PostFormValue("options_composition_tpl")
+	}
 
 	pnew, _ := apiClient.UpdateXProcessor(xprocessorUUID, &data)
 	c.JSON(200, pnew)

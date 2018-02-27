@@ -14,16 +14,17 @@ type StoreXProcessor struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 
-	Label       string   `json:"label" boltholdIndex:"Label" mapstructure:"label"`
-	Description string   `json:"description"`
-	Behavior    string   `json:"behavior" boltholdIndex:"Behavior" mapstructure:"behavior"`
-	Stream      bool     `json:"stream"`
-	Kind        string   `json:"kind"`
-	Args        []string `json:"args"`
-	Code        string   `json:"code"`
-	Command     string   `json:"command"`
-	StdinAs     string   `json:"stdin_as"`
-	StdoutAs    string   `json:"stdout_as"`
+	Label                 string   `json:"label" boltholdIndex:"Label" mapstructure:"label"`
+	Description           string   `json:"description"`
+	Behavior              string   `json:"behavior" boltholdIndex:"Behavior" mapstructure:"behavior"`
+	Stream                bool     `json:"stream"`
+	Kind                  string   `json:"kind"`
+	Args                  []string `json:"args"`
+	Code                  string   `json:"code"`
+	Command               string   `json:"command"`
+	StdinAs               string   `json:"stdin_as"`
+	StdoutAs              string   `json:"stdout_as"`
+	OptionsCompositionTpl string   `json:"options_composition_tpl"`
 }
 
 func (s *Store) CreateXProcessor(xp *models.XProcessor) {
@@ -32,16 +33,17 @@ func (s *Store) CreateXProcessor(xp *models.XProcessor) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 
-		Label:       xp.Label,
-		Behavior:    xp.Behavior,
-		Stream:      xp.Stream,
-		Command:     xp.Command,
-		Code:        xp.Code,
-		Args:        xp.Args,
-		Kind:        xp.Kind,
-		StdinAs:     xp.StdinAs,
-		StdoutAs:    xp.StdoutAs,
-		Description: xp.Description,
+		Label:                 xp.Label,
+		Behavior:              xp.Behavior,
+		Stream:                xp.Stream,
+		Command:               xp.Command,
+		Code:                  xp.Code,
+		Args:                  xp.Args,
+		Kind:                  xp.Kind,
+		StdinAs:               xp.StdinAs,
+		StdoutAs:              xp.StdoutAs,
+		Description:           xp.Description,
+		OptionsCompositionTpl: xp.OptionsCompositionTpl,
 	}
 
 	s.db.Upsert(sxp.Uuid, sxp)
@@ -53,16 +55,17 @@ func (s *Store) SaveXProcessor(xp *models.XProcessor) {
 		CreatedAt: xp.CreatedAt,
 		UpdatedAt: time.Now(),
 
-		Label:       xp.Label,
-		Behavior:    xp.Behavior,
-		Stream:      xp.Stream,
-		Command:     xp.Command,
-		Code:        xp.Code,
-		Args:        xp.Args,
-		Kind:        xp.Kind,
-		StdinAs:     xp.StdinAs,
-		StdoutAs:    xp.StdoutAs,
-		Description: xp.Description,
+		Label:                 xp.Label,
+		Behavior:              xp.Behavior,
+		Stream:                xp.Stream,
+		Command:               xp.Command,
+		Code:                  xp.Code,
+		Args:                  xp.Args,
+		Kind:                  xp.Kind,
+		StdinAs:               xp.StdinAs,
+		StdoutAs:              xp.StdoutAs,
+		Description:           xp.Description,
+		OptionsCompositionTpl: xp.OptionsCompositionTpl,
 	}
 
 	s.db.Upsert(sp.Uuid, sp)
@@ -108,6 +111,7 @@ func (s *Store) FindXProcessors(behavior string) []models.XProcessor {
 		tXProcessor.StdinAs = xp.StdinAs
 		tXProcessor.StdoutAs = xp.StdoutAs
 		tXProcessor.Description = xp.Description
+		tXProcessor.OptionsCompositionTpl = xp.OptionsCompositionTpl
 
 		xps = append(xps, tXProcessor)
 	}
@@ -140,6 +144,7 @@ func (s *Store) FindOneXProcessorByUUID(UUID string, withAssetValues bool) (mode
 	tXProcessor.StdinAs = sps[0].StdinAs
 	tXProcessor.StdoutAs = sps[0].StdoutAs
 	tXProcessor.Description = sps[0].Description
+	tXProcessor.OptionsCompositionTpl = sps[0].OptionsCompositionTpl
 
 	return tXProcessor, nil
 }
@@ -170,6 +175,7 @@ func (s *Store) FindOneXProcessorByName(name string) (models.XProcessor, error) 
 	tXProcessor.StdinAs = sps[0].StdinAs
 	tXProcessor.StdoutAs = sps[0].StdoutAs
 	tXProcessor.Description = sps[0].Description
+	tXProcessor.OptionsCompositionTpl = sps[0].OptionsCompositionTpl
 
 	return tXProcessor, nil
 }
