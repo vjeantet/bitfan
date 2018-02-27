@@ -167,6 +167,9 @@ func buildCommandArgs(args []string, flags map[string]string, e processors.IPack
 	finalArgs := []string{}
 	for _, v := range args {
 		v := strings.TrimSpace(v)
+		if v == "" {
+			continue
+		}
 		finalArgs = append(finalArgs, v)
 	}
 	for k, v := range flags {
