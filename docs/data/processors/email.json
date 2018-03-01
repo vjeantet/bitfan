@@ -155,6 +155,16 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "array"
+      },
+      {
+        "Alias": "embed_b64_images",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "EmbedB64Images",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "bool"
       }
     ]
   },
