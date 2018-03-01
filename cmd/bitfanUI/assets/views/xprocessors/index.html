@@ -12,7 +12,7 @@
   <p>
     Custom processor, available into pipeline configuration which use an external binary to handle, produce and/or consume events. <br> 3 availables behaviors : <br>
     <ul>
-    <li>Producer - Produce event on stdout on start (Stream) or on interval (noStream)</li>
+    <li>Producer - Produce event on stdout on start and/or on interval</li>
     <li>Transformer - Consume events on process's stdin and write transformed events on process's stdout - <small>process can started for each event received (noStream) or once, on start, and consume stream of events on stdin (stream)</small></li>
     <li>Consumers - Consume events on process's stdin. <small>process can started for each event received (noStream) or once, on start, and consume stream of events on stdin (stream)</small></li>
     </ul>
@@ -22,7 +22,7 @@
     <br>
     <br>On pipeline stop :
     <ul>
-    <li>Stream process :  a SIGQUIT signal will be passed to currently running process, and bitfan will wait for process to quit itself.</li>
+    <li>Stream process :  its stdin will be closed as a signal to quit, bitfan then wait for process termination.</li>
     <li>noStream process :  Bitfan waits for currently running process to quit.</li>
   </ul>
   </p>
