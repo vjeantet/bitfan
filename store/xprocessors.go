@@ -72,13 +72,7 @@ func (s *Store) SaveXProcessor(xp *models.XProcessor) {
 }
 
 func (s *Store) DeleteXProcessor(p *models.XProcessor) {
-	err := s.db.DeleteMatching(&StoreAsset{}, bolthold.Where("XProcessorUUID").Eq(p.Uuid))
-	if err != nil {
-		s.log.Error("Store : DeleteXProcessor -" + err.Error())
-		return
-	}
-
-	err = s.db.Delete(p.Uuid, &StoreXProcessor{})
+	err := s.db.Delete(p.Uuid, &StoreXProcessor{})
 	if err != nil {
 		s.log.Error("Store : DeleteXProcessor - " + err.Error())
 		return
