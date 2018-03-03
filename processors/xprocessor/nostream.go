@@ -49,7 +49,7 @@ func (p *noStreamProcessor) Receive(e processors.IPacket) error {
 		defer p.wg.Done()
 		fscanner := bufio.NewScanner(s)
 		for fscanner.Scan() {
-			p.Logger.Errorf("stderr : %s", fscanner.Text())
+			p.Logger.Errorf("%s", fscanner.Text())
 		}
 	}(stderr)
 	p.readAndSendEventsFromProcess(dec)

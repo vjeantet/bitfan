@@ -30,7 +30,7 @@ func (p *streamProcessor) Start(e processors.IPacket) error {
 	go func(s io.ReadCloser) {
 		scanner := bufio.NewScanner(s)
 		for scanner.Scan() {
-			p.Logger.Errorf("stderr : %s", scanner.Text())
+			p.Logger.Errorf("%s", scanner.Text())
 		}
 	}(p.stderr)
 

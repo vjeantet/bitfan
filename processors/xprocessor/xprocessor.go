@@ -109,7 +109,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	delete(conf, "remove_field")
 	delete(conf, "add_tag")
 	delete(conf, "trace")
-	delete(conf, "interval")
+	delete(conf, "interval") // todo remove only when producer noStream
 	delete(conf, "workers")
 
 	// Set processor's user options
@@ -221,7 +221,6 @@ func (p *processor) startCommand(e processors.IPacket) (*exec.Cmd, io.WriteClose
 
 	var cmd *exec.Cmd
 
-	p.Logger.Debugf("command '%s', args=%s", p.opt.Command, args)
 	cmd = exec.Command(p.opt.Command, args...)
 	cmd.Dir = p.ConfigWorkingLocation
 	cmd.Env = append(os.Environ(),
@@ -237,10 +236,10 @@ func (p *processor) startCommand(e processors.IPacket) (*exec.Cmd, io.WriteClose
 	stderr, _ := cmd.StderrPipe()
 
 	if err := cmd.Start(); err != nil {
+		p.Logger.Errorf("processor '%s' start error with command='%s' %s", cmd.Process.Pid, p.opt.Command, args)
 		return cmd, stdin, stdout, stderr, err
 	}
-
-	p.Logger.Infof("delegator %s started PId=%d", p.B().Name, cmd.Process.Pid)
+	p.Logger.Infof("processor started process PID=%d with command= '%s' %s", cmd.Process.Pid, p.opt.Command, args)
 	return cmd, stdin, stdout, stderr, nil
 }
 
