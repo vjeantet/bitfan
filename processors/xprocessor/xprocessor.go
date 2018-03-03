@@ -3,14 +3,15 @@ package xprocessor
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"sync"
-	"text/template"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/bitfan/api/models"
@@ -83,7 +84,7 @@ type options struct {
 
 	// Flags for delegated processors (will be passed as args)
 	// @default {"Content-Type" => "application/json"}
-	Flags map[string]string
+	Flags map[string]interface{}
 }
 
 // Reads events from standard input
@@ -144,8 +145,16 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 	if p.opt.OptionsCompositionTpl != "" {
 		//Prepare templates
-		funcMap := template.FuncMap{}
-		tpl, err := template.New("").Option("missingkey=zero").Funcs(funcMap).Parse(string(p.opt.OptionsCompositionTpl))
+
+		funcMap := template.FuncMap{
+			"isSlice": func(a interface{}) (bool, error) {
+				av := reflect.ValueOf(a).Kind()
+				return av == reflect.Slice, nil
+			},
+		}
+		// p.opt.OptionsCompositionTpl = `{{ range $name, $value := .Options }}{{if ne $name "_" }}{{if isSlice $value}}{{ range $value }}--{{$name}}="{{.}}" {{end}}{{else}}--{{$name}}="{{$value}}" {{end}}{{ end }}{{ end }}{{ index .Options "_"}}`
+
+		tpl, err := template.New("").Option("missingkey=zero").Funcs(funcMap).Parse(p.opt.OptionsCompositionTpl)
 		if err != nil {
 			return err
 		}
@@ -191,21 +200,55 @@ func (p *processor) buildCommandArgs(e processors.IPacket) []string {
 			if k == "_" {
 				continue
 			}
-			if v == "" {
-				finalArgs = append(finalArgs, "--"+k)
-			} else {
-				if e != nil {
-					processors.Dynamic(&v, e.Fields())
+			switch vt := v.(type) {
+			case string:
+				if v == "" {
+					finalArgs = append(finalArgs, "--"+k)
+				} else {
+					if e != nil {
+						processors.Dynamic(&vt, e.Fields())
+					}
+					finalArgs = append(finalArgs, "--"+k+"="+vt)
 				}
-				finalArgs = append(finalArgs, "--"+k+"="+v)
+			case int64:
+				finalArgs = append(finalArgs, fmt.Sprintf("--%s=%d", k, vt))
+			case bool:
+				if vt == true {
+					finalArgs = append(finalArgs, fmt.Sprintf("--%s=%s", k, "true"))
+				} else {
+					finalArgs = append(finalArgs, fmt.Sprintf("--%s=%s", k, "false"))
+				}
+			case []interface{}:
+				for _, l := range vt {
+					switch lt := l.(type) {
+					case string:
+						if e != nil {
+							processors.Dynamic(&lt, e.Fields())
+						}
+						finalArgs = append(finalArgs, fmt.Sprintf("--%s=%s", k, lt))
+					case int64:
+						finalArgs = append(finalArgs, fmt.Sprintf("--%s=%d", k, lt))
+					default:
+						p.Logger.Errorf("not handled slice type : %s=>%v", k, v)
+					}
+				}
+			default:
+				p.Logger.Errorf("not handled type : %s=>%v", k, v)
 			}
+
 		}
 		if v, ok := p.opt.Flags["_"]; ok {
-			finalArgs = append(finalArgs, v)
+			switch vt := v.(type) {
+			case string:
+				finalArgs = append(finalArgs, vt)
+			default:
+				p.Logger.Errorf("not handled type : _ =>%v", v)
+			}
+
 		}
 	} else { // use template
 		buff := bytes.NewBufferString("")
-		err := p.flagsTpl.Execute(buff, struct{ Options map[string]string }{p.opt.Flags})
+		err := p.flagsTpl.Execute(buff, struct{ Options map[string]interface{} }{p.opt.Flags})
 		if err != nil {
 			p.Logger.Errorf("template error : %v", err)
 			return finalArgs
