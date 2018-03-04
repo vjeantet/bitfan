@@ -74,3 +74,5 @@ releases
 /cmd/bitfanUI/build-windows.sh
 
 /cmd/bitfan/commons/public/*
+
+/TODO.md
