@@ -165,10 +165,10 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "EmbedB64Images",
         Alias:          "embed_b64_images",
-        Doc:            "",
+        Doc:            "Search for img:data in HTML body, and replace them to a reference to inline attachment",
         Required:       false,
         Type:           "bool",
-        DefaultValue:   nil,
+        DefaultValue:   "false",
         PossibleValues: []string{},
         ExampleLS:      "",
       },

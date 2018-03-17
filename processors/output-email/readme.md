@@ -131,7 +131,7 @@ Images - specify the name(s) and location(s) of the images
 * Value type is bool
 * Default value is `false`
 
-
+Search for img:data in HTML body, and replace them to a reference to inline attachment
 
 
 
@@ -154,6 +154,6 @@ email{
 	body => "message : {{.message}}. from {{.host}}."
 	attachments => []
 	images => []
-	embed_b64_images => bool
+	embed_b64_images => false
 }
 ```

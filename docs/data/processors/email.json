@@ -158,8 +158,8 @@
       },
       {
         "Alias": "embed_b64_images",
-        "DefaultValue": null,
-        "Doc": "",
+        "DefaultValue": "false",
+        "Doc": "Search for img:data in HTML body, and replace them to a reference to inline attachment",
         "ExampleLS": "",
         "Name": "EmbedB64Images",
         "PossibleValues": null,

@@ -97,6 +97,8 @@ type options struct {
 	// Images - specify the name(s) and location(s) of the images
 	Images []string `mapstructure:"images"`
 
+	// Search for img:data in HTML body, and replace them to a reference to inline attachment
+	// @Default false
 	EmbedB64Images bool `mapstructure:"embed_b64_images"`
 }
 
