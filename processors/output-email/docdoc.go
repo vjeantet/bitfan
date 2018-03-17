@@ -153,6 +153,16 @@ func (p *processor) Doc() *doc.Processor {
         ExampleLS:      "",
       },
       &doc.ProcessorOption{
+        Name:           "AttachEventData",
+        Alias:          "attachments_with_event",
+        Doc:            "Use event field's values as attachment content\neach pair is  : event field's path => attachment's name",
+        Required:       false,
+        Type:           "hash",
+        DefaultValue:   nil,
+        PossibleValues: []string{},
+        ExampleLS:      " attachments_with_event=>{\"mydata\"=>\"myimage.jpg\"}",
+      },
+      &doc.ProcessorOption{
         Name:           "Images",
         Alias:          "images",
         Doc:            "Images - specify the name(s) and location(s) of the images",

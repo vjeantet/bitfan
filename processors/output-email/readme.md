@@ -4,24 +4,25 @@ Send email when an output is received. Alternatively, you may include or exclude
 ## Synopsys
 
 
-|     SETTING      |   TYPE   | REQUIRED |    DEFAULT VALUE     |
-|------------------|----------|----------|----------------------|
-| address          | string   | false    | "localhost"          |
-| port             | int      | false    |                   25 |
-| username         | string   | false    | ""                   |
-| password         | string   | false    | ""                   |
-| from             | string   | false    | "bitfan@nowhere.com" |
-| replyto          | string   | false    | ""                   |
-| to               | string   | true     | ""                   |
-| cc               | string   | false    | ""                   |
-| bcc              | string   | false    | ""                   |
-| subject          | string   | false    | ""                   |
-| subjectfile      | string   | false    | ""                   |
-| htmlbody         | location | false    | ?                    |
-| body             | location | false    | ?                    |
-| attachments      | array    | false    | []                   |
-| images           | array    | false    | []                   |
-| embed_b64_images | bool     | false    | false                |
+|        SETTING         |   TYPE   | REQUIRED |    DEFAULT VALUE     |
+|------------------------|----------|----------|----------------------|
+| address                | string   | false    | "localhost"          |
+| port                   | int      | false    |                   25 |
+| username               | string   | false    | ""                   |
+| password               | string   | false    | ""                   |
+| from                   | string   | false    | "bitfan@nowhere.com" |
+| replyto                | string   | false    | ""                   |
+| to                     | string   | true     | ""                   |
+| cc                     | string   | false    | ""                   |
+| bcc                    | string   | false    | ""                   |
+| subject                | string   | false    | ""                   |
+| subjectfile            | string   | false    | ""                   |
+| htmlbody               | location | false    | ?                    |
+| body                   | location | false    | ?                    |
+| attachments            | array    | false    | []                   |
+| attachments_with_event | hash     | false    | {}                   |
+| images                 | array    | false    | []                   |
+| embed_b64_images       | bool     | false    | false                |
 
 
 ## Details
@@ -121,6 +122,13 @@ Body for the email - plain text only.
 
 Attachments - specify the name(s) and location(s) of the files
 
+### attachments_with_event
+* Value type is hash
+* Default value is `{}`
+
+Use event field's values as attachment content
+each pair is  : event field's path => attachment's name
+
 ### images
 * Value type is array
 * Default value is `[]`
@@ -153,6 +161,7 @@ email{
 	htmlBody => "<h1>Hello</h1> message received : {{.message}}"
 	body => "message : {{.message}}. from {{.host}}."
 	attachments => []
+	 attachments_with_event=>{"mydata"=>"myimage.jpg"}
 	images => []
 	embed_b64_images => false
 }

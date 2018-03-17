@@ -12,7 +12,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/k0kubun/pp"
+	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 	gomail "gopkg.in/gomail.v2"
@@ -93,6 +93,11 @@ type options struct {
 
 	// Attachments - specify the name(s) and location(s) of the files
 	Attachments []string `mapstructure:"attachments"`
+
+	// Use event field's values as attachment content
+	// each pair is  : event field's path => attachment's name
+	// @ExampleLS  attachments_with_event=>{"mydata"=>"myimage.jpg"}
+	AttachEventData map[string]string `mapstructure:"attachments_with_event"`
 
 	// Images - specify the name(s) and location(s) of the images
 	Images []string `mapstructure:"images"`
@@ -211,9 +216,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 				imgUid := fmt.Sprintf("embed-%d.png", i)
 				content = strings.Replace(content, imgTag, `<img src='cid:`+imgUid+`'/>`, 1)
-				pp.Println("b64Data-->", b64Data)
 				imgPath := filepath.Join(os.TempDir(), imgUid)
-				pp.Println("imgPath-->", imgPath)
 
 				sDec, err := base64.StdEncoding.DecodeString(b64Data)
 				if err != nil {
@@ -299,6 +302,39 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 
 		m.Attach(f)
+	}
+
+	for path, attachmentName := range p.opt.AttachEventData {
+		value, err := e.Fields().ValueForPath(path)
+		if err != nil {
+			p.Logger.Warningf("Attach event data failed for path %s : %s", path, err)
+			continue
+		}
+
+		name, _ := uuid.NewV4()
+		attachFileName := filepath.Join(os.TempDir(), "bitfan-tmp-email-"+name.String())
+		switch vt := value.(type) {
+		case string:
+			sDec, err := base64.StdEncoding.DecodeString(vt)
+			if err != nil {
+				p.Logger.Warningf("base64 decode %s, %s", path, err)
+				return err
+			}
+			if err = ioutil.WriteFile(attachFileName, sDec, 0644); err != nil {
+				p.Logger.Warningf("write file error %s : %s", attachFileName, err)
+				continue
+			}
+		case []byte:
+			if err = ioutil.WriteFile(attachFileName, vt, 0644); err != nil {
+				p.Logger.Warningf("write file error %s : %s", attachFileName, err)
+				continue
+			}
+		default:
+			p.Logger.Warningf("Unknow content type for %V", value)
+			continue
+		}
+
+		m.Attach(attachFileName, gomail.Rename(attachmentName))
 	}
 
 	d := gomail.NewDialer(p.opt.Host, p.opt.Port, p.opt.Username, p.opt.Password)
