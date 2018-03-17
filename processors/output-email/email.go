@@ -317,8 +317,11 @@ func (p *processor) Receive(e processors.IPacket) error {
 		case string:
 			sDec, err := base64.StdEncoding.DecodeString(vt)
 			if err != nil {
-				p.Logger.Warningf("base64 decode %s, %s", path, err)
-				return err
+				p.Logger.Debugf("base64 decode %s, %s", path, err)
+				if err = ioutil.WriteFile(attachFileName, []byte(vt), 0644); err != nil {
+					p.Logger.Warningf("write file error %s : %s", attachFileName, err)
+					continue
+				}
 			}
 			if err = ioutil.WriteFile(attachFileName, sDec, 0644); err != nil {
 				p.Logger.Warningf("write file error %s : %s", attachFileName, err)
