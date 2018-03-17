@@ -76,3 +76,9 @@ releases
 /cmd/bitfan/commons/public/*
 
 /TODO.md
+
+/cmd/bitfan/examples.d/xprocessor/
+
+/cmd/bitfan/examples.d/htmlimage/
+
+/cmd/bitfanUI/test.py
