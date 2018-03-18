@@ -1,5 +1,23 @@
 # WEBFAN
-
+Example
+```
+input{
+  webhook{
+        uri => "toto/titi"
+        pipeline=> "test.conf"
+        codec => plain{
+            role => "decoder"
+        }
+        codec => plain{
+            role => "encoder"
+            format=> "<h1>Hello {{.request.querystring.name}}</h1>"
+        }
+        headers => {
+            "Content-Type" => "text/html"
+        }
+    }
+}
+```
 
 ## Synopsys
 

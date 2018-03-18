@@ -1,5 +1,5 @@
 {
-  "Doc": "",
+  "Doc": "Example\n```\ninput{\n  webhook{\n        uri =\u003e \"toto/titi\"\n        pipeline=\u003e \"test.conf\"\n        codec =\u003e plain{\n            role =\u003e \"decoder\"\n        }\n        codec =\u003e plain{\n            role =\u003e \"encoder\"\n            format=\u003e \"\u003ch1\u003eHello {{.request.querystring.name}}\u003c/h1\u003e\"\n        }\n        headers =\u003e {\n            \"Content-Type\" =\u003e \"text/html\"\n        }\n    }\n}\n```",
   "DocShort": "Reads events from standard input",
   "ImportPath": "github.com/vjeantet/bitfan/processors/webfan",
   "Name": "webfan",

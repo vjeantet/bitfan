@@ -7,7 +7,7 @@ func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
   Name:       "webfan",
   ImportPath: "github.com/vjeantet/bitfan/processors/webfan",
-  Doc:        "",
+  Doc:        "Example\n```\ninput{\n  webhook{\n        uri => \"toto/titi\"\n        pipeline=> \"test.conf\"\n        codec => plain{\n            role => \"decoder\"\n        }\n        codec => plain{\n            role => \"encoder\"\n            format=> \"<h1>Hello {{.request.querystring.name}}</h1>\"\n        }\n        headers => {\n            \"Content-Type\" => \"text/html\"\n        }\n    }\n}\n```",
   DocShort:   "Reads events from standard input",
   Options:    &doc.ProcessorOptions{
     Doc:     "",

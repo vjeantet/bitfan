@@ -1,4 +1,23 @@
 //go:generate bitfanDoc
+// Example
+// ```
+// input{
+//   webhook{
+//         uri => "toto/titi"
+//         pipeline=> "test.conf"
+//         codec => plain{
+//             role => "decoder"
+//         }
+//         codec => plain{
+//             role => "encoder"
+//             format=> "<h1>Hello {{.request.querystring.name}}</h1>"
+//         }
+//         headers => {
+//             "Content-Type" => "text/html"
+//         }
+//     }
+// }
+// ```
 package webfan
 
 import (
@@ -7,7 +26,6 @@ import (
 	"net/http/httputil"
 	"sync"
 
-	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/entrypoint"
@@ -97,42 +115,51 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
+
 	// pp.Println("ppl-->", ppl)
+
 	orderedAgentConfList := core.Sort(ppl.Agents(), core.SortInputsFirst)
 
 	// Find Last Agent
-	lastAgent := orderedAgentConfList[len(orderedAgentConfList)-1]
-	if lastAgent.Label != "pass" {
-		p.Logger.Errorf("Add an `output{pass{}}` into pipeline configuration")
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.Write([]byte("Add an `output{pass{}}` into pipeline configuration"))
-		return
-	}
-	// pp.Println("lastAgent-->", lastAgent)
-	// Connect its Recipient to this Receive
-
-	// Find First agent
 	firstAgent := orderedAgentConfList[0]
-	// pp.Println("lastAgent-->", lastAgent)
+	lastAgent := orderedAgentConfList[len(orderedAgentConfList)-1]
+
+	// When no pass output set, add one
+	if lastAgent.Label != "pass" {
+		lastEp, _ := entrypoint.New("output{pass{}}", firstAgent.Wd, entrypoint.CONTENT_INLINE)
+		lastPpl, _ := lastEp.Pipeline()
+		for _, a := range lastPpl.Agents() {
+			a.AgentSources = core.PortList{core.Port{AgentID: lastAgent.ID, PortNumber: 0}}
+			ppl.AddAgent(*a)
+			lastAgent = a
+			break
+		}
+	}
+
 	back := make(chan processors.IPacket)
 	lastAgent.Options["chan"] = back
+
+	// Create a reader
+	var dec codecs.Decoder
+	if dec, err = p.opt.Codec.NewDecoder(r.Body); err != nil {
+		p.Logger.Errorln("decoder error : ", err.Error())
+		close(back)
+		return
+	}
+	// Create a writer
+	var enc codecs.Encoder
+	enc, err = p.opt.Codec.NewEncoder(w)
+	if err != nil {
+		p.Logger.Errorln("codec error : ", err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Write([]byte(err.Error()))
+		return
+	}
 
 	done := make(chan bool)
 	go func(back chan processors.IPacket) {
 		defer close(done)
-
-		// Encode content
-		var enc codecs.Encoder
-		enc, err = p.opt.Codec.NewEncoder(w)
-		if err != nil {
-			p.Logger.Errorln("codec error : ", err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-			w.Write([]byte(err.Error()))
-			return
-		}
-
 		firstPass := true
 		for e := range back {
 			if firstPass {
@@ -145,8 +172,8 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 				firstPass = false
 			}
 			enc.Encode(e.Fields().Old())
+			w.(http.Flusher).Flush()
 		}
-
 	}(back)
 
 	_, err = ppl.Start()
@@ -155,20 +182,12 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Write([]byte(err.Error()))
-		close(back)
+		close(back) // will close done chan
 		return
 	}
 
-	// Create a reader
-	var dec codecs.Decoder
-	if dec, err = p.opt.Codec.NewDecoder(r.Body); err != nil {
-		p.Logger.Errorln("decoder error : ", err.Error())
-		close(back)
-		return
-	}
 	headersBytes, _ := httputil.DumpRequest(r, false)
 	headers := string(headersBytes)
-
 	req := map[string]interface{}{
 		"remoteAddr":  r.RemoteAddr,
 		"rawHeaders":  headers,
@@ -211,7 +230,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 
 	p.Logger.Debug("request = ", req)
 	p.Logger.Debug("start reading body content")
-	i := 1
+
 	for dec.More() {
 		var record interface{}
 
@@ -220,6 +239,10 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 				p.Logger.Debugln("error while http read docoding : ", err)
 			} else {
 				p.Logger.Errorln("error while http read docoding : ", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+				w.Write([]byte(err.Error()))
+				close(back)
 				break
 			}
 		}
@@ -247,21 +270,9 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 			p.Logger.Errorf("Unknow structure %#v", v)
 		}
 
-		id, _ := uuid.NewV4()
-		e.Fields().SetValueForPath(id.String(), "uuid")
 		p.opt.ProcessCommonOptions(e.Fields())
 
 		firstAgent.Processor().Receive(e)
-		i = i + 1
-	}
-
-	if err != nil && err != io.EOF {
-		p.Logger.Errorln("error : ", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.Write([]byte(err.Error()))
-		close(back)
-		return
 	}
 
 	ppl.Stop()
