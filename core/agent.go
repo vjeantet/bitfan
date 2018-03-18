@@ -233,6 +233,11 @@ func (a *Agent) start() error {
 	return nil
 }
 
+// Processor return the agent's processor
+func (a *Agent) Processor() processors.Processor {
+	return a.processor
+}
+
 // listen plugs the agent processor to its event chan
 func (a *Agent) listen(wg *sync.WaitGroup) {
 	Log().Debugf("Starting EventLoop on %d-%s", a.ID, a.Label)

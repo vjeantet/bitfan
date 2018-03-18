@@ -29,7 +29,6 @@ type Hook struct {
 
 var webHookMap = syncmap.Map{}
 var baseURL = ""
-var whPrefixURL = "/h/"
 var Log commons.Logger
 
 func New(pipelineLabel, nameSpace string) *webHook {
@@ -52,7 +51,27 @@ func WebHooks(uuid string) []Hook {
 }
 
 func (w *webHook) buildURL(hookName string) string {
-	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
+	return strings.ToLower("/h/" + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
+}
+
+func (w *webHook) buildNamedURL(hookName string) string {
+	return strings.ToLower("/_/" + hookName)
+}
+
+// Add a new route to a given http.HandlerFunc
+func (w *webHook) AddNamed(hookName string, hf http.HandlerFunc) {
+
+	hUrl := w.buildNamedURL(hookName)
+	w.Hooks = append(w.Hooks, hookName)
+
+	webHookMap.Store(hUrl, &Hook{
+		h:            hf,
+		Description:  hookName,
+		Namespace:    w.namespace,
+		PipelineUUID: w.pipelineLabel,
+		Url:          hUrl,
+	})
+	Log.Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }
 
 // Add a new route to a given http.HandlerFunc
@@ -74,6 +93,10 @@ func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
 // Delete a route
 func (w *webHook) Delete(hookName string) {
 	hUrl := w.buildURL(hookName)
+	webHookMap.Delete(hUrl)
+	Log.Debugf("WebHook unregisted [%s]", hUrl)
+
+	hUrl = w.buildNamedURL(hookName)
 	webHookMap.Delete(hUrl)
 	Log.Debugf("WebHook unregisted [%s]", hUrl)
 }
