@@ -4,24 +4,24 @@
 ## Synopsys
 
 
-| SETTING |  TYPE  | REQUIRED | DEFAULT VALUE |
-|---------|--------|----------|---------------|
-| Codec   | codec  | false    | "json"        |
-| uri     | string | true     | ""            |
-| conf    | string | true     | ""            |
-| headers | hash   | false    | {}            |
+| SETTING  |  TYPE  | REQUIRED | DEFAULT VALUE |
+|----------|--------|----------|---------------|
+| Codec    | codec  | false    | ?             |
+| uri      | string | true     | ""            |
+| pipeline | string | true     | ""            |
+| headers  | hash   | false    | {}            |
 
 
 ## Details
 
 ### Codec
 * Value type is codec
-* Default value is `"json"`
+* Default value is `?`
 
-The codec used for input data. Input codecs are a convenient method for decoding
-your data before it enters the input, without needing a separate filter in your bitfan pipeline
+The codec used for posted data. Input codecs are a convenient method for decoding
+your data before it enters the pipeline, without needing a separate filter in your bitfan pipeline
 
-Default decode http request as json, response is json encoded.
+Default decode http request as plain text, response is json encoded.
 Set multiple codec with role to customize
 
 ### uri
@@ -31,7 +31,7 @@ Set multiple codec with role to customize
 
 URI path /_/path
 
-### conf
+### pipeline
 * This is a required setting.
 * Value type is string
 * Default value is `""`
@@ -43,7 +43,7 @@ This configuration should contains only a filter section an a output like ```out
 * Value type is hash
 * Default value is `{}`
 
-Headers to send back into each outgoing response
+Headers to send back into outgoing response
 
 
 
@@ -51,9 +51,9 @@ Headers to send back into each outgoing response
 
 ```
 webfan{
-	codec => "json"
+	codec => plain { role=>"encoder"} codec => json { role=>"decoder"}
 	uri => ""
-	conf => ""
+	pipeline => ""
 	{"X-Processor" => "bitfan"}
 }
 ```

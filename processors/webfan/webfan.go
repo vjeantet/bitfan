@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
-	"os"
 	"sync"
 
 	uuid "github.com/nu7hatch/gouuid"
@@ -22,12 +21,12 @@ func New() processors.Processor {
 type options struct {
 	processors.CommonOptions `mapstructure:",squash"`
 
-	// The codec used for input data. Input codecs are a convenient method for decoding
-	// your data before it enters the input, without needing a separate filter in your bitfan pipeline
+	// The codec used for posted data. Input codecs are a convenient method for decoding
+	// your data before it enters the pipeline, without needing a separate filter in your bitfan pipeline
 	//
-	// Default decode http request as json, response is json encoded.
+	// Default decode http request as plain text, response is json encoded.
 	// Set multiple codec with role to customize
-	// @Default "json"
+	// @ExampleLS codec => plain { role=>"encoder"} codec => json { role=>"decoder"}
 	// @Type codec
 	Codec codecs.CodecCollection
 
@@ -36,9 +35,9 @@ type options struct {
 
 	// Path to pipeline's configuration to execute on request
 	// This configuration should contains only a filter section an a output like ```output{pass{}}```
-	Conf string `mapstructure:"conf" validate:"required"`
+	Pipeline string `mapstructure:"pipeline" validate:"required"`
 
-	// Headers to send back into each outgoing response
+	// Headers to send back into outgoing response
 	// @ExampleLS {"X-Processor" => "bitfan"}
 	Headers map[string]string `mapstructure:"headers"`
 }
@@ -47,10 +46,9 @@ type options struct {
 type processor struct {
 	processors.Base
 
-	opt  *options
-	wg   *sync.WaitGroup
-	host string
-	ep   *entrypoint.Entrypoint
+	opt *options
+	wg  *sync.WaitGroup
+	ep  *entrypoint.Entrypoint
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -59,10 +57,6 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
 	if err != nil {
 		return err
-	}
-
-	if p.host, err = os.Hostname(); err != nil {
-		p.Logger.Warnf("can not get hostname : %v", err)
 	}
 
 	if p.opt.Codec.Enc == nil {
@@ -77,12 +71,12 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 }
 func (p *processor) Start(e processors.IPacket) error {
 	p.wg = &sync.WaitGroup{}
-	p.WebHook.AddNamed(p.opt.Uri, p.HttpHandler)
+	p.WebHook.AddShort(p.opt.Uri, p.HttpHandler)
 
 	var err error
-	p.ep, err = entrypoint.New(p.opt.Conf, p.ConfigWorkingLocation, entrypoint.CONTENT_REF)
+	p.ep, err = entrypoint.New(p.opt.Pipeline, p.ConfigWorkingLocation, entrypoint.CONTENT_REF)
 	if err != nil {
-		p.Logger.Errorf("Error with entrypoint %s", p.opt.Conf)
+		p.Logger.Errorf("Error with entrypoint %s", p.opt.Pipeline)
 	}
 
 	return err
@@ -98,6 +92,9 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 	ppl, err := p.ep.Pipeline()
 	if err != nil {
 		p.Logger.Errorf("%s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Write([]byte(err.Error()))
 		return
 	}
 	// pp.Println("ppl-->", ppl)
@@ -105,6 +102,14 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Find Last Agent
 	lastAgent := orderedAgentConfList[len(orderedAgentConfList)-1]
+	if lastAgent.Label != "pass" {
+		p.Logger.Errorf("Add an `output{pass{}}` into pipeline configuration")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Write([]byte("Add an `output{pass{}}` into pipeline configuration"))
+		return
+	}
+	// pp.Println("lastAgent-->", lastAgent)
 	// Connect its Recipient to this Receive
 
 	// Find First agent
@@ -158,7 +163,6 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 	var dec codecs.Decoder
 	if dec, err = p.opt.Codec.NewDecoder(r.Body); err != nil {
 		p.Logger.Errorln("decoder error : ", err.Error())
-		close(back)
 		close(back)
 		return
 	}

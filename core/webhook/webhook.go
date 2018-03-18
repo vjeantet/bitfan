@@ -54,14 +54,14 @@ func (w *webHook) buildURL(hookName string) string {
 	return strings.ToLower("/h/" + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
 }
 
-func (w *webHook) buildNamedURL(hookName string) string {
+func (w *webHook) buildShortURL(hookName string) string {
 	return strings.ToLower("/_/" + hookName)
 }
 
 // Add a new route to a given http.HandlerFunc
-func (w *webHook) AddNamed(hookName string, hf http.HandlerFunc) {
+func (w *webHook) AddShort(hookName string, hf http.HandlerFunc) {
 
-	hUrl := w.buildNamedURL(hookName)
+	hUrl := w.buildShortURL(hookName)
 	w.Hooks = append(w.Hooks, hookName)
 
 	webHookMap.Store(hUrl, &Hook{
@@ -96,7 +96,7 @@ func (w *webHook) Delete(hookName string) {
 	webHookMap.Delete(hUrl)
 	Log.Debugf("WebHook unregisted [%s]", hUrl)
 
-	hUrl = w.buildNamedURL(hookName)
+	hUrl = w.buildShortURL(hookName)
 	webHookMap.Delete(hUrl)
 	Log.Debugf("WebHook unregisted [%s]", hUrl)
 }

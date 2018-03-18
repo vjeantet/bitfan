@@ -25,12 +25,12 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "Codec",
         Alias:          "",
-        Doc:            "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline\n\nDefault decode http request as json, response is json encoded.\nSet multiple codec with role to customize",
+        Doc:            "The codec used for posted data. Input codecs are a convenient method for decoding\nyour data before it enters the pipeline, without needing a separate filter in your bitfan pipeline\n\nDefault decode http request as plain text, response is json encoded.\nSet multiple codec with role to customize",
         Required:       false,
         Type:           "codec",
-        DefaultValue:   "\"json\"",
+        DefaultValue:   nil,
         PossibleValues: []string{},
-        ExampleLS:      "",
+        ExampleLS:      "codec => plain { role=>\"encoder\"} codec => json { role=>\"decoder\"}",
       },
       &doc.ProcessorOption{
         Name:           "Uri",
@@ -43,8 +43,8 @@ func (p *processor) Doc() *doc.Processor {
         ExampleLS:      "",
       },
       &doc.ProcessorOption{
-        Name:           "Conf",
-        Alias:          "conf",
+        Name:           "Pipeline",
+        Alias:          "pipeline",
         Doc:            "Path to pipeline's configuration to execute on request\nThis configuration should contains only a filter section an a output like ```output{pass{}}```",
         Required:       true,
         Type:           "string",
@@ -55,7 +55,7 @@ func (p *processor) Doc() *doc.Processor {
       &doc.ProcessorOption{
         Name:           "Headers",
         Alias:          "headers",
-        Doc:            "Headers to send back into each outgoing response",
+        Doc:            "Headers to send back into outgoing response",
         Required:       false,
         Type:           "hash",
         DefaultValue:   nil,
