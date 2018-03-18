@@ -1,5 +1,7 @@
 language: go
-
+go:
+  - "1.10"
+  
 # before_cache:
 # -  find $GOPATH/pkg/**/github.com/vjeantet/bitfan/* -maxdepth 0 ! -name vendor -print0 | xargs -0 rm -rf
 # 
