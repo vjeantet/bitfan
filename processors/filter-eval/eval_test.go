@@ -167,7 +167,7 @@ func TestTemplateErrorUrlNotFound(t *testing.T) {
 		},
 	)
 
-	assert.EqualError(t, err, "Get http://127.0.0.1/iuherfiuhoiuehroiuhzeroiuhaiuzheifuhaerg: dial tcp 127.0.0.1:80: getsockopt: connection refused")
+	assert.Regexp(t, "Get http://127.0.0.1/iuherfiuhoiuehroiuhzeroiuhaiuzheifuhaerg: dial tcp 127.0.0.1:80: .*: connection refused", err.Error())
 }
 
 func TestTemplateErrorPathIsDirectory(t *testing.T) {
