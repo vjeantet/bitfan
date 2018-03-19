@@ -42,7 +42,7 @@
     <li>
       [{{$webhook.Namespace}}]
       <span>
-        <a href="http://{{$.apiHost}}/{{$webhook.Url}}" target="_blank">/h/.../{{$webhook.Description}}</a>
+        <a href="http://{{$.apiHost}}{{$webhook.Url}}" target="_blank">/{{$webhook.Description}}</a>
       </span>
     </li>    
   {{end}}
