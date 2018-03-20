@@ -190,3 +190,11 @@ func TestParseErrorUnkowTokken(t *testing.T) {
 	assert.Equal(t, 6, err.(*ParseError).Line)
 	assert.Equal(t, 13, err.(*ParseError).Column)
 }
+
+func TestParseIssue75(t *testing.T) {
+	conf, err := parseTestCase("issue-75")
+	assert.Equal(t, "'message' =~ '^{'", conf.Sections["filter"].Plugins[0].When[0].Expression)
+	assert.Equal(t, "'message' =~ '^{'", conf.Sections["filter"].Plugins[1].When[0].Expression)
+	assert.Equal(t, "'{' in [message]", conf.Sections["filter"].Plugins[2].When[0].Expression)
+	assert.NoError(t, err)
+}
