@@ -21,12 +21,6 @@
 			"revisionTime": "2013-12-01T22:36:12Z"
 		},
 		{
-			"checksumSHA1": "S4ukyUmvCeISgRFMCQlsmeaCMoc=",
-			"path": "github.com/Knetic/govaluate",
-			"revision": "249bbfcda0a3fc15c0e58db8e84bac7beda17961",
-			"revisionTime": "2016-10-12T18:29:40Z"
-		},
-		{
 			"checksumSHA1": "2wcgnEdGnKLkBnzkBEC9RmiqP4w=",
 			"path": "github.com/PuerkitoBio/goquery",
 			"revision": "3cb3b8656883c2cc3deb9c643d93ea6e5157e425",
@@ -907,6 +901,12 @@
 			"path": "golang.org/x/text/transform",
 			"revision": "a8b38433e35b65ba247bb267317037dee1b70cea",
 			"revisionTime": "2016-10-19T13:35:53Z"
+		},
+		{
+			"checksumSHA1": "pVNZGpGxS3eO63SJzRo8tKAAdHg=",
+			"path": "gopkg.in/Knetic/govaluate.v3",
+			"revision": "d216395917cc49052c7c7094cf57f09657ca08a8",
+			"revisionTime": "2017-05-01T02:28:28Z"
 		},
 		{
 			"checksumSHA1": "o5Skl9YjZqmvEEqWie3f3oY0Kow=",

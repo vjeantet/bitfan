@@ -6,6 +6,7 @@ import (
 )
 
 const isoDateFormat string = "2006-01-02T15:04:05.999999999Z0700"
+const shortCircuitHolder int = -1
 
 var DUMMY_PARAMETERS = MapParameters(map[string]interface{}{})
 
@@ -20,6 +21,16 @@ type EvaluableExpression struct {
 		Defaults to the complete ISO8601 format, including nanoseconds.
 	*/
 	QueryDateFormat string
+
+	/*
+		Whether or not to safely check types when evaluating.
+		If true, this library will return error messages when invalid types are used.
+		If false, the library will panic when operators encounter types they can't use.
+
+		This is exclusively for users who need to squeeze every ounce of speed out of the library as they can,
+		and you should only set this to false if you know exactly what you're doing.
+	*/
+	ChecksTypes bool
 
 	tokens           []ExpressionToken
 	evaluationStages *evaluationStage
@@ -68,6 +79,7 @@ func NewEvaluableExpressionFromTokens(tokens []ExpressionToken) (*EvaluableExpre
 		return nil, err
 	}
 
+	ret.ChecksTypes = true
 	return ret, nil
 }
 
@@ -89,7 +101,17 @@ func NewEvaluableExpressionWithFunctions(expression string, functions map[string
 		return nil, err
 	}
 
+	err = checkBalance(ret.tokens)
+	if err != nil {
+		return nil, err
+	}
+
 	err = checkExpressionSyntax(ret.tokens)
+	if err != nil {
+		return nil, err
+	}
+
+	ret.tokens, err = optimizeTokens(ret.tokens)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +121,7 @@ func NewEvaluableExpressionWithFunctions(expression string, functions map[string
 		return nil, err
 	}
 
+	ret.ChecksTypes = true
 	return ret, nil
 }
 
@@ -133,45 +156,72 @@ func (this EvaluableExpression) Eval(parameters Parameters) (interface{}, error)
 	if parameters != nil {
 		parameters = &sanitizedParameters{parameters}
 	}
-	return evaluateStage(this.evaluationStages, parameters)
+	return this.evaluateStage(this.evaluationStages, parameters)
 }
 
-func evaluateStage(stage *evaluationStage, parameters Parameters) (interface{}, error) {
+func (this EvaluableExpression) evaluateStage(stage *evaluationStage, parameters Parameters) (interface{}, error) {
 
 	var left, right interface{}
 	var err error
 
 	if stage.leftStage != nil {
-		left, err = evaluateStage(stage.leftStage, parameters)
+		left, err = this.evaluateStage(stage.leftStage, parameters)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if stage.rightStage != nil {
-		right, err = evaluateStage(stage.rightStage, parameters)
+	if stage.isShortCircuitable() {
+		switch stage.symbol {
+			case AND:
+				if left == false {
+					return false, nil
+				}
+			case OR:
+				if left == true {
+					return true, nil
+				}
+			case COALESCE:
+				if left != nil {
+					return left, nil
+				}
+			
+			case TERNARY_TRUE:
+				if left == false {
+					right = shortCircuitHolder
+				}
+			case TERNARY_FALSE:
+				if left != nil {
+					right = shortCircuitHolder
+				}
+		}
+	}
+
+	if right != shortCircuitHolder && stage.rightStage != nil {
+		right, err = this.evaluateStage(stage.rightStage, parameters)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	// type checks
-	if stage.typeCheck == nil {
+	if this.ChecksTypes {
+		if stage.typeCheck == nil {
 
-		err = typeCheck(stage.leftTypeCheck, left, stage.symbol, stage.typeErrorFormat)
-		if err != nil {
-			return nil, err
-		}
+			err = typeCheck(stage.leftTypeCheck, left, stage.symbol, stage.typeErrorFormat)
+			if err != nil {
+				return nil, err
+			}
 
-		err = typeCheck(stage.rightTypeCheck, right, stage.symbol, stage.typeErrorFormat)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// special case where the type check needs to know both sides to determine if the operator can handle it
-		if !stage.typeCheck(left, right) {
-			errorMsg := fmt.Sprintf(stage.typeErrorFormat, left, stage.symbol.String())
-			return nil, errors.New(errorMsg)
+			err = typeCheck(stage.rightTypeCheck, right, stage.symbol, stage.typeErrorFormat)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			// special case where the type check needs to know both sides to determine if the operator can handle it
+			if !stage.typeCheck(left, right) {
+				errorMsg := fmt.Sprintf(stage.typeErrorFormat, left, stage.symbol.String())
+				return nil, errors.New(errorMsg)
+			}
 		}
 	}
 
@@ -206,4 +256,17 @@ func (this EvaluableExpression) Tokens() []ExpressionToken {
 func (this EvaluableExpression) String() string {
 
 	return this.inputExpression
+}
+
+/*
+	Returns an array representing the variables contained in this EvaluableExpression.
+*/
+func (this EvaluableExpression) Vars() []string {
+	var varlist []string
+	for _, val := range this.Tokens() {
+		if val.Kind == VARIABLE {
+			varlist = append(varlist, val.Value.(string))
+		}
+	}
+	return varlist
 }

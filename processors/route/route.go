@@ -14,8 +14,8 @@ import (
 
 	"reflect"
 
-	"github.com/Knetic/govaluate"
 	"github.com/vjeantet/bitfan/processors"
+	"gopkg.in/Knetic/govaluate.v3"
 )
 
 const (

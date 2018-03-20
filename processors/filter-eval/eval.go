@@ -29,9 +29,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Knetic/govaluate"
 	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
+	"gopkg.in/Knetic/govaluate.v3"
 )
 
 func New() processors.Processor {

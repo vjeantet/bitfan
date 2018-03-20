@@ -8,8 +8,8 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
-	"github.com/Knetic/govaluate"
 	"github.com/vjeantet/bitfan/processors"
+	"gopkg.in/Knetic/govaluate.v3"
 )
 
 type processor struct {
