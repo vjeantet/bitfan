@@ -1011,6 +1011,18 @@
 			"revisionTime": "2016-09-28T09:21:14Z"
 		},
 		{
+			"checksumSHA1": "pcIMnbrvD+xcWXE9+BtvkjjFmis=",
+			"path": "gopkg.in/olivere/elastic.v5",
+			"revision": "dbe820f35164384c998099db63481b583d53f73b",
+			"revisionTime": "2018-03-13T12:41:36Z"
+		},
+		{
+			"checksumSHA1": "wk8UXA5wqefDPyd2ubHEnVbJW8Q=",
+			"path": "gopkg.in/olivere/elastic.v6",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
+		},
+		{
 			"checksumSHA1": "TO8baX+t1Qs7EmOYth80MkbKzFo=",
 			"path": "gopkg.in/tomb.v1",
 			"revision": "dd632973f1e7218eb1089048e0798ec9ae7dceb8",
