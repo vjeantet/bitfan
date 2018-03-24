@@ -471,6 +471,12 @@
 			"revisionTime": "2017-11-20T08:03:33Z"
 		},
 		{
+			"checksumSHA1": "T8soMJArSZrYnhmdpAnq1bVxQ6Q=",
+			"path": "github.com/mailru/easyjson/buffer",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
 			"checksumSHA1": "QA+9yav6Xzq7LmuZUREeOX1hfjk=",
 			"path": "github.com/mailru/easyjson/jlexer",
 			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
@@ -563,6 +569,12 @@
 		{
 			"checksumSHA1": "LkxLK7ff1eJbj6Wv9TlLDV96l58=",
 			"path": "github.com/olivere/elastic/config",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
+		},
+		{
+			"checksumSHA1": "AmcqvKDAUGvVsrf8NDCQ/B8cMj4=",
+			"path": "github.com/olivere/elastic/uritemplates",
 			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
 			"revisionTime": "2018-03-16T21:08:31Z"
 		},
