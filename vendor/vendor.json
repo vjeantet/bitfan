@@ -909,6 +909,12 @@
 			"revisionTime": "2017-05-01T02:28:28Z"
 		},
 		{
+			"checksumSHA1": "QPs8F/aqKAAQJr8dLc3CVQ5SxlM=",
+			"path": "gopkg.in/alecthomas/kingpin.v2",
+			"revision": "8cccfa8eb2e3183254457fb1749b2667fbc364c7",
+			"revisionTime": "2016-02-17T09:03:01Z"
+		},
+		{
 			"checksumSHA1": "o5Skl9YjZqmvEEqWie3f3oY0Kow=",
 			"path": "gopkg.in/alexcesaro/statsd.v2",
 			"revision": "7fea3f0d2fab1ad973e641e51dba45443a311a90",
