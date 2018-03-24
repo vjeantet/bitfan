@@ -465,6 +465,24 @@
 			"revisionTime": "2016-09-08T09:36:58Z"
 		},
 		{
+			"checksumSHA1": "HIF2ZYMMr2kzt5oE7SRjKefOIOc=",
+			"path": "github.com/mailru/easyjson",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
+			"checksumSHA1": "QA+9yav6Xzq7LmuZUREeOX1hfjk=",
+			"path": "github.com/mailru/easyjson/jlexer",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
+			"checksumSHA1": "svJ32su8itWtutcMkP+RzoMsIfw=",
+			"path": "github.com/mailru/easyjson/jwriter",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
 			"checksumSHA1": "/zjnnN/Hrijtm1ObxnEPHhuFl8c=",
 			"path": "github.com/mattn/go-colorable",
 			"revision": "e8a10ddc7d2a7fe255f6fd7f501070a4cb62c183",
@@ -535,6 +553,18 @@
 			"path": "github.com/olekukonko/tablewriter",
 			"revision": "bdcc175572fd7abece6c831e643891b9331bc9e7",
 			"revisionTime": "2016-09-23T12:54:01Z"
+		},
+		{
+			"checksumSHA1": "KwJhQVvwbUjz2sLj3nDk8rzvEZk=",
+			"path": "github.com/olivere/elastic",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
+		},
+		{
+			"checksumSHA1": "LkxLK7ff1eJbj6Wv9TlLDV96l58=",
+			"path": "github.com/olivere/elastic/config",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
 		},
 		{
 			"checksumSHA1": "tths50mGvnvWps6KZLmKLvkLVI0=",
@@ -1019,6 +1049,18 @@
 		{
 			"checksumSHA1": "pcIMnbrvD+xcWXE9+BtvkjjFmis=",
 			"path": "gopkg.in/olivere/elastic.v5",
+			"revision": "dbe820f35164384c998099db63481b583d53f73b",
+			"revisionTime": "2018-03-13T12:41:36Z"
+		},
+		{
+			"checksumSHA1": "Z/5tTcmNfSOHMkcLDkxN93PQ410=",
+			"path": "gopkg.in/olivere/elastic.v5/config",
+			"revision": "dbe820f35164384c998099db63481b583d53f73b",
+			"revisionTime": "2018-03-13T12:41:36Z"
+		},
+		{
+			"checksumSHA1": "pCApZfp2CeDnWbNVsyzNO62ZUXA=",
+			"path": "gopkg.in/olivere/elastic.v5/uritemplates",
 			"revision": "dbe820f35164384c998099db63481b583d53f73b",
 			"revisionTime": "2018-03-13T12:41:36Z"
 		},
