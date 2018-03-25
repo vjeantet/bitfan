@@ -1,5 +1,7 @@
 package xprocessor
 
+import "strconv"
+
 type Option struct {
 	Name         string      `json:"name"`
 	Alias        string      `json:"alias"`
@@ -9,6 +11,34 @@ type Option struct {
 	DefaultValue interface{} `json:"default_value"`
 	ExampleLS    string      `json:"example"`
 	Value        interface{} `json:"-"`
+}
+
+func (o *Option) Default() []string {
+	r := []string{}
+	if o.DefaultValue == nil {
+		return r
+	}
+
+	switch dv := o.DefaultValue.(type) {
+	case string:
+		r = append(r, dv)
+	case bool:
+		if dv {
+			r = append(r, "true")
+		} else {
+			r = append(r, "false")
+		}
+	case int:
+		r = append(r, strconv.Itoa(dv))
+	case []string:
+		r = append(r, dv...)
+	case []int:
+		for _, v := range dv {
+			r = append(r, strconv.Itoa(v))
+		}
+	}
+
+	return r
 }
 
 type Options map[string]*Option

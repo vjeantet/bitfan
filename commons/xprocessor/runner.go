@@ -94,6 +94,8 @@ func (t *Runner) Run(maxConcurrent int) {
 		f := kingpin.Flag(varName, spec.Doc)
 		if spec.Required {
 			f.Required()
+		} else {
+			f.Default(spec.Default()...)
 		}
 
 		switch spec.Type {
@@ -139,8 +141,6 @@ func (t *Runner) Run(maxConcurrent int) {
 
 	kingpin.CommandLine.PreAction(action)
 	kingpin.Parse()
-
-	// pp.Println("t-->", t.opt)
 
 	// Configure Processor with flags values
 	if t.configure != nil {
