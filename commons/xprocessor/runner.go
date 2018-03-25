@@ -23,12 +23,12 @@ func init() {
 }
 
 type Runner struct {
-	opt Options
+	Opt Options
 
 	Description      string
 	ShortDescription string
 
-	configure func(Options) error
+	configure func() error
 	start     func() error
 	receive   func(interface{}) error
 	stop      func() error
@@ -38,13 +38,13 @@ type Runner struct {
 }
 
 func New(
-	configure func(Options) error,
+	configure func() error,
 	start func() error,
 	receive func(interface{}) error,
 	stop func() error,
 ) *Runner {
 	return &Runner{
-		opt:       Options{},
+		Opt:       Options{},
 		configure: configure,
 		start:     start,
 		receive:   receive,
@@ -62,34 +62,41 @@ func (r *Runner) option(name string, required bool, doc string, defaultValue int
 	}
 }
 func (r *Runner) OptionBool(name string, required bool, doc string, defaultValue bool) {
-	r.opt[name] = r.option(name, required, doc, defaultValue)
-	r.opt[name].Type = "bool"
+	r.Opt[name] = r.option(name, required, doc, defaultValue)
+	r.Opt[name].Type = "bool"
 }
 func (r *Runner) OptionString(name string, required bool, doc string, defaultValue string) {
-	r.opt[name] = r.option(name, required, doc, defaultValue)
-	r.opt[name].Type = "string"
+	r.Opt[name] = r.option(name, required, doc, defaultValue)
+	r.Opt[name].Type = "string"
 }
 func (r *Runner) OptionInt(name string, required bool, doc string, defaultValue int) {
-	r.opt[name] = r.option(name, required, doc, defaultValue)
-	r.opt[name].Type = "int"
+	r.Opt[name] = r.option(name, required, doc, defaultValue)
+	r.Opt[name].Type = "int"
 }
 func (r *Runner) OptionStringSlice(name string, required bool, doc string, defaultValue []string) {
-	r.opt[name] = r.option(name, required, doc, defaultValue)
-	r.opt[name].Type = "[]string"
+	r.Opt[name] = r.option(name, required, doc, defaultValue)
+	r.Opt[name].Type = "[]string"
 }
 func (r *Runner) OptionIntSlice(name string, required bool, doc string, defaultValue []int) {
-	r.opt[name] = r.option(name, required, doc, defaultValue)
-	r.opt[name].Type = "[]int"
+	r.Opt[name] = r.option(name, required, doc, defaultValue)
+	r.Opt[name].Type = "[]int"
+}
+func (r *Runner) OptionMapString(name string, required bool, doc string, defaultValue map[string]string) {
+	r.Opt[name] = r.option(name, required, doc, defaultValue)
+	r.Opt[name].Type = "map[string]string"
 }
 
 func (r *Runner) Logf(format string, args ...interface{}) {
 	Logger.Printf(format, args...)
 }
+func (r *Runner) Debugf(format string, args ...interface{}) {
+	Logger.Printf("[DEBUG] "+format, args...)
+}
 
 func (t *Runner) Run(maxConcurrent int) {
 
 	// Spec Options
-	for _, spec := range t.opt {
+	for _, spec := range t.Opt {
 		varName := spec.Name
 		f := kingpin.Flag(varName, spec.Doc)
 		if spec.Required {
@@ -109,6 +116,8 @@ func (t *Runner) Run(maxConcurrent int) {
 			spec.Value = f.Strings()
 		case "[]int":
 			spec.Value = f.Ints()
+		case "map[string]string":
+			spec.Value = f.StringMap()
 		}
 	}
 
@@ -127,7 +136,7 @@ func (t *Runner) Run(maxConcurrent int) {
 						}{
 							Description:      t.Description,
 							ShortDescription: t.ShortDescription,
-							Options:          t.opt,
+							Options:          t.Opt,
 						},
 					)
 					os.Stdout.Write(mapB)
@@ -144,7 +153,7 @@ func (t *Runner) Run(maxConcurrent int) {
 
 	// Configure Processor with flags values
 	if t.configure != nil {
-		err := t.configure(t.opt)
+		err := t.configure()
 		if err != nil {
 			Logger.Println(err)
 			return

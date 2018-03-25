@@ -1,6 +1,9 @@
 package xprocessor
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Option struct {
 	Name         string      `json:"name"`
@@ -35,6 +38,10 @@ func (o *Option) Default() []string {
 	case []int:
 		for _, v := range dv {
 			r = append(r, strconv.Itoa(v))
+		}
+	case map[string]string:
+		for k, v := range dv {
+			r = append(r, fmt.Sprintf("%s:%s", k, v))
 		}
 	}
 
@@ -73,6 +80,14 @@ func (o Options) StringSlice(name string) []string {
 		return *v
 	}
 	return []string{}
+}
+
+func (o Options) MapString(name string) map[string]string {
+	switch v := o[name].Value.(type) {
+	case *map[string]string:
+		return *v
+	}
+	return map[string]string{}
 }
 
 func (o Options) String(name string) string {
