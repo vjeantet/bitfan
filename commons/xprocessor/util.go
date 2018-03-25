@@ -17,7 +17,9 @@ func processStdinDataWith(recv func(interface{}) error, maxConcurrent int) *sync
 			wg.Add(1)
 			go func(ch chan interface{}) {
 				for data := range ch {
-					recv(data)
+					if err := recv(data); err != nil {
+						Logger.Printf(err.Error())
+					}
 				}
 				wg.Done()
 			}(ch)
@@ -28,7 +30,9 @@ func processStdinDataWith(recv func(interface{}) error, maxConcurrent int) *sync
 			for data := range ch {
 				wg.Add(1)
 				go func(data interface{}) {
-					recv(data)
+					if err := recv(data); err != nil {
+						Logger.Printf(err.Error())
+					}
 					wg.Done()
 				}(data)
 			}
