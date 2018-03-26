@@ -232,6 +232,16 @@ func (p *processor) buildCommandArgs(e processors.IPacket) []string {
 						p.Logger.Errorf("not handled slice type : %s=>%v", k, v)
 					}
 				}
+			case map[string]interface{}:
+				for key, value := range vt {
+					switch valuet := value.(type) {
+					case string:
+						finalArgs = append(finalArgs, fmt.Sprintf("--%s=%s:%s", k, key, valuet))
+					default:
+						p.Logger.Errorf("not handled map value type : %s=>%s", key, value)
+					}
+				}
+
 			default:
 				p.Logger.Errorf("not handled type : %s=>%v", k, v)
 			}
