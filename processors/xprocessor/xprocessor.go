@@ -279,7 +279,7 @@ func (p *processor) startCommand(e processors.IPacket) (*exec.Cmd, io.WriteClose
 	stderr, _ := cmd.StderrPipe()
 
 	if err := cmd.Start(); err != nil {
-		p.Logger.Errorf("processor '%s' start error with command='%s' %s", cmd.Process.Pid, p.opt.Command, args)
+		p.Logger.Errorf("processor start error [%s] with command='%s' %s", err.Error(), p.opt.Command, args)
 		return cmd, stdin, stdout, stderr, err
 	}
 	p.Logger.Infof("processor started process PID=%d with command= '%s' %s", cmd.Process.Pid, p.opt.Command, args)
