@@ -55,8 +55,7 @@ func (p *processor) Tick(e processors.IPacket) error {
 	p.wg.Add(1)
 	for i := 1; i <= p.opt.Count; i++ {
 		e := p.NewPacket(
-			p.opt.Message,
-			map[string]interface{}{"number": i},
+			map[string]interface{}{"message": p.opt.Message, "number": i},
 		)
 		p.opt.ProcessCommonOptions(e.Fields())
 		p.Send(e)

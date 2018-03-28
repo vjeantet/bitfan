@@ -61,7 +61,7 @@ func toWhenExpression(lsExpression string) (string, error) {
 		case TERNARY:
 
 		default:
-			return ktokens, fmt.Errorf("unknow token %s", tok.Type)
+			return ktokens, fmt.Errorf("unknow token %d", tok.Type)
 		}
 		ktokens = ktokens + separator + value
 		separator = " "

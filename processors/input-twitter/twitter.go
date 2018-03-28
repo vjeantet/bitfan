@@ -150,8 +150,8 @@ func (p *processor) doStream(stream *anaconda.Stream, packet processors.IPacket,
 			if err == nil {
 				r["@timestamp"] = createdAtTime
 			}
-
-			e := p.NewPacket(t.Text, r)
+			r["message"] = t.Text
+			e := p.NewPacket(r)
 			processors.AddFields(opt.Add_field, e.Fields())
 			if len(opt.Tags) > 0 {
 				processors.AddTags(opt.Tags, e.Fields())

@@ -39,7 +39,7 @@
   <table class='table table-striped'>
     <tr>
       <th>Name</th>
-      <th>Running since</th>
+      <th>Active informations</th>
       <th></th>
     </tr>
 
@@ -48,17 +48,50 @@
         <td class=''>
         	<a href="/pipelines/{{$pipeline.Uuid}}{{range $pipeline.Assets}}{{if eq "entrypoint" .Type}}/assets/{{.Uuid}}{{end}}{{end}}" class="">
           {{if $pipeline.Label}}{{$pipeline.Label}}{{else}}noname{{end}}
-      </a>
+      </a>  <small><span class='text-muted'>({{len $pipeline.Assets}} assets)</span></small>
           <br/>
-          <small><span class='text-muted'>updated {{ago "%m" $pipeline.UpdatedAt}} minutes ago</span></small>
+          <small><span class='text-muted'>
+
+{{if ne $pipeline.Description ""}}
+            {{safeHTML (markdown $pipeline.Description)}}
+          {{end}}
+
+          </span></small>
         </td>
-        <td class=''>
-      {{if $pipeline.Active}}
-      {{dateFormat "dd/MM/YYYY HH:mm:ss" $pipeline.StartedAt }}
-      {{else}}    
-      Not started
-      {{end}}
+        <td >
+          {{if $pipeline.Active}}
+            <small>
+            <div>Started on {{dateFormat "dd/MM/YYYY HH:mm:ss" $pipeline.StartedAt }}</div>
+
+            {{if lt 0 (len $pipeline.Schedulers)}}
+            <strong>Schedulers</strong>
+            {{range  $scheduler := $pipeline.Schedulers}}
+              <li>
+                [{{$scheduler.AgentName}}]
+                <span title="{{$scheduler.Spec}}">
+                <script type="text/javascript">
+                  try {
+                     document.write(cronstrue.toString("{{$scheduler.Spec}}")) ;
+                  }
+                  catch(e){
+                    document.write("{{$scheduler.Spec}}");  
+                  }  
+                </script>
+                </span>
+              </li>
+            {{end}}  
+            {{end}}
+            {{if lt 0 (len $pipeline.Webhooks)}}
+            <strong>HTTP endpoints</strong>
+            {{range  $webhook := $pipeline.Webhooks}}
+              <li>[{{$webhook.Namespace}}] <a href="http://{{$.apiHost}}/{{$webhook.Url}}" target="_blank">{{$webhook.Url}}</a></li>    
+            {{end}}
+            {{end}}
+            </small>
+          {{end}}
         </td>
+
+        
         <td>
           {{ template "pipelineactions" $pipeline }}
         </td>

@@ -144,3 +144,33 @@ func (s *Store) FindOneAssetByUUID(uuid string) (models.Asset, error) {
 
 	return asset, nil
 }
+
+func (s *Store) FindAssetsByPipelineUUID(uuid string) ([]models.Asset, error) {
+	assets := []models.Asset{}
+
+	var sas []StoreAsset
+	err := s.db.Find(&sas, bolthold.Where("PipelineUUID").Eq(uuid))
+	if err != nil {
+		return assets, err
+	}
+	if len(sas) == 0 {
+		return assets, fmt.Errorf("Assets for pipeline UUID=%s not found", uuid)
+	}
+
+	for _, sa := range sas {
+
+		var asset models.Asset
+		asset.ContentType = sa.ContentType
+		asset.CreatedAt = sa.CreatedAt
+		asset.Name = sa.Label
+		asset.PipelineUUID = sa.PipelineUUID
+		asset.Size = sa.Size
+		asset.Type = sa.Type
+		asset.UpdatedAt = sa.UpdatedAt
+		asset.Uuid = sa.Uuid
+		asset.Value = sa.Value
+
+		assets = append(assets, asset)
+	}
+	return assets, nil
+}

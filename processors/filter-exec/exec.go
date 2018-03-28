@@ -90,7 +90,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 		// recover @timestamp
 		dat["@timestamp"], _ = e.Fields().ValueForPath("@timestamp")
-		e = p.NewPacket("", dat)
+		e = p.NewPacket(dat)
 	} else {
 		value := strings.TrimSpace(string(d))
 		err := e.Fields().SetValueForPath(value, p.opt.Target)
@@ -117,6 +117,7 @@ func (p *processor) doExec(inData []byte, e processors.IPacket) (data []byte, er
 	}
 	p.Logger.Debugf("command '%s', args=%s", p.opt.Command, args)
 	cmd = exec.Command(p.opt.Command, args...)
+	cmd.Dir = p.ConfigWorkingLocation
 	cmd.Stderr = &buferr
 	stdin, err := cmd.StdinPipe()
 	stdout, err := cmd.StdoutPipe()

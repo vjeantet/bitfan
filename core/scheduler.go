@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"golang.org/x/sync/syncmap"
+
 	"github.com/vjeantet/cron"
 )
 
@@ -34,12 +36,12 @@ var planningDailyHour = map[string]int{
 	"11pm":     23,
 }
 
-type scheduleJob struct {
-	runnable func() error
-}
+var scheduleMap = syncmap.Map{}
 
-func (j *scheduleJob) Run() error {
-	return j.runnable()
+type schedulerJob struct {
+	Description string
+	Spec        string
+	AgentName   string
 }
 
 type scheduler struct {
@@ -50,7 +52,7 @@ func newScheduler() *scheduler {
 	return &scheduler{cron.New()}
 }
 
-func (s *scheduler) Add(jobName string, planning string, callbackFunc func()) error {
+func (s *scheduler) Add(pipelineUUID string, agentName string, planning string, callbackFunc func()) error {
 	var w string
 
 	// Allow 11:13
@@ -66,12 +68,37 @@ func (s *scheduler) Add(jobName string, planning string, callbackFunc func()) er
 		w = planning
 	}
 
-	if err := s.AddFunc(jobName, w, callbackFunc); err != nil {
+	var jobs []schedulerJob
+	if beforeJobs, ok := scheduleMap.Load(pipelineUUID); ok {
+		jobs = beforeJobs.([]schedulerJob)
+	}
+	jobs = append([]schedulerJob{{
+		Description: "a job",
+		AgentName:   agentName,
+		Spec:        w,
+	}}, jobs...)
+	scheduleMap.Store(pipelineUUID, jobs)
+
+	if err := s.AddFunc(pipelineUUID+"/"+agentName, w, callbackFunc); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *scheduler) Remove(agentName string) {
-	s.DeleteJob(agentName)
+func (s *scheduler) Remove(pipelineUUID string, agentName string) {
+	s.DeleteJob(pipelineUUID + "/" + agentName)
+
+	if beforeJobs, ok := scheduleMap.Load(pipelineUUID); ok {
+		jobs := beforeJobs.([]schedulerJob)
+
+		for i, job := range jobs {
+			if job.AgentName == agentName {
+				jobs = append(jobs[:i], jobs[i+1:]...)
+				break
+			}
+		}
+
+		scheduleMap.Store(pipelineUUID, jobs)
+	}
+
 }

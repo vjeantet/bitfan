@@ -1,0 +1,140 @@
+{{ define "title"}}{{.xprocessor.Label}}{{ end }}
+
+{{ define "sidebar" }}
+{{ template "xprocessorsidebar" . }}
+{{ end }}
+
+{{define "scripts"}}
+<script src="/public/js/xprocessors.js"></script>
+<script src="/public/js/bitbar.js"></script>
+{{end}}
+
+{{ define "content" }}
+<div class="row">
+  <div class="col">
+  <h1>Edit xProcessor informations</h1>
+  </div>
+</div>
+
+
+{{ range $flash := .flashes }}
+<div class="alert alert-success" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+
+<div class="row">
+  <div class="col-12">
+
+    <form method="POST" action="" name="bitfan-xprocessor-form-content" id="bitfan-xprocessor-form-content">
+
+{{if eq .xprocessor.Kind "bin"}}
+  <div class="form-group">
+    <label for="command">Command</label>
+    <input type="text" class="form-control" name="command" id="command" placeholder="Enter path to executable" value="{{.xprocessor.Command}}">
+  </div>
+
+    <div class="form-group">
+    <label for="args">Command arguments</label>
+    <textarea class="form-control" rows=6 name="args" id="args" placeholder="one argument by line">
+      {{- range  .xprocessor.Args -}}
+      {{- . -}}
+      {{- end -}}
+    </textarea>
+  </div>
+
+{{else}}
+ <div class="form-group">
+        
+        
+          <label for="code">Code ({{.xprocessor.Kind}})</label>
+          <textarea style="display: none" name="code" id="bitfan-code-content">{{ string .xprocessor.Code }}</textarea>
+          <div style="height: 500px;" id="content"></div>
+          <script src="/public/vendor/ace/ace.js" type="text/javascript" charset="utf-8">
+          </script>
+          <script src="/public/vendor/ace/ext-modelist.js"></script>
+          <script>
+
+            $(document).ready(function () {
+
+              function getModeByFileExtension(path){
+                  var modelist = ace.require("ace/ext/modelist");
+                  return modelist.getModeForPath(path).mode;
+              }
+
+              var editor = ace.edit("content");
+              editor.setAutoScrollEditorIntoView(true);
+              editor.setTheme("ace/theme/monokai");
+
+              // var mode = getModeByFileExtension("o.go");
+              // console.log(mode)
+              // editor.getSession().setMode("ace/mode/python");
+              //ace/mode/php
+              //ace/mode/golang
+              //ace/mode/python
+              editor.getSession().setMode("ace/mode/{{.xprocessor.Kind}}");
+
+              var textarea = $('textarea[name="code"]').hide();
+              editor.getSession().setValue(textarea.val());
+              editor.getSession().on('change', function(){
+                textarea.val(editor.getSession().getValue());
+                editor.getSession().clearAnnotations() ;
+              });
+
+              editor.commands.addCommand(
+                {
+                  name: 'saveFile',
+                  bindKey: {
+                  win: 'Ctrl-S',
+                  mac: 'Command-S',
+                  sender: 'editor|cli'
+                },
+                exec: function(env, args, request) {
+                 $("#bitfan-xprocessor-form").submit() ;
+                }
+              });
+            });
+          </script>
+        
+        
+
+
+
+
+
+      </div>
+{{end}}
+
+
+
+  <div class="form-group">
+    <label for="options_composition_tpl">processor option composition</label>
+    <input class="form-control" rows=6 name="options_composition_tpl" id="options_composition_tpl" placeholder="&#x7B;&#x7B;&#x20;&#x72;&#x61;&#x6E;&#x67;&#x65;&#x20;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x2C;&#x20;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x20;&#x3A;&#x3D;&#x20;&#x2E;&#x4F;&#x70;&#x74;&#x69;&#x6F;&#x6E;&#x73;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x69;&#x66;&#x20;&#x6E;&#x65;&#x20;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x20;&#x22;&#x5F;&#x22;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x69;&#x66;&#x20;&#x69;&#x73;&#x53;&#x6C;&#x69;&#x63;&#x65;&#x20;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x72;&#x61;&#x6E;&#x67;&#x65;&#x20;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x20;&#x7D;&#x7D;&#x2D;&#x2D;&#x7B;&#x7B;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x7D;&#x7D;&#x3D;&#x22;&#x7B;&#x7B;&#x2E;&#x7D;&#x7D;&#x22;&#x20;&#x7B;&#x7B;&#x65;&#x6E;&#x64;&#x7D;&#x7D;&#x7B;&#x7B;&#x65;&#x6C;&#x73;&#x65;&#x7D;&#x7D;&#x2D;&#x2D;&#x7B;&#x7B;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x7D;&#x7D;&#x3D;&#x22;&#x7B;&#x7B;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x7D;&#x7D;&#x22;&#x20;&#x7B;&#x7B;&#x65;&#x6E;&#x64;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x65;&#x6E;&#x64;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x65;&#x6E;&#x64;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x69;&#x6E;&#x64;&#x65;&#x78;&#x20;&#x2E;&#x4F;&#x70;&#x74;&#x69;&#x6F;&#x6E;&#x73;&#x20;&#x22;&#x5F;&#x22;&#x7D;&#x7D;" value="{{- .xprocessor.OptionsCompositionTpl -}}">
+    <small>Default behavior : &#x7B;&#x7B;&#x20;&#x72;&#x61;&#x6E;&#x67;&#x65;&#x20;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x2C;&#x20;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x20;&#x3A;&#x3D;&#x20;&#x2E;&#x4F;&#x70;&#x74;&#x69;&#x6F;&#x6E;&#x73;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x69;&#x66;&#x20;&#x6E;&#x65;&#x20;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x20;&#x22;&#x5F;&#x22;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x69;&#x66;&#x20;&#x69;&#x73;&#x53;&#x6C;&#x69;&#x63;&#x65;&#x20;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x72;&#x61;&#x6E;&#x67;&#x65;&#x20;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x20;&#x7D;&#x7D;&#x2D;&#x2D;&#x7B;&#x7B;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x7D;&#x7D;&#x3D;&#x22;&#x7B;&#x7B;&#x2E;&#x7D;&#x7D;&#x22;&#x20;&#x7B;&#x7B;&#x65;&#x6E;&#x64;&#x7D;&#x7D;&#x7B;&#x7B;&#x65;&#x6C;&#x73;&#x65;&#x7D;&#x7D;&#x2D;&#x2D;&#x7B;&#x7B;&#x24;&#x6E;&#x61;&#x6D;&#x65;&#x7D;&#x7D;&#x3D;&#x22;&#x7B;&#x7B;&#x24;&#x76;&#x61;&#x6C;&#x75;&#x65;&#x7D;&#x7D;&#x22;&#x20;&#x7B;&#x7B;&#x65;&#x6E;&#x64;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x65;&#x6E;&#x64;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x65;&#x6E;&#x64;&#x20;&#x7D;&#x7D;&#x7B;&#x7B;&#x20;&#x69;&#x6E;&#x64;&#x65;&#x78;&#x20;&#x2E;&#x4F;&#x70;&#x74;&#x69;&#x6F;&#x6E;&#x73;&#x20;&#x22;&#x5F;&#x22;&#x7D;&#x7D;
+
+<pre>
+MyProcessor{
+   abc=>"Hello world"
+   debug => ""
+   "_" => "foo.html bar.html"
+}
+
+will be passed to command arguments as : --abc="Hello world" --debug foo.html bar.html
+</pre>
+
+    </small>
+  </div>
+
+
+
+
+      <button type="submit" name="save" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+
+
+
+
+{{ end }}

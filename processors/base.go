@@ -17,6 +17,8 @@ type Base struct {
 	ConfigWorkingLocation string
 	DataLocation          string
 	PipelineUUID          string
+	Name                  string
+	Label                 string
 }
 
 // B returns the Base Processor
@@ -30,6 +32,11 @@ func (b *Base) Doc() *doc.Processor {
 
 func (b *Base) SetPipelineUUID(uuid string) {
 	b.PipelineUUID = uuid
+}
+
+func (b *Base) SetProcessorIdentifiers(name, label string) {
+	b.Name = name
+	b.Label = label
 }
 
 func (b *Base) Configure(ctx ProcessorContext, conf map[string]interface{}) error { return nil }

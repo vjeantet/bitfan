@@ -43,7 +43,7 @@ func TestInvalidConfiguration(t *testing.T) {
 
 func TestUuidFilterGeneration(t *testing.T) {
 	Convey("When the target field name does not exist", t, func() {
-		event := testutils.NewPacket("", map[string]interface{}{})
+		event := testutils.NewPacketOld("", map[string]interface{}{})
 		conf := map[string]interface{}{
 			"target": "name1",
 		}
@@ -60,7 +60,7 @@ func TestUuidFilterGeneration(t *testing.T) {
 	})
 
 	Convey("When the target field exists", t, func() {
-		event := testutils.NewPacket("", map[string]interface{}{
+		event := testutils.NewPacketOld("", map[string]interface{}{
 			"name1": "test",
 		})
 

@@ -59,7 +59,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 		p.opt.ProcessCommonOptions(&cp)
 
 		// e := processors.NewEvent(e.ToAgentName(), e.Message(), cp)
-		e2 := p.NewPacket(e.Message(), cp)
+		e2 := p.NewPacket(cp)
 		p.Send(e2, 0)
 	}
 

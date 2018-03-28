@@ -1,0 +1,62 @@
+{
+  "Doc": "Example\n```\ninput{\n  webhook{\n        uri =\u003e \"toto/titi\"\n        pipeline=\u003e \"test.conf\"\n        codec =\u003e plain{\n            role =\u003e \"decoder\"\n        }\n        codec =\u003e plain{\n            role =\u003e \"encoder\"\n            format=\u003e \"\u003ch1\u003eHello {{.request.querystring.name}}\u003c/h1\u003e\"\n        }\n        headers =\u003e {\n            \"Content-Type\" =\u003e \"text/html\"\n        }\n    }\n}\n```",
+  "DocShort": "Reads events from standard input",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/webfan",
+  "Name": "webfan",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": ",squash",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "processors.CommonOptions",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "processors.CommonOptions"
+      },
+      {
+        "Alias": "",
+        "DefaultValue": null,
+        "Doc": "The codec used for posted data. Input codecs are a convenient method for decoding\nyour data before it enters the pipeline, without needing a separate filter in your bitfan pipeline\n\nDefault decode http request as plain text, response is json encoded.\nSet multiple codec with role to customize",
+        "ExampleLS": "codec =\u003e plain { role=\u003e\"encoder\"} codec =\u003e json { role=\u003e\"decoder\"}",
+        "Name": "Codec",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "codec"
+      },
+      {
+        "Alias": "uri",
+        "DefaultValue": null,
+        "Doc": "URI path /_/path",
+        "ExampleLS": "",
+        "Name": "Uri",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "pipeline",
+        "DefaultValue": null,
+        "Doc": "Path to pipeline's configuration to execute on request\nThis configuration should contains only a filter section an a output like ```output{pass{}}```",
+        "ExampleLS": "",
+        "Name": "Pipeline",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "headers",
+        "DefaultValue": null,
+        "Doc": "Headers to send back into outgoing response",
+        "ExampleLS": "{\"X-Processor\" =\u003e \"bitfan\"}",
+        "Name": "Headers",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      }
+    ]
+  },
+  "Ports": []
+}

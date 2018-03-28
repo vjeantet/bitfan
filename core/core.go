@@ -7,8 +7,6 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
-	"github.com/spf13/viper"
-
 	"github.com/vjeantet/bitfan/core/memory"
 	"github.com/vjeantet/bitfan/core/metrics"
 	"github.com/vjeantet/bitfan/core/webhook"
@@ -113,7 +111,7 @@ func Start(opt Options) {
 	}
 
 	if opt.LogFile != "" {
-		setLogOutputFile(viper.GetString("log"))
+		setLogOutputFile(opt.LogFile)
 	}
 
 	if err := setDataLocation(opt.DataLocation); err != nil {
@@ -127,9 +125,16 @@ func Start(opt Options) {
 		myMetrics = m
 	}
 
+	// Load env
+	envs := Storage().FindEnvs()
+	for _, v := range envs {
+		os.Setenv(v.Name, v.Value)
+	}
+
 	if len(opt.HttpHandlers) > 0 {
 		webhook.Log = logger
 		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/h/", webhook.Handler(opt.Host)))
+		opt.HttpHandlers = append(opt.HttpHandlers, HTTPHandler("/_/", webhook.Handler(opt.Host)))
 
 		listenAndServe(opt.Host, opt.HttpHandlers...)
 	}
@@ -181,6 +186,9 @@ func Stop() error {
 func GetPipeline(UUID string) (*Pipeline, bool) {
 	if i, found := pipelines.Load(UUID); found {
 		i.(*Pipeline).Webhooks = webhook.WebHooks(UUID)
+		if sjobs, ok := scheduleMap.Load(UUID); ok {
+			i.(*Pipeline).Schedulers = sjobs.([]schedulerJob)
+		}
 		return i.(*Pipeline), found
 	} else {
 		return nil, found
@@ -193,6 +201,9 @@ func Pipelines() map[string]*Pipeline {
 	pipelines.Range(func(key, value interface{}) bool {
 		pps[key.(string)] = value.(*Pipeline)
 		pps[key.(string)].Webhooks = webhook.WebHooks(key.(string))
+		if sjobs, ok := scheduleMap.Load(key.(string)); ok {
+			pps[key.(string)].Schedulers = sjobs.([]schedulerJob)
+		}
 		return true
 	})
 	return pps

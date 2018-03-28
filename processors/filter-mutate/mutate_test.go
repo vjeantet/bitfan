@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/clbanning/mxj"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
 	"github.com/vjeantet/bitfan/processors/doc"
 	"github.com/vjeantet/bitfan/processors/testutils"
@@ -86,7 +87,7 @@ func TestReceive(t *testing.T) {
 
 	p.Configure(ctx, getExampleConfiguration())
 
-	em := testutils.NewPacket("test", nil)
+	em := testutils.NewPacketOld("test", nil)
 	em.Fields().SetValueForPath("VALUE", "field1")
 	em.Fields().SetValueForPath("loRem", "ucfield2")
 	em.Fields().SetValueForPath("newvalue", "upfield3")
@@ -138,7 +139,7 @@ func TestReceiveRemoveAllBut(t *testing.T) {
 	}
 	p.Configure(ctx, conf)
 
-	em := testutils.NewPacket("test", nil)
+	em := testutils.NewPacketOld("test", nil)
 	em.Fields().SetValueForPath("VALUE", "field1")
 	em.Fields().SetValueForPath("loRem", "ucfield2")
 	em.Fields().SetValueForPath("newvalue", "upfield3")
@@ -707,6 +708,25 @@ func TestMerge(t *testing.T) {
 	}
 	assert.False(t, false, data.Exists("foo15"))
 	assert.False(t, false, data.Exists("fooZ"))
+}
+
+// https://github.com/vjeantet/bitfan/issues/71
+func TestNoEmptyTags(t *testing.T) {
+	Convey("When no option about tags is involved", t, func() {
+		event := testutils.NewPacketOld("", map[string]interface{}{})
+		conf := map[string]interface{}{
+			"target": "name1",
+		}
+		p, _ := testutils.NewProcessor(New, conf)
+		p.Receive(event)
+
+		Convey("Then no empty tags fields is created in resulting event", func() {
+			em := p.SentPackets(0)[0]
+			So(em.Fields().Exists("tags"), ShouldBeFalse)
+
+		})
+	})
+
 }
 
 //Shim for 2 param return values

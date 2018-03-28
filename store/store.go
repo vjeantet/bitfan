@@ -43,27 +43,54 @@ func (s *Store) PipelineTmpPath(tPipeline *models.Pipeline) string {
 	return pipelinePath
 }
 
-func (s *Store) PreparePipelineExecutionStage(tPipeline *models.Pipeline) (string, error) {
-	//Save assets to cwd
-	cwd := s.PipelineTmpPath(tPipeline)
-	for _, asset := range tPipeline.Assets {
+func (s *Store) preparePipelineAssetExecutionStage(cwd string, tAssets *[]models.Asset) (string, error) {
+	var entrypointLocation string
+	for _, asset := range *tAssets {
 		dest := filepath.Join(cwd, asset.Name)
 		dir := filepath.Dir(dest)
 		os.MkdirAll(dir, os.ModePerm)
-		s.log.Debugf("configuration  stored to %s", cwd)
+		s.log.Debugf("configuration %s stored to %s", asset.Name, cwd)
 		if err := ioutil.WriteFile(dest, asset.Value, 07770); err != nil {
 			return "", err
 		}
 
 		if asset.Type == models.ASSET_TYPE_ENTRYPOINT {
-			tPipeline.ConfigLocation = filepath.Join(cwd, asset.Name)
+			entrypointLocation = filepath.Join(cwd, asset.Name)
+		}
+	}
+
+	return entrypointLocation, nil
+}
+
+func (s *Store) PreparePipelineExecutionStage(tPipeline *models.Pipeline) (string, error) {
+	//Save assets to cwd
+	cwd := s.PipelineTmpPath(tPipeline)
+
+	s.log.Debugf("configuration %s storage to %s", tPipeline.Uuid, cwd)
+
+	// If Playground With Base
+	if tPipeline.PlaygroundBaseUUID != "" {
+		// Find all assets from Base Pipeline
+		assets, err := s.FindAssetsByPipelineUUID(tPipeline.PlaygroundBaseUUID)
+		if err != nil {
+			return "", err
 		}
 
-		if tPipeline.ConfigLocation == "" {
-			return "", fmt.Errorf("missing entrypoint for pipeline %s", tPipeline.Uuid)
+		// Save them with playground pipeline
+		_, err = s.preparePipelineAssetExecutionStage(cwd, &assets)
+		if err != nil {
+			return "", err
 		}
+	}
 
-		s.log.Debugf("configuration %s asset %s stored", tPipeline.Uuid, asset.Name)
+	entrypointLocation, err := s.preparePipelineAssetExecutionStage(cwd, &tPipeline.Assets)
+	if err != nil {
+		return "", err
+	}
+	tPipeline.ConfigLocation = entrypointLocation
+
+	if tPipeline.ConfigLocation == "" {
+		return "", fmt.Errorf("missing entrypoint for pipeline %s", tPipeline.Uuid)
 	}
 
 	s.log.Debugf("configuration %s pipeline %s ready to be loaded", tPipeline.Uuid, tPipeline.ConfigLocation)

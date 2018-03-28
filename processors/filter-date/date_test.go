@@ -27,7 +27,7 @@ func TestMatchUnix(t *testing.T) {
 		"timezone": "UTC",
 	}
 	p.Configure(ctx, conf)
-	em := testutils.NewPacket("", map[string]interface{}{"ts": "1499254601"})
+	em := testutils.NewPacketOld("", map[string]interface{}{"ts": "1499254601"})
 	p.Receive(em)
 	var m msg
 	em.Fields().Struct(&m)
@@ -43,7 +43,7 @@ func TestMatchUnixWithMS(t *testing.T) {
 		"timezone": "UTC",
 	}
 	p.Configure(ctx, conf)
-	em := testutils.NewPacket("", map[string]interface{}{"ts": "1499254601.343"})
+	em := testutils.NewPacketOld("", map[string]interface{}{"ts": "1499254601.343"})
 	p.Receive(em)
 	var m msg
 	em.Fields().Struct(&m)
@@ -59,7 +59,7 @@ func TestMatchUnixMS(t *testing.T) {
 		"timezone": "UTC",
 	}
 	p.Configure(ctx, conf)
-	em := testutils.NewPacket("", map[string]interface{}{"ts": "1499254601343"})
+	em := testutils.NewPacketOld("", map[string]interface{}{"ts": "1499254601343"})
 	p.Receive(em)
 	var m msg
 	em.Fields().Struct(&m)
@@ -75,7 +75,7 @@ func TestMatchJODATime(t *testing.T) {
 		"timezone": "Europe/Paris",
 	}
 	p.Configure(ctx, conf)
-	em := testutils.NewPacket("", map[string]interface{}{"ts": "2017-07-05T11:36:41"})
+	em := testutils.NewPacketOld("", map[string]interface{}{"ts": "2017-07-05T11:36:41"})
 	p.Receive(em)
 	var m msg
 	em.Fields().Struct(&m)

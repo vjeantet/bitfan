@@ -46,6 +46,7 @@ import (
 	pop3processor "github.com/vjeantet/bitfan/processors/pop3"
 	route "github.com/vjeantet/bitfan/processors/route"
 	stdout "github.com/vjeantet/bitfan/processors/stdout"
+	webfan "github.com/vjeantet/bitfan/processors/webfan"
 	websocket "github.com/vjeantet/bitfan/processors/websocket"
 
 	use "github.com/vjeantet/bitfan/processors/use"
@@ -61,6 +62,7 @@ import (
 )
 
 func init() {
+	initPlugin("input", "webhook", webfan.New)
 	initPlugin("input", "stdout", inputstdout.New)
 	initPlugin("input", "stdin", stdin.New)
 	initPlugin("input", "twitter", twitter.New)
@@ -132,6 +134,7 @@ func init() {
 
 	initPlugin("output", "when", when.New)
 	initPlugin("output", "use", use.New)
+	initPlugin("output", "pass", webfan.NewPass)
 	// plugins = map[string]map[string]*core.ProcessorFactory{}
 
 }

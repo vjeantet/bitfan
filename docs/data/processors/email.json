@@ -117,7 +117,7 @@
         "Type": "string"
       },
       {
-        "Alias": "",
+        "Alias": "htmlbody",
         "DefaultValue": null,
         "Doc": "HTML Body for the email, which may contain HTML markup",
         "ExampleLS": "htmlBody =\u003e \"\u003ch1\u003eHello\u003c/h1\u003e message received : {{.message}}\"",
@@ -147,6 +147,16 @@
         "Type": "array"
       },
       {
+        "Alias": "attachments_with_event",
+        "DefaultValue": null,
+        "Doc": "Use event field's values as attachment content\neach pair is  : event field's path =\u003e attachment's name",
+        "ExampleLS": " attachments_with_event=\u003e{\"mydata\"=\u003e\"myimage.jpg\"}",
+        "Name": "AttachEventData",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "hash"
+      },
+      {
         "Alias": "images",
         "DefaultValue": null,
         "Doc": "Images - specify the name(s) and location(s) of the images",
@@ -155,6 +165,16 @@
         "PossibleValues": null,
         "Required": false,
         "Type": "array"
+      },
+      {
+        "Alias": "embed_b64_images",
+        "DefaultValue": "false",
+        "Doc": "Search for img:data in HTML body, and replace them to a reference to inline attachment",
+        "ExampleLS": "",
+        "Name": "EmbedB64Images",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "bool"
       }
     ]
   },

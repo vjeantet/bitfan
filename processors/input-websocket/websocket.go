@@ -130,11 +130,11 @@ func (p *processor) processMessage(m []byte) {
 		case nil:
 			continue
 		case string:
-			e = p.NewPacket(v, map[string]interface{}{})
+			e = p.NewPacket(map[string]interface{}{"message": v})
 		case map[string]interface{}:
-			e = p.NewPacket("", v)
+			e = p.NewPacket(v)
 		case []interface{}:
-			e = p.NewPacket("", map[string]interface{}{
+			e = p.NewPacket(map[string]interface{}{
 				"request": v,
 			})
 		default:

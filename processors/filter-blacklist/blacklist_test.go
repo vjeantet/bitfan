@@ -52,13 +52,13 @@ func TestReceiveMatch(t *testing.T) {
 			"terms":         []string{"val1", "val2"},
 		},
 	)
-	p.Receive(testutils.NewPacket("test", nil))
-	p.Receive(testutils.NewPacket("fqsdf", nil))
-	p.Receive(testutils.NewPacket("valo", nil))
-	p.Receive(testutils.NewPacket("al1", nil))
-	p.Receive(testutils.NewPacket("val1", nil))
-	p.Receive(testutils.NewPacket("val3", nil))
-	p.Receive(testutils.NewPacket("val2", nil))
+	p.Receive(testutils.NewPacketOld("test", nil))
+	p.Receive(testutils.NewPacketOld("fqsdf", nil))
+	p.Receive(testutils.NewPacketOld("valo", nil))
+	p.Receive(testutils.NewPacketOld("al1", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
+	p.Receive(testutils.NewPacketOld("val3", nil))
+	p.Receive(testutils.NewPacketOld("val2", nil))
 	if assert.Equal(t, 2, ctx.SentPacketsCount(0), "2 events should pass") {
 		assert.Equal(t, "val1", ctx.SentPackets(0)[0].Message())
 		assert.Equal(t, "val2", ctx.SentPackets(0)[1].Message())
@@ -75,13 +75,13 @@ func TestReceiveDuplicateTermsInConfig(t *testing.T) {
 			"terms":         []string{"val1", "val1", "val1", "val1", "val1"},
 		},
 	)
-	p.Receive(testutils.NewPacket("test", nil))
-	p.Receive(testutils.NewPacket("fqsdf", nil))
-	p.Receive(testutils.NewPacket("valo", nil))
-	p.Receive(testutils.NewPacket("al1", nil))
-	p.Receive(testutils.NewPacket("val1", nil))
-	p.Receive(testutils.NewPacket("val3", nil))
-	p.Receive(testutils.NewPacket("val2", nil))
+	p.Receive(testutils.NewPacketOld("test", nil))
+	p.Receive(testutils.NewPacketOld("fqsdf", nil))
+	p.Receive(testutils.NewPacketOld("valo", nil))
+	p.Receive(testutils.NewPacketOld("al1", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
+	p.Receive(testutils.NewPacketOld("val3", nil))
+	p.Receive(testutils.NewPacketOld("val2", nil))
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "2 events should pass") {
 		assert.Equal(t, "val1", ctx.SentPackets(0)[0].Message())
 	}
@@ -97,13 +97,13 @@ func TestReceiveAllMessagesMatch(t *testing.T) {
 			"terms":         []string{"valo", "test", "val2", "al1", "val3", "val1", "fqsdf"},
 		},
 	)
-	p.Receive(testutils.NewPacket("test", nil))
-	p.Receive(testutils.NewPacket("fqsdf", nil))
-	p.Receive(testutils.NewPacket("valo", nil))
-	p.Receive(testutils.NewPacket("al1", nil))
-	p.Receive(testutils.NewPacket("val1", nil))
-	p.Receive(testutils.NewPacket("val3", nil))
-	p.Receive(testutils.NewPacket("val2", nil))
+	p.Receive(testutils.NewPacketOld("test", nil))
+	p.Receive(testutils.NewPacketOld("fqsdf", nil))
+	p.Receive(testutils.NewPacketOld("valo", nil))
+	p.Receive(testutils.NewPacketOld("al1", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
+	p.Receive(testutils.NewPacketOld("val3", nil))
+	p.Receive(testutils.NewPacketOld("val2", nil))
 	if assert.Equal(t, 7, ctx.SentPacketsCount(0), "2 events should pass") {
 		assert.Equal(t, "test", ctx.SentPackets(0)[0].Message())
 		assert.Equal(t, "fqsdf", ctx.SentPackets(0)[1].Message())
@@ -125,7 +125,7 @@ func TestReceiveMessageIncludingTermsDoNotMatch(t *testing.T) {
 			"terms":         []string{"test"},
 		},
 	)
-	p.Receive(testutils.NewPacket("testtest", nil))
+	p.Receive(testutils.NewPacketOld("testtest", nil))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "0 event should pass")
 }
 
@@ -140,7 +140,7 @@ func TestReceiveFieldIncludingTermsDoNotMatch(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "testtest"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "testtest"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "0 event should pass")
 }
 
@@ -155,9 +155,9 @@ func TestReceiveFieldNamesAreCaseSensitive(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"myfield": "test"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"myfield": "test"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "myfield != MyField")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "test"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "test"}))
 	assert.Equal(t, 1, ctx.SentPacketsCount(0), "match !")
 }
 
@@ -172,11 +172,11 @@ func TestReceiveFieldValuesAreCaseSensitive(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "TEST"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "TEST"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "TEST != test")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "Test"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "Test"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "TEST != test")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "test"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "test"}))
 	assert.Equal(t, 1, ctx.SentPacketsCount(0), "match !")
 }
 func TestReceiveLongValue(t *testing.T) {
@@ -190,10 +190,10 @@ func TestReceiveLongValue(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "TEST"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "TEST"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "No match")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "Test"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "Test"}))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "No match")
-	p.Receive(testutils.NewPacket("hello", map[string]interface{}{"MyField": "azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn"}))
+	p.Receive(testutils.NewPacketOld("hello", map[string]interface{}{"MyField": "azertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbnazertyuiopqsdfghjklmwxcvbn"}))
 	assert.Equal(t, 1, ctx.SentPacketsCount(0), "match !")
 }

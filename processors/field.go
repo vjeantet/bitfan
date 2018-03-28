@@ -88,6 +88,9 @@ func AddFields(fields map[string]interface{}, data *mxj.Map) {
 }
 
 func AddTags(tags []string, data *mxj.Map) {
+	if len(tags) == 0 {
+		return
+	}
 	var currentTags []string
 
 	currentTagsInterface, _ := data.ValueForPath("tags")

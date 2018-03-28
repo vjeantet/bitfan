@@ -81,7 +81,7 @@ func (p *processor) fixGrokMatch(conf interface{}) (map[string][]string, error) 
 			case string:
 				fixMatch[fieldName] = []string{v}
 			default:
-				return fixMatch, fmt.Errorf("unsupported match value format %V", reflect.TypeOf(v))
+				return fixMatch, fmt.Errorf("unsupported match value format %v", reflect.TypeOf(v))
 			}
 		}
 	default:

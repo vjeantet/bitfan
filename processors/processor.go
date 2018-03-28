@@ -12,6 +12,7 @@ type Processor interface {
 	Doc() *doc.Processor
 	MaxConcurent() int
 	SetPipelineUUID(string)
+	SetProcessorIdentifiers(string, string)
 }
 
 type ProcessorContext interface {

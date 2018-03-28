@@ -158,6 +158,9 @@ func (l *Location) TemplateWithOptions(options map[string]string) (*template.Tem
 		"TrimPrefix":   (*templateFunctions)(nil).trimPrefix,
 		"Replace":      (*templateFunctions)(nil).replace,
 		"markdown":     (*templateFunctions)(nil).toMarkdown,
+
+		"jsonDecodeArray": (*templateFunctions)(nil).jsonDecodeArray,
+		"hexDecode":       (*templateFunctions)(nil).hexDecode,
 	}
 
 	tpl, errTpl := template.New("").Option("missingkey=zero").Funcs(funcMap).Parse(string(content))

@@ -1,0 +1,51 @@
+{{ define "title"}}Environment Variables{{ end }}
+
+{{ define "sidebar" }}
+{{ end }}
+
+{{define "scripts"}}
+<script src="/public/js/env.js"></script>
+<script src="/public/js/bitbar.js"></script>
+{{end}}
+
+{{ define "content" }}
+
+
+<div class="row">
+<div class="col">
+	<h1>Environment Variables</h1>
+</div>
+</div>
+
+<div>
+  Theses values are available
+  <li>in configuration pipeline with the ${VARNAME} syntax</li>
+  <li>in xprocessor getting env var</li>
+</div>
+<hr>
+
+<div id="env-items"> 
+  
+</div>
+
+<hr>
+<form id="add_env">
+  <input type="text" name="name" placeholder="Name">
+  <input type="text" name="value" placeholder="Value">
+  <input type="checkbox" name="secret" id="secret"><label for="secret">Secret</label>
+  <button type="submit" name="save" class="btn btn-sm btn-primary">Add</button>
+</form>
+
+
+<script id="env-item" type="text/x-jsrender">
+  <div class="env-item" id="env-[[:env.uuid]]">
+    <input type="text" name="name" value="[[:env.name]]" disabled>
+    <input type="text" name="value" value="[[:env.value]]" disabled>
+    [[if env.uuid]]
+    <button href="/env/[[:env.uuid]]/delete" name="delete" uuid="[[:env.uuid]]" class="btn btn-sm btn-danger" name="delete">Delete</button>
+    [[/if]]
+  </div>
+</script>
+
+{{ end }}
+

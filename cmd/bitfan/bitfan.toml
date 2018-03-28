@@ -11,7 +11,7 @@
 
 ## Where to save logs ?
 ## Default is stdout
-# log = "/var/log/bitfan-app.log"
+log = "/tmp/bitfan-app.log"
 
 ## Set log verbosity on core and/or processors
 # verbose = true (default)

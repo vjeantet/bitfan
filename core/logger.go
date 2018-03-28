@@ -53,6 +53,8 @@ func setLogOutputFile(fileLocation string) {
 		Log().Errorf("Error while opening log file %v", err)
 	}
 	logrus.SetOutput(f)
+
+	redirectStderr(f)
 }
 
 type Logger struct {

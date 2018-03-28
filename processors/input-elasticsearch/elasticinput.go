@@ -88,9 +88,11 @@ func (p *processor) Start(e processors.IPacket) error {
 				fields, err := mxj.NewMapJson(*hit.Source)
 				if err != nil {
 					p.Logger.Error(err.Error())
-					e = p.NewPacket(string(*hit.Source), nil)
+					e = p.NewPacket(map[string]interface{}{
+						"message": string(*hit.Source),
+					})
 				} else {
-					e = p.NewPacket("", fields)
+					e = p.NewPacket(fields)
 				}
 
 				// if err != nil {

@@ -22,6 +22,50 @@ func (r *RestClient) client() *sling.Sling {
 	return sling.New().Base(r.host)
 }
 
+func (r *RestClient) Envs() ([]models.Env, error) {
+	varenvs := []models.Env{}
+	apierror := new(models.Error)
+
+	resp, err := r.client().Get("env").Receive(&varenvs, apierror)
+
+	if err != nil {
+		return varenvs, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+	return varenvs, nil
+}
+
+func (r *RestClient) XProcessors(behavior string) ([]models.XProcessor, error) {
+	xprocessors := []models.XProcessor{}
+	apierror := new(models.Error)
+
+	resp, err := r.client().Get("xprocessors?behavior="+behavior).Receive(&xprocessors, apierror)
+
+	if err != nil {
+		return xprocessors, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+	return xprocessors, nil
+}
+
+func (r *RestClient) XProcessor(ID string) (*models.XProcessor, error) {
+	xprocessor := &models.XProcessor{}
+	apierror := new(models.Error)
+
+	resp, err := r.client().Get("xprocessors/"+ID).Receive(xprocessor, apierror)
+
+	if err != nil {
+		return xprocessor, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+		return xprocessor, err
+	}
+
+	return xprocessor, err
+}
+
 func (r *RestClient) Pipelines() ([]models.Pipeline, error) {
 	pipelines := []models.Pipeline{}
 	apierror := new(models.Error)
@@ -63,6 +107,35 @@ func (r *RestClient) NewPipeline(pipeline *models.Pipeline) (*models.Pipeline, e
 		err = fmt.Errorf(apierror.Message)
 	}
 	return newPipeline, err
+}
+
+func (r *RestClient) NewXProcessor(xprocessor *models.XProcessor) (*models.XProcessor, error) {
+	newXProcessor := new(models.XProcessor)
+	apierror := new(models.Error)
+	resp, err := r.client().Post("xprocessors").BodyJSON(xprocessor).Receive(newXProcessor, apierror)
+
+	if err != nil {
+		return newXProcessor, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return newXProcessor, err
+}
+
+func (r *RestClient) UpdateXProcessor(UUID string, data *map[string]interface{}) (*models.XProcessor, error) {
+	newXProcessor := new(models.XProcessor)
+	apierror := new(models.Error)
+
+	resp, err := r.client().Patch("xprocessors/"+UUID).BodyJSON(data).Receive(newXProcessor, apierror)
+
+	if err != nil {
+		return newXProcessor, err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return newXProcessor, err
 }
 
 func (r *RestClient) UpdatePipeline(UUID string, data *map[string]interface{}) (*models.Pipeline, error) {
@@ -115,6 +188,18 @@ func (r *RestClient) StopPipeline(UUID string) (*models.Pipeline, error) {
 	return newPipeline, err
 }
 
+func (r *RestClient) DeleteXProcessor(UUID string) error {
+	apierror := new(models.Error)
+
+	resp, err := r.client().Delete("xprocessors/"+UUID).Receive(nil, apierror)
+	if err != nil {
+		return err
+	} else if resp.StatusCode > 400 {
+		err = fmt.Errorf(apierror.Message)
+	}
+
+	return nil
+}
 func (r *RestClient) DeletePipeline(UUID string) error {
 	apierror := new(models.Error)
 

@@ -50,7 +50,7 @@ func TestInvalidConfiguration(t *testing.T) {
 func TestNormalCases(t *testing.T) {
 
 	Convey("Given an existing event with a valid ip", t, func() {
-		event := testutils.NewPacket("", map[string]interface{}{})
+		event := testutils.NewPacketOld("", map[string]interface{}{})
 		conf := map[string]interface{}{
 			"database": setupTmpDatabase("GeoIP2-City-Test.mmdb"),
 			"source":   "ip",

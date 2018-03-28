@@ -229,6 +229,9 @@ func buildOutputAgents(plugin *logstash.Plugin, lastOutPorts []core.Port, pwd st
 		}
 	}
 
+	// interval can be a number, a string number or a cron string pattern
+	setAgentInterval(&agent)
+
 	// @see commit dbeb4015a88893bffd6334d38f34f978312eff82
 	setAgentTrace(&agent)
 

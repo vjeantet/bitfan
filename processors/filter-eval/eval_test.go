@@ -23,8 +23,7 @@ func TestMaxConcurent(t *testing.T) {
 
 func TestConfigureNoExpressionNorTemplate(t *testing.T) {
 	p := New().(*processor)
-	conf := map[string]interface{}{
-	}
+	conf := map[string]interface{}{}
 	ctx := testutils.NewProcessorContext()
 	err := p.Configure(ctx, conf)
 	assert.EqualError(t, err, "set one expression or go template")
@@ -40,7 +39,7 @@ func TestReceiveSimpleMultiplication(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("stats", map[string]interface{}{"usage": float64(1738)}))
+	p.Receive(testutils.NewPacketOld("stats", map[string]interface{}{"usage": float64(1738)}))
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "One match") {
 		expected := map[string]interface{}{
 			"usage": float64(173800),
@@ -70,7 +69,7 @@ func TestReceiveSimpleExpressions(t *testing.T) {
 			},
 		)
 
-		p.Receive(testutils.NewPacket("stats", map[string]interface{}{"usage": oneData[1]}))
+		p.Receive(testutils.NewPacketOld("stats", map[string]interface{}{"usage": oneData[1]}))
 		if assert.Equal(t, 1, ctx.SentPacketsCount(0), "One match") {
 			expected := map[string]interface{}{
 				"usage": oneData[2],
@@ -90,7 +89,7 @@ func TestReceiveLeaveOtherFieldsUnchanged(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("stats", map[string]interface{}{"usage": float64(19), "size": int64(4938), "label": "hello", "percent": float64(18.59)}))
+	p.Receive(testutils.NewPacketOld("stats", map[string]interface{}{"usage": float64(19), "size": int64(4938), "label": "hello", "percent": float64(18.59)}))
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "One match") {
 		expected := map[string]interface{}{
 			"usage":   float64(1900),
@@ -101,8 +100,6 @@ func TestReceiveLeaveOtherFieldsUnchanged(t *testing.T) {
 		testutils.AssertValuesForPaths(t, ctx, expected)
 	}
 }
-
-
 
 func TestTemplate(t *testing.T) {
 	p := New().(*processor)
@@ -116,7 +113,7 @@ func TestTemplate(t *testing.T) {
 	)
 
 	fields := map[string]interface{}{"name": "Jon Doe", "templateName": "EVAL-TEST.tpl", "filter": "EVAL"}
-	p.Receive(testutils.NewPacket("stats", fields))
+	p.Receive(testutils.NewPacketOld("stats", fields))
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "One match") {
 		expected := map[string]interface{}{
 			"mytest": "Hello Jon Doe !\n\nThis template named \"EVAL-TEST.tpl\" (version 1.0) was created for testing the \"EVAL\" filter.\n",
@@ -137,7 +134,7 @@ func TestTemplateWithVar(t *testing.T) {
 	)
 
 	fields := map[string]interface{}{}
-	p.Receive(testutils.NewPacket("stats", fields))
+	p.Receive(testutils.NewPacketOld("stats", fields))
 	if assert.Equal(t, 1, ctx.SentPacketsCount(0), "One match") {
 		expected := map[string]interface{}{
 			"mytest": "Hello Doe Jon !\n\nThis template named \"EVAL-VAR-TEST.tpl\" (version 1.0) was created for testing the \"EVAL\" filter with var template.\n",
@@ -170,7 +167,7 @@ func TestTemplateErrorUrlNotFound(t *testing.T) {
 		},
 	)
 
-	assert.EqualError(t, err, "Get http://127.0.0.1/iuherfiuhoiuehroiuhzeroiuhaiuzheifuhaerg: dial tcp 127.0.0.1:80: getsockopt: connection refused")
+	assert.Regexp(t, "Get http://127.0.0.1/iuherfiuhoiuehroiuhzeroiuhaiuzheifuhaerg: dial tcp 127.0.0.1:80: .*: connection refused", err.Error())
 }
 
 func TestTemplateErrorPathIsDirectory(t *testing.T) {

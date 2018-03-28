@@ -46,9 +46,9 @@ func TestDefault(t *testing.T) {
 
 	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
 	assert.NoError(t, p.Start(nil))
-	assert.NoError(t, p.Receive(testutils.NewPacket("msg 1", map[string]interface{}{"abc1": "def1", "1": 123, "@timestamp": "ts"})))
+	assert.NoError(t, p.Receive(testutils.NewPacketOld("msg 1", map[string]interface{}{"abc1": "def1", "1": 123, "@timestamp": "ts"})))
 	assert.Equal(t, map[string]interface{}{"message": "msg 1", "abc1": "def1", "1": 123.0, "@timestamp": "ts"}, <-c)
-	assert.NoError(t, p.Receive(testutils.NewPacket("message 2", map[string]interface{}{"abc2": "def2", "2": 456, "@timestamp": "ts"})))
+	assert.NoError(t, p.Receive(testutils.NewPacketOld("message 2", map[string]interface{}{"abc2": "def2", "2": 456, "@timestamp": "ts"})))
 	assert.Equal(t, map[string]interface{}{"message": "message 2", "abc2": "def2", "2": 456.0, "@timestamp": "ts"}, <-c)
 	assert.NoError(t, p.Stop(nil))
 }
@@ -76,8 +76,8 @@ func TestLine(t *testing.T) {
 
 	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
 	assert.NoError(t, p.Start(nil))
-	assert.NoError(t, p.Receive(testutils.NewPacket("message1", map[string]interface{}{"abc": "def1", "n": 123})))
-	assert.NoError(t, p.Receive(testutils.NewPacket("message2", map[string]interface{}{"abc": "def2", "n": 456})))
+	assert.NoError(t, p.Receive(testutils.NewPacketOld("message1", map[string]interface{}{"abc": "def1", "n": 123})))
+	assert.NoError(t, p.Receive(testutils.NewPacketOld("message2", map[string]interface{}{"abc": "def2", "n": 456})))
 	assert.Equal(t, "message1\tdef1\t123\nmessage2\tdef2\t456\n", <-c)
 	assert.NoError(t, p.Stop(nil))
 }
@@ -114,7 +114,7 @@ func TestRetry(t *testing.T) {
 	}
 	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
 	assert.NoError(t, p.Start(nil))
-	assert.NoError(t, p.Receive(testutils.NewPacket("message", nil)))
+	assert.NoError(t, p.Receive(testutils.NewPacketOld("message", nil)))
 	assert.Equal(t, "500", <-c)
 	assert.Equal(t, "message\n", <-c)
 	assert.NoError(t, p.Stop(nil))
@@ -131,7 +131,7 @@ func TestStopInRetry(t *testing.T) {
 	}
 	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
 	assert.NoError(t, p.Start(nil))
-	assert.NoError(t, p.Receive(testutils.NewPacket("doom message", nil)))
+	assert.NoError(t, p.Receive(testutils.NewPacketOld("doom message", nil)))
 	time.Sleep(time.Second)
 	assert.NoError(t, p.Stop(nil))
 }

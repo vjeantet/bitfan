@@ -281,7 +281,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 			packetFields["parts"] = parts
 		}
 
-		ne := p.NewPacket(env.Text, packetFields)
+		ne := p.NewPacket(packetFields)
 		p.opt.ProcessCommonOptions(e.Fields())
 		p.Send(ne)
 

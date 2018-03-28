@@ -15,6 +15,63 @@
   </li>
 </script>
 
+
+
+{{if .pipeline.Active}}
+  <section class="Infos">
+    <h2>Active Infos.</h2>
+    <label>started on {{dateFormat "dd/MM/YYYY HH:mm:ss" .pipeline.StartedAt }}</label>
+{{if lt 0 (len .pipeline.Schedulers)}}
+<section class="schedulerJobs">
+  <h4>Schedulers</h4>
+  {{range  $scheduler := .pipeline.Schedulers}}
+    <li>
+      [{{$scheduler.AgentName}}]
+      <span title="{{$scheduler.Spec}}">
+      <script type="text/javascript">document.write(cronstrue.toString("{{$scheduler.Spec}}"));</script>
+      </span>
+    </li>
+  {{end}}  
+</section>
+{{end}}  
+
+{{if lt 0 (len .pipeline.Webhooks)}}
+<section class="hooks">
+  <h4>HTTP Endpoints</h4>
+  {{range  $webhook := .pipeline.Webhooks}}
+    <li>
+      [{{$webhook.Namespace}}]
+      <span>
+        <a href="http://{{$.apiHost}}{{$webhook.Url}}" target="_blank">/{{$webhook.Description}}</a>
+      </span>
+    </li>    
+  {{end}}
+</section>
+{{end}}
+
+  </section>
+{{end}}
+
+<section class="playground">
+  <h2>PlayTest</h2>
+<div id="play-actions" class="btn-group btn-group-sm " role="group" aria-label="playground">
+    <a href="/pipelines/{{.pipeline.Uuid}}/play" class="btn btn-outline-success" >
+      Open Playground
+    </a>
+    <a class="btn btn-outline-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="sr-only">Toggle Dropdown</span>
+    </a>
+    <ul class="dropdown-menu">
+      {{ range $asset := .pipeline.Assets }}    
+      <a href="/pipelines/{{$.pipeline.Uuid}}/play?with={{$asset.Uuid}}" class="dropdown-item" >
+        {{$asset.Name}}
+      </a>
+      {{ end }}
+    </ul>
+</div> 
+
+</section>
+
 <section class="assets">
   <h2>Assets</h2>
   {{ range $asset := .pipeline.Assets }}
@@ -51,7 +108,7 @@
       var drop = $('#dz-preview-template').html();
       Dropzone.options.myAwesomeDropzone = {
       paramName: "file", // The name that will be used to transfer the file
-      maxFilesize: 20, // MB
+      maxFilesize: 50, // MB
       // previewTemplate: drop,
 
       createImageThumbnails: true,

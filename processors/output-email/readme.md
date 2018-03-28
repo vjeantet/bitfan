@@ -4,23 +4,25 @@ Send email when an output is received. Alternatively, you may include or exclude
 ## Synopsys
 
 
-|   SETTING   |   TYPE   | REQUIRED |    DEFAULT VALUE     |
-|-------------|----------|----------|----------------------|
-| address     | string   | false    | "localhost"          |
-| port        | int      | false    |                   25 |
-| username    | string   | false    | ""                   |
-| password    | string   | false    | ""                   |
-| from        | string   | false    | "bitfan@nowhere.com" |
-| replyto     | string   | false    | ""                   |
-| to          | string   | true     | ""                   |
-| cc          | string   | false    | ""                   |
-| bcc         | string   | false    | ""                   |
-| subject     | string   | false    | ""                   |
-| subjectfile | string   | false    | ""                   |
-| HTMLBody    | location | false    | ?                    |
-| body        | location | false    | ?                    |
-| attachments | array    | false    | []                   |
-| images      | array    | false    | []                   |
+|        SETTING         |   TYPE   | REQUIRED |    DEFAULT VALUE     |
+|------------------------|----------|----------|----------------------|
+| address                | string   | false    | "localhost"          |
+| port                   | int      | false    |                   25 |
+| username               | string   | false    | ""                   |
+| password               | string   | false    | ""                   |
+| from                   | string   | false    | "bitfan@nowhere.com" |
+| replyto                | string   | false    | ""                   |
+| to                     | string   | true     | ""                   |
+| cc                     | string   | false    | ""                   |
+| bcc                    | string   | false    | ""                   |
+| subject                | string   | false    | ""                   |
+| subjectfile            | string   | false    | ""                   |
+| htmlbody               | location | false    | ?                    |
+| body                   | location | false    | ?                    |
+| attachments            | array    | false    | []                   |
+| attachments_with_event | hash     | false    | {}                   |
+| images                 | array    | false    | []                   |
+| embed_b64_images       | bool     | false    | false                |
 
 
 ## Details
@@ -102,7 +104,7 @@ You can use template
 
 Path to Subject template file for the email
 
-### HTMLBody
+### htmlbody
 * Value type is location
 * Default value is `?`
 
@@ -120,11 +122,24 @@ Body for the email - plain text only.
 
 Attachments - specify the name(s) and location(s) of the files
 
+### attachments_with_event
+* Value type is hash
+* Default value is `{}`
+
+Use event field's values as attachment content
+each pair is  : event field's path => attachment's name
+
 ### images
 * Value type is array
 * Default value is `[]`
 
 Images - specify the name(s) and location(s) of the images
+
+### embed_b64_images
+* Value type is bool
+* Default value is `false`
+
+Search for img:data in HTML body, and replace them to a reference to inline attachment
 
 
 
@@ -146,6 +161,8 @@ email{
 	htmlBody => "<h1>Hello</h1> message received : {{.message}}"
 	body => "message : {{.message}}. from {{.host}}."
 	attachments => []
+	 attachments_with_event=>{"mydata"=>"myimage.jpg"}
 	images => []
+	embed_b64_images => false
 }
 ```

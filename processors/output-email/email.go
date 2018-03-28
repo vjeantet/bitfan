@@ -4,10 +4,15 @@ package email
 
 import (
 	"bytes"
+	"encoding/base64"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
+	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/bitfan/commons"
 	"github.com/vjeantet/bitfan/processors"
 	gomail "gopkg.in/gomail.v2"
@@ -79,7 +84,7 @@ type options struct {
 	// HTML Body for the email, which may contain HTML markup
 	// @ExampleLS htmlBody => "<h1>Hello</h1> message received : {{.message}}"
 	// @Type Location
-	HTMLBody string `mapstructure:"htmlBody"`
+	HTMLBody string `mapstructure:"htmlbody"`
 
 	// Body for the email - plain text only.
 	// @ExampleLS body => "message : {{.message}}. from {{.host}}."
@@ -89,15 +94,25 @@ type options struct {
 	// Attachments - specify the name(s) and location(s) of the files
 	Attachments []string `mapstructure:"attachments"`
 
+	// Use event field's values as attachment content
+	// each pair is  : event field's path => attachment's name
+	// @ExampleLS  attachments_with_event=>{"mydata"=>"myimage.jpg"}
+	AttachEventData map[string]string `mapstructure:"attachments_with_event"`
+
 	// Images - specify the name(s) and location(s) of the images
 	Images []string `mapstructure:"images"`
+
+	// Search for img:data in HTML body, and replace them to a reference to inline attachment
+	// @Default false
+	EmbedB64Images bool `mapstructure:"embed_b64_images"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Host: "localhost",
-		From: "bitfan@nowhere.com",
-		Port: 25,
+		Host:           "localhost",
+		From:           "bitfan@nowhere.com",
+		Port:           25,
+		EmbedB64Images: false,
 	}
 	p.opt = &defaults
 	err := p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -187,7 +202,38 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 		buff := bytes.NewBufferString("")
 		tmpl.Execute(buff, e.Fields())
-		m.SetBody("text/html", buff.String())
+
+		if p.opt.EmbedB64Images == false {
+			m.SetBody("text/html", buff.String())
+		} else {
+			content := buff.String()
+			//find all <img src="(data:image/png;base64,[a-zA-Z0-9+=/]*)"/>
+			r, _ := regexp.Compile(`<img src="data:image/png;base64,([a-zA-Z0-9+=/]*)"/>`)
+
+			for i, match := range r.FindAllStringSubmatch(content, -1) {
+				imgTag := match[0]
+				b64Data := match[1]
+
+				imgUid := fmt.Sprintf("embed-%d.png", i)
+				content = strings.Replace(content, imgTag, `<img src='cid:`+imgUid+`'/>`, 1)
+				imgPath := filepath.Join(os.TempDir(), imgUid)
+
+				sDec, err := base64.StdEncoding.DecodeString(b64Data)
+				if err != nil {
+					p.Logger.Errorf("error while decoding base64 %s", err.Error())
+					continue
+				}
+
+				if err := ioutil.WriteFile(imgPath, sDec, 0644); err != nil {
+					p.Logger.Errorf("error while writing image to %s", imgPath)
+					continue
+				}
+
+				p.opt.Images = append(p.opt.Images, imgPath)
+			}
+			m.SetBody("text/html", content)
+		}
+
 	}
 
 	if p.opt.Body != "" {
@@ -256,6 +302,42 @@ func (p *processor) Receive(e processors.IPacket) error {
 		}
 
 		m.Attach(f)
+	}
+
+	for path, attachmentName := range p.opt.AttachEventData {
+		value, err := e.Fields().ValueForPath(path)
+		if err != nil {
+			p.Logger.Warningf("Attach event data failed for path %s : %s", path, err)
+			continue
+		}
+
+		name, _ := uuid.NewV4()
+		attachFileName := filepath.Join(os.TempDir(), "bitfan-tmp-email-"+name.String())
+		switch vt := value.(type) {
+		case string:
+			sDec, err := base64.StdEncoding.DecodeString(vt)
+			if err != nil {
+				p.Logger.Debugf("base64 decode %s, %s", path, err)
+				if err = ioutil.WriteFile(attachFileName, []byte(vt), 0644); err != nil {
+					p.Logger.Warningf("write file error %s : %s", attachFileName, err)
+					continue
+				}
+			}
+			if err = ioutil.WriteFile(attachFileName, sDec, 0644); err != nil {
+				p.Logger.Warningf("write file error %s : %s", attachFileName, err)
+				continue
+			}
+		case []byte:
+			if err = ioutil.WriteFile(attachFileName, vt, 0644); err != nil {
+				p.Logger.Warningf("write file error %s : %s", attachFileName, err)
+				continue
+			}
+		default:
+			p.Logger.Warningf("Unknow content type for %V", value)
+			continue
+		}
+
+		m.Attach(attachFileName, gomail.Rename(attachmentName))
 	}
 
 	d := gomail.NewDialer(p.opt.Host, p.opt.Port, p.opt.Username, p.opt.Password)

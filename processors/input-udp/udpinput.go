@@ -66,8 +66,9 @@ func (p *processor) Start(e processors.IPacket) error {
 				p.Logger.Errorf("ReadFromUDP: %v input-udp goroutine exiting", err)
 				return
 			}
-			ne := p.NewPacket(string(buf[:buflen]), map[string]interface{}{
-				"host": saddr.IP.String(),
+			ne := p.NewPacket(map[string]interface{}{
+				"message": string(buf[:buflen]),
+				"host":    saddr.IP.String(),
 			})
 
 			p.opt.ProcessCommonOptions(ne.Fields())

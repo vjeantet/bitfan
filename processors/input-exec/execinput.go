@@ -100,8 +100,9 @@ func (p *processor) Tick(e processors.IPacket) error {
 					return err
 				}
 			} else {
-				ne := p.NewPacket(data, map[string]interface{}{
-					"host": p.host,
+				ne := p.NewPacket(map[string]interface{}{
+					"message": data,
+					"host":    p.host,
 				})
 				ne.Fields().SetValueForPath(record, "stdout")
 				ne.Fields().SetValueForPath(p.opt.Command, "command")

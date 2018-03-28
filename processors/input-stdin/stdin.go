@@ -108,14 +108,15 @@ func (p *processor) Start(e processors.IPacket) error {
 
 				switch v := msg.(type) {
 				case string:
-					ne = p.NewPacket(v, map[string]interface{}{
-						"host": p.host,
+					ne = p.NewPacket(map[string]interface{}{
+						"message": v,
+						"host":    p.host,
 					})
 				case map[string]interface{}:
-					ne = p.NewPacket("", v)
+					ne = p.NewPacket(v)
 					ne.Fields().SetValueForPath(p.host, "host")
 				case []interface{}:
-					ne = p.NewPacket("", map[string]interface{}{
+					ne = p.NewPacket(map[string]interface{}{
 						"host": p.host,
 						"data": v,
 					})

@@ -31,10 +31,10 @@ func (e *event) SetMessage(s string) {
 func (e *event) Clone() processors.IPacket {
 	nf, _ := e.Fields().Copy()
 	nf["@timestamp"], _ = e.Fields().ValueForPath("@timestamp")
-	return NewPacket(e.Message(), nf)
+	return NewPacket(nf)
 }
 
-func NewPacket(message string, fields map[string]interface{}) processors.IPacket {
+func NewPacketOld(message string, fields map[string]interface{}) processors.IPacket {
 	if fields == nil {
 		fields = mxj.Map{}
 	}
@@ -43,9 +43,24 @@ func NewPacket(message string, fields map[string]interface{}) processors.IPacket
 	if _, ok := fields["message"]; !ok {
 		fields["message"] = message
 	}
+	return NewPacket(fields)
+}
+
+func NewPacket(fields map[string]interface{}) processors.IPacket {
+	if fields == nil {
+		fields = mxj.Map{}
+	}
 
 	if _, k := fields["@timestamp"]; !k {
 		fields["@timestamp"] = time.Now()
+	} else {
+		switch v := fields["@timestamp"].(type) {
+		case string:
+			var err error
+			if fields["@timestamp"], err = time.Parse(time.RFC3339, v); err != nil {
+				fields["@timestamp"] = v
+			}
+		}
 	}
 	return &event{
 		fields: fields,

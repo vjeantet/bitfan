@@ -94,7 +94,7 @@ func (p *processor) Start(e processors.IPacket) error {
 			message["@timestamp"] = message["timestamp"].(time.Time)
 			delete(message, "timestamp")
 
-			ne := p.NewPacket("", message)
+			ne := p.NewPacket(message)
 			p.opt.ProcessCommonOptions(ne.Fields())
 			p.Send(ne)
 		}

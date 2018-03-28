@@ -19,7 +19,8 @@ type Pipeline struct {
 
 	Description string
 
-	Webhooks []webhook.Hook
+	Webhooks   []webhook.Hook
+	Schedulers []schedulerJob
 }
 
 func NewPipeline() *Pipeline {

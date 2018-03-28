@@ -20,15 +20,15 @@ type webHook struct {
 }
 
 type Hook struct {
-	h           http.HandlerFunc
-	Description string
-	Namespace   string
-	Url         string
+	h            http.HandlerFunc
+	Description  string
+	Namespace    string
+	PipelineUUID string
+	Url          string
 }
 
 var webHookMap = syncmap.Map{}
 var baseURL = ""
-var whPrefixURL = "/h/"
 var Log commons.Logger
 
 func New(pipelineLabel, nameSpace string) *webHook {
@@ -38,18 +38,40 @@ func New(pipelineLabel, nameSpace string) *webHook {
 func WebHooks(uuid string) []Hook {
 	urls := []Hook{}
 	webHookMap.Range(func(key, value interface{}) bool {
-		urls = append(urls, Hook{
-			Description: value.(*Hook).Description,
-			Namespace:   value.(*Hook).Namespace,
-			Url:         value.(*Hook).Url,
-		})
+		if uuid == value.(*Hook).PipelineUUID {
+			urls = append(urls, Hook{
+				Description: value.(*Hook).Description,
+				Namespace:   value.(*Hook).Namespace,
+				Url:         value.(*Hook).Url,
+			})
+		}
 		return true
 	})
 	return urls
 }
 
 func (w *webHook) buildURL(hookName string) string {
-	return strings.ToLower(whPrefixURL + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
+	return strings.ToLower("/h/" + slug.Make(w.pipelineLabel) + "/" + slug.Make(hookName))
+}
+
+func (w *webHook) buildShortURL(hookName string) string {
+	return strings.ToLower("/_/" + hookName)
+}
+
+// Add a new route to a given http.HandlerFunc
+func (w *webHook) AddShort(hookName string, hf http.HandlerFunc) {
+
+	hUrl := w.buildShortURL(hookName)
+	w.Hooks = append(w.Hooks, hookName)
+
+	webHookMap.Store(hUrl, &Hook{
+		h:            hf,
+		Description:  hookName,
+		Namespace:    w.namespace,
+		PipelineUUID: w.pipelineLabel,
+		Url:          hUrl,
+	})
+	Log.Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }
 
 // Add a new route to a given http.HandlerFunc
@@ -59,10 +81,11 @@ func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
 	w.Hooks = append(w.Hooks, hookName)
 
 	webHookMap.Store(hUrl, &Hook{
-		h:           hf,
-		Description: hookName,
-		Namespace:   w.namespace,
-		Url:         hUrl,
+		h:            hf,
+		Description:  hookName,
+		Namespace:    w.namespace,
+		PipelineUUID: w.pipelineLabel,
+		Url:          hUrl,
 	})
 	Log.Infof("Hook [%s - %s] %s", w.pipelineLabel, w.namespace, baseURL+hUrl)
 }
@@ -70,6 +93,10 @@ func (w *webHook) Add(hookName string, hf http.HandlerFunc) {
 // Delete a route
 func (w *webHook) Delete(hookName string) {
 	hUrl := w.buildURL(hookName)
+	webHookMap.Delete(hUrl)
+	Log.Debugf("WebHook unregisted [%s]", hUrl)
+
+	hUrl = w.buildShortURL(hookName)
 	webHookMap.Delete(hUrl)
 	Log.Debugf("WebHook unregisted [%s]", hUrl)
 }

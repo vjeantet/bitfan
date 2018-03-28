@@ -53,13 +53,13 @@ func TestReceiveMatch(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("test", nil))
-	p.Receive(testutils.NewPacket("fqsdf", nil))
-	p.Receive(testutils.NewPacket("valo", nil))
-	p.Receive(testutils.NewPacket("al1", nil))
-	p.Receive(testutils.NewPacket("val1", nil))
-	p.Receive(testutils.NewPacket("val3", nil))
-	p.Receive(testutils.NewPacket("val2", nil))
+	p.Receive(testutils.NewPacketOld("test", nil))
+	p.Receive(testutils.NewPacketOld("fqsdf", nil))
+	p.Receive(testutils.NewPacketOld("valo", nil))
+	p.Receive(testutils.NewPacketOld("al1", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
+	p.Receive(testutils.NewPacketOld("val3", nil))
+	p.Receive(testutils.NewPacketOld("val2", nil))
 	assert.Equal(t, 5, ctx.SentPacketsCount(0), "5 events should pass")
 }
 
@@ -75,10 +75,10 @@ func TestReceiveMissingFieldIgnoreTrue(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("val1", nil))
-	p.Receive(testutils.NewPacket("val2", nil))
-	p.Receive(testutils.NewPacket("val3", nil))
-	p.Receive(testutils.NewPacket("val4", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
+	p.Receive(testutils.NewPacketOld("val2", nil))
+	p.Receive(testutils.NewPacketOld("val3", nil))
+	p.Receive(testutils.NewPacketOld("val4", nil))
 	assert.Equal(t, 0, ctx.SentPacketsCount(0), "no event pass")
 }
 
@@ -94,9 +94,9 @@ func TestReceiveMissingFieldIgnoreFalse(t *testing.T) {
 		},
 	)
 
-	p.Receive(testutils.NewPacket("val2d", nil))
-	p.Receive(testutils.NewPacket("val1", nil))
-	p.Receive(testutils.NewPacket("val1", nil))
-	p.Receive(testutils.NewPacket("val1", nil))
+	p.Receive(testutils.NewPacketOld("val2d", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
+	p.Receive(testutils.NewPacketOld("val1", nil))
 	assert.Equal(t, 4, ctx.SentPacketsCount(0), "all events pass")
 }

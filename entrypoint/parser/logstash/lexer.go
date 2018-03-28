@@ -30,7 +30,7 @@ func readToken(stream *lexerStream) (token, error) {
 		kind = TokenIllegal
 
 		if character == '#' {
-			tokenString, _ = readUntilFalse(stream, true, false, true, isNotNewLine)
+			tokenString, _ = readUntilFalse(stream, true, false, true, false, isNotNewLine)
 			tokenValue = tokenString
 			kind = TokenComment
 			break
@@ -108,12 +108,12 @@ func readToken(stream *lexerStream) (token, error) {
 		if unicode.IsLetter(character) {
 			stream.rewind(1)
 
-			tokenString, _ = readUntilFalse(stream, true, false, true, isString)
+			tokenString, _ = readUntilFalse(stream, true, false, true, false, isString)
 			tokenValue = tokenString
 			kind = TokenString
 
 			if tokenString == "if" {
-				tokenString, _ = readUntilFalse(stream, true, false, true, isNotLeftBr)
+				tokenString, _ = readUntilFalse(stream, true, false, true, true, isNotLeftBr)
 				tokenValue = tokenString
 				kind = TokenIf
 				break
@@ -125,7 +125,7 @@ func readToken(stream *lexerStream) (token, error) {
 				if stream.readCharacter() == ' ' {
 					if stream.readCharacter() == 'i' {
 						if stream.readCharacter() == 'f' {
-							tokenString, _ = readUntilFalse(stream, true, false, true, isNotLeftBr)
+							tokenString, _ = readUntilFalse(stream, true, false, true, false, isNotLeftBr)
 							tokenValue = tokenString
 							kind = TokenElseIf
 							break
@@ -153,7 +153,7 @@ func readToken(stream *lexerStream) (token, error) {
 		}
 
 		if !isNotQuote(character) {
-			tokenValue, completed = readUntilFalse(stream, true, false, true, isNotQuoteS(character))
+			tokenValue, completed = readUntilFalse(stream, true, false, true, false, isNotQuoteS(character))
 
 			if !completed {
 				ret.Kind = kind
@@ -193,7 +193,7 @@ func readTokenUntilFalse(stream *lexerStream, condition func(rune) bool) string 
 	var ret string
 
 	stream.rewind(1)
-	ret, _ = readUntilFalse(stream, false, true, true, condition)
+	ret, _ = readUntilFalse(stream, false, true, true, false, condition)
 	return ret
 }
 
@@ -201,11 +201,19 @@ func readTokenUntilFalse(stream *lexerStream, condition func(rune) bool) string 
 	Returns the string that was read until the given [condition] was false, or whitespace was broken.
 	Returns false if the stream ended before whitespace was broken or condition was met.
 */
-func readUntilFalse(stream *lexerStream, includeWhitespace bool, breakWhitespace bool, allowEscaping bool, condition func(rune) bool) (string, bool) {
+func readUntilFalse(
+	stream *lexerStream,
+	includeWhitespace bool,
+	breakWhitespace bool,
+	allowEscaping bool,
+	handleQuotes bool,
+	condition func(rune) bool,
+) (string, bool) {
 
 	var tokenBuffer bytes.Buffer
 	var character rune
 	var conditioned bool
+	var quoted rune
 
 	conditioned = false
 
@@ -228,6 +236,20 @@ func readUntilFalse(stream *lexerStream, includeWhitespace bool, breakWhitespace
 				break
 			}
 			if !includeWhitespace {
+				continue
+			}
+		}
+
+		if handleQuotes {
+			if quoted != 0 { // If we are in a quoted string
+				if character == quoted { // if caracter is the opening char, reset quote
+					quoted = 0
+				}
+				tokenBuffer.WriteString(string(character))
+				continue
+			} else if character == '"' || character == '\'' { // If we not in a quoted string, and the character is a quote
+				quoted = character
+				tokenBuffer.WriteString(string(character))
 				continue
 			}
 		}

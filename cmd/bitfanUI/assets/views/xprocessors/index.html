@@ -1,0 +1,168 @@
+{{ define "title"}}Xprocessors{{ end }}
+
+{{ define "sidebar" }}
+{{ end }}
+
+{{ define "content" }}
+
+
+<div class="row">
+<div class="col">
+	<h1>Xprocessors</h1>
+  <p>
+    Custom processor, available into pipeline configuration which use an external binary to handle, produce and/or consume events. <br> 3 availables behaviors : <br>
+    <ul>
+    <li>Producer - Produce event on stdout on start and/or on interval</li>
+    <li>Transformer - Consume events on process's stdin and write transformed events on process's stdout - <small>process can started for each event received (noStream) or once, on start, and consume stream of events on stdin (stream)</small></li>
+    <li>Consumers - Consume events on process's stdin. <small>process can started for each event received (noStream) or once, on start, and consume stream of events on stdin (stream)</small></li>
+    </ul>
+  </p>
+  <p>
+    Pipeline configuration options are passed as arguments --option="option value".
+    <br>
+    <br>On pipeline stop :
+    <ul>
+    <li>Stream process :  its stdin will be closed as a signal to quit, bitfan then wait for process termination.</li>
+    <li>noStream process :  Bitfan waits for currently running process to quit.</li>
+  </ul>
+  </p>
+</div>
+<div class="col">
+  <div class="float-right">
+	
+
+  <div id="asset-actions" class="btn-group btn-group" role="group" aria-label="assets">
+    <a href="/xprocessors/0/new" class="btn btn-dark">Create new xprocessor</a> 
+
+    <a class="btn btn-outline-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="sr-only">Toggle Dropdown</span>
+    </a>
+    <ul class="dropdown-menu">
+      <!-- <a href="http://{{.apiHost}}/api/v2/xprocessors.zip" class="dropdown-item">
+        Download all
+      </a> -->
+    </ul>
+  </div> 
+  
+
+  </div>
+</div>
+</div>
+
+
+<h2>Producers</h2>
+<div class='table-responsive'>
+  <table class='table table-striped'>
+    <tr>
+      <th>Name</th>
+      <th>Stream</th>
+      <th></th>
+    </tr>
+    {{range  $xprocessor := .producers}}
+      <tr>
+        <td class=''>
+        	<a href="/xprocessors/{{$xprocessor.Uuid}}" class="">
+          {{if $xprocessor.Label}}{{$xprocessor.Label}}{{else}}noname{{end}}
+      		</a>  
+      		<small>
+      			<span class='text-muted'>({{$xprocessor.Kind}})</span>
+     		</small>
+          <br/>
+          <small><span class='text-muted'>
+		  {{if ne $xprocessor.Description ""}}
+            {{safeHTML (markdown $xprocessor.Description)}}
+          {{end}}
+          </span></small>
+        </td>
+        <td >
+        	{{$xprocessor.Stream}}
+        </td>
+        <td>
+          {{ template "xprocessoractions" $xprocessor }}
+        </td>
+      </tr>
+    {{else}}
+    	No Producers ! <a href="/xprocessors/0/new?behavior=producer">create a first one</a>
+    {{end}}
+  </table>
+</div>
+
+
+<h2>Transformers</h2>
+<div class='table-responsive'>
+  <table class='table table-striped'>
+    <tr>
+      <th>Name</th>
+      <th>Stream</th>
+      <th></th>
+    </tr>
+    {{range  $xprocessor := .transformers}}
+      <tr>
+        <td class=''>
+        	<a href="/xprocessors/{{$xprocessor.Uuid}}" class="">
+          {{if $xprocessor.Label}}{{$xprocessor.Label}}{{else}}noname{{end}}
+      		</a>  
+      		<small>
+      			<span class='text-muted'>({{$xprocessor.Kind}})</span>
+     		</small>
+          <br/>
+          <small><span class='text-muted'>
+		  {{if ne $xprocessor.Description ""}}
+            {{safeHTML (markdown $xprocessor.Description)}}
+          {{end}}
+          </span></small>
+        </td>
+        <td >
+        	{{$xprocessor.Stream}}
+        </td>
+        <td>
+          {{ template "xprocessoractions" $xprocessor }}
+        </td>
+      </tr>
+    {{else}}
+    	No Transformers ! <a href="/xprocessors/0/new?behavior=transformer">create a first one</a>
+    {{end}}
+  </table>
+</div>
+
+
+
+<h2>Consumers</h2>
+<div class='table-responsive'>
+  <table class='table table-striped'>
+    <tr>
+      <th>Name</th>
+      <th>Stream</th>
+      <th></th>
+    </tr>
+    {{range  $xprocessor := .consumers}}
+      <tr>
+        <td class=''>
+        	<a href="/xprocessors/{{$xprocessor.Uuid}}" class="">
+          {{if $xprocessor.Label}}{{$xprocessor.Label}}{{else}}noname{{end}}
+      		</a>  
+      		<small>
+      			<span class='text-muted'>({{$xprocessor.Kind}})</span>
+     		</small>
+          <br/>
+          <small><span class='text-muted'>
+		  {{if ne $xprocessor.Description ""}}
+            {{safeHTML (markdown $xprocessor.Description)}}
+          {{end}}
+          </span></small>
+        </td>
+        <td >
+        	{{$xprocessor.Stream}}
+        </td>
+        <td>
+          {{ template "xprocessoractions" $xprocessor }}
+        </td>
+      </tr>
+    {{else}}
+    	No Consumers ! <a href="/xprocessors/0/new?behavior=consumer">create a first one</a>
+    {{end}}
+  </table>
+</div>
+
+{{ end }}
+

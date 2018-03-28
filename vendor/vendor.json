@@ -21,12 +21,6 @@
 			"revisionTime": "2013-12-01T22:36:12Z"
 		},
 		{
-			"checksumSHA1": "S4ukyUmvCeISgRFMCQlsmeaCMoc=",
-			"path": "github.com/Knetic/govaluate",
-			"revision": "249bbfcda0a3fc15c0e58db8e84bac7beda17961",
-			"revisionTime": "2016-10-12T18:29:40Z"
-		},
-		{
 			"checksumSHA1": "2wcgnEdGnKLkBnzkBEC9RmiqP4w=",
 			"path": "github.com/PuerkitoBio/goquery",
 			"revision": "3cb3b8656883c2cc3deb9c643d93ea6e5157e425",
@@ -471,6 +465,30 @@
 			"revisionTime": "2016-09-08T09:36:58Z"
 		},
 		{
+			"checksumSHA1": "HIF2ZYMMr2kzt5oE7SRjKefOIOc=",
+			"path": "github.com/mailru/easyjson",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
+			"checksumSHA1": "T8soMJArSZrYnhmdpAnq1bVxQ6Q=",
+			"path": "github.com/mailru/easyjson/buffer",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
+			"checksumSHA1": "QA+9yav6Xzq7LmuZUREeOX1hfjk=",
+			"path": "github.com/mailru/easyjson/jlexer",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
+			"checksumSHA1": "svJ32su8itWtutcMkP+RzoMsIfw=",
+			"path": "github.com/mailru/easyjson/jwriter",
+			"revision": "32fa128f234d041f196a9f3e0fea5ac9772c08e1",
+			"revisionTime": "2017-11-20T08:03:33Z"
+		},
+		{
 			"checksumSHA1": "/zjnnN/Hrijtm1ObxnEPHhuFl8c=",
 			"path": "github.com/mattn/go-colorable",
 			"revision": "e8a10ddc7d2a7fe255f6fd7f501070a4cb62c183",
@@ -541,6 +559,24 @@
 			"path": "github.com/olekukonko/tablewriter",
 			"revision": "bdcc175572fd7abece6c831e643891b9331bc9e7",
 			"revisionTime": "2016-09-23T12:54:01Z"
+		},
+		{
+			"checksumSHA1": "KwJhQVvwbUjz2sLj3nDk8rzvEZk=",
+			"path": "github.com/olivere/elastic",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
+		},
+		{
+			"checksumSHA1": "LkxLK7ff1eJbj6Wv9TlLDV96l58=",
+			"path": "github.com/olivere/elastic/config",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
+		},
+		{
+			"checksumSHA1": "AmcqvKDAUGvVsrf8NDCQ/B8cMj4=",
+			"path": "github.com/olivere/elastic/uritemplates",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
 		},
 		{
 			"checksumSHA1": "tths50mGvnvWps6KZLmKLvkLVI0=",
@@ -909,6 +945,18 @@
 			"revisionTime": "2016-10-19T13:35:53Z"
 		},
 		{
+			"checksumSHA1": "pVNZGpGxS3eO63SJzRo8tKAAdHg=",
+			"path": "gopkg.in/Knetic/govaluate.v3",
+			"revision": "d216395917cc49052c7c7094cf57f09657ca08a8",
+			"revisionTime": "2017-05-01T02:28:28Z"
+		},
+		{
+			"checksumSHA1": "QPs8F/aqKAAQJr8dLc3CVQ5SxlM=",
+			"path": "gopkg.in/alecthomas/kingpin.v2",
+			"revision": "8cccfa8eb2e3183254457fb1749b2667fbc364c7",
+			"revisionTime": "2016-02-17T09:03:01Z"
+		},
+		{
 			"checksumSHA1": "o5Skl9YjZqmvEEqWie3f3oY0Kow=",
 			"path": "gopkg.in/alexcesaro/statsd.v2",
 			"revision": "7fea3f0d2fab1ad973e641e51dba45443a311a90",
@@ -1009,6 +1057,30 @@
 			"path": "gopkg.in/olivere/elastic.v3/uritemplates",
 			"revision": "3f5e619b7a90ff8d4ad81a53ca8e74ee79b83b42",
 			"revisionTime": "2016-09-28T09:21:14Z"
+		},
+		{
+			"checksumSHA1": "pcIMnbrvD+xcWXE9+BtvkjjFmis=",
+			"path": "gopkg.in/olivere/elastic.v5",
+			"revision": "dbe820f35164384c998099db63481b583d53f73b",
+			"revisionTime": "2018-03-13T12:41:36Z"
+		},
+		{
+			"checksumSHA1": "Z/5tTcmNfSOHMkcLDkxN93PQ410=",
+			"path": "gopkg.in/olivere/elastic.v5/config",
+			"revision": "dbe820f35164384c998099db63481b583d53f73b",
+			"revisionTime": "2018-03-13T12:41:36Z"
+		},
+		{
+			"checksumSHA1": "pCApZfp2CeDnWbNVsyzNO62ZUXA=",
+			"path": "gopkg.in/olivere/elastic.v5/uritemplates",
+			"revision": "dbe820f35164384c998099db63481b583d53f73b",
+			"revisionTime": "2018-03-13T12:41:36Z"
+		},
+		{
+			"checksumSHA1": "wk8UXA5wqefDPyd2ubHEnVbJW8Q=",
+			"path": "gopkg.in/olivere/elastic.v6",
+			"revision": "f9243358b15391d76b5d0e2cb816442f9cded8cc",
+			"revisionTime": "2018-03-16T21:08:31Z"
 		},
 		{
 			"checksumSHA1": "TO8baX+t1Qs7EmOYth80MkbKzFo=",

@@ -17,13 +17,13 @@
         initWith([])
         var bitbar = {
             hide: function() {
-                $('#exampleModal').modal('hide');
+                $('#bitbar').modal('hide');
             },
             // Display bitbar with default items
             show: function(label, context) {
-                console.log("bitbar - GO - label=" + label);
+                // console.log("bitbar - GO - label=" + label);
                 if (this.items.length == 0) {
-                    console.log("no bitbar item set");
+                    // console.log("no bitbar item set");
                     return
                 } else {
                     this.showWith(this.items, label, context)
@@ -32,7 +32,7 @@
             // Display bitbar with given items
             showWith: function(items, label, context) {
                 if (label == null) { label = "" }
-                console.log("bitbar - GO With keys - label=" + label);
+                // console.log("bitbar - GO With keys - label=" + label);
 
                 if (context.selected == null) {
                     context.selected = [];
@@ -44,11 +44,16 @@
                 $('#bitbar-input').val(label);
                 this.search(label);
 
+                var lastActiveElement = document.activeElement;
+                
                 // Display modal and focus on input
-                $('#exampleModal').on('shown.bs.modal', function() {
+                $('#bitbar').on('shown.bs.modal', function() {
                     $('#bitbar-input').focus();
                 });
-                $('#exampleModal').modal({
+                $('#bitbar').on('hidden.bs.modal', function() {
+                    lastActiveElement.focus();
+                });
+                $('#bitbar').modal({
                     keyboard: true
                 });
             },
@@ -56,7 +61,7 @@
             search: function(txt) {
                 const term = getSearchLower(txt);
 
-                console.log('bitbar - search - term = "' + term + '"')
+                // console.log('bitbar - search - term = "' + term + '"')
 
                 // let objects = [ 'Favorite Color', 'Google Chrome',  'Launch Chrome' }]
                 if (txt != null && txt != "") {
@@ -64,6 +69,7 @@
                 } else {
                     this.renderAll();
                 }
+
             },
             // render all items
             renderAll: function() {
@@ -77,11 +83,14 @@
                         html += this.renderItem(result.id, result.label, "");
                     }
                 }
+                if (this.citems.length > 0) {
+                    this.focus(this.citems[0].id)
+                }
                 $('#bitbar-results').html(html);
             },
             // render results
             renderResults: function(results) {
-                console.log("result count = " + results.length);
+                // console.log("result count = " + results.length);
                 var html = ''
                 for (var i = 0; i < results.length; i++) {
                     const result = results[i]
@@ -91,45 +100,60 @@
                         html += this.renderItem(result.obj.id, fuzzysort.highlight(result[0]), "");
                     }
                 }
+                if (results.length > 0) {
+                    this.focus(results[0].obj.id)    
+                }
+                
                 $('#bitbar-results').html(html);
             },
             renderItem: function(id, label, className) {
                 return '<li bid="' + id + '" class="' + className + '">' + label + '</li>';
             },
             focus: function(id){
+                // console.log("focus "+id)
                 var result = $.grep(this.citems, function(e) { return e.id == id; });
                 if (result.length == 0) {
-                    console.log("id " + id + " not found")
-                } else if (result.length == 1) {
-                    if (isFunction(result[0].focus)) {
-                        result[0].focus(this.context,result[0])
-                    } else {
-                        console.log("no focus callback for item " + id)
-                    }
-                } else {
+                    // console.log("id " + id + " not found")
+                    return
+                } else if (result.length > 1) {
                     // multiple items found
-                    console.log("crazy ids found for " + id)
+                    // console.log("crazy ids found for " + id)
+                    return
                 }
+
+                if (result[0].help != null && result[0].help != "") {
+                    $("#bitbar-console div").html("<pre style='color:white'>"+result[0].help+"</pre>")
+                    $("#bitbar-console").show()
+                }else{
+                    $("#bitbar-console").hide()
+                }
+
+                if (isFunction(result[0].onFocus)) {
+                    result[0].onFocus(this.context,result[0])
+                } else {
+                    // console.log("no focus callback for item " + id)
+                }
+                
             },
             // Action Entry selection
             select: function(id) {
-                console.log("selected entry id = " + id)
+                // console.log("selected entry id = " + id)
                 // hide modal
                 this.hide();
-                // find the "do" callback
+                // find the "onSelect" callback
                 var result = $.grep(this.citems, function(e) { return e.id == id; });
                 if (result.length == 0) {
-                    console.log("id " + id + " not found")
+                    // console.log("id " + id + " not found")
                 } else if (result.length == 1) {
-                    if (isFunction(result[0].do)) {
+                    if (isFunction(result[0].onSelect)) {
                         this.context.selected.unshift(id)
-                        result[0].do(this.context,result[0])
+                        result[0].onSelect(this.context,result[0])
                     } else {
-                        console.log("no callback for item " + id)
+                        // console.log("no callback for item " + id)
                     }
                 } else {
                     // multiple items found
-                    console.log("crazy ids found for " + id)
+                    // console.log("crazy ids found for " + id)
                 }
             },
 
@@ -179,7 +203,7 @@
                 bitbar.hide();
             }
             if (event.which == 38) {
-                console.log("UP");
+                // console.log("UP");
                 event.preventDefault();
 
                 active = $('#bitbar-results > li.active')
@@ -195,21 +219,21 @@
                         scrollToVisible(active.prev());
                     }
                 } else {
-                    console.log("todo : use the last visible element");
+                    // console.log("todo : use the last visible element");
                 }
             }
             if (event.which == 40) {
-                console.log("DOWN");
+                // console.log("DOWN");
                 // find active li in #bitbar-results
                 active = $('#bitbar-results > li.active')
 
                 if (active.length > 0) { // if found
-                    console.log("active li found");
+                    // console.log("active li found");
                     // if the active one is the last one
                     if (active.is(':last-child')) {
-                        console.log("active is the last one");
+                        // console.log("active is the last one");
                     } else {
-                        console.log("active is not the last one");
+                        // console.log("active is not the last one");
                         // select next sibbling element
                         active.next().addClass("active");
                         active.removeClass("active");
@@ -217,13 +241,13 @@
                         scrollToVisible(active.next())
                     }
                 } else { // try to select first
-                    console.log("no active li found");
+                    // console.log("no active li found");
                     $('#bitbar-results > li:first').addClass("active");
                 }
 
             }
             if (event.which == 13) {
-                console.log("ENTER");
+                // console.log("ENTER");
                 active = $('#bitbar-results > li.active')
                 bitbar.select(active.attr("bid"));
             }
@@ -231,7 +255,7 @@
         // On input change do Search
         $(document).on("input", "#bitbar-input", function(event) {
             // $('#bitbar-input').on("input",function(e){
-            console.log("bitbar - input : " + event.target.value);
+            // console.log("bitbar - input : " + event.target.value);
             bitbar.search(event.target.value);
         });
 

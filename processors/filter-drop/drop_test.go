@@ -48,7 +48,7 @@ func TestReceiveDropAll(t *testing.T) {
 	ctx := testutils.NewProcessorContext()
 	p.Configure(ctx, getExampleConfiguration())
 	for i := 1; i <= 1000; i++ {
-		em := testutils.NewPacket("", nil)
+		em := testutils.NewPacketOld("", nil)
 		p.Receive(em)
 	}
 
@@ -62,7 +62,7 @@ func TestReceiveDrop99p(t *testing.T) {
 	p.opt.Percentage = 99
 	total := 1000
 	for i := 1; i <= total; i++ {
-		em := testutils.NewPacket("", nil)
+		em := testutils.NewPacketOld("", nil)
 		p.Receive(em)
 	}
 
@@ -79,7 +79,7 @@ func TestReceiveDrop80p(t *testing.T) {
 	p.opt.Percentage = 80
 	total := 10000
 	for i := 1; i <= total; i++ {
-		em := testutils.NewPacket("", nil)
+		em := testutils.NewPacketOld("", nil)
 		p.Receive(em)
 	}
 

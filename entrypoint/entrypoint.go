@@ -51,6 +51,7 @@ func New(contentValue string, cwl string, contentKind int) (*Entrypoint, error) 
 
 	if contentKind == CONTENT_INLINE {
 		loc.Kind = CONTENT_INLINE
+		loc.Workingpath = cwl
 		loc.Content = contentValue
 		return loc, nil
 	}

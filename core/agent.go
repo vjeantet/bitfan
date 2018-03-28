@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/vjeantet/bitfan/core/metrics"
 	"github.com/vjeantet/bitfan/core/webhook"
 	"github.com/vjeantet/bitfan/processors"
+	"github.com/vjeantet/bitfan/processors/xprocessor"
 )
 
 type ProcessorFactory func() processors.Processor
@@ -49,14 +51,29 @@ func NewAgent() Agent {
 // build an agent and return its input chan
 func buildAgent(conf *Agent) error {
 	// Check that the agent's processor type is supported
-	if _, ok := availableProcessorsFactory[conf.Type]; !ok {
-		return fmt.Errorf("Processor %s not found", conf.Type)
+	var proc processors.Processor
+
+	if pfactory, ok := availableProcessorsFactory[conf.Type]; ok {
+		// Create a new Processor processor
+		proc = pfactory()
+	} else {
+		// Try to find an user XProcessor
+		xProcName := conf.Type
+		if strings.HasPrefix(conf.Type, "input_") {
+			xProcName = xProcName[6:]
+		}
+		if strings.HasPrefix(conf.Type, "output_") {
+			xProcName = xProcName[7:]
+		}
+		if xProcSpec, err := Storage().FindOneXProcessorByName(xProcName); err != nil {
+			return fmt.Errorf("Processor '%s' not found, and %s", conf.Type, err)
+		} else {
+			proc = xprocessor.NewWithSpec(&xProcSpec)
+		}
 	}
 
-	// Create a new Processor processor
-	proc := availableProcessorsFactory[conf.Type]()
 	if proc == nil {
-		return fmt.Errorf("Can not start processor %s", conf.Type)
+		return fmt.Errorf("Can not build processor %s", conf.Type)
 	}
 
 	conf.packetChan = make(chan *event, conf.Buffer)
@@ -76,6 +93,7 @@ func buildAgent(conf *Agent) error {
 func (a *Agent) configure() error {
 
 	a.processor.SetPipelineUUID(a.PipelineUUID)
+	a.processor.SetProcessorIdentifiers(a.Type, a.Label)
 
 	ctx := processorContext{}
 	ctx.logger = NewLogger("pipeline",
@@ -165,7 +183,11 @@ func (a *Agent) addOutput(in chan *event, portNumber int) error {
 // Start agent
 func (a *Agent) start() error {
 	// Start processor
-	a.processor.Start(newPacket("start", map[string]interface{}{}))
+	err := a.processor.Start(newPacket(map[string]interface{}{"message": "start"}))
+	if err != nil {
+		Log().Errorf("pipeline UUID '%s' agent '%s' not started : %s", a.PipelineUUID, a.Label, err)
+
+	}
 
 	// Maximum number of concurent packet consumption ?
 	var maxConcurentPackets = a.PoolSize
@@ -187,7 +209,7 @@ func (a *Agent) start() error {
 		wg.Wait()
 
 		Log().Debugf("processor (%d) - stopping (no more packets)", a.ID)
-		if err := a.processor.Stop(newPacket("", nil)); err != nil {
+		if err := a.processor.Stop(newPacket(nil)); err != nil {
 			Log().Errorf("%s %d : %v", a.Type, a.ID, err)
 		}
 		close(a.Done)
@@ -197,17 +219,23 @@ func (a *Agent) start() error {
 	// Register scheduler if needed
 	if a.Schedule != "" {
 		Log().Debugf("agent %s : schedule=%s", a.Label, a.Schedule)
-		err := myScheduler.Add(a.Label, a.Schedule, func() {
-			go a.processor.Tick(newPacket("", nil))
+		err := myScheduler.Add(a.PipelineUUID, a.Label, a.Schedule, func() {
+			go a.processor.Tick(newPacket(nil))
+			a.processor.B().Logger.Debugf("Scheduler ticked")
 		})
 		if err != nil {
 			Log().Errorf("schedule start failed - %s : %v", a.Label, err)
 		} else {
-			Log().Debugf("agent %s(%s) scheduled with %s", a.Label, a.ID, a.Schedule)
+			Log().Debugf("agent %s(%d) scheduled with %s", a.Label, a.ID, a.Schedule)
 		}
 	}
 
 	return nil
+}
+
+// Processor return the agent's processor
+func (a *Agent) Processor() processors.Processor {
+	return a.processor
 }
 
 // listen plugs the agent processor to its event chan
@@ -230,7 +258,7 @@ func (a *Agent) listen(wg *sync.WaitGroup) {
 }
 
 func (a *Agent) stop() {
-	myScheduler.Remove(a.Label)
+	myScheduler.Remove(a.PipelineUUID, a.Label)
 	Log().Debugf("agent %d schedule job removed", a.ID)
 
 	// unregister processor's webhooks URLs

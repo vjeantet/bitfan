@@ -1,0 +1,25 @@
+{{ define "title"}}Play {{.pipeline.Label}}{{ end }}
+
+{{ define "sidebar" }}
+{{ template "pipelinesidebar" . }}
+{{ end }}
+
+
+
+{{ define "content" }}
+<div class="row">
+  <div class="col">
+  <h1>Pipeline's Playground</h1>
+  </div>
+</div>
+
+
+{{ range $flash := .flashes }}
+<div class="alert alert-success" role="alert">
+  {{$flash}}
+</div>
+{{end}}
+
+{{ template "playground" . }}
+
+{{ end }}
