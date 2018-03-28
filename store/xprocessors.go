@@ -25,6 +25,7 @@ type StoreXProcessor struct {
 	StdinAs               string   `json:"stdin_as"`
 	StdoutAs              string   `json:"stdout_as"`
 	OptionsCompositionTpl string   `json:"options_composition_tpl"`
+	HasDoc                bool     `json:"has_doc"`
 }
 
 func (s *Store) CreateXProcessor(xp *models.XProcessor) {
@@ -44,6 +45,7 @@ func (s *Store) CreateXProcessor(xp *models.XProcessor) {
 		StdoutAs:              xp.StdoutAs,
 		Description:           xp.Description,
 		OptionsCompositionTpl: xp.OptionsCompositionTpl,
+		HasDoc:                xp.HasDoc,
 	}
 
 	s.db.Upsert(sxp.Uuid, sxp)
@@ -66,6 +68,7 @@ func (s *Store) SaveXProcessor(xp *models.XProcessor) {
 		StdoutAs:              xp.StdoutAs,
 		Description:           xp.Description,
 		OptionsCompositionTpl: xp.OptionsCompositionTpl,
+		HasDoc:                xp.HasDoc,
 	}
 
 	s.db.Upsert(sp.Uuid, sp)
@@ -106,6 +109,7 @@ func (s *Store) FindXProcessors(behavior string) []models.XProcessor {
 		tXProcessor.StdoutAs = xp.StdoutAs
 		tXProcessor.Description = xp.Description
 		tXProcessor.OptionsCompositionTpl = xp.OptionsCompositionTpl
+		tXProcessor.HasDoc = xp.HasDoc
 
 		xps = append(xps, tXProcessor)
 	}
@@ -139,6 +143,7 @@ func (s *Store) FindOneXProcessorByUUID(UUID string, withAssetValues bool) (mode
 	tXProcessor.StdoutAs = sps[0].StdoutAs
 	tXProcessor.Description = sps[0].Description
 	tXProcessor.OptionsCompositionTpl = sps[0].OptionsCompositionTpl
+	tXProcessor.HasDoc = sps[0].HasDoc
 
 	return tXProcessor, nil
 }
@@ -170,6 +175,7 @@ func (s *Store) FindOneXProcessorByName(name string) (models.XProcessor, error) 
 	tXProcessor.StdoutAs = sps[0].StdoutAs
 	tXProcessor.Description = sps[0].Description
 	tXProcessor.OptionsCompositionTpl = sps[0].OptionsCompositionTpl
+	tXProcessor.HasDoc = sps[0].HasDoc
 
 	return tXProcessor, nil
 }

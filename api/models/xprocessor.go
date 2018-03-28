@@ -15,6 +15,7 @@ type XProcessor struct {
 	StdoutAs              string   `json:"stdout_as" mapstructure:"stdout_as"`
 	Description           string   `json:"description"`
 	OptionsCompositionTpl string   `json:"options_composition_tpl" mapstructure:"options_composition_tpl"`
+	HasDoc                bool     `json:"has_doc" mapstructure:"has_doc"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

@@ -45,6 +45,7 @@ type CodecOption struct {
 }
 
 type Processor struct {
+	Behavior   string
 	Name       string
 	ImportPath string
 	Doc        string

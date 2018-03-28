@@ -118,9 +118,11 @@ MyProcessor{
    abc=>"Hello world"
    debug => ""
    "_" => "foo.html bar.html"
+   count => {"a"=>"1234","c"=>"lorem"}
+   issues => ["A","B"]
 }
 
-will be passed to command arguments as : --abc="Hello world" --debug foo.html bar.html
+will be passed to command arguments as : --abc="Hello world" --debug  --count="a:1234" --count="c:lorem" --issues="A" --issues="B" foo.html bar.html
 </pre>
 
     </small>

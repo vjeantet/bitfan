@@ -2,6 +2,7 @@ package xprocessor
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
@@ -17,6 +18,7 @@ import (
 	"github.com/vjeantet/bitfan/api/models"
 	"github.com/vjeantet/bitfan/codecs"
 	"github.com/vjeantet/bitfan/processors"
+	"github.com/vjeantet/bitfan/processors/doc"
 )
 
 func NewWithSpec(spec *models.XProcessor) processors.Processor {
@@ -35,10 +37,12 @@ func NewWithSpec(spec *models.XProcessor) processors.Processor {
 	if spec.Stream == true {
 		p := &streamProcessor{}
 		p.opt = opt
+		p.hasDoc = spec.HasDoc
 		return p
 	} else {
 		p := &noStreamProcessor{}
 		p.opt = opt
+		p.hasDoc = spec.HasDoc
 		return p
 	}
 }
@@ -90,6 +94,8 @@ type options struct {
 // Reads events from standard input
 type processor struct {
 	processors.Base
+
+	hasDoc bool
 
 	opt *options
 
@@ -267,6 +273,65 @@ func (p *processor) buildCommandArgs(e processors.IPacket) []string {
 	}
 
 	return finalArgs
+}
+func (p *processor) Doc() *doc.Processor {
+	d := &doc.Processor{
+		Behavior: p.opt.Behavior,
+		Name:     p.Name,
+		Doc:      "",
+		DocShort: "",
+		Options: &doc.ProcessorOptions{
+			Options: []*doc.ProcessorOption{},
+		},
+	}
+
+	if p.hasDoc == false {
+		return d
+	}
+
+	args := p.buildCommandArgs(nil)
+	args = append(args, "--help-json")
+	out, err := exec.Command(p.opt.Command, args...).Output()
+	if err != nil {
+		return d
+	}
+
+	var dat map[string]interface{}
+	if err := json.Unmarshal(out, &dat); err != nil {
+		return d
+	}
+
+	d.Doc = dat["Description"].(string)
+	d.DocShort = dat["ShortDescription"].(string)
+
+	for _, opti := range dat["Options"].(map[string]interface{}) {
+		opt := opti.(map[string]interface{})
+
+		d.Options.Options = append(d.Options.Options, &doc.ProcessorOption{
+			Name:         opt["name"].(string),
+			Alias:        opt["name"].(string),
+			Doc:          opt["doc"].(string),
+			Required:     opt["required"].(bool),
+			DefaultValue: opt["default_value"],
+			Type:         mapType(opt["type"].(string)),
+			// PossibleValues: []string{},
+			// ExampleLS:      "",
+		})
+	}
+
+	return d
+}
+
+func mapType(s string) string {
+	switch s {
+	case "[]string":
+		return "array"
+	case "[]int":
+		return "array"
+	case "map[string]string":
+		return "hash"
+	}
+	return s
 }
 
 func (p *processor) startCommand(e processors.IPacket) (*exec.Cmd, io.WriteCloser, io.ReadCloser, io.ReadCloser, error) {

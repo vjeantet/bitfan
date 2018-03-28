@@ -118,7 +118,7 @@
                 } else if (result.length > 1) {
                     // multiple items found
                     // console.log("crazy ids found for " + id)
-                    return
+                    // return
                 }
 
                 if (result[0].help != null && result[0].help != "") {
@@ -143,18 +143,20 @@
                 // find the "onSelect" callback
                 var result = $.grep(this.citems, function(e) { return e.id == id; });
                 if (result.length == 0) {
-                    // console.log("id " + id + " not found")
-                } else if (result.length == 1) {
-                    if (isFunction(result[0].onSelect)) {
-                        this.context.selected.unshift(id)
-                        result[0].onSelect(this.context,result[0])
-                    } else {
-                        // console.log("no callback for item " + id)
-                    }
-                } else {
-                    // multiple items found
-                    // console.log("crazy ids found for " + id)
+                    return
+                } 
+
+                if (result.length > 1) {
+                    console.log("bitbar: multiple entry with the same key : " + id)
                 }
+
+                if (isFunction(result[0].onSelect)) {
+                    this.context.selected.unshift(id)
+                    result[0].onSelect(this.context,result[0])
+                } else {
+                    console.log("bitbar: no callback for item " + id)
+                }
+
             },
 
             new: bitbarNew,

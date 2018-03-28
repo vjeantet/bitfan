@@ -145,7 +145,7 @@ function bitfanOptionText(option, withDoc) {
     }
 
     var value = labelStr + " => ";
-
+    
     switch (option.Type) {
         case "hash":
             if (option.DefaultValue != null) {
@@ -162,7 +162,7 @@ function bitfanOptionText(option, withDoc) {
             }
             break;
         case "string":
-            if (option.DefaultValue != null) {
+            if (option.DefaultValue != null && option.DefaultValue != "" ) {
                 value += option.DefaultValue;
             } else {
                 value += '""';
@@ -247,7 +247,18 @@ function bitfanProcessorInsertTemplate(c) {
             }
             finalTxt = key + " {\n"
 
+            withDoc = false
+            if (c.selected[0] == "insert_full") {
+                withDoc = true
+            }
+
             var optionsLen = proc.Options.Options.length;
+            if (optionsLen == 0 && withDoc == true){
+                const regex = /\n/gm;
+                const subst = `  # `;
+                // The substituted value will be contained in the result variable
+                    finalTxt += "  # "+proc.Doc.replace(regex, subst)+"\n"              
+            }
             for (var i = 0; i < optionsLen; i++) {
                 let option = proc.Options.Options[i]
 
@@ -256,12 +267,7 @@ function bitfanProcessorInsertTemplate(c) {
                     continue
                 }
 
-                withDoc = false
-                if (c.selected[0] == "insert_full") {
-                    withDoc = true
-                }
                 finalTxt += bitfanOptionText(option, withDoc)
-
             }
             finalTxt = finalTxt + "}\n"
 
@@ -336,12 +342,36 @@ $(document).ready(function() {
                 if (key.startsWith("input") || key.startsWith("output")) {
                     labelStr = "doc " + key.replace("_", " ");
                 }
+
+                switch (processors_docs[key].Behavior) {
+                       case "producer":
+                            labelStr = "doc input " + key;
+                            break;
+                       case "transformer":
+                            labelStr = "doc filter " + key;
+                            break;
+                        case "consumer":
+                            labelStr = "doc output " + key;
+                            break;
+                }
+
                 bitbar.items.push({
                     onSelect: bitfanProcessorMenu,
                     id: key,
                     label: labelStr,
                     help: processors_docs[key].Doc,
                 })
+                
+                if (processors_docs[key].Behavior == "producer") {   
+                    bitbar.items.push({
+                        onSelect: bitfanProcessorMenu,
+                        id: key,
+                        label: "doc filter " + key,
+                        help: processors_docs[key].Doc,
+                    })
+                }
+
+
             }
 
         },
