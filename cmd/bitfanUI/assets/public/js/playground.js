@@ -10,6 +10,8 @@ var editorOutputRaw;
 var autoStartPlayGround = false;
 
 
+
+
 function PgNewEditor(name, firstLineNumber, syntaxName, themeName, playWithKeyPress) {
     var pgEditor = ace.edit("section-" + name + "-content");
     pgEditor.setAutoScrollEditorIntoView(true);
@@ -145,7 +147,7 @@ function bitfanOptionText(option, withDoc) {
     }
 
     var value = labelStr + " => ";
-    
+
     switch (option.Type) {
         case "hash":
             if (option.DefaultValue != null) {
@@ -162,7 +164,7 @@ function bitfanOptionText(option, withDoc) {
             }
             break;
         case "string":
-            if (option.DefaultValue != null && option.DefaultValue != "" ) {
+            if (option.DefaultValue != null && option.DefaultValue != "") {
                 value += option.DefaultValue;
             } else {
                 value += '""';
@@ -253,11 +255,11 @@ function bitfanProcessorInsertTemplate(c) {
             }
 
             var optionsLen = proc.Options.Options.length;
-            if (optionsLen == 0 && withDoc == true){
+            if (optionsLen == 0 && withDoc == true) {
                 const regex = /\n/gm;
                 const subst = `  # `;
                 // The substituted value will be contained in the result variable
-                    finalTxt += "  # "+proc.Doc.replace(regex, subst)+"\n"              
+                finalTxt += "  # " + proc.Doc.replace(regex, subst) + "\n"
             }
             for (var i = 0; i < optionsLen; i++) {
                 let option = proc.Options.Options[i]
@@ -344,15 +346,15 @@ $(document).ready(function() {
                 }
 
                 switch (processors_docs[key].Behavior) {
-                       case "producer":
-                            labelStr = "doc input " + key;
-                            break;
-                       case "transformer":
-                            labelStr = "doc filter " + key;
-                            break;
-                        case "consumer":
-                            labelStr = "doc output " + key;
-                            break;
+                    case "producer":
+                        labelStr = "doc input " + key;
+                        break;
+                    case "transformer":
+                        labelStr = "doc filter " + key;
+                        break;
+                    case "consumer":
+                        labelStr = "doc output " + key;
+                        break;
                 }
 
                 bitbar.items.push({
@@ -361,8 +363,8 @@ $(document).ready(function() {
                     label: labelStr,
                     help: processors_docs[key].Doc,
                 })
-                
-                if (processors_docs[key].Behavior == "producer") {   
+
+                if (processors_docs[key].Behavior == "producer") {
                     bitbar.items.push({
                         onSelect: bitfanProcessorMenu,
                         id: key,
@@ -409,7 +411,7 @@ $(document).ready(function() {
     // FILTER CONFIGURATION
     editorFilter = PgNewEditor("filter-configuration", 6, "logstash", "monokai", true)
     editorFilter.getSession().on('change', function() {
-        editorOutput.setOption("firstLineNumber", editorFilter.getSession().getLength() + 6 + 1);
+        editorOutput.setOption("firstLineNumber", editorFilter.getSession().getLength() + 6 + 4);
     });
 
     // INPUT CONFIGURATION
@@ -425,6 +427,51 @@ $(document).ready(function() {
         editorFilter.setOption("firstLineNumber", 6)
         editorOutput.setOption("firstLineNumber", editorFilter.getOption("firstLineNumber") + editorFilter.getSession().getLength() + 1)
     });
+
+
+    var dragging = false;
+
+    $('#pg-container .dragbar').mousedown(function(e) {
+        e.preventDefault();
+        window.dragging = true;
+
+
+        var wrapper = $(e.target).parent()
+        var my_editor = wrapper.find(".editor_wrap div");
+        var top_offset = my_editor.offset().top;
+        // Set editor opacity to 0 to make transparent so our wrapper div shows
+        my_editor.css('opacity', 0);
+        // handle mouse movement
+
+        $(document).mousemove(function(e) {
+            var actualY = e.pageY;
+            var eheight = actualY - top_offset;
+
+            // for each editor_wrap
+            wrapper.parent().find(".editor_wrap").css('height', eheight);
+
+            // Only one
+            wrapper.find(".dragbar").css('opacity', 0.15);
+        });
+    });
+
+    $(document).mouseup(function(e) {
+        if (window.dragging) {
+            window.dragging = false;
+            $(document).unbind('mousemove');
+            // For each Wrapper
+            var wrapper = $(e.target).parent()
+            var my_editor = wrapper.find(".editor_wrap div");
+            // Set dragbar opacity back to 1
+            $(e.target).css('opacity', 1);
+            my_editor.css('opacity', 1);
+            // Trigger resize() one each ace editor 
+            wrapper.parent().find(".editor_wrap > div").each(function(index) {
+                ace.edit($(this).attr("id")).resize();
+            })
+        }
+    });
+
 
 
     // #########
