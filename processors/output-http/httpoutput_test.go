@@ -86,9 +86,9 @@ func TestRetry(t *testing.T) {
 	c := make(chan string, 1)
 	counter := 0
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
 		counter++
 		if counter == 1 {
+			ioutil.ReadAll(r.Body)
 			w.WriteHeader(http.StatusInternalServerError)
 			c <- "500"
 		} else {
@@ -96,6 +96,7 @@ func TestRetry(t *testing.T) {
 			c <- string(body)
 			w.WriteHeader(http.StatusOK)
 		}
+		r.Body.Close()
 	}))
 	defer ts.Close()
 	p := New().(*processor)
