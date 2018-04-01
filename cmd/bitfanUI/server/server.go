@@ -53,6 +53,7 @@ func Handler(baseURL string, debug bool) http.Handler {
 		"trim":         (*templateFunctions)(nil).trim,
 		"trimPrefix":   (*templateFunctions)(nil).trimPrefix,
 		"hasPrefix":    (*templateFunctions)(nil).hasPrefix,
+		"hasSuffix":    (*templateFunctions)(nil).hasSuffix,
 		"replace":      (*templateFunctions)(nil).replace,
 		"markdown":     (*templateFunctions)(nil).toMarkdown,
 	}

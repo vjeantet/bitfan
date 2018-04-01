@@ -164,6 +164,20 @@ func (t *templateFunctions) hasPrefix(s, prefix interface{}) (bool, error) {
 	return strings.HasPrefix(pf, ss), nil
 }
 
+func (t *templateFunctions) hasSuffix(s, prefix interface{}) (bool, error) {
+	ss, err := cast.ToStringE(s)
+	if err != nil {
+		return false, err
+	}
+
+	pf, err := cast.ToStringE(prefix)
+	if err != nil {
+		return false, err
+	}
+
+	return strings.HasSuffix(pf, ss), nil
+}
+
 // TrimPrefix returns s without the provided leading prefix string.
 // If s doesn't start with prefix, s is returned unchanged.
 func (t *templateFunctions) trimPrefix(s, cutset interface{}) (string, error) {

@@ -52,30 +52,12 @@
   </section>
 {{end}}
 
-<section class="playground">
-  <h2>PlayTest</h2>
-<div id="play-actions" class="btn-group btn-group-sm " role="group" aria-label="playground">
-    <a href="/pipelines/{{.pipeline.Uuid}}/play" class="btn btn-outline-success" >
-      Open Playground
-    </a>
-    <a class="btn btn-outline-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <span class="sr-only">Toggle Dropdown</span>
-    </a>
-    <ul class="dropdown-menu">
-      {{ range $asset := .pipeline.Assets }}    
-      <a href="/pipelines/{{$.pipeline.Uuid}}/play?with={{$asset.Uuid}}" class="dropdown-item" >
-        {{$asset.Name}}
-      </a>
-      {{ end }}
-    </ul>
-</div> 
 
-</section>
 
 <section class="assets">
   <h2>Assets</h2>
   {{ range $asset := .pipeline.Assets }}
-  <li class="asset_type_{{$asset.Type}} {{if $.asset }}{{if eq $asset.Uuid $.asset.Uuid}}active{{end}}{{end}}">
+  <li id="asset-{{$asset.Uuid}}" class="asset_type_{{$asset.Type}} {{if $.asset }}{{if eq $asset.Uuid $.asset.Uuid}}active{{end}}{{end}}">
     <a href="/pipelines/{{$.pipeline.Uuid}}/assets/{{$asset.Uuid}}">{{$asset.Name}}</a> 
     <span class="action">
       {{if ne $asset.Type "entrypoint"}}

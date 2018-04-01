@@ -27,8 +27,8 @@ func Handler(path string) http.Handler {
 		gin.Recovery(),
 		func(c *gin.Context) {
 			c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE, PATCH")
+			c.Writer.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE, PATCH")
 			if c.Request.Method == "OPTIONS" {
 				c.Writer.Header().Add("Access-Control-Allow-Headers", "*")
 				c.JSON(http.StatusOK, struct{}{})

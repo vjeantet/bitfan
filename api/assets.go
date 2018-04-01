@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/api/models"
+	"github.com/vjeantet/bitfan/core"
 	"github.com/vjeantet/bitfan/entrypoint/parser/logstash"
 )
 
@@ -107,7 +107,8 @@ func (a *AssetApiController) UpdateByUUID(c *gin.Context) {
 
 	core.Storage().SaveAsset(&asset)
 
-	c.Redirect(302, fmt.Sprintf("/%s/assets/%s", a.path, asset.Uuid))
+	// c.Redirect(201, fmt.Sprintf("/%s/assets/%s", a.path, asset.Uuid))
+	c.JSON(200, asset)
 }
 
 func (a *AssetApiController) DeleteByUUID(c *gin.Context) {

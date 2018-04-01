@@ -295,7 +295,8 @@ function bitfanProcessorMenu(c) {
 }
 
 
-
+var contentUUID = ""
+var testingAsset ;
 $(document).ready(function() {
 
     var urlParams = new URLSearchParams(window.location.search);
@@ -307,6 +308,13 @@ $(document).ready(function() {
             processData: false,
             url: 'http://' + baseApiHost + '/api/v2/assets/' + contentUUID,
             success: function(asset) {
+                testingAsset = asset
+                // console.log(testingAsset)
+                $("#asset-"+asset.uuid).addClass("active")
+                $("#saveassetlink").show()
+                $("#saveassetlink button").text($("#saveassetlink button").text() + " "+asset.Name)
+                $("#saveassetlink button").attr("assetUUID",asset.uuid)
+
                 contentValueString = Base64.decode(asset.Value);
                 try {
                     const myRegexp = /input[^{]*{([\S\s.]*)}[^}]*filter[^{]*{([\S\s.]*)}[^}]*output[^{]*{([\S\s.]*)}[^}]*/gm;
@@ -592,9 +600,64 @@ $(document).ready(function() {
         autoStartPlayGround = $(this).is(":checked")
     });
 
+    $('#saveassetlink button').click(function(e){
+        e.preventDefault();
+        saveToAsset(e);
+    });
 
 });
 
+
+function saveToAsset(e){
+    // PATCH to API
+    var input_value = $("#section-input-configuration").val()
+    var filter_value = $("#section-filter-configuration").val()
+    var output_value = $("#section-output-configuration").val()
+    // var input_value = "  " + $("#section-input-configuration").val().replace(/[\n\r]/g, "\n  ")
+    // var filter_value = "  " + $("#section-filter-configuration").val().replace(/[\n\r]/g, "\n  ")
+    // var output_value = "  " + $("#section-output-configuration").val().replace(/[\n\r]/g, "\n  ")
+
+     
+var final_value = `input{`+input_value+`}
+
+filter{`+filter_value+`}
+
+output{`+output_value+`}`
+// console.log(final_value)
+
+    
+        var assetUUID = $(e.target).attr("assetUUID")
+        var sendData = {"uuid":assetUUID, "value": Base64.encode(final_value)};
+
+        $.ajax({
+            type: 'patch',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(sendData),
+            url: 'http://' + baseApiHost + '/api/v2/assets/'+assetUUID,
+            beforeSend: function() {
+                $(e.target).attr("disabled", true)
+            },
+            success: function(envVar) {
+                console.log(envVar);
+                $(e.target).removeAttr("disabled")
+                notie.alert({ type: "success", text: 'Success !' })
+                return false;
+            },
+
+            error: function(output, textStatus, errorThrown) {
+                console.log(output);
+                var errorObj = output.responseJSON
+                var errorMessage = output.responseText
+                if (errorObj != null) {
+                    errorMessage = errorObj.error
+                }
+                notie.alert({ type: 'error', text: errorMessage });
+                $(e.target).removeAttr("disabled")
+                return false;
+            }
+        });
+        return false
+}
 
 
 function stop() {
