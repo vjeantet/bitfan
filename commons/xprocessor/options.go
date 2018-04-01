@@ -51,6 +51,9 @@ func (o *Option) Default() []string {
 type Options map[string]*Option
 
 func (o Options) Value(name string) interface{} {
+	if _, ok := o[name]; !ok {
+		return nil
+	}
 	switch v := o[name].Value.(type) {
 	case *bool:
 		return *v
@@ -67,6 +70,9 @@ func (o Options) Value(name string) interface{} {
 }
 
 func (o Options) IntSlice(name string) []int {
+	if _, ok := o[name]; !ok {
+		return []int{}
+	}
 	switch v := o[name].Value.(type) {
 	case *[]int:
 		return *v
@@ -75,6 +81,9 @@ func (o Options) IntSlice(name string) []int {
 }
 
 func (o Options) StringSlice(name string) []string {
+	if _, ok := o[name]; !ok {
+		return []string{}
+	}
 	switch v := o[name].Value.(type) {
 	case *[]string:
 		return *v
@@ -83,6 +92,9 @@ func (o Options) StringSlice(name string) []string {
 }
 
 func (o Options) MapString(name string) map[string]string {
+	if _, ok := o[name]; !ok {
+		return map[string]string{}
+	}
 	switch v := o[name].Value.(type) {
 	case *map[string]string:
 		return *v
@@ -91,6 +103,9 @@ func (o Options) MapString(name string) map[string]string {
 }
 
 func (o Options) String(name string) string {
+	if _, ok := o[name]; !ok {
+		return ""
+	}
 	switch v := o[name].Value.(type) {
 	case *string:
 		return *v
@@ -99,6 +114,9 @@ func (o Options) String(name string) string {
 }
 
 func (o Options) Int(name string) int {
+	if _, ok := o[name]; !ok {
+		return 0
+	}
 	switch v := o[name].Value.(type) {
 	case *int:
 		return *v
@@ -107,6 +125,9 @@ func (o Options) Int(name string) int {
 }
 
 func (o Options) Bool(name string) bool {
+	if _, ok := o[name]; !ok {
+		return false
+	}
 	switch v := o[name].Value.(type) {
 	case *bool:
 		return *v

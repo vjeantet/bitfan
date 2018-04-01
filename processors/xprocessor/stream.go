@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"os/exec"
+	"strings"
 	"sync"
 
 	"github.com/vjeantet/bitfan/codecs"
@@ -28,9 +29,14 @@ func (p *streamProcessor) Start(e processors.IPacket) error {
 	p.cmd, p.stdin, p.stdout, p.stderr, err = p.startCommand(nil)
 
 	go func(s io.ReadCloser) {
-		scanner := bufio.NewScanner(s)
-		for scanner.Scan() {
-			p.Logger.Errorf("%s", scanner.Text())
+		fscanner := bufio.NewScanner(s)
+		for fscanner.Scan() {
+			if strings.HasPrefix(fscanner.Text(), "[DEBUG] ") {
+				p.Logger.Debugf("%s", strings.TrimPrefix(fscanner.Text(), "[DEBUG] "))
+			} else {
+				p.Logger.Errorf("%s", fscanner.Text())
+			}
+
 		}
 	}(p.stderr)
 

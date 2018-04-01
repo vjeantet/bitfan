@@ -220,9 +220,7 @@ func (p *processor) buildCommandArgs(e processors.IPacket) []string {
 				finalArgs = append(finalArgs, fmt.Sprintf("--%s=%d", k, vt))
 			case bool:
 				if vt == true {
-					finalArgs = append(finalArgs, fmt.Sprintf("--%s=%s", k, "true"))
-				} else {
-					finalArgs = append(finalArgs, fmt.Sprintf("--%s=%s", k, "false"))
+					finalArgs = append(finalArgs, fmt.Sprintf("--%s", k))
 				}
 			case []interface{}:
 				for _, l := range vt {

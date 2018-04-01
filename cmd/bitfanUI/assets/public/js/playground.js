@@ -475,7 +475,9 @@ $(document).ready(function() {
             my_editor.css('opacity', 1);
             // Trigger resize() one each ace editor 
             wrapper.parent().find(".editor_wrap > div").each(function(index) {
-                ace.edit($(this).attr("id")).resize();
+                if ($(this).attr("id") != "logs") {
+                    ace.edit($(this).attr("id")).resize();    
+                }
             })
         }
     });

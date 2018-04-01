@@ -3,6 +3,7 @@ package xprocessor
 import (
 	"bufio"
 	"io"
+	"strings"
 	"sync"
 
 	"github.com/vjeantet/bitfan/codecs"
@@ -49,7 +50,12 @@ func (p *noStreamProcessor) Receive(e processors.IPacket) error {
 		defer p.wg.Done()
 		fscanner := bufio.NewScanner(s)
 		for fscanner.Scan() {
-			p.Logger.Errorf("%s", fscanner.Text())
+			if strings.HasPrefix(fscanner.Text(), "[DEBUG] ") {
+				p.Logger.Debugf("%s", strings.TrimPrefix(fscanner.Text(), "[DEBUG] "))
+			} else {
+				p.Logger.Errorf("%s", fscanner.Text())
+			}
+
 		}
 	}(stderr)
 	p.readAndSendEventsFromProcess(dec)
