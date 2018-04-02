@@ -50,6 +50,11 @@ do not check if the process should be run for each event received
     ">Stream events to I/O</label>
   </div>
 
+  <div class="form-group">
+    <input type="checkbox" name="has_doc" id="has_doc" value="true" {{if .xprocessor.HasDoc}}checked{{end}}>
+    <label for="has_doc" title="xprocessor provides documentation as json when started with --help-json">support --help-json</label>
+  </div>
+
 
 <div class="form-group">
     <label for="stdin_as">incoming event (stdin) received as </label>

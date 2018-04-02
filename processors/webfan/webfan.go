@@ -273,6 +273,7 @@ func (p *processor) HttpHandler(w http.ResponseWriter, r *http.Request) {
 		p.opt.ProcessCommonOptions(e.Fields())
 
 		firstAgent.Processor().Receive(e)
+		p.Send(e)
 	}
 
 	ppl.Stop()

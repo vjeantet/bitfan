@@ -9,6 +9,7 @@ package models
 // swagger:model processorDoc
 type processorDoc struct {
 	Kind     string `json:"kind"`
+	Behavior string `json:"behavior"`
 	Name     string `json:"name"`
 	Doc      string `json:"doc"`
 	DocShort string `json:"doc_short"`

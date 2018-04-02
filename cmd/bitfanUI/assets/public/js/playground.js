@@ -10,6 +10,8 @@ var editorOutputRaw;
 var autoStartPlayGround = false;
 
 
+
+
 function PgNewEditor(name, firstLineNumber, syntaxName, themeName, playWithKeyPress) {
     var pgEditor = ace.edit("section-" + name + "-content");
     pgEditor.setAutoScrollEditorIntoView(true);
@@ -162,7 +164,7 @@ function bitfanOptionText(option, withDoc) {
             }
             break;
         case "string":
-            if (option.DefaultValue != null) {
+            if (option.DefaultValue != null && option.DefaultValue != "") {
                 value += option.DefaultValue;
             } else {
                 value += '""';
@@ -247,7 +249,18 @@ function bitfanProcessorInsertTemplate(c) {
             }
             finalTxt = key + " {\n"
 
+            withDoc = false
+            if (c.selected[0] == "insert_full") {
+                withDoc = true
+            }
+
             var optionsLen = proc.Options.Options.length;
+            if (optionsLen == 0 && withDoc == true) {
+                const regex = /\n/gm;
+                const subst = `  # `;
+                // The substituted value will be contained in the result variable
+                finalTxt += "  # " + proc.Doc.replace(regex, subst) + "\n"
+            }
             for (var i = 0; i < optionsLen; i++) {
                 let option = proc.Options.Options[i]
 
@@ -256,12 +269,7 @@ function bitfanProcessorInsertTemplate(c) {
                     continue
                 }
 
-                withDoc = false
-                if (c.selected[0] == "insert_full") {
-                    withDoc = true
-                }
                 finalTxt += bitfanOptionText(option, withDoc)
-
             }
             finalTxt = finalTxt + "}\n"
 
@@ -287,7 +295,8 @@ function bitfanProcessorMenu(c) {
 }
 
 
-
+var contentUUID = ""
+var testingAsset ;
 $(document).ready(function() {
 
     var urlParams = new URLSearchParams(window.location.search);
@@ -299,6 +308,13 @@ $(document).ready(function() {
             processData: false,
             url: 'http://' + baseApiHost + '/api/v2/assets/' + contentUUID,
             success: function(asset) {
+                testingAsset = asset
+                // console.log(testingAsset)
+                $("#asset-"+asset.uuid).addClass("active")
+                $("#saveassetlink").show()
+                $("#saveassetlink button").text($("#saveassetlink button").text() + " "+asset.Name)
+                $("#saveassetlink button").attr("assetUUID",asset.uuid)
+
                 contentValueString = Base64.decode(asset.Value);
                 try {
                     const myRegexp = /input[^{]*{([\S\s.]*)}[^}]*filter[^{]*{([\S\s.]*)}[^}]*output[^{]*{([\S\s.]*)}[^}]*/gm;
@@ -336,12 +352,36 @@ $(document).ready(function() {
                 if (key.startsWith("input") || key.startsWith("output")) {
                     labelStr = "doc " + key.replace("_", " ");
                 }
+
+                switch (processors_docs[key].Behavior) {
+                    case "producer":
+                        labelStr = "doc input " + key;
+                        break;
+                    case "transformer":
+                        labelStr = "doc filter " + key;
+                        break;
+                    case "consumer":
+                        labelStr = "doc output " + key;
+                        break;
+                }
+
                 bitbar.items.push({
                     onSelect: bitfanProcessorMenu,
                     id: key,
                     label: labelStr,
                     help: processors_docs[key].Doc,
                 })
+
+                if (processors_docs[key].Behavior == "producer") {
+                    bitbar.items.push({
+                        onSelect: bitfanProcessorMenu,
+                        id: key,
+                        label: "doc filter " + key,
+                        help: processors_docs[key].Doc,
+                    })
+                }
+
+
             }
 
         },
@@ -379,7 +419,7 @@ $(document).ready(function() {
     // FILTER CONFIGURATION
     editorFilter = PgNewEditor("filter-configuration", 6, "logstash", "monokai", true)
     editorFilter.getSession().on('change', function() {
-        editorOutput.setOption("firstLineNumber", editorFilter.getSession().getLength() + 6 + 1);
+        editorOutput.setOption("firstLineNumber", editorFilter.getSession().getLength() + 6 + 4);
     });
 
     // INPUT CONFIGURATION
@@ -395,6 +435,53 @@ $(document).ready(function() {
         editorFilter.setOption("firstLineNumber", 6)
         editorOutput.setOption("firstLineNumber", editorFilter.getOption("firstLineNumber") + editorFilter.getSession().getLength() + 1)
     });
+
+
+    var dragging = false;
+
+    $('#pg-container .dragbar').mousedown(function(e) {
+        e.preventDefault();
+        window.dragging = true;
+
+
+        var wrapper = $(e.target).parent()
+        var my_editor = wrapper.find(".editor_wrap div");
+        var top_offset = my_editor.offset().top;
+        // Set editor opacity to 0 to make transparent so our wrapper div shows
+        my_editor.css('opacity', 0);
+        // handle mouse movement
+
+        $(document).mousemove(function(e) {
+            var actualY = e.pageY;
+            var eheight = actualY - top_offset;
+
+            // for each editor_wrap
+            wrapper.parent().find(".editor_wrap").css('height', eheight);
+
+            // Only one
+            wrapper.find(".dragbar").css('opacity', 0.15);
+        });
+    });
+
+    $(document).mouseup(function(e) {
+        if (window.dragging) {
+            window.dragging = false;
+            $(document).unbind('mousemove');
+            // For each Wrapper
+            var wrapper = $(e.target).parent()
+            var my_editor = wrapper.find(".editor_wrap div");
+            // Set dragbar opacity back to 1
+            $(e.target).css('opacity', 1);
+            my_editor.css('opacity', 1);
+            // Trigger resize() one each ace editor 
+            wrapper.parent().find(".editor_wrap > div").each(function(index) {
+                if ($(this).attr("id") != "logs") {
+                    ace.edit($(this).attr("id")).resize();    
+                }
+            })
+        }
+    });
+
 
 
     // #########
@@ -515,9 +602,64 @@ $(document).ready(function() {
         autoStartPlayGround = $(this).is(":checked")
     });
 
+    $('#saveassetlink button').click(function(e){
+        e.preventDefault();
+        saveToAsset(e);
+    });
 
 });
 
+
+function saveToAsset(e){
+    // PATCH to API
+    var input_value = $("#section-input-configuration").val()
+    var filter_value = $("#section-filter-configuration").val()
+    var output_value = $("#section-output-configuration").val()
+    // var input_value = "  " + $("#section-input-configuration").val().replace(/[\n\r]/g, "\n  ")
+    // var filter_value = "  " + $("#section-filter-configuration").val().replace(/[\n\r]/g, "\n  ")
+    // var output_value = "  " + $("#section-output-configuration").val().replace(/[\n\r]/g, "\n  ")
+
+     
+var final_value = `input{`+input_value+`}
+
+filter{`+filter_value+`}
+
+output{`+output_value+`}`
+// console.log(final_value)
+
+    
+        var assetUUID = $(e.target).attr("assetUUID")
+        var sendData = {"uuid":assetUUID, "value": Base64.encode(final_value)};
+
+        $.ajax({
+            type: 'patch',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(sendData),
+            url: 'http://' + baseApiHost + '/api/v2/assets/'+assetUUID,
+            beforeSend: function() {
+                $(e.target).attr("disabled", true)
+            },
+            success: function(envVar) {
+                console.log(envVar);
+                $(e.target).removeAttr("disabled")
+                notie.alert({ type: "success", text: 'Success !' })
+                return false;
+            },
+
+            error: function(output, textStatus, errorThrown) {
+                console.log(output);
+                var errorObj = output.responseJSON
+                var errorMessage = output.responseText
+                if (errorObj != null) {
+                    errorMessage = errorObj.error
+                }
+                notie.alert({ type: 'error', text: errorMessage });
+                $(e.target).removeAttr("disabled")
+                return false;
+            }
+        });
+        return false
+}
 
 
 function stop() {

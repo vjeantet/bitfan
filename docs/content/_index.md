@@ -19,6 +19,10 @@ I use it as a “Swiss Army Knife” to complete a wide variety of different tas
 * Sending weekly **email reports** computed from multiples sources datastores.
 * Launching external processes to gather operational data from the local system.
 
+
+![scope](../images/screenshot.png)
+
+
 ## Processors / Plugins availables
 
 <table>

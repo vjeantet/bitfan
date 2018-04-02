@@ -11,6 +11,7 @@ import (
 	"github.com/vjeantet/bitfan/core/metrics"
 	"github.com/vjeantet/bitfan/core/webhook"
 	"github.com/vjeantet/bitfan/processors/doc"
+	"github.com/vjeantet/bitfan/processors/xprocessor"
 	"github.com/vjeantet/bitfan/store"
 )
 
@@ -217,10 +218,31 @@ func ProcessorsDocs(code string) map[string]*doc.Processor {
 			docs[code] = proc().Doc()
 		}
 
+		// get Xprocessors docs
+		if xp, err := Storage().FindOneXProcessorByName(code); err == nil {
+			docs[xp.Label] = xprocessor.NewWithSpec(&xp).Doc()
+			docs[xp.Label].Name = xp.Label
+			if docs[xp.Label].Doc == "" {
+				docs[xp.Label].Doc = xp.Description
+			}
+		}
+		return docs
 	} else {
 		for code, proc := range availableProcessorsFactory {
 			docs[code] = proc().Doc()
 		}
+		// findXprocessors
+		xprocessors := Storage().FindXProcessors("")
+		for _, xp := range xprocessors {
+			docs[xp.Label] = xprocessor.NewWithSpec(&xp).Doc()
+			docs[xp.Label].Name = xp.Label
+			if docs[xp.Label].Doc == "" {
+				docs[xp.Label].Doc = xp.Description
+			}
+		}
+
+		// get xProcessor doc
+		return docs
 	}
 
 	return docs

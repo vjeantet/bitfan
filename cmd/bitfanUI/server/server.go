@@ -53,6 +53,7 @@ func Handler(baseURL string, debug bool) http.Handler {
 		"trim":         (*templateFunctions)(nil).trim,
 		"trimPrefix":   (*templateFunctions)(nil).trimPrefix,
 		"hasPrefix":    (*templateFunctions)(nil).hasPrefix,
+		"hasSuffix":    (*templateFunctions)(nil).hasSuffix,
 		"replace":      (*templateFunctions)(nil).replace,
 		"markdown":     (*templateFunctions)(nil).toMarkdown,
 	}
@@ -231,7 +232,8 @@ func updateXProcessor(c *gin.Context) {
 	xprocessorUUID := c.Param("id")
 
 	var data = map[string]interface{}{
-		"stream": false,
+		"stream":  false,
+		"has_doc": false,
 	}
 	if _, ok := c.Request.PostForm["behavior"]; ok {
 		data["behavior"] = c.Request.PostFormValue("behavior")
@@ -244,6 +246,9 @@ func updateXProcessor(c *gin.Context) {
 	}
 	if _, ok := c.Request.PostForm["stream"]; ok {
 		data["stream"] = true
+	}
+	if _, ok := c.Request.PostForm["has_doc"]; ok {
+		data["has_doc"] = true
 	}
 	if _, ok := c.Request.PostForm["stdin_as"]; ok {
 		data["stdin_as"] = c.Request.PostFormValue("stdin_as")
