@@ -18,7 +18,7 @@ func New() processors.Processor {
 }
 
 type processor struct {
-	conn *net.TCPConn
+	conn net.Conn
 	processors.Base
 	enc codecs.Encoder
 	opt *options
@@ -94,10 +94,7 @@ func (p *processor) Receive(e processors.IPacket) error {
 }
 
 func (p *processor) Start(e processors.IPacket) error {
-	if err := p.connect(); err != nil {
-		return err
-	}
-	return nil
+	return p.connect()
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
@@ -119,9 +116,9 @@ func (p *processor) connect() error {
 		if p.conn, err = net.DialTCP("tcp", nil, addr); err != nil {
 			return err
 		}
-		p.conn.SetNoDelay(false)
-		p.conn.SetKeepAlive(p.opt.KeepAlive)
-		p.conn.SetKeepAlivePeriod(30 * time.Second)
+		p.conn.(*net.TCPConn).SetNoDelay(false)
+		p.conn.(*net.TCPConn).SetKeepAlive(p.opt.KeepAlive)
+		p.conn.(*net.TCPConn).SetKeepAlivePeriod(30 * time.Second)
 	}
 	return nil
 }

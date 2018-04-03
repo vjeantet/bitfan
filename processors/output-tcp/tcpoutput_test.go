@@ -21,9 +21,9 @@ func TestDoc(t *testing.T) {
 }
 
 func TestLine(t *testing.T) {
-	srv := &testServer{Address: ":3000"}
-	assert.NoError(t, srv.Start(), "tcp server must be started")
-
+	server, client := net.Pipe()
+	srv := &testServer{conn: server}
+	srv.Start()
 	p := New().(*processor)
 	ctx := testutils.NewProcessorContext()
 	conf := map[string]interface{}{
@@ -35,6 +35,7 @@ func TestLine(t *testing.T) {
 			}, ctx.Log(), ctx.ConfigWorkingLocation()),
 		},
 	}
+	p.conn = client
 
 	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
 	assert.NoError(t, p.Start(nil))
@@ -47,49 +48,39 @@ func TestLine(t *testing.T) {
 }
 
 type testServer struct {
-	Address string
-	listener net.Listener
+	conn       net.Conn
 	stringChan chan string
 }
 
-func (t *testServer) Start() error {
-	var err error
-	if t.listener, err = net.Listen("tcp", t.Address); err != nil {
-		return err
-	}
+func (t *testServer) Start() {
 	t.stringChan = make(chan string, 10)
 	go func() error {
-		defer t.listener.Close()
 		for {
-			conn, err := t.listener.Accept()
+			buf := make([]byte, 1024)
+			n, err := t.conn.Read(buf)
 			if err != nil {
-				fmt.Println("TCP Fail accept with err:", err)
+				fmt.Println(err)
+				return err
+			}
+			if n == 0 {
+				fmt.Println("n=0")
 				continue
 			}
-			go func(conn net.Conn) {
-				defer conn.Close()
-				buf := make([]byte, 1024)
-				for {
-					n, err := conn.Read(buf)
-					if err != nil {
-						return
-					}
-					t.stringChan <- string(buf[:n])
-				}
-			}(conn)
+			t.stringChan <- string(buf[:n])
 		}
 	}()
-	return nil
 }
 
 func (t *testServer) Stop() {
-	t.listener.Close()
+	t.conn.Close()
 	close(t.stringChan)
 }
 
 func (t *testServer) GetMessage() string {
 	select {
-	case m := <-t.stringChan: return m
-	default: return ""
+	case m := <-t.stringChan:
+		return m
+	default:
+		return ""
 	}
 }
