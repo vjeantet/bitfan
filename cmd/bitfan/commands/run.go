@@ -108,8 +108,20 @@ When no configuration is passed to the command, bitfan use the config set in glo
 		cwd, _ := os.Getwd()
 		if len(args) == 0 {
 			for _, v := range viper.GetStringSlice("config") {
-				loc, _ := entrypoint.New(v, cwd, entrypoint.CONTENT_REF)
-				entrypoints.AddEntrypoint(loc)
+				files, err := filepath.Glob(v)
+				if err != nil {
+					core.Log().Errorf("can't match '%s' with err: %v", v, err)
+					continue
+				}
+				for _, file := range files {
+					core.Log().Debugf("add config file '%s'", file)
+					loc, err := entrypoint.New(file, cwd, entrypoint.CONTENT_REF)
+					if err != nil {
+						core.Log().Errorf("can't add etrypoint from '%s' with err: %v", file, err)
+						continue
+					}
+					entrypoints.AddEntrypoint(loc)
+				}
 			}
 		}
 
