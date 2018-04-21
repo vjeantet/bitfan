@@ -69,8 +69,8 @@ func NewProcessor(pkgPath string) (*Processor, error) {
 
 	docPkg := doc.New(astPkg, pkgPath, doc.AllDecls)
 	dp.Name = docPkg.Name
-	dp.ImportPath = strings.TrimPrefix(docPkg.ImportPath, build.Default.GOPATH+"/src/")
-
+	p := string(os.PathSeparator)
+	dp.ImportPath = strings.Replace(strings.TrimPrefix(docPkg.ImportPath, build.Default.GOPATH+p+"src"+p), "\\", "/", -1)
 	dp.Doc = removeSpecialComment(docPkg.Doc)
 
 	for _, typ := range docPkg.Types {

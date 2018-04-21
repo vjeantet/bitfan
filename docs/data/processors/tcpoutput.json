@@ -1,0 +1,78 @@
+{
+  "Behavior": "",
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/output-tcp",
+  "Name": "tcpoutput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": "codec",
+        "DefaultValue": "\"line\"",
+        "Doc": "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+        "ExampleLS": "",
+        "Name": "Codec",
+        "PossibleValues": [
+          "\"json\"",
+          "\"line\"",
+          "\"pp\"",
+          "\"rubydebug\""
+        ],
+        "Required": false,
+        "Type": "codec"
+      },
+      {
+        "Alias": "host",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Host",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "Port",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "uint"
+      },
+      {
+        "Alias": "keepalive",
+        "DefaultValue": "true",
+        "Doc": "Turn this on to enable HTTP keepalive support. Default value is true",
+        "ExampleLS": "",
+        "Name": "KeepAlive",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "bool"
+      },
+      {
+        "Alias": "request_timeout",
+        "DefaultValue": "30",
+        "Doc": "Timeout (in seconds) for the entire request. Default value is 60",
+        "ExampleLS": "",
+        "Name": "RequestTimeout",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "uint"
+      },
+      {
+        "Alias": "retry_interval",
+        "DefaultValue": "10",
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "RetryInterval",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "uint"
+      }
+    ]
+  },
+  "Ports": []
+}

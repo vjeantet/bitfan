@@ -39,6 +39,7 @@ import (
 	fileoutput "github.com/vjeantet/bitfan/processors/output-file"
 	glusterfsoutput "github.com/vjeantet/bitfan/processors/output-glusterfs"
 	httpoutput "github.com/vjeantet/bitfan/processors/output-http"
+	tcpoutput "github.com/vjeantet/bitfan/processors/output-tcp"
 	mongodb "github.com/vjeantet/bitfan/processors/output-mongodb"
 	null "github.com/vjeantet/bitfan/processors/output-null"
 	rabbitmqoutput "github.com/vjeantet/bitfan/processors/output-rabbitmq"
@@ -127,6 +128,7 @@ func init() {
 	initPlugin("output", "rabbitmq", rabbitmqoutput.New)
 	initPlugin("output", "email", email.New)
 	initPlugin("output", "http", httpoutput.New)
+	initPlugin("output", "tcp", tcpoutput.New)
 	initPlugin("output", "sql", sqlprocessor.New)
 	initPlugin("output", "template", templateprocessor.New)
 	initPlugin("output", "httpout", httpoutprocessor.New)
