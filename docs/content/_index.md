@@ -23,7 +23,7 @@ I use it as a “Swiss Army Knife” to complete a wide variety of different tas
 ![scope](../images/screenshot.png)
 
 
-## Processors / Plugins availables
+## Processors / Available Plugins
 
 <table>
 	<thead>
@@ -65,4 +65,3 @@ Feed the pipeline with a copy/paste of following lines in your console :
 
 
 {{%children style="h2" description="true" page="home"%}}
-
