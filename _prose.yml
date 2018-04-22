@@ -1,4 +1,4 @@
 prose:
-  rooturl: "docs/contents"
+  rooturl: "docs/content"
   siteurl: 'https://bitfan.io/'
   media: 'docs/static'
