@@ -207,18 +207,20 @@ func (p *processor) Receive(e processors.IPacket) error {
 			m.SetBody("text/html", buff.String())
 		} else {
 			content := buff.String()
-			//find all <img src="(data:image/png;base64,[a-zA-Z0-9+=/]*)"/>
-			r, _ := regexp.Compile(`<img src="data:image/png;base64,([a-zA-Z0-9+=/]*)"/>`)
+			r, _ := regexp.Compile(`<img([^>]*)src=['"]data:image/(\w+);base64,([^"']*)['"]([^>]*)>`)
 
 			for i, match := range r.FindAllStringSubmatch(content, -1) {
 				imgTag := match[0]
-				b64Data := match[1]
+				mBeforeAttr := match[1]
+				mImageType := match[2]
+				m64Data := match[3]
+				mAfterAttr := match[4]
 
-				imgUid := fmt.Sprintf("embed-%d.png", i)
-				content = strings.Replace(content, imgTag, `<img src='cid:`+imgUid+`'/>`, 1)
+				imgUid := fmt.Sprintf("embed-%d."+mImageType, i)
+				content = strings.Replace(content, imgTag, `<img`+mBeforeAttr+`src='cid:`+imgUid+`'`+mAfterAttr+`>`, 1)
 				imgPath := filepath.Join(os.TempDir(), imgUid)
 
-				sDec, err := base64.StdEncoding.DecodeString(b64Data)
+				sDec, err := base64.StdEncoding.DecodeString(m64Data)
 				if err != nil {
 					p.Logger.Errorf("error while decoding base64 %s", err.Error())
 					continue
