@@ -1,0 +1,18 @@
+#bitfan front
+FROM centos
+
+ENV BITFAN_VERSION 0.67
+ENV BITFAN_CONNECTED bitfan:5123
+ENV HOST 0.0.0.0
+ENV PORT 8080
+
+WORKDIR /opt
+
+RUN cd /opt \
+  &&   curl -L "https://github.com/vjeantet/bitfan/releases/download/v${BITFAN_VERSION}/bitfan_${BITFAN_VERSION}_linux_amd64.tar.gz" --output bitfan.tar.gz \
+  &&   tar xzvf bitfan.tar.gz \
+  &&   rm -rf  bitfan.tar.gz bitfan LICENSE README.md
+
+EXPOSE ${PORT}
+
+CMD ["sh", "-c", "/opt/bitfanUI -H ${HOST}:${PORT} -a ${BITFAN_CONNECTED}" ]

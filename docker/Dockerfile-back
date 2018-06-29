@@ -1,0 +1,44 @@
+# bitfan api
+FROM centos
+
+ENV BITFAN_VERSION 0.67
+ENV HOST 0.0.0.0
+ENV PORT 5123
+ENV DATA /opt/data
+ENV LOGS /var/log/bitfan.log
+
+ENV WORKERS 2
+ENV DEBUG true
+ENV VERBOSE true
+ENV PROMETHEUS_PATH /metrics
+
+WORKDIR /opt
+
+RUN cd /opt \
+  &&   mkdir data \
+  &&   curl -L "https://github.com/vjeantet/bitfan/releases/download/v${BITFAN_VERSION}/bitfan_${BITFAN_VERSION}_linux_amd64.tar.gz" --output bitfan.tar.gz \
+  &&   tar xzvf bitfan.tar.gz \
+  &&   rm -f bitfan.tar.gz \
+  &&   rm -rf bitfanUI LICENSE README.md
+
+# config
+RUN echo host = "\"${HOST}:${PORT}\"" >> /opt/bitfan.toml \
+   && echo data = "\"${DATA}\"" >> /opt/bitfan.toml \
+   && cat /opt/bitfan.toml
+
+
+# Other config add to RUN 
+# Default is stdout
+#echo log = "\"${LOGS}\"" >> /opt/bitfan.toml
+
+# Default is 2
+#echo -e "\"[plugin]\nworkers = ${WORKERS}\""  >> /opt/bitfan.toml
+
+# Default
+#echo -e "[prometheus]\npath =\"${PROMETHEUS_PATH}\"" >> /opt/bitfan.toml
+#echo debug = "${DEBUG}" >> /opt/bitfan.toml
+#echo verbose = "${VERBOSE}" >> /opt/bitfan.toml
+
+EXPOSE ${PORT}
+
+CMD ["/opt/bitfan", "--settings", "/opt/", "run" ] 
