@@ -1,0 +1,24 @@
+#bitfan front
+FROM alpine
+
+ENV BITFAN_VERSION 0.67
+ENV BITFAN_CONNECTED bitfan:5123
+ENV HOST 0.0.0.0
+ENV PORT 8080
+
+WORKDIR /opt
+
+RUN set -x \
+  &&   apk update && apk add --no-cache --virtual .deps curl \
+  &&   curl -L "https://github.com/vjeantet/bitfan/releases/download/v${BITFAN_VERSION}/bitfan_${BITFAN_VERSION}_linux_armv7.tar.gz" --output /opt/bitfan.tar.gz \
+  &&   tar xzvf bitfan.tar.gz \
+  &&   rm -rf  bitfan.tar.gz bitfan LICENSE README.md \
+  &&   apk del .deps
+
+RUN echo host = "\"${HOST}:${PORT}\"" >> /opt/bitfan-ui.toml \
+  && echo api  = "\"${BITFAN_CONNECTED}\"" >> /opt/bitfan-ui.toml \
+  && cat /opt/bitfan-ui.toml
+
+EXPOSE ${PORT}
+
+CMD ["/opt/bitfanUI", "--config", "/opt/bitfan-ui.toml"]

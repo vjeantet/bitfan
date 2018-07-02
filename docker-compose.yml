@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  bitfan:
+    build:
+      context: ./docker/
+      dockerfile: Dockerfile-back
+    container_name: bitfan
+    ports:
+      - 5123:5123
+    environment:
+      - HOST 0.0.0.0
+      - PORT 5123
+      - BITFAN_VERSION 0.67
+      # - DATA /opt/data
+      # - LOGS /var/log/bitfan.log
+      # - WORKERS 2
+      # - DEBUG true
+      # - VERBOSE true
+      # - PROMETHEUS_PATH /metrics
+    # volumes:
+      # - ./logs/:/var/log/
+      # - ./data/:/opt/data/
+    restart: on-failure
+
+  bitfan-ui:
+    build:
+      context: ./docker/
+      dockerfile: Dockerfile-front
+    container_name: bitfan-ui
+    ports:
+      - 8080:8080
+    environment:
+      - HOST 0.0.0.0
+      - PORT 8080
+      - BITFAN_VERSION 0.67
+      - BITFAN_CONNECTED bitfan:5123
+    links:
+      - bitfan
+    depends_on:
+      - bitfan
+    restart: on-failure
