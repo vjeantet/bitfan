@@ -1,5 +1,5 @@
 # bitfan api
-FROM centos
+FROM alpine
 
 ENV BITFAN_VERSION 0.67
 ENV HOST 0.0.0.0
@@ -14,12 +14,13 @@ ENV PROMETHEUS_PATH /metrics
 
 WORKDIR /opt
 
-RUN cd /opt \
+RUN set -x \
+  &&   apk update && apk add --no-cache --virtual .deps curl \
   &&   mkdir data \
-  &&   curl -L "https://github.com/vjeantet/bitfan/releases/download/v${BITFAN_VERSION}/bitfan_${BITFAN_VERSION}_linux_amd64.tar.gz" --output bitfan.tar.gz \
+  &&   curl -L "https://github.com/vjeantet/bitfan/releases/download/v${BITFAN_VERSION}/bitfan_${BITFAN_VERSION}_linux_armv7.tar.gz" --output /opt/bitfan.tar.gz \
   &&   tar xzvf bitfan.tar.gz \
-  &&   rm -f bitfan.tar.gz \
-  &&   rm -rf bitfanUI LICENSE README.md
+  &&   rm -rf bitfan.tar.gz bitfanUI LICENSE README.md \
+  &&   apk del .deps 
 
 # config
 RUN echo host = "\"${HOST}:${PORT}\"" >> /opt/bitfan.toml \
