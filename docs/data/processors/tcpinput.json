@@ -1,0 +1,43 @@
+{
+  "Behavior": "",
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/input-tcp",
+  "Name": "tcpinput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": ",squash",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "processors.CommonOptions",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "processors.CommonOptions"
+      },
+      {
+        "Alias": "port",
+        "DefaultValue": null,
+        "Doc": "TCP port number to listen on",
+        "ExampleLS": "",
+        "Name": "Port",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "read_buffer_size",
+        "DefaultValue": null,
+        "Doc": "Message buffer size",
+        "ExampleLS": "",
+        "Name": "ReadBufferSize",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      }
+    ]
+  },
+  "Ports": []
+}
