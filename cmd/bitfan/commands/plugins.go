@@ -29,7 +29,7 @@ import (
 	inputstdout "github.com/vjeantet/bitfan/processors/input-stdout"
 	sysloginput "github.com/vjeantet/bitfan/processors/input-syslog"
 	tail "github.com/vjeantet/bitfan/processors/input-tail"
-	"github.com/vjeantet/bitfan/processors/input-tcp"
+	tcpinput "github.com/vjeantet/bitfan/processors/input-tcp"
 	twitter "github.com/vjeantet/bitfan/processors/input-twitter"
 	udpinput "github.com/vjeantet/bitfan/processors/input-udp"
 	unixinput "github.com/vjeantet/bitfan/processors/input-unix"
