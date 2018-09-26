@@ -2,7 +2,7 @@
 package tcpinput
 
 import (
-	"bytes"
+	"bufio"
 	"fmt"
 	"github.com/vjeantet/bitfan/processors"
 	"net"
@@ -25,7 +25,7 @@ type options struct {
 	// TCP port number to listen on
 	Port int `mapstructure:"port"`
 	// Message buffer size
-	BufferSize int `mapstructure:"buffer_size"`
+	ReadBufferSize int `mapstructure:"read_buffer_size"`
 }
 
 type processor struct {
@@ -40,8 +40,8 @@ type processor struct {
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
-		Port:       5151,
-		BufferSize: 65536,
+		Port:           5151,
+		ReadBufferSize: 65536,
 	}
 	p.opt = &defaults
 
@@ -88,6 +88,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	go func(p *processor) {
 		for {
 			conn := <-p.end
+			delete(p.conntable, conn)
 			conn.Close()
 		}
 	}(p)
@@ -98,27 +99,18 @@ func (p *processor) Start(e processors.IPacket) error {
 			case conn := <-p.start:
 				go func(p *processor) {
 
-					buf := bytes.NewBuffer(make([]byte, p.opt.BufferSize))
-					length, err := conn.ReadFrom(buf)
+					buf := bufio.NewReaderSize(conn, p.opt.ReadBufferSize)
+					scanner := bufio.NewScanner(buf)
 
-					if err != nil {
-						p.Logger.Errorln(err)
+					for scanner.Scan() {
+						ne := p.NewPacket(map[string]interface{}{
+							"message": scanner.Text(),
+							"host":    conn.LocalAddr().String(),
+						})
+						p.opt.ProcessCommonOptions(ne.Fields())
+						p.Send(ne)
 					}
-
 					p.end <- conn
-
-					if length == 0 {
-						p.Logger.Print("No data read from socket")
-						return
-					}
-
-					ne := p.NewPacket(map[string]interface{}{
-						"message": buf.String(),
-						"host":    addr.String(),
-					})
-
-					p.opt.ProcessCommonOptions(ne.Fields())
-					p.Send(ne)
 				}(p)
 
 			}
