@@ -79,7 +79,7 @@ Required Acks ( number of replicas that must acknowledge write. -1 for all repli
 ## Configuration blueprint
 
 ```
-kafkaoutput{
+kafka {
 	brokers => []
 	topic => ""
 	balancer => ""

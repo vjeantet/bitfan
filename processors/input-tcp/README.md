@@ -29,7 +29,7 @@ Message buffer size
 ## Configuration blueprint
 
 ```
-tcpinput{
+tcp {
 	port => 123
 	read_buffer_size => 123
 }
