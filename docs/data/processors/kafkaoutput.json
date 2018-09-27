@@ -18,6 +18,26 @@
         "Type": "processors.CommonOptions"
       },
       {
+        "Alias": "bootstrap_host",
+        "DefaultValue": null,
+        "Doc": "Bootstrap Host",
+        "ExampleLS": "",
+        "Name": "BootstrapHost",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "bootstrap_port",
+        "DefaultValue": null,
+        "Doc": "Bootstrap Port",
+        "ExampleLS": "",
+        "Name": "BootstrapPort",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
         "Alias": "brokers",
         "DefaultValue": null,
         "Doc": "Broker list",

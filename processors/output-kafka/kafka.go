@@ -3,8 +3,11 @@ package kafkaoutput
 
 import (
 	"context"
-	kafka "github.com/segmentio/kafka-go"
+	"github.com/miekg/dns"
+	"github.com/segmentio/kafka-go"
 	"github.com/vjeantet/bitfan/processors"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,6 +24,10 @@ type processor struct {
 type options struct {
 	processors.CommonOptions `mapstructure:",squash"`
 
+	// Bootstrap Host
+	BootstrapHost string `mapstructure:"bootstrap_host"`
+	// Bootstrap Port
+	BootstrapPort int `mapstructure:"bootstrap_port"`
 	// Broker list
 	Brokers []string `mapstructure:"brokers"`
 	// Kafka topic
@@ -41,10 +48,40 @@ type options struct {
 	RequiredAcks int `mapstructure:"required_acks"`
 }
 
+func bootstrapLookup(hostname string, port int) ([]string, error) {
+
+	var result []string
+
+	msg := new(dns.Msg)
+	msg.SetQuestion(dns.Fqdn(hostname), dns.TypeA)
+
+	dnsconf, err := dns.ClientConfigFromFile("/etc/resolv.conf")
+
+	if err != nil {
+		return result, err
+	}
+
+	ans, err := dns.Exchange(msg, strings.Join([]string{dnsconf.Servers[0], dnsconf.Port}, ":"))
+
+	if err != nil {
+		return result, err
+	}
+
+	for _, rr := range ans.Answer {
+		if rr.Header().Rrtype == dns.TypeA {
+			arec := rr.(*dns.A)
+			broker := strings.Join([]string{arec.A.String(), strconv.Itoa(port)}, ":")
+			result = append(result, broker)
+		}
+	}
+
+	return result, err
+}
+
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
+
 	defaults := options{
 		Brokers:      []string{"localhost:9092"},
-		Balancer:     "roundrobin",
 		MaxAttempts:  10,
 		QueueSize:    10e3,
 		BatchSize:    10e2,
@@ -58,7 +95,15 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 func (p *processor) Start(e processors.IPacket) error {
 
+	var err error
 	var balancer kafka.Balancer
+
+	if p.opt.BootstrapHost != "" && p.opt.BootstrapPort > 0 {
+		p.opt.Brokers, err = bootstrapLookup(p.opt.BootstrapHost, p.opt.BootstrapPort)
+		if err != nil {
+			p.Logger.Error(err)
+		}
+	}
 
 	switch p.opt.Balancer {
 	case "roundrobin":
@@ -70,6 +115,8 @@ func (p *processor) Start(e processors.IPacket) error {
 	default:
 		balancer = &kafka.RoundRobin{}
 	}
+
+	p.Logger.Infof("using kafka brokers %v", p.opt.Brokers)
 
 	p.writer = kafka.NewWriter(kafka.WriterConfig{
 		Brokers: p.opt.Brokers,
@@ -88,7 +135,7 @@ func (p *processor) Start(e processors.IPacket) error {
 		Async:         false,
 	})
 
-	return nil
+	return err
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
