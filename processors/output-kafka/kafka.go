@@ -6,7 +6,6 @@ import (
 	"github.com/miekg/dns"
 	"github.com/segmentio/kafka-go"
 	"github.com/vjeantet/bitfan/processors"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -24,14 +23,14 @@ type processor struct {
 type options struct {
 	processors.CommonOptions `mapstructure:",squash"`
 
-	// Bootstrap Host
-	BootstrapHost string `mapstructure:"bootstrap_host"`
-	// Bootstrap Port
-	BootstrapPort int `mapstructure:"bootstrap_port"`
+	// Bootstrap Servers ( "host:port" )
+	BootstrapServers string `mapstructure:"bootstrap_servers"`
 	// Broker list
 	Brokers []string `mapstructure:"brokers"`
 	// Kafka topic
-	Topic string `mapstructure:"topic" validate:"required"`
+	TopicID string `mapstructure:"topic_id" validate:"required"`
+	// Kafka client id
+	ClientID string `mapstructure:"client_id"`
 	// Balancer ( roundrobin, hash or leastbytes )
 	Balancer string `mapstructure:"balancer"`
 	// Max Attempts
@@ -45,10 +44,10 @@ type options struct {
 	// IO Timeout ( in seconds )
 	IOTimeout int `mapstructure:"io_timeout"`
 	// Required Acks ( number of replicas that must acknowledge write. -1 for all replicas )
-	RequiredAcks int `mapstructure:"required_acks"`
+	RequiredAcks int `mapstructure:"acks"`
 }
 
-func bootstrapLookup(hostname string, port int) ([]string, error) {
+func bootstrapLookup(hostname string, port string) ([]string, error) {
 
 	var result []string
 
@@ -70,7 +69,7 @@ func bootstrapLookup(hostname string, port int) ([]string, error) {
 	for _, rr := range ans.Answer {
 		if rr.Header().Rrtype == dns.TypeA {
 			arec := rr.(*dns.A)
-			broker := strings.Join([]string{arec.A.String(), strconv.Itoa(port)}, ":")
+			broker := strings.Join([]string{arec.A.String(), port}, ":")
 			result = append(result, broker)
 		}
 	}
@@ -82,6 +81,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 	defaults := options{
 		Brokers:      []string{"localhost:9092"},
+		ClientID:     "bitfan",
 		MaxAttempts:  10,
 		QueueSize:    10e3,
 		BatchSize:    10e2,
@@ -98,8 +98,9 @@ func (p *processor) Start(e processors.IPacket) error {
 	var err error
 	var balancer kafka.Balancer
 
-	if p.opt.BootstrapHost != "" && p.opt.BootstrapPort > 0 {
-		p.opt.Brokers, err = bootstrapLookup(p.opt.BootstrapHost, p.opt.BootstrapPort)
+	if p.opt.BootstrapServers != "" {
+		bstrap := strings.Split(p.opt.BootstrapServers, ":")
+		p.opt.Brokers, err = bootstrapLookup(bstrap[0], bstrap[1])
 		if err != nil {
 			p.Logger.Error(err)
 		}
@@ -120,8 +121,9 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	p.writer = kafka.NewWriter(kafka.WriterConfig{
 		Brokers: p.opt.Brokers,
-		Topic:   p.opt.Topic,
+		Topic:   p.opt.TopicID,
 		Dialer: &kafka.Dialer{
+			ClientID:  p.opt.ClientID,
 			DualStack: true, // RFC-6555 compliance
 			KeepAlive: time.Second * time.Duration(p.opt.KeepAlive),
 		},
@@ -139,12 +141,18 @@ func (p *processor) Start(e processors.IPacket) error {
 }
 
 func (p *processor) Receive(e processors.IPacket) error {
+
 	var err error
+
+	message, err := e.Fields().Json(true)
+
+	if err != nil {
+		p.Logger.Errorf("json encoding error: %v", err)
+	}
 
 	err = p.writer.WriteMessages(context.Background(),
 		kafka.Message{
-			Key:   []byte("message"),
-			Value: []byte(e.Message()),
+			Value: message,
 		})
 
 	return err
