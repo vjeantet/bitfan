@@ -4,20 +4,28 @@
 ## Synopsys
 
 
-|    SETTING    |  TYPE  | REQUIRED | DEFAULT VALUE |
-|---------------|--------|----------|---------------|
-| brokers       | array  | false    | []            |
-| topic         | string | true     | ""            |
-| balancer      | string | false    | ""            |
-| max_attempts  | int    | false    |             0 |
-| queue_size    | int    | false    |             0 |
-| batch_size    | int    | false    |             0 |
-| keepalive     | int    | false    |             0 |
-| io_timeout    | int    | false    |             0 |
-| required_acks | int    | false    |             0 |
+|      SETTING      |  TYPE  | REQUIRED | DEFAULT VALUE |
+|-------------------|--------|----------|---------------|
+| bootstrap_servers | string | false    | ""            |
+| brokers           | array  | false    | []            |
+| topic_id          | string | true     | ""            |
+| client_id         | string | false    | ""            |
+| balancer          | string | false    | ""            |
+| max_attempts      | int    | false    |             0 |
+| queue_size        | int    | false    |             0 |
+| batch_size        | int    | false    |             0 |
+| keepalive         | int    | false    |             0 |
+| io_timeout        | int    | false    |             0 |
+| acks              | int    | false    |             0 |
 
 
 ## Details
+
+### bootstrap_servers
+* Value type is string
+* Default value is `""`
+
+Bootstrap Servers ( "host:port" )
 
 ### brokers
 * Value type is array
@@ -25,12 +33,18 @@
 
 Broker list
 
-### topic
+### topic_id
 * This is a required setting.
 * Value type is string
 * Default value is `""`
 
 Kafka topic
+
+### client_id
+* Value type is string
+* Default value is `""`
+
+Kafka client id
 
 ### balancer
 * Value type is string
@@ -68,7 +82,7 @@ Keep Alive ( in seconds )
 
 IO Timeout ( in seconds )
 
-### required_acks
+### acks
 * Value type is int
 * Default value is `0`
 
@@ -79,15 +93,17 @@ Required Acks ( number of replicas that must acknowledge write. -1 for all repli
 ## Configuration blueprint
 
 ```
-kafka {
+kafkaoutput{
+	bootstrap_servers => ""
 	brokers => []
-	topic => ""
+	topic_id => ""
+	client_id => ""
 	balancer => ""
 	max_attempts => 123
 	queue_size => 123
 	batch_size => 123
 	keepalive => 123
 	io_timeout => 123
-	required_acks => 123
+	acks => 123
 }
 ```
