@@ -1,16 +1,18 @@
 package processors
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
 
 func TestNewSinceDB(t *testing.T) {
 	sdboptions := &SinceDBOptions{
-		Identifier: "sincedb.json",
+		WriteInterval: 1,
+		Identifier:    "sincedb.json",
 	}
 	sdb := NewSinceDB(sdboptions)
+	time.Sleep(time.Second * 2)
 	assert.IsType(t, (*SinceDB)(nil), sdb)
 	assert.False(t, sdb.dryrun)
 }
