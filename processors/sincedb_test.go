@@ -22,4 +22,6 @@ func TestNewSinceDBDryRun(t *testing.T) {
 	sdb := NewSinceDB(sdboptions)
 	assert.IsType(t, (*SinceDB)(nil), sdb)
 	assert.True(t, sdb.dryrun)
+	err := sdb.Close()
+	assert.Nil(t, err, "successful close of db")
 }
