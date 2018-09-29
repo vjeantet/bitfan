@@ -1,10 +1,10 @@
 package kafkaoutput
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/vjeantet/bitfan/processors/doc"
+	"github.com/vjeantet/bitfan/processors/testutils"
+	"testing"
 )
 
 func TestNew(t *testing.T) {
@@ -14,4 +14,11 @@ func TestNew(t *testing.T) {
 }
 func TestDoc(t *testing.T) {
 	assert.IsType(t, &doc.Processor{}, New().(*processor).Doc())
+}
+func TestConfigure(t *testing.T) {
+	conf := map[string]interface{}{"topic_id": "test_topic"}
+	ctx := testutils.NewProcessorContext()
+	p := New()
+	err := p.Configure(ctx, conf)
+	assert.Nil(t, err, "Configure() processor without error")
 }
