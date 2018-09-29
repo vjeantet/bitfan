@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vjeantet/bitfan/codecs"
@@ -40,6 +41,7 @@ func TestLine(t *testing.T) {
 	assert.NoError(t, p.Configure(ctx, conf), "configuration is correct, error should be nil")
 	assert.NoError(t, p.Start(nil))
 	assert.NoError(t, p.Receive(testutils.NewPacketOld("message", map[string]interface{}{"abc": "def1", "n": 123})))
+	time.Sleep(time.Second * 1)
 	assert.Equal(t, "message\n", srv.GetMessage())
 	assert.NoError(t, p.Stop(nil))
 	srv.Stop()
