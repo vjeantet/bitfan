@@ -3,11 +3,12 @@ package kafkaoutput
 
 import (
 	"context"
-	"github.com/miekg/dns"
-	"github.com/segmentio/kafka-go"
-	"github.com/vjeantet/bitfan/processors"
+	"net"
 	"strings"
 	"time"
+
+	"github.com/vjeantet/bitfan/processors"
+	"gopkg.in/segmentio/kafka-go.v0"
 )
 
 func New() processors.Processor {
@@ -47,36 +48,6 @@ type options struct {
 	RequiredAcks int `mapstructure:"acks"`
 }
 
-func bootstrapLookup(hostname string, port string) ([]string, error) {
-
-	var result []string
-
-	msg := new(dns.Msg)
-	msg.SetQuestion(dns.Fqdn(hostname), dns.TypeA)
-
-	dnsconf, err := dns.ClientConfigFromFile("/etc/resolv.conf")
-
-	if err != nil {
-		return result, err
-	}
-
-	ans, err := dns.Exchange(msg, strings.Join([]string{dnsconf.Servers[0], dnsconf.Port}, ":"))
-
-	if err != nil {
-		return result, err
-	}
-
-	for _, rr := range ans.Answer {
-		if rr.Header().Rrtype == dns.TypeA {
-			arec := rr.(*dns.A)
-			broker := strings.Join([]string{arec.A.String(), port}, ":")
-			result = append(result, broker)
-		}
-	}
-
-	return result, err
-}
-
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 
 	defaults := options{
@@ -98,13 +69,8 @@ func (p *processor) Start(e processors.IPacket) error {
 	var err error
 	var balancer kafka.Balancer
 
-	if p.opt.BootstrapServers != "" {
-		bstrap := strings.Split(p.opt.BootstrapServers, ":")
-		p.opt.Brokers, err = bootstrapLookup(bstrap[0], bstrap[1])
-		if err != nil {
-			p.Logger.Error(err)
-		}
-	}
+	// lookup bootstrap server
+	bootstrapLookup(p.opt.BootstrapServers)
 
 	switch p.opt.Balancer {
 	case "roundrobin":
@@ -160,4 +126,27 @@ func (p *processor) Receive(e processors.IPacket) error {
 
 func (p *processor) Stop(e processors.IPacket) error {
 	return p.writer.Close()
+}
+
+func bootstrapLookup(endpoint string) ([]string, error) {
+
+	var err error
+	var brokers []string
+
+	host, port, err := net.SplitHostPort(endpoint)
+	if err != nil {
+		return brokers, err
+	}
+
+	addrs, err := net.LookupHost(host)
+
+	if err != nil {
+		return brokers, err
+	}
+
+	for _, ip := range addrs {
+		brokers = append(brokers, strings.Join([]string{ip, port}, ":"))
+	}
+
+	return brokers, err
 }

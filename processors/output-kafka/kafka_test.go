@@ -22,8 +22,8 @@ func TestConfigure(t *testing.T) {
 	err := p.Configure(ctx, conf)
 	assert.Nil(t, err, "Configure() processor without error")
 }
-func TestBootstrapLookup(t *testing.T)  {
-	brokers, err := bootstrapLookup("codecov.io", "1000")
+func TestBootstrapLookup(t *testing.T) {
+	brokers, err := bootstrapLookup("codecov.io:1000")
 	assert.Nil(t, err)
 	assert.True(t, len(brokers) > 0)
 }
