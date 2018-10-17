@@ -13,8 +13,7 @@ install:
     - go get -v golang.org/x/tools/cmd/cover
     - go get -v github.com/stretchr/testify/assert
     - go get -v github.com/smartystreets/goconvey
-    - go get -v github.com/miekg/dns
-    - go get -v github.com/segmentio/kafka-go
+    - go get -v gopkg.in/segmentio/kafka-go.v0
 script:
     - ./go.test.sh
 after_success:
