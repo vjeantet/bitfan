@@ -9,6 +9,9 @@ import (
 
 	"github.com/vjeantet/bitfan/processors"
 	"gopkg.in/segmentio/kafka-go.v0"
+	"gopkg.in/segmentio/kafka-go.v0/gzip"
+	"gopkg.in/segmentio/kafka-go.v0/lz4"
+	"gopkg.in/segmentio/kafka-go.v0/snappy"
 )
 
 func New() processors.Processor {
@@ -34,6 +37,8 @@ type options struct {
 	ClientID string `mapstructure:"client_id"`
 	// Balancer ( roundrobin, hash or leastbytes )
 	Balancer string `mapstructure:"balancer"`
+	// Compression algorithm ( 'gzip', 'snappy', or 'lz4' )
+	Compression string `mapstructure:"compression"`
 	// Max Attempts
 	MaxAttempts int `mapstructure:"max_attempts"`
 	// Queue Size
@@ -68,6 +73,7 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	var err error
 	var balancer kafka.Balancer
+	var codec kafka.CompressionCodec
 
 	// lookup bootstrap server
 	bootstrapLookup(p.opt.BootstrapServers)
@@ -83,6 +89,17 @@ func (p *processor) Start(e processors.IPacket) error {
 		balancer = &kafka.RoundRobin{}
 	}
 
+	switch p.opt.Compression {
+	case "gzip":
+		codec = gzip.NewCompressionCodec()
+	case "lz4":
+		codec = lz4.NewCompressionCodec()
+	case "snappy":
+		codec = snappy.NewCompressionCodec()
+	default:
+		codec = nil
+	}
+
 	p.Logger.Infof("using kafka brokers %v", p.opt.Brokers)
 
 	p.writer = kafka.NewWriter(kafka.WriterConfig{
@@ -93,14 +110,15 @@ func (p *processor) Start(e processors.IPacket) error {
 			DualStack: true, // RFC-6555 compliance
 			KeepAlive: time.Second * time.Duration(p.opt.KeepAlive),
 		},
-		Balancer:      balancer,
-		MaxAttempts:   p.opt.MaxAttempts,
-		QueueCapacity: p.opt.QueueSize,
-		BatchSize:     p.opt.BatchSize,
-		ReadTimeout:   time.Second * time.Duration(p.opt.IOTimeout),
-		WriteTimeout:  time.Second * time.Duration(p.opt.IOTimeout),
-		RequiredAcks:  p.opt.RequiredAcks,
-		Async:         false,
+		Balancer:         balancer,
+		CompressionCodec: codec,
+		MaxAttempts:      p.opt.MaxAttempts,
+		QueueCapacity:    p.opt.QueueSize,
+		BatchSize:        p.opt.BatchSize,
+		ReadTimeout:      time.Second * time.Duration(p.opt.IOTimeout),
+		WriteTimeout:     time.Second * time.Duration(p.opt.IOTimeout),
+		RequiredAcks:     p.opt.RequiredAcks,
+		Async:            false,
 	})
 
 	return err
