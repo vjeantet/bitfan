@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/gzip"
+	"github.com/segmentio/kafka-go/lz4"
+	"github.com/segmentio/kafka-go/snappy"
 	"github.com/vjeantet/bitfan/processors"
-	"gopkg.in/segmentio/kafka-go.v0"
-	"gopkg.in/segmentio/kafka-go.v0/gzip"
-	"gopkg.in/segmentio/kafka-go.v0/lz4"
-	"gopkg.in/segmentio/kafka-go.v0/snappy"
 )
 
 func New() processors.Processor {

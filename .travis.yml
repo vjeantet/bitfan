@@ -13,7 +13,9 @@ install:
     - go get -v golang.org/x/tools/cmd/cover
     - go get -v github.com/stretchr/testify/assert
     - go get -v github.com/smartystreets/goconvey
-    - go get -v gopkg.in/segmentio/kafka-go.v0
+    - go get -v github.com/segmentio/kafka-go
+    - go get -v github.com/golang/snappy
+    - go get -v github.com/pierrec/lz4
 script:
     - ./go.test.sh
 after_success:
