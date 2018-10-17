@@ -29,6 +29,7 @@ import (
 	inputstdout "github.com/vjeantet/bitfan/processors/input-stdout"
 	sysloginput "github.com/vjeantet/bitfan/processors/input-syslog"
 	tail "github.com/vjeantet/bitfan/processors/input-tail"
+	tcpinput "github.com/vjeantet/bitfan/processors/input-tcp"
 	twitter "github.com/vjeantet/bitfan/processors/input-twitter"
 	udpinput "github.com/vjeantet/bitfan/processors/input-udp"
 	unixinput "github.com/vjeantet/bitfan/processors/input-unix"
@@ -39,6 +40,7 @@ import (
 	fileoutput "github.com/vjeantet/bitfan/processors/output-file"
 	glusterfsoutput "github.com/vjeantet/bitfan/processors/output-glusterfs"
 	httpoutput "github.com/vjeantet/bitfan/processors/output-http"
+	kafkaoutput "github.com/vjeantet/bitfan/processors/output-kafka"
 	tcpoutput "github.com/vjeantet/bitfan/processors/output-tcp"
 	mongodb "github.com/vjeantet/bitfan/processors/output-mongodb"
 	null "github.com/vjeantet/bitfan/processors/output-null"
@@ -73,6 +75,7 @@ func init() {
 	initPlugin("input", "beats", beatsinput.New)
 	initPlugin("input", "rabbitmq", rabbitmqinput.New)
 	initPlugin("input", "udp", udpinput.New)
+	initPlugin("input", "tcp", tcpinput.New)
 	initPlugin("input", "syslog", sysloginput.New)
 	initPlugin("input", "unix", unixinput.New)
 	initPlugin("input", "readfile", file.New)
@@ -128,6 +131,7 @@ func init() {
 	initPlugin("output", "rabbitmq", rabbitmqoutput.New)
 	initPlugin("output", "email", email.New)
 	initPlugin("output", "http", httpoutput.New)
+	initPlugin("output", "kafka", kafkaoutput.New)
 	initPlugin("output", "tcp", tcpoutput.New)
 	initPlugin("output", "sql", sqlprocessor.New)
 	initPlugin("output", "template", templateprocessor.New)

@@ -1,4 +1,4 @@
-package rabbitmqoutput
+package kafkaoutput
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -15,17 +15,15 @@ func TestNew(t *testing.T) {
 func TestDoc(t *testing.T) {
 	assert.IsType(t, &doc.Processor{}, New().(*processor).Doc())
 }
-func TestMaxConcurent(t *testing.T) {
-	max := New().(*processor).MaxConcurent()
-	assert.Equal(t, 0, max, "this processor does support concurency")
-}
 func TestConfigure(t *testing.T) {
-	conf := map[string]interface{}{
-		"exchange": "exchange",
-		"exchange_type": "exchange_type",
-	}
+	conf := map[string]interface{}{"topic_id": "test_topic"}
 	ctx := testutils.NewProcessorContext()
 	p := New()
 	err := p.Configure(ctx, conf)
 	assert.Nil(t, err, "Configure() processor without error")
+}
+func TestBootstrapLookup(t *testing.T) {
+	brokers, err := bootstrapLookup("codecov.io:1000")
+	assert.Nil(t, err)
+	assert.True(t, len(brokers) > 0)
 }
