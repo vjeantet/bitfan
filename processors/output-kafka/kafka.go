@@ -76,7 +76,14 @@ func (p *processor) Start(e processors.IPacket) error {
 	var codec kafka.CompressionCodec
 
 	// lookup bootstrap server
-	bootstrapLookup(p.opt.BootstrapServers)
+	if p.opt.BootstrapServers != "" {
+		brokers, err := bootstrapLookup(p.opt.BootstrapServers)
+		if err != nil {
+			p.Logger.Errorf("error getting bootstrap servers: %v", err)
+		} else {
+			p.opt.Brokers = brokers
+		}
+	}
 
 	switch p.opt.Balancer {
 	case "roundrobin":
