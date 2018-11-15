@@ -1,0 +1,133 @@
+{
+  "Behavior": "",
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "github.com/vjeantet/bitfan/processors/output-kafka",
+  "Name": "kafkaoutput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": ",squash",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "processors.CommonOptions",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "processors.CommonOptions"
+      },
+      {
+        "Alias": "bootstrap_servers",
+        "DefaultValue": null,
+        "Doc": "Bootstrap Servers ( \"host:port\" )",
+        "ExampleLS": "",
+        "Name": "BootstrapServers",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "brokers",
+        "DefaultValue": null,
+        "Doc": "Broker list",
+        "ExampleLS": "",
+        "Name": "Brokers",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "topic_id",
+        "DefaultValue": null,
+        "Doc": "Kafka topic",
+        "ExampleLS": "",
+        "Name": "TopicID",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "client_id",
+        "DefaultValue": null,
+        "Doc": "Kafka client id",
+        "ExampleLS": "",
+        "Name": "ClientID",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "balancer",
+        "DefaultValue": null,
+        "Doc": "Balancer ( roundrobin, hash or leastbytes )",
+        "ExampleLS": "",
+        "Name": "Balancer",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "max_attempts",
+        "DefaultValue": null,
+        "Doc": "Max Attempts",
+        "ExampleLS": "",
+        "Name": "MaxAttempts",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "queue_size",
+        "DefaultValue": null,
+        "Doc": "Queue Size",
+        "ExampleLS": "",
+        "Name": "QueueSize",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "batch_size",
+        "DefaultValue": null,
+        "Doc": "Batch Size",
+        "ExampleLS": "",
+        "Name": "BatchSize",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "keepalive",
+        "DefaultValue": null,
+        "Doc": "Keep Alive ( in seconds )",
+        "ExampleLS": "",
+        "Name": "KeepAlive",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "io_timeout",
+        "DefaultValue": null,
+        "Doc": "IO Timeout ( in seconds )",
+        "ExampleLS": "",
+        "Name": "IOTimeout",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "acks",
+        "DefaultValue": null,
+        "Doc": "Required Acks ( number of replicas that must acknowledge write. -1 for all replicas )",
+        "ExampleLS": "",
+        "Name": "RequiredAcks",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      }
+    ]
+  },
+  "Ports": []
+}
