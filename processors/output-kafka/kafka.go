@@ -20,6 +20,7 @@ func New() processors.Processor {
 
 type processor struct {
 	processors.Base
+	output chan []byte
 	writer *kafka.Writer
 	opt    *options
 }
@@ -27,8 +28,8 @@ type processor struct {
 type options struct {
 	processors.CommonOptions `mapstructure:",squash"`
 
-	// Bootstrap Servers ( "host:port" )
-	BootstrapServers string `mapstructure:"bootstrap_servers"`
+	// Bootstrap Server ( "host:port" )
+	BootstrapServer string `mapstructure:"bootstrap_server"`
 	// Broker list
 	Brokers []string `mapstructure:"brokers"`
 	// Kafka topic
@@ -59,10 +60,10 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		Brokers:      []string{"localhost:9092"},
 		ClientID:     "bitfan",
 		MaxAttempts:  10,
-		QueueSize:    10e3,
-		BatchSize:    10e2,
+		QueueSize:    1024,
+		BatchSize:    256,
 		KeepAlive:    180,
-		IOTimeout:    10,
+		IOTimeout:    30,
 		RequiredAcks: -1,
 	}
 	p.opt = &defaults
@@ -76,8 +77,8 @@ func (p *processor) Start(e processors.IPacket) error {
 	var codec kafka.CompressionCodec
 
 	// lookup bootstrap server
-	if p.opt.BootstrapServers != "" {
-		brokers, err := bootstrapLookup(p.opt.BootstrapServers)
+	if p.opt.BootstrapServer != "" {
+		brokers, err := bootstrapLookup(p.opt.BootstrapServer)
 		if err != nil {
 			p.Logger.Errorf("error getting bootstrap servers: %v", err)
 		} else {
@@ -128,6 +129,42 @@ func (p *processor) Start(e processors.IPacket) error {
 		Async:            false,
 	})
 
+	//go func(p *processor) {
+	//
+	//	batch := make([]kafka.Message, p.opt.BatchSize)
+	//	var shutdown = false
+	//
+	//	for {
+	//		select {
+	//		case message, ok := <-p.output:
+	//			if !ok {
+	//				shutdown = true
+	//			} else {
+	//				batch = append(batch, kafka.Message{
+	//					Value: message,
+	//				})
+	//			}
+	//		}
+	//
+	//		if len(batch) >= p.opt.BatchSize || shutdown == true {
+	//			ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(p.opt.IOTimeout))
+	//
+	//			go func(b []kafka.Message) {
+	//
+	//				err = p.writer.WriteMessages(ctx, b...)
+	//
+	//				if err != nil {
+	//					for _, msg := range b {
+	//						p.Logger.Errorf("unable to write to kafka: %v", msg.Value)
+	//					}
+	//					cancel()
+	//				}
+	//			}(batch)
+	//			batch = nil
+	//		}
+	//	}
+	//}(p)
+
 	return err
 }
 
@@ -141,15 +178,20 @@ func (p *processor) Receive(e processors.IPacket) error {
 		p.Logger.Errorf("json encoding error: %v", err)
 	}
 
-	err = p.writer.WriteMessages(context.Background(),
-		kafka.Message{
-			Value: message,
-		})
+	//p.output <- message
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(p.opt.IOTimeout))
+	err = p.writer.WriteMessages(ctx, kafka.Message{
+		Value: message,
+	})
 
+	if err != nil {
+		cancel()
+	}
 	return err
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
+	close(p.output)
 	return p.writer.Close()
 }
 
