@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/elastic/go-lumber/log"
 	"github.com/elastic/go-lumber/server"
 	"github.com/vjeantet/bitfan/processors"
 )
@@ -120,9 +119,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	}
 
 	options = append(options, server.Timeout(time.Second * time.Duration(p.opt.CongestionThreshold)))
-	options = append(options, server.V2(true))
 
-	log.Logger = p.Logger
 	svr, err := server.ListenAndServe(fmt.Sprintf("%s:%d", p.opt.Host, p.opt.Port), options...)
 	if err != nil {
 		return err

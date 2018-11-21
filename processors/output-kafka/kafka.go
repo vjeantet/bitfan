@@ -5,6 +5,7 @@ import (
 	"context"
 	"net"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -15,12 +16,17 @@ import (
 )
 
 func New() processors.Processor {
-	return &processor{opt: &options{}}
+	return &processor{
+		msgs: make(chan []byte),
+		wg:   new(sync.WaitGroup),
+		opt:  &options{},
+	}
 }
 
 type processor struct {
 	processors.Base
-	output chan []byte
+	msgs   chan []byte
+	wg     *sync.WaitGroup
 	writer *kafka.Writer
 	opt    *options
 }
@@ -129,41 +135,42 @@ func (p *processor) Start(e processors.IPacket) error {
 		Async:            false,
 	})
 
-	//go func(p *processor) {
-	//
-	//	batch := make([]kafka.Message, p.opt.BatchSize)
-	//	var shutdown = false
-	//
-	//	for {
-	//		select {
-	//		case message, ok := <-p.output:
-	//			if !ok {
-	//				shutdown = true
-	//			} else {
-	//				batch = append(batch, kafka.Message{
-	//					Value: message,
-	//				})
-	//			}
-	//		}
-	//
-	//		if len(batch) >= p.opt.BatchSize || shutdown == true {
-	//			ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(p.opt.IOTimeout))
-	//
-	//			go func(b []kafka.Message) {
-	//
-	//				err = p.writer.WriteMessages(ctx, b...)
-	//
-	//				if err != nil {
-	//					for _, msg := range b {
-	//						p.Logger.Errorf("unable to write to kafka: %v", msg.Value)
-	//					}
-	//					cancel()
-	//				}
-	//			}(batch)
-	//			batch = nil
-	//		}
-	//	}
-	//}(p)
+	go func(p *processor) {
+
+		batch := make([]kafka.Message, 0, p.opt.BatchSize)
+		var shutdown = false
+		p.wg.Add(1)
+
+		for {
+			select {
+			case message, ok := <-p.msgs:
+				if ok {
+					batch = append(batch, kafka.Message{Value: message})
+				} else {
+					shutdown = true
+				}
+			default:
+				continue
+			}
+
+			if len(batch) == p.opt.BatchSize || shutdown == true {
+
+				err = p.writer.WriteMessages(context.Background(), batch...)
+
+				if err != nil {
+					p.Logger.Error(err)
+				}
+
+				if shutdown {
+					p.Logger.Infof("shutting down kafka writer, flushed %d records", len(batch))
+					p.wg.Done()
+					break
+				}
+
+				batch = nil
+			}
+		}
+	}(p)
 
 	return err
 }
@@ -178,20 +185,14 @@ func (p *processor) Receive(e processors.IPacket) error {
 		p.Logger.Errorf("json encoding error: %v", err)
 	}
 
-	//p.output <- message
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(p.opt.IOTimeout))
-	err = p.writer.WriteMessages(ctx, kafka.Message{
-		Value: message,
-	})
+	p.msgs <- message
 
-	if err != nil {
-		cancel()
-	}
 	return err
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
-	close(p.output)
+	close(p.msgs)
+	p.wg.Wait()
 	return p.writer.Close()
 }
 
