@@ -158,7 +158,7 @@ func (p *processor) Start(e processors.IPacket) error {
 				err = p.writer.WriteMessages(context.Background(), batch...)
 
 				if err != nil {
-					p.Logger.Error(err)
+					p.Logger.Errorf("error writing to kafka", err)
 				}
 
 				if shutdown {
