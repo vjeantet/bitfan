@@ -162,6 +162,11 @@ func (p *processor) Start(e processors.IPacket) error {
 
 			if len(batch) == p.opt.BatchSize || shutdown == true || pflush == true {
 
+				if !pftimer.Stop() {
+					<-pftimer.C
+					pflush = false
+				}
+
 				err = p.writer.WriteMessages(context.Background(), batch...)
 
 				if err != nil {
@@ -174,12 +179,7 @@ func (p *processor) Start(e processors.IPacket) error {
 					break
 				}
 
-				if pflush {
-					pflush = false
-					pftimer.Stop()
-					pftimer.Reset(time.Second * time.Duration(p.opt.PeriodicFlush))
-				}
-
+				pftimer.Reset(time.Second * time.Duration(p.opt.PeriodicFlush))
 				batch = nil
 			}
 		}
