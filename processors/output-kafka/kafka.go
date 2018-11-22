@@ -58,6 +58,8 @@ type options struct {
 	IOTimeout int `mapstructure:"io_timeout"`
 	// Required Acks ( number of replicas that must acknowledge write. -1 for all replicas )
 	RequiredAcks int `mapstructure:"acks"`
+	// Periodic Flush ( length of time in seconds a partially written buffer will live before being flushed )
+	PeriodicFlush int `mapstructure:"pflush"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -71,6 +73,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		KeepAlive:    180,
 		IOTimeout:    30,
 		RequiredAcks: -1,
+		PeriodicFlush: 15,
 	}
 	p.opt = &defaults
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -139,6 +142,8 @@ func (p *processor) Start(e processors.IPacket) error {
 
 		batch := make([]kafka.Message, 0, p.opt.BatchSize)
 		var shutdown = false
+		var pflush = false
+		var pftimer = time.NewTimer(time.Second * time.Duration(p.opt.PeriodicFlush))
 		p.wg.Add(1)
 
 		for {
@@ -149,11 +154,13 @@ func (p *processor) Start(e processors.IPacket) error {
 				} else {
 					shutdown = true
 				}
+			case <- pftimer.C:
+				pflush = true
 			default:
 				continue
 			}
 
-			if len(batch) == p.opt.BatchSize || shutdown == true {
+			if len(batch) == p.opt.BatchSize || shutdown == true || pflush == true {
 
 				err = p.writer.WriteMessages(context.Background(), batch...)
 
@@ -165,6 +172,12 @@ func (p *processor) Start(e processors.IPacket) error {
 					p.Logger.Infof("shutting down kafka writer, flushed %d records", len(batch))
 					p.wg.Done()
 					break
+				}
+
+				if pflush {
+					pflush = false
+					pftimer.Stop()
+					pftimer.Reset(time.Second * time.Duration(p.opt.PeriodicFlush))
 				}
 
 				batch = nil
