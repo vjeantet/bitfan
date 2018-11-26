@@ -156,8 +156,6 @@ func (p *processor) Start(e processors.IPacket) error {
 				}
 			case <- pftimer.C:
 				pflush = true
-			default:
-				continue
 			}
 
 			if len(batch) == p.opt.BatchSize || shutdown == true || pflush == true {
