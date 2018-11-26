@@ -163,7 +163,6 @@ func (p *processor) Start(e processors.IPacket) error {
 			if len(batch) == p.opt.BatchSize || shutdown == true || pflush == true {
 
 				if !pftimer.Stop() {
-					<-pftimer.C
 					pflush = false
 				}
 
