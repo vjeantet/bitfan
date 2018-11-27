@@ -22,7 +22,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/api/client"
+	"bitfan/api/client"
 )
 
 func init() {

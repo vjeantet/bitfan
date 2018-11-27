@@ -2,7 +2,7 @@
 // Drops everything received
 package null
 
-import "github.com/vjeantet/bitfan/processors"
+import "bitfan/processors"
 
 func New() processors.Processor {
 	return &processor{}

@@ -7,7 +7,7 @@ import (
 	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/core"
+	"bitfan/core"
 )
 
 var slogger service.Logger

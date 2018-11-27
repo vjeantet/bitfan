@@ -7,7 +7,7 @@ import (
 	"runtime"
 
 	"github.com/kardianos/service"
-	"github.com/vjeantet/bitfan/cmd/bitfanUI/commands"
+	"bitfan/cmd/bitfanUI/commands"
 )
 
 var version = "master"

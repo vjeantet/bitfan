@@ -7,8 +7,8 @@ import (
 	"github.com/clbanning/mxj"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/processors/doc"
-	"github.com/vjeantet/bitfan/processors/testutils"
+	"bitfan/processors/doc"
+	"bitfan/processors/testutils"
 )
 
 func TestNew(t *testing.T) {
@@ -710,7 +710,7 @@ func TestMerge(t *testing.T) {
 	assert.False(t, false, data.Exists("fooZ"))
 }
 
-// https://github.com/vjeantet/bitfan/issues/71
+// https://bitfan/issues/71
 func TestNoEmptyTags(t *testing.T) {
 	Convey("When no option about tags is involved", t, func() {
 		event := testutils.NewPacketOld("", map[string]interface{}{})

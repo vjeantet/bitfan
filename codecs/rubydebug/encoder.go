@@ -7,7 +7,7 @@ import (
 
 	"github.com/k0kubun/pp"
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/commons"
+	"bitfan/commons"
 	"gopkg.in/go-playground/validator.v8"
 )
 

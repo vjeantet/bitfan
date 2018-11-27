@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/commons"
+	"bitfan/commons"
 )
 
 func TestBuffer(t *testing.T) {

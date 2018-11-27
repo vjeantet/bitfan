@@ -3,9 +3,9 @@ package tcpoutput
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors/doc"
-	"github.com/vjeantet/bitfan/processors/testutils"
+	"bitfan/codecs"
+	"bitfan/processors/doc"
+	"bitfan/processors/testutils"
 	"net"
 	"testing"
 	"time"

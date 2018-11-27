@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/clbanning/mxj"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 const (

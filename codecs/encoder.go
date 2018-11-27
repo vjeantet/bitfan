@@ -1,6 +1,6 @@
 package codecs
 
-import "github.com/vjeantet/bitfan/commons"
+import "bitfan/commons"
 
 type Encoder interface {
 	Encode(map[string]interface{}) error

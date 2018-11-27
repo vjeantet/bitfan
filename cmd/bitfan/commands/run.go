@@ -25,9 +25,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/vjeantet/bitfan/api"
-	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/entrypoint"
+	"bitfan/api"
+	"bitfan/core"
+	"bitfan/entrypoint"
 )
 
 func init() {

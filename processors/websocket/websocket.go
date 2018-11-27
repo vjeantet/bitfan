@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/codecs"
+	"bitfan/processors"
 )
 
 // expose events thought a websocket

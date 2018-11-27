@@ -15,8 +15,8 @@ import (
 	"github.com/gin-gonic/gin"
 	sessions "github.com/tommy351/gin-sessions"
 
-	"github.com/vjeantet/bitfan/api/client"
-	"github.com/vjeantet/bitfan/api/models"
+	"bitfan/api/client"
+	"bitfan/api/models"
 )
 
 var apiClient *client.RestClient

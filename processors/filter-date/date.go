@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 	"github.com/vjeantet/jodaTime"
 )
 

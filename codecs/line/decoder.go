@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/commons"
+	"bitfan/commons"
 )
 
 // doc decoder

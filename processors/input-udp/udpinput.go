@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

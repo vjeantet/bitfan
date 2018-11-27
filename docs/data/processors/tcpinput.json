@@ -2,7 +2,7 @@
   "Behavior": "",
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/input-tcp",
+  "ImportPath": "bitfan/processors/input-tcp",
   "Name": "tcpinput",
   "Options": {
     "Doc": "",

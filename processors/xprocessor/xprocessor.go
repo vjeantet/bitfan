@@ -15,10 +15,10 @@ import (
 	"sync"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/api/models"
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors"
-	"github.com/vjeantet/bitfan/processors/doc"
+	"bitfan/api/models"
+	"bitfan/codecs"
+	"bitfan/processors"
+	"bitfan/processors/doc"
 )
 
 func NewWithSpec(spec *models.XProcessor) processors.Processor {

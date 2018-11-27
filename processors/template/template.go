@@ -5,8 +5,8 @@ import (
 	"bytes"
 	"text/template"
 
-	"github.com/vjeantet/bitfan/commons"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/commons"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

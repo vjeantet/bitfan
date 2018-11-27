@@ -23,8 +23,8 @@ import (
 	"strconv"
 
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/codecs"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

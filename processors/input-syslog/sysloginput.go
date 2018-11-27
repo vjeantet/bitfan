@@ -8,7 +8,7 @@ import (
 
 	"gopkg.in/mcuadros/go-syslog.v2"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

@@ -6,9 +6,9 @@ import (
 	"golang.org/x/sync/syncmap"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/processors"
-	"github.com/vjeantet/bitfan/processors/doc"
-	"github.com/vjeantet/bitfan/processors/testutils"
+	"bitfan/processors"
+	"bitfan/processors/doc"
+	"bitfan/processors/testutils"
 )
 
 func TestDoc(t *testing.T) {

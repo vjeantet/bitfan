@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/boltdb/bolt"
+	"go.etcd.io/bbolt"
 	"github.com/timshannon/bolthold"
-	"github.com/vjeantet/bitfan/api/models"
-	"github.com/vjeantet/bitfan/commons"
+	"bitfan/api/models"
+	"bitfan/commons"
 )
 
 type Store struct {

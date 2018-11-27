@@ -10,8 +10,8 @@ import (
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/vjeantet/bitfan/commons"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/commons"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

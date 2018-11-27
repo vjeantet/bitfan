@@ -14,7 +14,7 @@ import (
 
 	"reflect"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 	"gopkg.in/Knetic/govaluate.v3"
 )
 

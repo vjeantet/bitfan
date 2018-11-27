@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dghubble/sling"
-	"github.com/vjeantet/bitfan/api/models"
+	"bitfan/api/models"
 )
 
 type RestClient struct {

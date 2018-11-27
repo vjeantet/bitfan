@@ -3,7 +3,7 @@ package imap_input
 
 import (
 	"github.com/etrepat/postman/watch"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

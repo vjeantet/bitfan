@@ -16,7 +16,7 @@ package drop
 import (
 	"math/rand"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

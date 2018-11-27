@@ -6,7 +6,7 @@ import (
 
 	fqdn "github.com/ShowMax/go-fqdn"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/core/webhook"
+	"bitfan/core/webhook"
 )
 
 type Pipeline struct {

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

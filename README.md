@@ -7,11 +7,11 @@
 <h4 align="center">Data and Event processing pipeliner really inspired by Logstash.</h4>
 
 <p align="center">
-	<a href="https://godoc.org/github.com/vjeantet/bitfan">
-		<img src="https://godoc.org/github.com/vjeantet/bitfan?status.svg" alt="GoDoc" style="max-width:100%;">
+	<a href="https://godoc.org/bitfan">
+		<img src="https://godoc.org/bitfan?status.svg" alt="GoDoc" style="max-width:100%;">
 	</a>
-    <a href="https://goreportcard.com/report/github.com/vjeantet/bitfan">
-    	<img src="https://goreportcard.com/badge/github.com/vjeantet/bitfan" alt="Go Report Card" style="max-width:100%;">
+    <a href="https://goreportcard.com/report/bitfan">
+    	<img src="https://goreportcard.com/badge/bitfan" alt="Go Report Card" style="max-width:100%;">
     </a>
     <a href="https://travis-ci.org/vjeantet/bitfan">
     	<img src="https://travis-ci.org/vjeantet/bitfan.svg?branch=master" alt="Build Status" style="max-width:100%;">

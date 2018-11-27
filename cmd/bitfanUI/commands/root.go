@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/cmd/bitfanUI/server"
+	"bitfan/cmd/bitfanUI/server"
 )
 
 var cfgFile string

@@ -8,9 +8,9 @@ import (
 	"io"
 
 	"github.com/parnurzeal/gorequest"
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/commons"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/codecs"
+	"bitfan/commons"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

@@ -1,6 +1,6 @@
 package core
 
-import "github.com/vjeantet/bitfan/processors"
+import "bitfan/processors"
 
 type processorContext struct {
 	packetSender          processors.PacketSender

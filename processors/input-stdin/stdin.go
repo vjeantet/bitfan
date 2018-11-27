@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/codecs"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

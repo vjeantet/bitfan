@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 const (

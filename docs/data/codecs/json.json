@@ -47,7 +47,7 @@
       ]
     }
   },
-  "ImportPath": "github.com/vjeantet/bitfan/codecs/json",
+  "ImportPath": "bitfan/codecs/json",
   "Name": "json",
   "PkgName": "jsoncodec"
 }

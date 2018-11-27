@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vjeantet/bitfan/core"
+	"bitfan/core"
 	"github.com/vjeantet/jodaTime"
 )
 

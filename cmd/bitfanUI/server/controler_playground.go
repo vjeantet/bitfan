@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vjeantet/bitfan/api/models"
+	"bitfan/api/models"
 )
 
 type playgroundRequest struct {

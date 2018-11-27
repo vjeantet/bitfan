@@ -1,6 +1,6 @@
-//go:generate go generate github.com/vjeantet/bitfan/processors/...
-//go:generate go generate github.com/vjeantet/bitfan/codecs/...
-// broken - go:generate swagger generate spec -m -b github.com/vjeantet/bitfan/api -o ../../api/swagger.json
+//go:generate go generate bitfan/processors/...
+//go:generate go generate bitfan/codecs/...
+// broken - go:generate swagger generate spec -m -b bitfan/api -o ../../api/swagger.json
 // Copyright © 2016 Valere JEANTET <valere.jeantet@gmail.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ import (
 	"runtime"
 
 	"github.com/kardianos/service"
-	"github.com/vjeantet/bitfan/cmd/bitfan/commands"
+	"bitfan/cmd/bitfan/commands"
 )
 
 var version = "master"

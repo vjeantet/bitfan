@@ -10,7 +10,7 @@ pygmentsStyle = "monokailight"
 
 
 [params]
-editURL = "https://github.com/vjeantet/bitfan/edit/master/docs/content/"
+editURL = "https://bitfan/edit/master/docs/content/"
 noHomeIcon = false # default is false
 noSearch = false # default is false
 showVisitedLinks = false # default is false
@@ -25,12 +25,12 @@ home = [ "HTML", "RSS", "JSON"]
 [[menu.shortcuts]]
 name = "<i class='fa fa-github'></i> <label>Github repo</label>"
 identifier = "repo"
-url = "https://github.com/vjeantet/bitfan"
+url = "https://bitfan"
 weight = 1
 
 [[menu.shortcuts]]
 name = "<i class='fa fa-cloud-download'></i> <label>Download</label>"
-url = "https://github.com/vjeantet/bitfan/releases"
+url = "https://bitfan/releases"
 weight = 3
 
 [[menu.shortcuts]]

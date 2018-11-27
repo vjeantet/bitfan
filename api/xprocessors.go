@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/api/models"
-	"github.com/vjeantet/bitfan/core"
+	"bitfan/api/models"
+	"bitfan/core"
 )
 
 type XProcessorApiController struct {

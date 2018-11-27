@@ -1,7 +1,7 @@
 {
   "Doc": "Periodically scan an POP3 mailbox for new emails.",
   "DocShort": "Read mails from POP3 server",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/pop3",
+  "ImportPath": "bitfan/processors/pop3",
   "Name": "pop3processor",
   "Options": {
     "Doc": "",

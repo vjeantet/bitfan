@@ -1,7 +1,7 @@
 {
   "Doc": "Stop after emitting a blank event on start\nAllow you to put first event and then stop processors as soon as they finish their job.\n\nPermit to launch bitfan with a pipeline and quit when work is done.",
   "DocShort": "",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/stop",
+  "ImportPath": "bitfan/processors/stop",
   "Name": "stopprocessor",
   "Options": {
     "Doc": "",

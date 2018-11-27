@@ -11,8 +11,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/entrypoint/parser"
+	"bitfan/core"
+	"bitfan/entrypoint/parser"
 )
 
 const (

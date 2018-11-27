@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/elastic/go-lumber/server"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

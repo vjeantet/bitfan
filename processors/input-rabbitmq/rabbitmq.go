@@ -8,7 +8,7 @@ import (
 
 	"github.com/clbanning/mxj"
 	"github.com/streadway/amqp"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 // New returns a rabbimq processor

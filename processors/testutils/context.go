@@ -5,7 +5,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 type DummyProcessorContext struct {

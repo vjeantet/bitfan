@@ -173,7 +173,7 @@ func TestFieldAddTagsWithExistingOnes(t *testing.T) {
 	assert.Contains(t, tags, "foo")
 }
 
-// https://github.com/vjeantet/bitfan/issues/71
+// https://bitfan/issues/71
 func TestFieldAddTagsWithEmptyTags(t *testing.T) {
 	data := getTestFields()
 

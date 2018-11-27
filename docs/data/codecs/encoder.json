@@ -36,7 +36,7 @@
       ]
     }
   },
-  "ImportPath": "github.com/vjeantet/bitfan/codecs/plain",
+  "ImportPath": "bitfan/codecs/plain",
   "Name": "encoder",
   "PkgName": "plaincodec"
 }

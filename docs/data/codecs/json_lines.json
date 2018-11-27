@@ -20,7 +20,7 @@
   "Doc": "",
   "DocShort": "",
   "Encoder": null,
-  "ImportPath": "github.com/vjeantet/bitfan/codecs/jsonlines",
+  "ImportPath": "bitfan/codecs/jsonlines",
   "Name": "json_lines",
   "PkgName": "jsonlinescodec"
 }

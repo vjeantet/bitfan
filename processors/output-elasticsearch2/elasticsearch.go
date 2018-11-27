@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jehiah/go-strftime"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 	"gopkg.in/olivere/elastic.v3"
 )
 

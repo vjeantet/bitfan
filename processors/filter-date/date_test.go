@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/processors/testutils"
+	"bitfan/processors/testutils"
 )
 
 type msg struct {

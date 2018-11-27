@@ -29,8 +29,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/vjeantet/bitfan/commons"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/commons"
+	"bitfan/processors"
 	"gopkg.in/Knetic/govaluate.v3"
 )
 

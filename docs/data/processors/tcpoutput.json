@@ -2,7 +2,7 @@
   "Behavior": "",
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/output-tcp",
+  "ImportPath": "bitfan/processors/output-tcp",
   "Name": "tcpoutput",
   "Options": {
     "Doc": "",

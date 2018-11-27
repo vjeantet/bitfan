@@ -9,7 +9,7 @@
       "Options": []
     }
   },
-  "ImportPath": "github.com/vjeantet/bitfan/codecs/rubydebug",
+  "ImportPath": "bitfan/codecs/rubydebug",
   "Name": "rubydebug",
   "PkgName": "rubydebugcodec"
 }

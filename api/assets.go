@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/api/models"
-	"github.com/vjeantet/bitfan/core"
-	"github.com/vjeantet/bitfan/entrypoint/parser/logstash"
+	"bitfan/api/models"
+	"bitfan/core"
+	"bitfan/entrypoint/parser/logstash"
 )
 
 type AssetApiController struct {

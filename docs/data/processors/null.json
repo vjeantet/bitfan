@@ -1,7 +1,7 @@
 {
   "Doc": "Drops everything received",
   "DocShort": "Drops everything received",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/output-null",
+  "ImportPath": "bitfan/processors/output-null",
   "Name": "null",
   "Options": null,
   "Ports": []

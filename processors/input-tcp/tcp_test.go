@@ -2,8 +2,8 @@ package tcpinput
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/processors/doc"
-	"github.com/vjeantet/bitfan/processors/testutils"
+	"bitfan/processors/doc"
+	"bitfan/processors/testutils"
 	"testing"
 )
 

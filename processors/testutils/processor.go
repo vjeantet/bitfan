@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 type Processor struct {

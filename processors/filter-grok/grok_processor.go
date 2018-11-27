@@ -6,7 +6,7 @@ import (
 	"reflect"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 	"github.com/vjeantet/grok"
 )
 

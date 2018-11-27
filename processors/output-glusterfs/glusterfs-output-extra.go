@@ -11,7 +11,7 @@ import (
 
 	"github.com/jehiah/go-strftime"
 	"github.com/kshlm/gogfapi/gfapi"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

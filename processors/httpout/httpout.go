@@ -13,8 +13,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/codecs"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

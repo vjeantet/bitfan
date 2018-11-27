@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/clbanning/mxj"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

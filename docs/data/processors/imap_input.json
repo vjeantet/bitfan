@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/input-imap",
+  "ImportPath": "bitfan/processors/input-imap",
   "Name": "imap_input",
   "Options": null,
   "Ports": []

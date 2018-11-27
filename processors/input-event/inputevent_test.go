@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/processors/doc"
+	"bitfan/processors/doc"
 )
 
 func TestNew(t *testing.T) {

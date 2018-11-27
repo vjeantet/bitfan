@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/core"
+	"bitfan/core"
 )
 
 var tsURL = ""

@@ -57,7 +57,7 @@
       ]
     }
   },
-  "ImportPath": "github.com/vjeantet/bitfan/codecs/line",
+  "ImportPath": "bitfan/codecs/line",
   "Name": "line",
   "PkgName": "linecodec"
 }

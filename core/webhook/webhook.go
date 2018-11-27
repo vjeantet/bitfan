@@ -10,7 +10,7 @@ import (
 	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/gosimple/slug"
 	"github.com/justinas/alice"
-	"github.com/vjeantet/bitfan/commons"
+	"bitfan/commons"
 )
 
 type webHook struct {

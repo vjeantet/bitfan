@@ -1,7 +1,7 @@
 {
   "Doc": "Send email when an output is received. Alternatively, you may include or exclude the email output execution using conditionals.",
   "DocShort": "Sends email to a specified address when output is received",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/output-email",
+  "ImportPath": "bitfan/processors/output-email",
   "Name": "email",
   "Options": {
     "Doc": "",

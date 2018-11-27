@@ -60,7 +60,7 @@
   "Doc": "Parses comma-separated value data into individual fields",
   "DocShort": "",
   "Encoder": null,
-  "ImportPath": "github.com/vjeantet/bitfan/codecs/csv",
+  "ImportPath": "bitfan/codecs/csv",
   "Name": "csv",
   "PkgName": "csvcodec"
 }

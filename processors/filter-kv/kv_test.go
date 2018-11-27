@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/vjeantet/bitfan/processors/testutils"
+	"bitfan/processors/testutils"
 )
 
 func TestCommonProcessorDetails(t *testing.T) {

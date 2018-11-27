@@ -5,7 +5,7 @@ package inputeventprocessor
 import (
 	"sync"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

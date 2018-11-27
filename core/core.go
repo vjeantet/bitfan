@@ -7,12 +7,12 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
-	"github.com/vjeantet/bitfan/core/memory"
-	"github.com/vjeantet/bitfan/core/metrics"
-	"github.com/vjeantet/bitfan/core/webhook"
-	"github.com/vjeantet/bitfan/processors/doc"
-	"github.com/vjeantet/bitfan/processors/xprocessor"
-	"github.com/vjeantet/bitfan/store"
+	"bitfan/core/memory"
+	"bitfan/core/metrics"
+	"bitfan/core/webhook"
+	"bitfan/processors/doc"
+	"bitfan/processors/xprocessor"
+	"bitfan/store"
 )
 
 var (

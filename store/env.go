@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/timshannon/bolthold"
-	"github.com/vjeantet/bitfan/api/models"
+	"bitfan/api/models"
 )
 
 type StoreEnv struct {

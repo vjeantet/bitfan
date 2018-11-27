@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	fqdn "github.com/ShowMax/go-fqdn"
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/codecs"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

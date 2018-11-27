@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/clbanning/mxj"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 // event represents data sent to agents (or received by agents)

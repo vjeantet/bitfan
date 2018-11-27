@@ -7,8 +7,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/vjeantet/bitfan/codecs"
-	"github.com/vjeantet/bitfan/processors/doc"
+	"bitfan/codecs"
+	"bitfan/processors/doc"
 	"gopkg.in/go-playground/validator.v8"
 )
 

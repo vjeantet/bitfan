@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"github.com/vjeantet/bitfan/core"
+	"bitfan/core"
 )
 
 // var plugins map[string]map[string]core.ProcessorFactory

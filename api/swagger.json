@@ -35,7 +35,7 @@
           "x-go-name": "Uuid"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+      "x-go-package": "bitfan/api/models"
     },
     "Error": {
       "description": "A Error is ....\n\nA Error can have.....",
@@ -47,7 +47,7 @@
           "x-go-name": "Message"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+      "x-go-package": "bitfan/api/models"
     },
     "Pipeline": {
       "description": "A Pipeline is ....\n\nA Pipeline can have.....",
@@ -119,7 +119,7 @@
           "x-go-name": "Uuid"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+      "x-go-package": "bitfan/api/models"
     },
     "Scheduler": {
       "type": "object",
@@ -134,7 +134,7 @@
           "type": "string"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+      "x-go-package": "bitfan/api/models"
     },
     "Webhook": {
       "type": "object",
@@ -149,7 +149,7 @@
           "type": "string"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+      "x-go-package": "bitfan/api/models"
     },
     "processorDoc": {
       "description": "A Doc is ....\n\nA Doc can have.....",
@@ -247,7 +247,7 @@
           "x-go-name": "Ports"
         }
       },
-      "x-go-package": "github.com/vjeantet/bitfan/api/models"
+      "x-go-package": "bitfan/api/models"
     }
   }
 }

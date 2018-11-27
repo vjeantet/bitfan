@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vjeantet/bitfan/processors/doc"
-	"github.com/vjeantet/bitfan/processors/testutils"
+	"bitfan/processors/doc"
+	"bitfan/processors/testutils"
 )
 
 func TestNew(t *testing.T) {

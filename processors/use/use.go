@@ -11,7 +11,7 @@
 // * pass the event to the first filter plugin found in the used configuration file
 package use
 
-import "github.com/vjeantet/bitfan/processors"
+import "bitfan/processors"
 
 const (
 	PORT_SUCCESS = 0

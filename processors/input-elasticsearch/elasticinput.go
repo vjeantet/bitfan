@@ -9,7 +9,7 @@ import (
 	elastic "gopkg.in/olivere/elastic.v3"
 
 	"github.com/clbanning/mxj"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

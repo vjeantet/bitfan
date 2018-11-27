@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/input-unix",
+  "ImportPath": "bitfan/processors/input-unix",
   "Name": "unixinput",
   "Options": {
     "Doc": "",

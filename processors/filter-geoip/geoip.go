@@ -22,7 +22,7 @@ import (
 
 	"github.com/hraban/lrucache"
 	"github.com/oschwald/geoip2-golang"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 )
 
 func New() processors.Processor {

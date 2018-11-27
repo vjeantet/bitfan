@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 	"gopkg.in/Knetic/govaluate.v3"
 )
 

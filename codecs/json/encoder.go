@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/commons"
+	"bitfan/commons"
 )
 
 type encoder struct {

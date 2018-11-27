@@ -13,8 +13,8 @@ import (
 	"strings"
 
 	uuid "github.com/nu7hatch/gouuid"
-	"github.com/vjeantet/bitfan/commons"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/commons"
+	"bitfan/processors"
 	gomail "gopkg.in/gomail.v2"
 )
 

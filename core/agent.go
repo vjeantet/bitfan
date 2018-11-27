@@ -7,10 +7,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/vjeantet/bitfan/core/metrics"
-	"github.com/vjeantet/bitfan/core/webhook"
-	"github.com/vjeantet/bitfan/processors"
-	"github.com/vjeantet/bitfan/processors/xprocessor"
+	"bitfan/core/metrics"
+	"bitfan/core/webhook"
+	"bitfan/processors"
+	"bitfan/processors/xprocessor"
 )
 
 type ProcessorFactory func() processors.Processor

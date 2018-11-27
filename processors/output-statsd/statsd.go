@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/ShowMax/go-fqdn"
-	"github.com/vjeantet/bitfan/processors"
+	"bitfan/processors"
 	"gopkg.in/alexcesaro/statsd.v2"
 )
 

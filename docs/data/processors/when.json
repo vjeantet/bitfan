@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/when",
+  "ImportPath": "bitfan/processors/when",
   "Name": "when",
   "Options": {
     "Doc": "",

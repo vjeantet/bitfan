@@ -72,7 +72,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/vjeantet/bitfan/commons"
+	"bitfan/commons"
 )
 
 // Merges multiline messages into a single event

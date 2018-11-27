@@ -1,6 +1,6 @@
 package processors
 
-import "github.com/vjeantet/bitfan/processors/doc"
+import "bitfan/processors/doc"
 
 type Processor interface {
 	B() *Base

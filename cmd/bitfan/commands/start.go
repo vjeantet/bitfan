@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vjeantet/bitfan/api/client"
+	"bitfan/api/client"
 )
 
 // startCmd represents the start command

@@ -1,7 +1,7 @@
 {
   "Doc": "This filter helps automatically parse messages (or specific event fields)\nwhich are of the foo=bar variety.",
   "DocShort": "Parses key-value pairs",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/filter-kv",
+  "ImportPath": "bitfan/processors/filter-kv",
   "Name": "kv",
   "Options": {
     "Doc": "",

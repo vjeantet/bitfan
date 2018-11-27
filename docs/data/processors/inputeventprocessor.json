@@ -1,7 +1,7 @@
 {
   "Doc": "Generate a blank event on interval",
   "DocShort": "",
-  "ImportPath": "github.com/vjeantet/bitfan/processors/input-event",
+  "ImportPath": "bitfan/processors/input-event",
   "Name": "inputeventprocessor",
   "Options": {
     "Doc": "",
