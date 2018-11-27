@@ -65,15 +65,15 @@ type options struct {
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 
 	defaults := options{
-		Brokers:      []string{"localhost:9092"},
-		ClientID:     "bitfan",
-		MaxAttempts:  10,
-		QueueSize:    1024,
-		BatchSize:    256,
-		KeepAlive:    180,
-		IOTimeout:    30,
-		RequiredAcks: -1,
-		PeriodicFlush: 15,
+		Brokers:       []string{"localhost:9092"},
+		ClientID:      "bitfan",
+		MaxAttempts:   10,
+		QueueSize:     1024,
+		BatchSize:     256,
+		KeepAlive:     180,
+		IOTimeout:     30,
+		RequiredAcks:  -1,
+		PeriodicFlush: 20,
 	}
 	p.opt = &defaults
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
@@ -154,7 +154,7 @@ func (p *processor) Start(e processors.IPacket) error {
 				} else {
 					shutdown = true
 				}
-			case <- pftimer.C:
+			case <-pftimer.C:
 				pflush = true
 			}
 
