@@ -135,11 +135,19 @@ func (p *processor) Start(e processors.IPacket) error {
 
 func (p *processor) Stop(e processors.IPacket) error {
 
-	if p.sock != nil {
-		err := p.sock.Close()
-		if err != nil {
-			return err
+	var err error
+
+	p.conntable.Range(func(key, value interface{}) bool {
+		if err = value.(*net.TCPConn).Close(); err != nil {
+			p.Logger.Error(err)
+			return false
+		} else {
+			return true
 		}
+	})
+
+	if p.sock != nil {
+		err = p.sock.Close()
 	}
-	return nil
+	return err
 }
