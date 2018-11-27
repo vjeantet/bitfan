@@ -15,8 +15,8 @@ import (
 func New() processors.Processor {
 	return &processor{
 		opt:       &options{},
-		start:     make(chan *net.TCPConn),
-		end:       make(chan *net.TCPConn),
+		start:     make(chan *net.TCPConn, 512),
+		end:       make(chan *net.TCPConn, 512),
 		conntable: new(sync.Map),
 	}
 }
@@ -95,10 +95,12 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	go func(p *processor) {
 		for {
-			conn := <-p.end
-			p.conntable.Delete(conn.RemoteAddr().String())
-			if err := conn.Close(); err != nil {
-				p.Logger.Error(err)
+			select {
+			case conn := <-p.end:
+				p.conntable.Delete(conn.RemoteAddr().String())
+				if err := conn.Close(); err != nil {
+					p.Logger.Error(err)
+				}
 			}
 		}
 	}(p)
