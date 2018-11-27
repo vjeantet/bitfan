@@ -43,9 +43,9 @@ func (l *logHook) String() [][]byte {
 
 // Fire is called when a log event is fired.
 func (l *logHook) Fire(entry *logrus.Entry) error {
-	serialized, err := json.Marshal(entry)
+	serialized, err := json.Marshal(entry.Message)
 	if err != nil {
-		return fmt.Errorf("Failed to marshal fields to JSON, %v", err)
+		return fmt.Errorf("failed to marshal fields to JSON, %v", err)
 	}
 	go func(serialized []byte) {
 		l.c <- serialized
