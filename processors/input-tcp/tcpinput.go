@@ -4,10 +4,12 @@ package tcpinput
 import (
 	"bufio"
 	"fmt"
-	"github.com/vjeantet/bitfan/processors"
 	"net"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/vjeantet/bitfan/processors"
 )
 
 func New() processors.Processor {
@@ -15,7 +17,7 @@ func New() processors.Processor {
 		opt:       &options{},
 		start:     make(chan *net.TCPConn),
 		end:       make(chan *net.TCPConn),
-		conntable: make(map[*net.TCPConn]bool),
+		conntable: new(sync.Map),
 	}
 }
 
@@ -35,7 +37,7 @@ type processor struct {
 	sock      *net.TCPListener
 	start     chan *net.TCPConn
 	end       chan *net.TCPConn
-	conntable map[*net.TCPConn]bool
+	conntable *sync.Map
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
@@ -73,13 +75,19 @@ func (p *processor) Start(e processors.IPacket) error {
 
 			if err != nil {
 				if strings.Contains(err.Error(), "accept tcp") {
-					p.sock.SetDeadline(time.Now().Add(3 * time.Second))
+					if err = p.sock.SetDeadline(time.Now().Add(3 * time.Second)); err != nil {
+						p.Logger.Error(err)
+					}
 				} else {
 					p.Logger.Error(err)
 				}
 				continue
 			}
-			p.conntable[conn] = true
+
+			if err := conn.SetReadBuffer(p.opt.ReadBufferSize); err != nil {
+				p.Logger.Error(err)
+			}
+			p.conntable.Store(conn.RemoteAddr().String(), *conn)
 			p.start <- conn
 
 		}
@@ -88,8 +96,10 @@ func (p *processor) Start(e processors.IPacket) error {
 	go func(p *processor) {
 		for {
 			conn := <-p.end
-			delete(p.conntable, conn)
-			conn.Close()
+			p.conntable.Delete(conn.RemoteAddr().String())
+			if err := conn.Close(); err != nil {
+				p.Logger.Error(err)
+			}
 		}
 	}(p)
 
@@ -99,7 +109,7 @@ func (p *processor) Start(e processors.IPacket) error {
 			case conn := <-p.start:
 				go func(p *processor) {
 
-					buf := bufio.NewReaderSize(conn, p.opt.ReadBufferSize)
+					buf := bufio.NewReader(conn)
 					scanner := bufio.NewScanner(buf)
 
 					for scanner.Scan() {
@@ -109,6 +119,9 @@ func (p *processor) Start(e processors.IPacket) error {
 						})
 						p.opt.ProcessCommonOptions(ne.Fields())
 						p.Send(ne)
+					}
+					if err := scanner.Err(); err != nil {
+						p.Logger.Error(err)
 					}
 					p.end <- conn
 				}(p)

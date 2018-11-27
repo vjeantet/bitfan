@@ -2,7 +2,7 @@ module bitfan
 
 require (
 	github.com/BurntSushi/toml v0.0.0-20160717150709-99064174e013
-	github.com/ChimeraCoder/anaconda v0.0.0-20160509014622-91bfbf5de08d
+	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7
 	github.com/PuerkitoBio/goquery v1.0.2
 	github.com/ShowMax/go-fqdn v0.0.0-20180501083314-6f60894d629f

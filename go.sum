@@ -2,6 +2,11 @@ github.com/BurntSushi/toml v0.0.0-20160717150709-99064174e013 h1:8kwKwd3A/Fg0zN3
 github.com/BurntSushi/toml v0.0.0-20160717150709-99064174e013/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/ChimeraCoder/anaconda v0.0.0-20160509014622-91bfbf5de08d h1:/ECS08jQALok8wJMpU6UY4M9NrwNJnXn1z3GjxPnH8U=
 github.com/ChimeraCoder/anaconda v0.0.0-20160509014622-91bfbf5de08d/go.mod h1:TCt3MijIq3Qqo9SBtuW/rrM4x7rDfWqYWHj8T7hLcLg=
+github.com/ChimeraCoder/anaconda v1.0.0 h1:iFEwD9/eygHcyT/uZI3sG1SjUuvjlTZrqI4bY4art/E=
+github.com/ChimeraCoder/anaconda v1.0.0/go.mod h1:TCt3MijIq3Qqo9SBtuW/rrM4x7rDfWqYWHj8T7hLcLg=
+github.com/ChimeraCoder/anaconda v2.0.0+incompatible h1:slAmCJMpjEztM42qRfhFkh3gBLHnIUUmlMK5zFd60Pc=
+github.com/ChimeraCoder/anaconda v2.0.0+incompatible/go.mod h1:TCt3MijIq3Qqo9SBtuW/rrM4x7rDfWqYWHj8T7hLcLg=
+github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 h1:VhNF/1LOAMtJOPjNt+f785lF3H37n1b/kiinFgqL6hM=
 github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7/go.mod h1:b2EuEMLSG9q3bZ95ql1+8oVqzzrTNSiOQqSXWFBzxeI=
 github.com/PuerkitoBio/goquery v1.0.2 h1:6eVgli+CgrpInQgyW5Unj3aqfzqFk/ALcKm6m0w7hgA=
 github.com/PuerkitoBio/goquery v1.0.2/go.mod h1:T9ezsOHcCrDCgA8aF1Cqr3sSYbO/xgdy8/R/XiIMAhA=
@@ -16,6 +21,7 @@ github.com/andybalholm/cascadia v0.0.0-20161224141413-349dd0209470/go.mod h1:3I+
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/axgle/mahonia v0.0.0-20151019004008-c528b747d92d h1:23UwR+FuqjkWtYdp/s2r/xq23IFmk7zVzUx04xg4OJw=
 github.com/axgle/mahonia v0.0.0-20151019004008-c528b747d92d/go.mod h1:Q8n74mJTIgjX4RBBcHnJ05h//6/k6foqmgE45jTQtxg=
+github.com/azr/backoff v0.0.0-20160115115103-53511d3c7330 h1:ekDALXAVvY/Ub1UtNta3inKQwZ/jMB/zpOtD8rAYh78=
 github.com/azr/backoff v0.0.0-20160115115103-53511d3c7330/go.mod h1:nH+k0SvAt3HeiYyOlJpLLv1HG1p7KWP7qU9QPp2/pCo=
 github.com/beorn7/perks v0.0.0-20160229213445-3ac7bf7a47d1 h1:OnJHjoVbY69GG4gclp0ngXfywigLhR6rrgUxmxQRWO4=
 github.com/beorn7/perks v0.0.0-20160229213445-3ac7bf7a47d1/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
@@ -29,7 +35,9 @@ github.com/davidscholberg/go-durationfmt v0.0.0-20170122144659-64843a2083d3 h1:q
 github.com/davidscholberg/go-durationfmt v0.0.0-20170122144659-64843a2083d3/go.mod h1:M9fx6rAdHSYLKxXPgUXGgblb586CA7ceNrpu4DEc2No=
 github.com/dghubble/sling v0.0.0-20160713062357-3db1177a9ec0 h1:1LO7VsdStUKJIpfDUaf17QdJccHZ/zlM9s9/85CCp0s=
 github.com/dghubble/sling v0.0.0-20160713062357-3db1177a9ec0/go.mod h1:ZcPRuLm0qrcULW2gOrjXrAWgf76sahqSyxXyVOvkunE=
+github.com/dustin/go-jsonpointer v0.0.0-20150814064524-2efc9fef1d94 h1:knDK9R1Y2ZO1y53fhaF4AvyRbvU65N5zZbP5uM166Hs=
 github.com/dustin/go-jsonpointer v0.0.0-20150814064524-2efc9fef1d94/go.mod h1:ORH5Qp2bskd9NzSfKqAF7tKfONsEkCarTE5ESr/RVBw=
+github.com/dustin/gojson v0.0.0-20150115165335-af16e0e771e2 h1:aWzOz1ccU6hK9Gg5uaoj+osMpovG+UUolaxr9v6ictA=
 github.com/dustin/gojson v0.0.0-20150115165335-af16e0e771e2/go.mod h1:mPKfmRa823oBIgl2r20LeMSpTAteW5j7FLkc0vjmzyQ=
 github.com/elastic/go-lumber v0.1.0 h1:HUjpyg36v2HoKtXlEC53EJ3zDFiDRn65d7B8dBHNius=
 github.com/elastic/go-lumber v0.1.0/go.mod h1:8YvjMIRYypWuPvpxx7WoijBYdbB7XIh/9FqSYQZTtxQ=
@@ -45,6 +53,7 @@ github.com/facebookgo/muster v0.0.0-20150708232844-fd3d7953fd52 h1:a4DFiKFJiDRGF
 github.com/facebookgo/muster v0.0.0-20150708232844-fd3d7953fd52/go.mod h1:yIquW87NGRw1FU5p5lEkpnt/QxoH5uPAOUlOVkAUuMg=
 github.com/fatih/structs v1.0.0 h1:BrX964Rv5uQ3wwS+KRUAJCBBw5PQmgJfJ6v4yly5QwU=
 github.com/fatih/structs v1.0.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga6PJ7M=
+github.com/garyburd/go-oauth v0.0.0-20150215044201-a0e528aa0c45 h1:m96Q+wBGbFyc2vew6XZJCHIntlMmrkqe+sd9Y2rThV4=
 github.com/garyburd/go-oauth v0.0.0-20150215044201-a0e528aa0c45/go.mod h1:HfkOCN6fkKKaPSAeNq/er3xObxTW4VLeY6UUK895gLQ=
 github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 h1:AzN37oI0cOS+cougNAV9szl6CVoj2RYwzS3DpUQNtlY=
 github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=
