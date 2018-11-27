@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ChimeraCoder/anaconda@v1.0.0"
+	"github.com/ChimeraCoder/anaconda"
 	"github.com/vjeantet/bitfan/processors"
 )
 
