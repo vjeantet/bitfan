@@ -36,7 +36,7 @@ type options struct {
 	// List of blacklisted terms.
 	// The compare_field term must be equal to one of these values for it to match.
 	// @ExampleLS terms => ["val1","val2","val3"]
-	Terms []string `mapstructure:"terms" validate:"required"`
+	Terms []string `mapstructure:"terms"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) (err error) {
