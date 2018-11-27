@@ -6,11 +6,9 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io/ioutil"
-
 	"time"
 
-	"github.com/elastic/go-lumber/log"
-	"github.com/elastic/go-lumber/server/v2"
+	"github.com/elastic/go-lumber/server"
 	"github.com/vjeantet/bitfan/processors"
 )
 
@@ -21,9 +19,8 @@ func New() processors.Processor {
 type processor struct {
 	processors.Base
 
-	server *v2.Server
+	server server.Server
 	opt    *options
-	q      chan bool
 }
 
 type options struct {
@@ -32,7 +29,7 @@ type options struct {
 	// The number of seconds before we raise a timeout,
 	// this option is useful to control how much time to wait if something is blocking
 	// the pipeline
-	Congestion_threshold int
+	CongestionThreshold int
 
 	// The IP address to listen on
 	Host string
@@ -43,10 +40,10 @@ type options struct {
 	// Events are by default send in plain text,
 	// you can enable encryption by using ssl to true and
 	// configuring the ssl_certificate and ssl_key options
-	Ssl bool
+	SSL bool
 
 	// SSL certificate to use (path)
-	Ssl_certificate string
+	SSLCertificate string
 
 	// Validate client certificates against theses authorities
 	//  You can defined multiples files or path, all the certificates will be read
@@ -55,13 +52,13 @@ type options struct {
 	//  the verification.
 	// This feature only support certificate directly signed by your root ca.
 	// Intermediate CA are currently not supported.
-	Ssl_certificate_authorities []string
+	SSlCertificateAuthorities []string
 
 	// SSL key to use (path)
-	Ssl_key string
+	SSlKey string
 
 	// SSL key passphrase to use. (not yet implemented)
-	Ssl_key_passphrase string
+	SSlKeyPassphrase string
 
 	// By default the server dont do any client verification,
 	// peer will make the server ask the client to provide a certificate,
@@ -70,88 +67,97 @@ type options struct {
 	//   if the clients doesn’t provide it the connection will be closed.
 	// This option need to be used with ssl_certificate_authorities and a defined list of CA.
 	// Value can be any of: none, peer, force_peer
-	Ssl_verify_mode string
+	SSlVerifyMode string
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
-	p.opt.Congestion_threshold = 30
+	p.opt.CongestionThreshold = 30
 	p.opt.Host = "0.0.0.0"
 	p.opt.Port = 5044
-	p.opt.Ssl = false
-	p.opt.Ssl_verify_mode = "none"
+	p.opt.SSL = false
+	p.opt.SSlVerifyMode = "none"
 
 	return p.ConfigureAndValidate(ctx, conf, p.opt)
 }
 
 func (p *processor) Start(e processors.IPacket) error {
-	p.q = make(chan bool)
 
-	options := []v2.Option{}
+	options := make([]server.Option, 0)
 
-	if p.opt.Ssl == true {
-		config := &tls.Config{}
+	if p.opt.SSL == true {
+		config := new(tls.Config)
 
 		// Server Certificates
-		cert, err := tls.LoadX509KeyPair(p.opt.Ssl_certificate, p.opt.Ssl_key)
+		cert, err := tls.LoadX509KeyPair(p.opt.SSLCertificate, p.opt.SSlKey)
 
 		if err != nil {
-			return fmt.Errorf("Error loading keys: %v", err)
+			return fmt.Errorf("error loading keys: %v", err)
 		}
 		config.Certificates = []tls.Certificate{cert}
 
 		// Certificate authority
-		if len(p.opt.Ssl_certificate_authorities) > 0 {
+		if len(p.opt.SSlCertificateAuthorities) > 0 {
 			config.RootCAs = x509.NewCertPool()
-			for _, pemCertPath := range p.opt.Ssl_certificate_authorities {
+			for _, pemCertPath := range p.opt.SSlCertificateAuthorities {
 				pemCert, err := ioutil.ReadFile(pemCertPath)
 				if err != nil {
-					return fmt.Errorf("Error loading certificate authorities: %v", err)
+					return fmt.Errorf("error loading certificate authorities: %v", err)
 				}
 				config.RootCAs.AppendCertsFromPEM(pemCert)
 			}
 		}
 
 		// SSL Verification mode
-		if p.opt.Ssl_verify_mode == "peer" {
+		if p.opt.SSlVerifyMode == "peer" {
 			config.ClientAuth = tls.VerifyClientCertIfGiven
 		}
-		if p.opt.Ssl_verify_mode == "force_peer" {
+		if p.opt.SSlVerifyMode == "force_peer" {
 			config.ClientAuth = tls.RequireAndVerifyClientCert
 		}
 
-		options = append(options, v2.TLS(config))
+		options = append(options, server.TLS(config))
 	}
 
-	options = append(options, v2.Timeout(time.Second*time.Duration(p.opt.Congestion_threshold)))
+	options = append(options, server.Timeout(time.Second * time.Duration(p.opt.CongestionThreshold)))
 
-	log.Logger = p.Logger
-	server, err := v2.ListenAndServe(fmt.Sprintf("%s:%d", p.opt.Host, p.opt.Port), options...)
+	svr, err := server.ListenAndServe(fmt.Sprintf("%s:%d", p.opt.Host, p.opt.Port), options...)
 	if err != nil {
 		return err
 	}
 
-	p.server = server
+	p.server = svr
 
-	go func() {
-		for batch := range p.server.ReceiveChan() {
-			batch.ACK()
-			events := batch.Events
-			for _, e := range events {
-				fields := e.(map[string]interface{})
-				if val, ok := fields["@timestamp"]; !ok {
-					fields["@timestamp"] = time.Now()
+	go func(p *processor) {
+		rchan := p.server.ReceiveChan()
+
+		for {
+			var closed bool
+			select {
+			case batch, ok := <-rchan:
+				if ok {
+					for _, evt := range batch.Events {
+
+						fields := evt.(map[string]interface{})
+						if val, ok := fields["@timestamp"]; !ok {
+							fields["@timestamp"] = time.Now()
+						} else {
+							fields["@timestamp"], _ = time.Parse(time.RFC3339, val.(string))
+						}
+
+						ev := p.NewPacket(fields)
+						p.opt.ProcessCommonOptions(ev.Fields())
+						p.Send(ev)
+					}
+					batch.ACK()
 				} else {
-					fields["@timestamp"], _ = time.Parse("2006-01-02T15:04:05Z07:00", val.(string))
+					closed = true
 				}
-
-				ev := p.NewPacket(fields)
-				p.opt.ProcessCommonOptions(ev.Fields())
-				p.Send(ev, 0)
+			}
+			if closed {
+				break
 			}
 		}
-		p.Logger.Debug("received events acked and drained")
-		close(p.q)
-	}()
+	}(p)
 
 	return nil
 }
@@ -161,6 +167,5 @@ func (p *processor) Stop(e processors.IPacket) error {
 	if err != nil {
 		return err
 	}
-	<-p.q
 	return nil
 }
