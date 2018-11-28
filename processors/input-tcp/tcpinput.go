@@ -74,60 +74,49 @@ func (p *processor) Start(e processors.IPacket) error {
 	}
 
 	go func(p *processor) {
+
 		p.wg.Add(1)
+		defer close(p.start)
 		defer p.wg.Done()
+
 		for {
 			conn, err := p.sock.AcceptTCP()
 
 			if err != nil {
 				if strings.Contains(err.Error(), "accept tcp") {
 					if err = p.sock.SetDeadline(time.Now().Add(3 * time.Second)); err != nil {
-						p.Logger.Error(err)
+						p.Logger.Info("shutting down tcp acceptor")
+						break
+					} else {
+						continue
 					}
-					continue
 				}
-				p.Logger.Infof("shutting down tcp acceptor: %v", err)
-				break
+				p.Logger.Errorf("socket error: %v", err)
 			}
 
 			if err := conn.SetReadBuffer(p.opt.ReadBufferSize); err != nil {
-				p.Logger.Error(err)
+				p.Logger.Errorf("error setting socket read buffer: %v", err)
 			}
 			p.conntable.Store(conn.RemoteAddr().String(), *conn)
 			p.start <- conn
 		}
-		close(p.start)
-	}(p)
-
-	go func(p *processor) {
-		p.wg.Add(1)
-		defer p.wg.Done()
-		for {
-			select {
-			case conn, ok := <-p.end:
-				if ok {
-					if err := conn.Close(); err != nil {
-						p.Logger.Error(err)
-					} else {
-						p.conntable.Delete(conn.RemoteAddr().String())
-					}
-				} else {
-					break
-				}
-			}
-		}
 	}(p)
 
 	go func() {
+
 		p.wg.Add(1)
+		var shutdown = false
+		var waiter = new(sync.WaitGroup)
+		defer close(p.end)
 		defer p.wg.Done()
+
 		for {
 			select {
 			case conn, ok := <-p.start:
 				if ok {
 					go func(p *processor) {
-						p.wg.Add(1)
-						defer p.wg.Done()
+						waiter.Add(1)
+						defer waiter.Done()
 
 						buf := bufio.NewReader(conn)
 						scanner := bufio.NewScanner(buf)
@@ -141,16 +130,46 @@ func (p *processor) Start(e processors.IPacket) error {
 							p.Send(ne)
 						}
 						if err := scanner.Err(); err != nil {
-							p.Logger.Error(err)
+							p.Logger.Errorf("error while reading from client: %v", err)
 						}
+
 						p.end <- conn
 					}(p)
 				} else {
-					close(p.end)
+					shutdown = true
 				}
+			}
+			if shutdown {
+				waiter.Wait()
+				break
 			}
 		}
 	}()
+
+	go func(p *processor) {
+
+		p.wg.Add(1)
+		var shutdown = false
+		defer p.wg.Done()
+
+		for {
+			select {
+			case conn, ok := <-p.end:
+				if ok {
+					if err := conn.Close(); err != nil {
+						p.Logger.Errorf("error while closing connection: %v", err)
+					} else {
+						p.conntable.Delete(conn.RemoteAddr().String())
+					}
+				} else {
+					shutdown = true
+				}
+			}
+			if shutdown {
+				break
+			}
+		}
+	}(p)
 
 	return err
 }
