@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jehiah/go-strftime"
 	"bitfan/processors"
+	"github.com/jehiah/go-strftime"
 	els5 "gopkg.in/olivere/elastic.v5"
 	els6 "gopkg.in/olivere/elastic.v6"
 )

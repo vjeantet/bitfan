@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"bitfan/core/webhook"
 	fqdn "github.com/ShowMax/go-fqdn"
 	uuid "github.com/nu7hatch/gouuid"
-	"bitfan/core/webhook"
 )
 
 type Pipeline struct {

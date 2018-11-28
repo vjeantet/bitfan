@@ -3,9 +3,9 @@ package drop
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"bitfan/processors/doc"
 	"bitfan/processors/testutils"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {

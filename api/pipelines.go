@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/mitchellh/mapstructure"
-	uuid "github.com/nu7hatch/gouuid"
 	"bitfan/api/models"
 	"bitfan/core"
 	"bitfan/entrypoint"
+	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
+	uuid "github.com/nu7hatch/gouuid"
 	"github.com/vjeantet/jodaTime"
 )
 

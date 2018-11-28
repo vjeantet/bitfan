@@ -14,10 +14,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clbanning/mxj"
-	"github.com/facebookgo/muster"
 	"bitfan/codecs"
 	"bitfan/processors"
+	"github.com/clbanning/mxj"
+	"github.com/facebookgo/muster"
 )
 
 func New() processors.Processor {

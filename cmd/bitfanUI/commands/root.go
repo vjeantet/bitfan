@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
+	"bitfan/cmd/bitfanUI/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"bitfan/cmd/bitfanUI/server"
 )
 
 var cfgFile string

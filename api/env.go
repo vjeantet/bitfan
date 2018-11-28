@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-	uuid "github.com/nu7hatch/gouuid"
 	"bitfan/api/models"
 	"bitfan/core"
+	"github.com/gin-gonic/gin"
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 type EnvApiController struct {

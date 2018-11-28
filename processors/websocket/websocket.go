@@ -9,9 +9,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"bitfan/codecs"
 	"bitfan/processors"
+	"github.com/gorilla/websocket"
 )
 
 // expose events thought a websocket

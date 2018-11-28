@@ -3,8 +3,8 @@ package client
 import (
 	"fmt"
 
-	"github.com/dghubble/sling"
 	"bitfan/api/models"
+	"github.com/dghubble/sling"
 )
 
 type RestClient struct {

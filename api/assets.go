@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	uuid "github.com/nu7hatch/gouuid"
 	"bitfan/api/models"
 	"bitfan/core"
 	"bitfan/entrypoint/parser/logstash"
+	"github.com/gin-gonic/gin"
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 type AssetApiController struct {

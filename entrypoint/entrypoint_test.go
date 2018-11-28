@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"bitfan/core"
+	"github.com/stretchr/testify/assert"
 )
 
 var tsURL = ""

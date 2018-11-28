@@ -3,8 +3,8 @@ package stdout
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"bitfan/processors/doc"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {

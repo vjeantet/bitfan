@@ -88,8 +88,8 @@ func TestDefaultSettings(t *testing.T) {
 
 	d := NewDecoder(strings.NewReader(javastacktrace))
 	conf := map[string]interface{}{
-	//"pattern": `^\s`,
-	// "what":    "previous",
+		//"pattern": `^\s`,
+		// "what":    "previous",
 	}
 
 	err := d.SetOptions(conf, logrus.New(), "")
@@ -245,8 +245,8 @@ func TestMore(t *testing.T) {
 
 	d := NewDecoder(strings.NewReader(javastacktrace))
 	conf := map[string]interface{}{
-	//"pattern": `^\s`,
-	// "what":    "previous",
+		//"pattern": `^\s`,
+		// "what":    "previous",
 	}
 
 	err := d.SetOptions(conf, logrus.New(), "")

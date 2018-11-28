@@ -5,30 +5,30 @@ import "bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "inputstdout",
-  ImportPath: "bitfan/processors/input-stdout",
-  Doc:        "",
-  DocShort:   "Prints events to the standard output",
-  Options:    &doc.ProcessorOptions{
-    Doc:     "",
-    Options: []*doc.ProcessorOption{
-      &doc.ProcessorOption{
-        Name:           "Codec",
-        Alias:          "codec",
-        Doc:            "Codec can be one of  \"json\", \"line\", \"pp\" or \"rubydebug\"",
-        Required:       false,
-        Type:           "codec",
-        DefaultValue:   "\"line\"",
-        PossibleValues: []string{
-          "\"json\"",
-          "\"line\"",
-          "\"pp\"",
-          "\"rubydebug\"",
-        },
-        ExampleLS: "codec => \"pp\"",
-      },
-    },
-  },
-  Ports: []*doc.ProcessorPort{},
-}
+		Name:       "inputstdout",
+		ImportPath: "bitfan/processors/input-stdout",
+		Doc:        "",
+		DocShort:   "Prints events to the standard output",
+		Options: &doc.ProcessorOptions{
+			Doc: "",
+			Options: []*doc.ProcessorOption{
+				&doc.ProcessorOption{
+					Name:         "Codec",
+					Alias:        "codec",
+					Doc:          "Codec can be one of  \"json\", \"line\", \"pp\" or \"rubydebug\"",
+					Required:     false,
+					Type:         "codec",
+					DefaultValue: "\"line\"",
+					PossibleValues: []string{
+						"\"json\"",
+						"\"line\"",
+						"\"pp\"",
+						"\"rubydebug\"",
+					},
+					ExampleLS: "codec => \"pp\"",
+				},
+			},
+		},
+		Ports: []*doc.ProcessorPort{},
+	}
 }

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/mitchellh/mapstructure"
 	"bitfan/processors"
+	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/grok"
 )
 

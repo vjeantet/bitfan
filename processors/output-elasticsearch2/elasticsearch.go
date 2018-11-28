@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jehiah/go-strftime"
 	"bitfan/processors"
+	"github.com/jehiah/go-strftime"
 	"gopkg.in/olivere/elastic.v3"
 )
 

@@ -71,8 +71,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
 	"bitfan/commons"
+	"github.com/mitchellh/mapstructure"
 )
 
 // Merges multiline messages into a single event

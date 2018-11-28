@@ -5,11 +5,11 @@ import "bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "imap_input",
-  ImportPath: "bitfan/processors/input-imap",
-  Doc:        "",
-  DocShort:   "",
-  Options:    (*doc.ProcessorOptions)(nil),
-  Ports:      []*doc.ProcessorPort{},
-}
+		Name:       "imap_input",
+		ImportPath: "bitfan/processors/input-imap",
+		Doc:        "",
+		DocShort:   "",
+		Options:    (*doc.ProcessorOptions)(nil),
+		Ports:      []*doc.ProcessorPort{},
+	}
 }

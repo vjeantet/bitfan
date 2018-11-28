@@ -14,10 +14,10 @@ import (
 	"path/filepath"
 	"time"
 
-	fqdn "github.com/ShowMax/go-fqdn"
-	zglob "github.com/mattn/go-zglob"
 	"bitfan/codecs"
 	"bitfan/processors"
+	fqdn "github.com/ShowMax/go-fqdn"
+	zglob "github.com/mattn/go-zglob"
 )
 
 func New() processors.Processor {

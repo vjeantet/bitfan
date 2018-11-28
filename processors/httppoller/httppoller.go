@@ -7,10 +7,10 @@ import (
 	"html/template"
 	"io"
 
-	"github.com/parnurzeal/gorequest"
 	"bitfan/codecs"
 	"bitfan/commons"
 	"bitfan/processors"
+	"github.com/parnurzeal/gorequest"
 )
 
 func New() processors.Processor {

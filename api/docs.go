@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"bitfan/core"
+	"github.com/gin-gonic/gin"
 )
 
 type DocsController struct {

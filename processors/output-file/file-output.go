@@ -7,8 +7,8 @@ import (
 	"path"
 	"time"
 
-	"github.com/jehiah/go-strftime"
 	"bitfan/processors"
+	"github.com/jehiah/go-strftime"
 )
 
 func New() processors.Processor {

@@ -5,45 +5,45 @@ import "bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "stdin",
-  ImportPath: "bitfan/processors/input-stdin",
-  Doc:        "Read events from standard input.\nBy default, each event is assumed to be one line. If you want to join lines, you’ll want to use the multiline filter.",
-  DocShort:   "Reads events from standard input",
-  Options:    &doc.ProcessorOptions{
-    Doc:     "",
-    Options: []*doc.ProcessorOption{
-      &doc.ProcessorOption{
-        Name:           "processors.CommonOptions",
-        Alias:          ",squash",
-        Doc:            "",
-        Required:       false,
-        Type:           "processors.CommonOptions",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
-        Name:           "Codec",
-        Alias:          "",
-        Doc:            "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
-        Required:       false,
-        Type:           "codec",
-        DefaultValue:   "\"line\"",
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
-        Name:           "EofExit",
-        Alias:          "eof_exit",
-        Doc:            "Stop bitfan on stdin EOF ? (use it when you pipe data with |)",
-        Required:       false,
-        Type:           "bool",
-        DefaultValue:   "false",
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-    },
-  },
-  Ports: []*doc.ProcessorPort{},
-}
+		Name:       "stdin",
+		ImportPath: "bitfan/processors/input-stdin",
+		Doc:        "Read events from standard input.\nBy default, each event is assumed to be one line. If you want to join lines, you’ll want to use the multiline filter.",
+		DocShort:   "Reads events from standard input",
+		Options: &doc.ProcessorOptions{
+			Doc: "",
+			Options: []*doc.ProcessorOption{
+				&doc.ProcessorOption{
+					Name:           "processors.CommonOptions",
+					Alias:          ",squash",
+					Doc:            "",
+					Required:       false,
+					Type:           "processors.CommonOptions",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+				&doc.ProcessorOption{
+					Name:           "Codec",
+					Alias:          "",
+					Doc:            "The codec used for input data. Input codecs are a convenient method for decoding\nyour data before it enters the input, without needing a separate filter in your bitfan pipeline",
+					Required:       false,
+					Type:           "codec",
+					DefaultValue:   "\"line\"",
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+				&doc.ProcessorOption{
+					Name:           "EofExit",
+					Alias:          "eof_exit",
+					Doc:            "Stop bitfan on stdin EOF ? (use it when you pipe data with |)",
+					Required:       false,
+					Type:           "bool",
+					DefaultValue:   "false",
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+			},
+		},
+		Ports: []*doc.ProcessorPort{},
+	}
 }

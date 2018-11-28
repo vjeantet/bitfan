@@ -12,9 +12,9 @@ import (
 	"regexp"
 	"strings"
 
-	uuid "github.com/nu7hatch/gouuid"
 	"bitfan/commons"
 	"bitfan/processors"
+	uuid "github.com/nu7hatch/gouuid"
 	gomail "gopkg.in/gomail.v2"
 )
 

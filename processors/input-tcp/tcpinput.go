@@ -15,6 +15,7 @@ import (
 func New() processors.Processor {
 	return &processor{
 		opt:       &options{},
+		wg:        new(sync.WaitGroup),
 		start:     make(chan *net.TCPConn, 512),
 		end:       make(chan *net.TCPConn, 512),
 		conntable: new(sync.Map),
@@ -34,6 +35,7 @@ type processor struct {
 	processors.Base
 
 	opt       *options
+	wg        *sync.WaitGroup
 	sock      *net.TCPListener
 	start     chan *net.TCPConn
 	end       chan *net.TCPConn
@@ -70,6 +72,7 @@ func (p *processor) Start(e processors.IPacket) error {
 	}
 
 	go func(p *processor) {
+		p.wg.Add(1)
 		for {
 			conn, err := p.sock.AcceptTCP()
 
@@ -78,10 +81,13 @@ func (p *processor) Start(e processors.IPacket) error {
 					if err = p.sock.SetDeadline(time.Now().Add(3 * time.Second)); err != nil {
 						p.Logger.Error(err)
 					}
+					continue
 				} else {
 					p.Logger.Error(err)
 				}
-				continue
+				p.Logger.Info("shutting down tcp acceptor")
+				p.wg.Done()
+				break
 			}
 
 			if err := conn.SetReadBuffer(p.opt.ReadBufferSize); err != nil {
@@ -89,45 +95,56 @@ func (p *processor) Start(e processors.IPacket) error {
 			}
 			p.conntable.Store(conn.RemoteAddr().String(), *conn)
 			p.start <- conn
-
 		}
 	}(p)
 
 	go func(p *processor) {
+		p.wg.Add(1)
 		for {
 			select {
-			case conn := <-p.end:
-				p.conntable.Delete(conn.RemoteAddr().String())
-				if err := conn.Close(); err != nil {
-					p.Logger.Error(err)
+			case conn, ok := <-p.end:
+				if ok {
+					if err := conn.Close(); err != nil {
+						p.Logger.Error(err)
+					} else {
+						p.conntable.Delete(conn.RemoteAddr().String())
+					}
+				} else {
+					p.wg.Done()
+					break
 				}
 			}
 		}
 	}(p)
 
 	go func() {
+		p.wg.Add(1)
 		for {
 			select {
-			case conn := <-p.start:
-				go func(p *processor) {
+			case conn, ok := <-p.start:
+				if ok {
+					go func(p *processor) {
 
-					buf := bufio.NewReader(conn)
-					scanner := bufio.NewScanner(buf)
+						buf := bufio.NewReader(conn)
+						scanner := bufio.NewScanner(buf)
 
-					for scanner.Scan() {
-						ne := p.NewPacket(map[string]interface{}{
-							"message": scanner.Text(),
-							"host":    conn.LocalAddr().String(),
-						})
-						p.opt.ProcessCommonOptions(ne.Fields())
-						p.Send(ne)
-					}
-					if err := scanner.Err(); err != nil {
-						p.Logger.Error(err)
-					}
-					p.end <- conn
-				}(p)
-
+						for scanner.Scan() {
+							ne := p.NewPacket(map[string]interface{}{
+								"message": scanner.Text(),
+								"host":    conn.LocalAddr().String(),
+							})
+							p.opt.ProcessCommonOptions(ne.Fields())
+							p.Send(ne)
+						}
+						if err := scanner.Err(); err != nil {
+							p.Logger.Error(err)
+						}
+						p.end <- conn
+					}(p)
+				} else {
+					p.wg.Done()
+					break
+				}
 			}
 		}
 	}()
@@ -139,14 +156,9 @@ func (p *processor) Stop(e processors.IPacket) error {
 
 	var err error
 
-	p.conntable.Range(func(key, value interface{}) bool {
-		if err = value.(*net.TCPConn).Close(); err != nil {
-			p.Logger.Error(err)
-			return false
-		} else {
-			return true
-		}
-	})
+	close(p.start)
+	close(p.end)
+	p.wg.Wait()
 
 	if p.sock != nil {
 		err = p.sock.Close()

@@ -1,9 +1,9 @@
 package mongodb
 
 import (
-	"github.com/stretchr/testify/assert"
 	"bitfan/processors/doc"
 	"bitfan/processors/testutils"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 

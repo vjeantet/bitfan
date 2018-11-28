@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
+	"bitfan/processors"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/gzip"
 	"github.com/segmentio/kafka-go/lz4"
 	"github.com/segmentio/kafka-go/snappy"
-	"bitfan/processors"
 )
 
 func New() processors.Processor {

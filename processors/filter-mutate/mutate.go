@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/clbanning/mxj"
 	"bitfan/processors"
+	"github.com/clbanning/mxj"
 )
 
 const (

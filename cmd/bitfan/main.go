@@ -22,8 +22,8 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/kardianos/service"
 	"bitfan/cmd/bitfan/commands"
+	"github.com/kardianos/service"
 )
 
 var version = "master"

@@ -3,9 +3,9 @@ package testutils
 import (
 	"testing"
 
+	"bitfan/processors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"bitfan/processors"
 )
 
 type Processor struct {

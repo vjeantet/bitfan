@@ -4,8 +4,8 @@ package html
 import (
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
 	"bitfan/processors"
+	"github.com/PuerkitoBio/goquery"
 )
 
 const (

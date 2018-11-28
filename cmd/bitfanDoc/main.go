@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"bitfan/processors/doc"
 	"github.com/clbanning/mxj"
 	"github.com/fatih/structs"
 	"github.com/k0kubun/pp"
-	"bitfan/processors/doc"
 )
 
 var (

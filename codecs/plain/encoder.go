@@ -7,8 +7,8 @@ import (
 	"io"
 	"text/template"
 
-	"github.com/mitchellh/mapstructure"
 	"bitfan/commons"
+	"github.com/mitchellh/mapstructure"
 )
 
 // doc encoder

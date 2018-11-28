@@ -18,11 +18,11 @@ import (
 	"fmt"
 	"os"
 
+	"bitfan/api/client"
 	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"bitfan/api/client"
 )
 
 func init() {

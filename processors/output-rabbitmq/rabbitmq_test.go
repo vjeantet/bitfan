@@ -1,9 +1,9 @@
 package rabbitmqoutput
 
 import (
-	"github.com/stretchr/testify/assert"
 	"bitfan/processors/doc"
 	"bitfan/processors/testutils"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -21,7 +21,7 @@ func TestMaxConcurent(t *testing.T) {
 }
 func TestConfigure(t *testing.T) {
 	conf := map[string]interface{}{
-		"exchange": "exchange",
+		"exchange":      "exchange",
 		"exchange_type": "exchange_type",
 	}
 	ctx := testutils.NewProcessorContext()

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"bitfan/commons"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuffer(t *testing.T) {

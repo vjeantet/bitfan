@@ -5,25 +5,25 @@ import "bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "when",
-  ImportPath: "bitfan/processors/when",
-  Doc:        "",
-  DocShort:   "",
-  Options:    &doc.ProcessorOptions{
-    Doc:     "",
-    Options: []*doc.ProcessorOption{
-      &doc.ProcessorOption{
-        Name:           "Expressions",
-        Alias:          "",
-        Doc:            "",
-        Required:       false,
-        Type:           "hash",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-    },
-  },
-  Ports: []*doc.ProcessorPort{},
-}
+		Name:       "when",
+		ImportPath: "bitfan/processors/when",
+		Doc:        "",
+		DocShort:   "",
+		Options: &doc.ProcessorOptions{
+			Doc: "",
+			Options: []*doc.ProcessorOption{
+				&doc.ProcessorOption{
+					Name:           "Expressions",
+					Alias:          "",
+					Doc:            "",
+					Required:       false,
+					Type:           "hash",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+			},
+		},
+		Ports: []*doc.ProcessorPort{},
+	}
 }

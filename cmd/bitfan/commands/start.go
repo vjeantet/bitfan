@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"bitfan/api/client"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"bitfan/api/client"
 )
 
 // startCmd represents the start command

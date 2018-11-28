@@ -3,8 +3,8 @@ package testutils
 import (
 	"time"
 
-	"github.com/clbanning/mxj"
 	"bitfan/processors"
+	"github.com/clbanning/mxj"
 )
 
 // event represents data sent to agents (or received by agents)

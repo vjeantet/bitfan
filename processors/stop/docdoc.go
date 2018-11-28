@@ -5,35 +5,35 @@ import "bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "stopprocessor",
-  ImportPath: "bitfan/processors/stop",
-  Doc:        "Stop after emitting a blank event on start\nAllow you to put first event and then stop processors as soon as they finish their job.\n\nPermit to launch bitfan with a pipeline and quit when work is done.",
-  DocShort:   "",
-  Options:    &doc.ProcessorOptions{
-    Doc:     "",
-    Options: []*doc.ProcessorOption{
-      &doc.ProcessorOption{
-        Name:           "processors.CommonOptions",
-        Alias:          ",squash",
-        Doc:            "",
-        Required:       false,
-        Type:           "processors.CommonOptions",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
-        Name:           "ExitBitfan",
-        Alias:          "exit_bitfan",
-        Doc:            "Stop bitfan after stopping the pipeline ?",
-        Required:       false,
-        Type:           "bool",
-        DefaultValue:   "true",
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-    },
-  },
-  Ports: []*doc.ProcessorPort{},
-}
+		Name:       "stopprocessor",
+		ImportPath: "bitfan/processors/stop",
+		Doc:        "Stop after emitting a blank event on start\nAllow you to put first event and then stop processors as soon as they finish their job.\n\nPermit to launch bitfan with a pipeline and quit when work is done.",
+		DocShort:   "",
+		Options: &doc.ProcessorOptions{
+			Doc: "",
+			Options: []*doc.ProcessorOption{
+				&doc.ProcessorOption{
+					Name:           "processors.CommonOptions",
+					Alias:          ",squash",
+					Doc:            "",
+					Required:       false,
+					Type:           "processors.CommonOptions",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+				&doc.ProcessorOption{
+					Name:           "ExitBitfan",
+					Alias:          "exit_bitfan",
+					Doc:            "Stop bitfan after stopping the pipeline ?",
+					Required:       false,
+					Type:           "bool",
+					DefaultValue:   "true",
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+			},
+		},
+		Ports: []*doc.ProcessorPort{},
+	}
 }

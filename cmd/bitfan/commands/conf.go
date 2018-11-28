@@ -6,9 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"bitfan/api/client"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"bitfan/api/client"
 )
 
 // stopCmd represents the stop command

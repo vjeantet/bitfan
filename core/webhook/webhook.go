@@ -7,10 +7,10 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
+	"bitfan/commons"
 	fqdn "github.com/ShowMax/go-fqdn"
 	"github.com/gosimple/slug"
 	"github.com/justinas/alice"
-	"bitfan/commons"
 )
 
 type webHook struct {

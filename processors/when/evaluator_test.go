@@ -5,10 +5,10 @@ import (
 
 	"golang.org/x/sync/syncmap"
 
-	"github.com/stretchr/testify/assert"
 	"bitfan/processors"
 	"bitfan/processors/doc"
 	"bitfan/processors/testutils"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDoc(t *testing.T) {

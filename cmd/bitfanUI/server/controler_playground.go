@@ -3,8 +3,8 @@ package server
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
 	"bitfan/api/models"
+	"github.com/gin-gonic/gin"
 )
 
 type playgroundRequest struct {

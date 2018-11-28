@@ -7,8 +7,8 @@
 package uuid
 
 import (
-	"github.com/nu7hatch/gouuid"
 	"bitfan/processors"
+	"github.com/nu7hatch/gouuid"
 )
 
 func New() processors.Processor {

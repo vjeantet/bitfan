@@ -7,8 +7,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/streadway/amqp"
 	"bitfan/processors"
+	"github.com/streadway/amqp"
 )
 
 func New() processors.Processor {

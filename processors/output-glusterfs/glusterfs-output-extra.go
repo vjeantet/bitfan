@@ -9,9 +9,9 @@ import (
 	"path"
 	"time"
 
+	"bitfan/processors"
 	"github.com/jehiah/go-strftime"
 	"github.com/kshlm/gogfapi/gfapi"
-	"bitfan/processors"
 )
 
 func New() processors.Processor {

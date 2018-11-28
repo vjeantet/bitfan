@@ -5,56 +5,56 @@ import "bitfan/processors/doc"
 
 func Doc() *doc.Codec {
 	return &doc.Codec{
-  Name:       "json",
-  PkgName:    "jsoncodec",
-  ImportPath: "bitfan/codecs/json",
-  Doc:        "",
-  DocShort:   "",
-  Decoder:    &doc.Decoder{
-    Doc:     "",
-    Options: &doc.CodecOptions{
-      Doc:     "",
-      Options: []*doc.CodecOption{
-        &doc.CodecOption{
-          Name:           "Indent",
-          Alias:          "indent",
-          Doc:            "Set indentation",
-          Required:       false,
-          Type:           "string",
-          DefaultValue:   "\"\"",
-          PossibleValues: []string{},
-          ExampleLS:      "indent => \"    \"",
-        },
-        &doc.CodecOption{
-          Name:           "StreamArray",
-          Alias:          "stream_array",
-          Doc:            "Json is an array, decode each element as a distinct dataframe",
-          Required:       false,
-          Type:           "bool",
-          DefaultValue:   "false",
-          PossibleValues: []string{},
-          ExampleLS:      "",
-        },
-      },
-    },
-  },
-  Encoder: &doc.Encoder{
-    Doc:     "",
-    Options: &doc.CodecOptions{
-      Doc:     "",
-      Options: []*doc.CodecOption{
-        &doc.CodecOption{
-          Name:           "Indent",
-          Alias:          "indent",
-          Doc:            "Set indentation",
-          Required:       false,
-          Type:           "string",
-          DefaultValue:   "\"\"",
-          PossibleValues: []string{},
-          ExampleLS:      "indent => \"    \"",
-        },
-      },
-    },
-  },
-}
+		Name:       "json",
+		PkgName:    "jsoncodec",
+		ImportPath: "bitfan/codecs/json",
+		Doc:        "",
+		DocShort:   "",
+		Decoder: &doc.Decoder{
+			Doc: "",
+			Options: &doc.CodecOptions{
+				Doc: "",
+				Options: []*doc.CodecOption{
+					&doc.CodecOption{
+						Name:           "Indent",
+						Alias:          "indent",
+						Doc:            "Set indentation",
+						Required:       false,
+						Type:           "string",
+						DefaultValue:   "\"\"",
+						PossibleValues: []string{},
+						ExampleLS:      "indent => \"    \"",
+					},
+					&doc.CodecOption{
+						Name:           "StreamArray",
+						Alias:          "stream_array",
+						Doc:            "Json is an array, decode each element as a distinct dataframe",
+						Required:       false,
+						Type:           "bool",
+						DefaultValue:   "false",
+						PossibleValues: []string{},
+						ExampleLS:      "",
+					},
+				},
+			},
+		},
+		Encoder: &doc.Encoder{
+			Doc: "",
+			Options: &doc.CodecOptions{
+				Doc: "",
+				Options: []*doc.CodecOption{
+					&doc.CodecOption{
+						Name:           "Indent",
+						Alias:          "indent",
+						Doc:            "Set indentation",
+						Required:       false,
+						Type:           "string",
+						DefaultValue:   "\"\"",
+						PossibleValues: []string{},
+						ExampleLS:      "indent => \"    \"",
+					},
+				},
+			},
+		},
+	}
 }

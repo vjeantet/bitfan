@@ -5,35 +5,35 @@ import "bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "udpinput",
-  ImportPath: "bitfan/processors/input-udp",
-  Doc:        "",
-  DocShort:   "",
-  Options:    &doc.ProcessorOptions{
-    Doc:     "",
-    Options: []*doc.ProcessorOption{
-      &doc.ProcessorOption{
-        Name:           "processors.CommonOptions",
-        Alias:          ",squash",
-        Doc:            "",
-        Required:       false,
-        Type:           "processors.CommonOptions",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
-        Name:           "Port",
-        Alias:          "port",
-        Doc:            "UDP port number to listen on",
-        Required:       false,
-        Type:           "int",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-    },
-  },
-  Ports: []*doc.ProcessorPort{},
-}
+		Name:       "udpinput",
+		ImportPath: "bitfan/processors/input-udp",
+		Doc:        "",
+		DocShort:   "",
+		Options: &doc.ProcessorOptions{
+			Doc: "",
+			Options: []*doc.ProcessorOption{
+				&doc.ProcessorOption{
+					Name:           "processors.CommonOptions",
+					Alias:          ",squash",
+					Doc:            "",
+					Required:       false,
+					Type:           "processors.CommonOptions",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+				&doc.ProcessorOption{
+					Name:           "Port",
+					Alias:          "port",
+					Doc:            "UDP port number to listen on",
+					Required:       false,
+					Type:           "int",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+			},
+		},
+		Ports: []*doc.ProcessorPort{},
+	}
 }

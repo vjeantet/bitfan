@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
+	"bitfan/processors/doc"
+	"bitfan/processors/testutils"
 	"github.com/clbanning/mxj"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
-	"bitfan/processors/doc"
-	"bitfan/processors/testutils"
 )
 
 func TestNew(t *testing.T) {

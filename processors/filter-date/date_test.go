@@ -3,8 +3,8 @@ package date
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"bitfan/processors/testutils"
+	"github.com/stretchr/testify/assert"
 )
 
 type msg struct {

@@ -1,11 +1,11 @@
 package tcpoutput
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/assert"
 	"bitfan/codecs"
 	"bitfan/processors/doc"
 	"bitfan/processors/testutils"
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"net"
 	"testing"
 	"time"

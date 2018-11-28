@@ -3,8 +3,8 @@ package uuid
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"bitfan/processors/testutils"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCommonProcessorDetails(t *testing.T) {

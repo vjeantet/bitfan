@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jhillyerd/enmime"
 	"bitfan/processors"
+	"github.com/jhillyerd/enmime"
 	"github.com/vjeantet/jodaTime"
 )
 

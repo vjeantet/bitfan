@@ -5,52 +5,52 @@ import "bitfan/processors/doc"
 
 func (p *processor) Doc() *doc.Processor {
 	return &doc.Processor{
-  Name:       "blacklist",
-  ImportPath: "bitfan/processors/filter-blacklist",
-  Doc:        "The blacklist rule will check a certain field against a blacklist, and match if it is in the blacklist.",
-  DocShort:   "drop event when term not in a given list",
-  Options:    &doc.ProcessorOptions{
-    Doc:     "",
-    Options: []*doc.ProcessorOption{
-      &doc.ProcessorOption{
-        Name:           "processors.CommonOptions",
-        Alias:          ",squash",
-        Doc:            "",
-        Required:       false,
-        Type:           "processors.CommonOptions",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "",
-      },
-      &doc.ProcessorOption{
-        Name:           "CompareField",
-        Alias:          "compare_field",
-        Doc:            "The name of the field to use to compare to the blacklist.\nIf the field is null, those events will be ignored.",
-        Required:       true,
-        Type:           "string",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "compare_field => \"message\"",
-      },
-      &doc.ProcessorOption{
-        Name:           "Terms",
-        Alias:          "terms",
-        Doc:            "List of blacklisted terms.\nThe compare_field term must be equal to one of these values for it to match.",
-        Required:       true,
-        Type:           "array",
-        DefaultValue:   nil,
-        PossibleValues: []string{},
-        ExampleLS:      "terms => [\"val1\",\"val2\",\"val3\"]",
-      },
-    },
-  },
-  Ports: []*doc.ProcessorPort{
-    &doc.ProcessorPort{
-      Default: true,
-      Name:    "PORT_SUCCESS",
-      Number:  0,
-      Doc:     "",
-    },
-  },
-}
+		Name:       "blacklist",
+		ImportPath: "bitfan/processors/filter-blacklist",
+		Doc:        "The blacklist rule will check a certain field against a blacklist, and match if it is in the blacklist.",
+		DocShort:   "drop event when term not in a given list",
+		Options: &doc.ProcessorOptions{
+			Doc: "",
+			Options: []*doc.ProcessorOption{
+				&doc.ProcessorOption{
+					Name:           "processors.CommonOptions",
+					Alias:          ",squash",
+					Doc:            "",
+					Required:       false,
+					Type:           "processors.CommonOptions",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "",
+				},
+				&doc.ProcessorOption{
+					Name:           "CompareField",
+					Alias:          "compare_field",
+					Doc:            "The name of the field to use to compare to the blacklist.\nIf the field is null, those events will be ignored.",
+					Required:       true,
+					Type:           "string",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "compare_field => \"message\"",
+				},
+				&doc.ProcessorOption{
+					Name:           "Terms",
+					Alias:          "terms",
+					Doc:            "List of blacklisted terms.\nThe compare_field term must be equal to one of these values for it to match.",
+					Required:       true,
+					Type:           "array",
+					DefaultValue:   nil,
+					PossibleValues: []string{},
+					ExampleLS:      "terms => [\"val1\",\"val2\",\"val3\"]",
+				},
+			},
+		},
+		Ports: []*doc.ProcessorPort{
+			&doc.ProcessorPort{
+				Default: true,
+				Name:    "PORT_SUCCESS",
+				Number:  0,
+				Doc:     "",
+			},
+		},
+	}
 }

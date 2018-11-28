@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/mitchellh/mapstructure"
 	"bitfan/commons"
+	"github.com/mitchellh/mapstructure"
 )
 
 type encoder struct {

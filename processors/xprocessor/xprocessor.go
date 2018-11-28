@@ -14,11 +14,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mitchellh/mapstructure"
 	"bitfan/api/models"
 	"bitfan/codecs"
 	"bitfan/processors"
 	"bitfan/processors/doc"
+	"github.com/mitchellh/mapstructure"
 )
 
 func NewWithSpec(spec *models.XProcessor) processors.Processor {

@@ -3,12 +3,12 @@ package processors
 import (
 	"testing"
 
+	"bitfan/codecs"
+	"bitfan/processors/doc"
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"bitfan/codecs"
-	"bitfan/processors/doc"
 	"gopkg.in/go-playground/validator.v8"
 )
 

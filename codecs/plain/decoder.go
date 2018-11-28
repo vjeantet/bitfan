@@ -5,8 +5,8 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/mitchellh/mapstructure"
 	"bitfan/commons"
+	"github.com/mitchellh/mapstructure"
 )
 
 type decoder struct {

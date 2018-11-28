@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/clbanning/mxj"
 	"bitfan/processors"
+	"github.com/clbanning/mxj"
 )
 
 func New() processors.Processor {

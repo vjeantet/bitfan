@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/timshannon/bolthold"
 	"bitfan/api/models"
+	"github.com/timshannon/bolthold"
 )
 
 type StorePipeline struct {
