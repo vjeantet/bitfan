@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
-
-	"golang.org/x/sync/syncmap"
+	"sync"
 
 	"bitfan/processors"
 	"gopkg.in/Knetic/govaluate.v3"
@@ -16,7 +15,7 @@ type processor struct {
 	processors.Base
 
 	opt                 *options
-	compiledExpressions *syncmap.Map
+	compiledExpressions *sync.Map
 }
 
 type options struct {
@@ -27,7 +26,7 @@ type EvaluatedParameters map[string]interface{}
 
 func New() processors.Processor {
 	return &processor{
-		compiledExpressions: &syncmap.Map{},
+		compiledExpressions: new(sync.Map),
 		opt:                 &options{},
 	}
 }

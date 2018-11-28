@@ -3,8 +3,7 @@ package core
 import (
 	"fmt"
 	"strings"
-
-	"golang.org/x/sync/syncmap"
+	"sync"
 
 	"github.com/vjeantet/cron"
 )
@@ -36,7 +35,7 @@ var planningDailyHour = map[string]int{
 	"11pm":     23,
 }
 
-var scheduleMap = syncmap.Map{}
+var scheduleMap = new(sync.Map)
 
 type schedulerJob struct {
 	Description string

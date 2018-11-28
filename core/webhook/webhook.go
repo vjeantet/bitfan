@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
-	"golang.org/x/sync/syncmap"
+	"sync"
 
 	"bitfan/commons"
-	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/ShowMax/go-fqdn"
 	"github.com/gosimple/slug"
 	"github.com/justinas/alice"
 )
@@ -27,7 +26,7 @@ type Hook struct {
 	Url          string
 }
 
-var webHookMap = syncmap.Map{}
+var webHookMap = new(sync.Map)
 var baseURL = ""
 var Log commons.Logger
 

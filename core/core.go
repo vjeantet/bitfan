@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-
-	"golang.org/x/sync/syncmap"
+	"sync"
 
 	"bitfan/core/memory"
 	"bitfan/core/metrics"
@@ -24,7 +23,7 @@ var (
 	availableProcessorsFactory map[string]ProcessorFactory = map[string]ProcessorFactory{}
 	dataLocation               string                      = "data"
 
-	pipelines syncmap.Map = syncmap.Map{}
+	pipelines = new(sync.Map)
 )
 
 type fnMux func(sm *http.ServeMux)

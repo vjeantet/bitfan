@@ -2,14 +2,13 @@ package processors
 
 import (
 	"strconv"
+	"sync"
 	"time"
-
-	"golang.org/x/sync/syncmap"
 )
 
 type SinceDB struct {
 	options *SinceDBOptions
-	offsets *syncmap.Map
+	offsets *sync.Map
 	done    chan (bool)
 	dryrun  bool
 }
@@ -25,7 +24,7 @@ func NewSinceDB(sdboptions *SinceDBOptions) *SinceDB {
 	s := &SinceDB{
 		options: sdboptions,
 		done:    make(chan (bool)),
-		offsets: &syncmap.Map{},
+		offsets: new(sync.Map),
 	}
 
 	if s.options.Identifier == "/dev/null" || s.options.Identifier == "" {
