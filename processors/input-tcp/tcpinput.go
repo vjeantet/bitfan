@@ -58,19 +58,19 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%d", p.opt.Port))
 	if err != nil {
-		p.Logger.Errorf("could not resolve tcp socket address: %s", err.Error())
+		p.Logger.Errorf("could not resolve tcp socket address: %v", err)
 		return err
 	}
 
 	p.sock, err = net.ListenTCP("tcp", addr)
 	if err != nil {
-		p.Logger.Errorf("could not start TCP input: %s", err.Error())
+		p.Logger.Errorf("could not start TCP input: %v", err)
 		return err
 	}
 
 	err = p.sock.SetDeadline(time.Now().Add(10 * time.Second))
 	if err != nil {
-		p.Logger.Errorf("could not set socket accept deadline", err)
+		p.Logger.Errorf("could not set socket accept deadline: %v", err)
 	}
 
 	go func(p *processor) {
