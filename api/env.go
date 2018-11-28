@@ -8,17 +8,17 @@ import (
 	"bitfan/api/models"
 	"bitfan/core"
 	"github.com/gin-gonic/gin"
-	uuid "github.com/nu7hatch/gouuid"
+	gouuid "github.com/nu7hatch/gouuid"
 )
 
 type EnvApiController struct {
 	path string
 }
 
-func (x *EnvApiController) Find(c *gin.Context) {
+func (p *EnvApiController) Find(c *gin.Context) {
 	envs := core.Storage().FindEnvs()
 
-	for i, _ := range envs {
+	for i := range envs {
 		if envs[i].Secret == true {
 			envs[i].Value = "********"
 		}
@@ -52,12 +52,15 @@ func (p *EnvApiController) Create(c *gin.Context) {
 	//TODO: find one by name, if err --> return err (duplicate)
 
 	if varenv.Uuid == "" {
-		uid, _ := uuid.NewV4()
+		uid, _ := gouuid.NewV4()
 		varenv.Uuid = uid.String()
 	}
 
 	core.Storage().CreateEnv(&varenv)
-	os.Setenv(varenv.Name, varenv.Value)
+	if err := os.Setenv(varenv.Name, varenv.Value); err != nil {
+		c.JSON(500, models.Error{Message: err.Error()})
+		return
+	}
 	c.Redirect(302, fmt.Sprintf("/%s/env/%s", p.path, varenv.Uuid))
 }
 
@@ -84,6 +87,9 @@ func (p *EnvApiController) DeleteByUUID(c *gin.Context) {
 	}
 
 	core.Storage().DeleteEnv(&varenv)
-	os.Unsetenv(varenv.Name)
+	if err := os.Unsetenv(varenv.Name); err != nil {
+		c.JSON(500, models.Error{Message: err.Error()})
+		return
+	}
 	c.JSON(204, "")
 }

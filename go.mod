@@ -105,7 +105,7 @@ require (
 	github.com/vjeantet/jodaTime v0.0.0-20170816150230-be924ce213fb
 	go.etcd.io/bbolt v1.3.0
 	golang.org/x/crypto v0.0.0-20181127143415-eb0de9b17e85 // indirect
-	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f
+	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
 	golang.org/x/sys v0.0.0-20181122145206-62eef0e2fa9b
 	golang.org/x/text v0.3.0
 	google.golang.org/appengine v1.3.0 // indirect

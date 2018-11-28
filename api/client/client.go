@@ -23,7 +23,7 @@ func (r *RestClient) client() *sling.Sling {
 }
 
 func (r *RestClient) Envs() ([]models.Env, error) {
-	varenvs := []models.Env{}
+	varenvs := make([]models.Env, 0)
 	apierror := new(models.Error)
 
 	resp, err := r.client().Get("env").Receive(&varenvs, apierror)
@@ -37,7 +37,7 @@ func (r *RestClient) Envs() ([]models.Env, error) {
 }
 
 func (r *RestClient) XProcessors(behavior string) ([]models.XProcessor, error) {
-	xprocessors := []models.XProcessor{}
+	xprocessors := make([]models.XProcessor, 0)
 	apierror := new(models.Error)
 
 	resp, err := r.client().Get("xprocessors?behavior="+behavior).Receive(&xprocessors, apierror)
@@ -67,7 +67,7 @@ func (r *RestClient) XProcessor(ID string) (*models.XProcessor, error) {
 }
 
 func (r *RestClient) Pipelines() ([]models.Pipeline, error) {
-	pipelines := []models.Pipeline{}
+	pipelines := make([]models.Pipeline, 0)
 	apierror := new(models.Error)
 
 	resp, err := r.client().Get("pipelines").Receive(&pipelines, apierror)

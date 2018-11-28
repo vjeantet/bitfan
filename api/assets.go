@@ -9,7 +9,7 @@ import (
 	"bitfan/core"
 	"bitfan/entrypoint/parser/logstash"
 	"github.com/gin-gonic/gin"
-	uuid "github.com/nu7hatch/gouuid"
+	gouuid "github.com/nu7hatch/gouuid"
 )
 
 type AssetApiController struct {
@@ -51,7 +51,7 @@ func (a *AssetApiController) Create(c *gin.Context) {
 		return
 	}
 
-	uid, _ := uuid.NewV4()
+	uid, _ := gouuid.NewV4()
 	asset.Uuid = uid.String()
 	asset.Size = len(asset.Value)
 
