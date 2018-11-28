@@ -54,25 +54,28 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 func (p *processor) Start(e processors.IPacket) error {
 
+	var err error
+
 	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%d", p.opt.Port))
 	if err != nil {
-		p.Logger.Errorf("Could not resolve tcp socket address: %s", err.Error())
+		p.Logger.Errorf("could not resolve tcp socket address: %s", err.Error())
 		return err
 	}
 
 	p.sock, err = net.ListenTCP("tcp", addr)
 	if err != nil {
-		p.Logger.Errorf("Could not start TCP input: %s", err.Error())
+		p.Logger.Errorf("could not start TCP input: %s", err.Error())
 		return err
 	}
 
 	err = p.sock.SetDeadline(time.Now().Add(10 * time.Second))
 	if err != nil {
-		p.Logger.Error(err)
+		p.Logger.Errorf("could not set socket accept deadline", err)
 	}
 
 	go func(p *processor) {
 		p.wg.Add(1)
+		defer p.wg.Done()
 		for {
 			conn, err := p.sock.AcceptTCP()
 
@@ -82,11 +85,8 @@ func (p *processor) Start(e processors.IPacket) error {
 						p.Logger.Error(err)
 					}
 					continue
-				} else {
-					p.Logger.Error(err)
 				}
-				p.Logger.Info("shutting down tcp acceptor")
-				p.wg.Done()
+				p.Logger.Infof("shutting down tcp acceptor: %v", err)
 				break
 			}
 
@@ -96,10 +96,12 @@ func (p *processor) Start(e processors.IPacket) error {
 			p.conntable.Store(conn.RemoteAddr().String(), *conn)
 			p.start <- conn
 		}
+		close(p.start)
 	}(p)
 
 	go func(p *processor) {
 		p.wg.Add(1)
+		defer p.wg.Done()
 		for {
 			select {
 			case conn, ok := <-p.end:
@@ -110,7 +112,6 @@ func (p *processor) Start(e processors.IPacket) error {
 						p.conntable.Delete(conn.RemoteAddr().String())
 					}
 				} else {
-					p.wg.Done()
 					break
 				}
 			}
@@ -119,11 +120,14 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	go func() {
 		p.wg.Add(1)
+		defer p.wg.Done()
 		for {
 			select {
 			case conn, ok := <-p.start:
 				if ok {
 					go func(p *processor) {
+						p.wg.Add(1)
+						defer p.wg.Done()
 
 						buf := bufio.NewReader(conn)
 						scanner := bufio.NewScanner(buf)
@@ -142,26 +146,23 @@ func (p *processor) Start(e processors.IPacket) error {
 						p.end <- conn
 					}(p)
 				} else {
-					p.wg.Done()
-					break
+					close(p.end)
 				}
 			}
 		}
 	}()
 
-	return nil
+	return err
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
 
 	var err error
 
-	close(p.start)
-	close(p.end)
-	p.wg.Wait()
-
 	if p.sock != nil {
 		err = p.sock.Close()
 	}
+
+	p.wg.Wait()
 	return err
 }
