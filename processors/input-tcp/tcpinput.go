@@ -3,7 +3,6 @@ package tcpinput
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"net"
 	"strings"
@@ -122,9 +121,8 @@ func (p *processor) Start(e processors.IPacket) error {
 						waiter.Add(1)
 						defer waiter.Done()
 
-						buf := bytes.NewBuffer(make([]byte, 0, p.opt.ReadBufferSize))
 						scanner := bufio.NewScanner(bufio.NewReader(conn))
-						scanner.Buffer(buf.Bytes(), buf.Cap())
+						scanner.Buffer(make([]byte, 0, p.opt.ReadBufferSize), p.opt.ReadBufferSize)
 
 						for scanner.Scan() {
 							ne := p.NewPacket(map[string]interface{}{
