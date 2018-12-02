@@ -79,14 +79,20 @@ func (p *processor) Start(e processors.IPacket) error {
 
 	switch strings.ToLower(p.opt.Protocol) {
 	case "udp":
-		p.s.ListenUDP(fmt.Sprintf(":%d", p.opt.Port))
+		if err := p.s.ListenUDP(fmt.Sprintf(":%d", p.opt.Port)); err != nil {
+			return fmt.Errorf("unable to create udp listener: %v", err)
+		}
 	case "tcp":
-		p.s.ListenTCP(fmt.Sprintf(":%d", p.opt.Port))
+		if err := p.s.ListenTCP(fmt.Sprintf(":%d", p.opt.Port)); err != nil {
+			return fmt.Errorf("unable to create tcp listener: %v", err)
+		}
 	default:
 		return fmt.Errorf("%s is not a valid protocol", p.opt.Protocol)
 	}
 
-	p.s.Boot()
+	if err := p.s.Boot(); err != nil {
+		return fmt.Errorf("unable to start syslog service: %v", err)
+	}
 
 	go func(channel syslog.LogPartsChannel) {
 		for message := range channel {
@@ -105,7 +111,9 @@ func (p *processor) Start(e processors.IPacket) error {
 
 func (p *processor) Stop(e processors.IPacket) error {
 	if p.s != nil {
-		p.s.Kill()
+		if err := p.s.Kill(); err != nil {
+			return fmt.Errorf("error during syslog shutdown: %v", err)
+		}
 	}
 	return nil
 }
