@@ -3,6 +3,7 @@ package tcpinput
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"net"
 	"strings"
@@ -27,7 +28,9 @@ type options struct {
 
 	// TCP port number to listen on
 	Port int `mapstructure:"port"`
-	// Message buffer size
+	// OS socket buffer size
+	SockBufferSize int `mapstructure:"sock_buffer_size"`
+	// application buffer size, used to read from OS
 	ReadBufferSize int `mapstructure:"read_buffer_size"`
 }
 
@@ -45,7 +48,8 @@ type processor struct {
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
 		Port:           5151,
-		ReadBufferSize: 65536,
+		SockBufferSize: 65536,
+		ReadBufferSize: 131072,
 	}
 	p.opt = &defaults
 
@@ -94,8 +98,8 @@ func (p *processor) Start(e processors.IPacket) error {
 				p.Logger.Errorf("socket error: %v", err)
 			}
 
-			if err := conn.SetReadBuffer(p.opt.ReadBufferSize); err != nil {
-				p.Logger.Errorf("error setting socket read buffer: %v", err)
+			if err := conn.SetReadBuffer(p.opt.SockBufferSize); err != nil {
+				p.Logger.Errorf("error setting socket buffer size: %v", err)
 			}
 			p.conntable.Store(conn.RemoteAddr().String(), *conn)
 			p.start <- conn
@@ -118,8 +122,9 @@ func (p *processor) Start(e processors.IPacket) error {
 						waiter.Add(1)
 						defer waiter.Done()
 
-						buf := bufio.NewReader(conn)
-						scanner := bufio.NewScanner(buf)
+						buf := bytes.NewBuffer(make([]byte, 0, p.opt.ReadBufferSize))
+						scanner := bufio.NewScanner(bufio.NewReader(conn))
+						scanner.Buffer(buf.Bytes(), buf.Cap())
 
 						for scanner.Scan() {
 							ne := p.NewPacket(map[string]interface{}{
