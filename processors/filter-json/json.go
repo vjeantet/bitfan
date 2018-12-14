@@ -36,11 +36,16 @@ type options struct {
 	// Append values to the tags field when there has been no successful match
 	// @Default ["_jsonparsefailure"]
 	TagOnFailure []string `mapstructure:"tag_on_failure"`
+
+	// Remove source field if json was parsed successfully
+	// @Default true
+	RemoveSourceUponSuccess bool `mapstructure:"remove_source_upon_success"`
 }
 
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	p.opt.TagOnFailure = []string{"_jsonparsefailure"}
 	p.opt.SkipOnInvalidJson = false
+	p.opt.RemoveSourceUponSuccess = true
 
 	if err := p.ConfigureAndValidate(ctx, conf, p.opt); err != nil {
 		return err
@@ -50,13 +55,13 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 func (p *processor) Receive(e processors.IPacket) error {
 
-	json_string, err := e.Fields().ValueForPathString(p.opt.Source)
+	jsonString, err := e.Fields().ValueForPathString(p.opt.Source)
 	if err != nil {
 		p.Logger.Warnf("error while looking for `%s` field : %s", p.opt.Source, err.Error())
 		return nil
 	}
 
-	byt := []byte(json_string)
+	byt := []byte(jsonString)
 	var dat map[string]interface{}
 	if err := json.Unmarshal(byt, &dat); err != nil {
 		if p.opt.SkipOnInvalidJson == false {
@@ -73,6 +78,12 @@ func (p *processor) Receive(e processors.IPacket) error {
 	} else {
 		for k, v := range dat {
 			e.Fields().SetValueForPath(v, k)
+		}
+	}
+
+	if p.opt.RemoveSourceUponSuccess {
+		if err := e.Fields().Remove(p.opt.Source); err != nil {
+			p.Logger.Warn("error while removing source field: %s", err.Error())
 		}
 	}
 

@@ -123,11 +123,16 @@ func (p *processor) Start(e processors.IPacket) error {
 
 						scanner := bufio.NewScanner(bufio.NewReader(conn))
 						scanner.Buffer(make([]byte, 0, p.opt.ReadBufferSize), p.opt.ReadBufferSize)
+						hostname, port, err := net.SplitHostPort(conn.RemoteAddr().String())
+						if err != nil {
+							p.Logger.Errorf("error getting remote host address")
+						}
 
 						for scanner.Scan() {
 							ne := p.NewPacket(map[string]interface{}{
-								"message": scanner.Text(),
-								"host":    conn.LocalAddr().String(),
+								"message":  scanner.Text(),
+								"hostname": hostname,
+								"port":     port,
 							})
 							p.opt.ProcessCommonOptions(ne.Fields())
 							p.Send(ne)
