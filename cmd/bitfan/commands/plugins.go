@@ -24,6 +24,7 @@ import (
 	inputeventprocessor "bitfan/processors/input-event"
 	execinput "bitfan/processors/input-exec"
 	file "bitfan/processors/input-file"
+	"bitfan/processors/input-kafka"
 	rabbitmqinput "bitfan/processors/input-rabbitmq"
 	stdin "bitfan/processors/input-stdin"
 	inputstdout "bitfan/processors/input-stdout"
@@ -88,6 +89,7 @@ func init() {
 	initPlugin("input", "event", inputeventprocessor.New)
 	initPlugin("input", "websocket", websocketinput.New)
 	initPlugin("input", "pop3", pop3processor.New)
+	initPlugin("input", "kafka", kafkainput.New)
 
 	initPlugin("filter", "eval", evalprocessor.New)
 	initPlugin("filter", "readfile", file.New)

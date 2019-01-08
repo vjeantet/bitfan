@@ -1,0 +1,163 @@
+{
+  "Behavior": "",
+  "Doc": "",
+  "DocShort": "",
+  "ImportPath": "/home/alan/scm/bitfan/processors/input-kafka",
+  "Name": "kafkainput",
+  "Options": {
+    "Doc": "",
+    "Options": [
+      {
+        "Alias": ",squash",
+        "DefaultValue": null,
+        "Doc": "",
+        "ExampleLS": "",
+        "Name": "processors.CommonOptions",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "processors.CommonOptions"
+      },
+      {
+        "Alias": "bootstrap_server",
+        "DefaultValue": null,
+        "Doc": "Bootstrap Server ( \"host:port\" )",
+        "ExampleLS": "",
+        "Name": "BootstrapServer",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "brokers",
+        "DefaultValue": null,
+        "Doc": "Broker list",
+        "ExampleLS": "",
+        "Name": "Brokers",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "array"
+      },
+      {
+        "Alias": "topic_id",
+        "DefaultValue": null,
+        "Doc": "Kafka topic",
+        "ExampleLS": "",
+        "Name": "TopicID",
+        "PossibleValues": null,
+        "Required": true,
+        "Type": "string"
+      },
+      {
+        "Alias": "group_id",
+        "DefaultValue": null,
+        "Doc": "Kafka group id",
+        "ExampleLS": "",
+        "Name": "GroupID",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "client_id",
+        "DefaultValue": null,
+        "Doc": "Kafka client id",
+        "ExampleLS": "",
+        "Name": "ClientID",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "balancer",
+        "DefaultValue": null,
+        "Doc": "Balancer ( roundrobin, hash or leastbytes )",
+        "ExampleLS": "",
+        "Name": "Balancer",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "compression",
+        "DefaultValue": null,
+        "Doc": "Compression algorithm ( 'gzip', 'snappy', or 'lz4' )",
+        "ExampleLS": "",
+        "Name": "Compression",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "string"
+      },
+      {
+        "Alias": "max_attempts",
+        "DefaultValue": null,
+        "Doc": "Max Attempts",
+        "ExampleLS": "",
+        "Name": "MaxAttempts",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "queue_size",
+        "DefaultValue": null,
+        "Doc": "Queue Size",
+        "ExampleLS": "",
+        "Name": "QueueSize",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "request_bytes_min",
+        "DefaultValue": null,
+        "Doc": "Minimum amount of bytes to fetch per request",
+        "ExampleLS": "",
+        "Name": "RequestBytesMin",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "request_bytes_max",
+        "DefaultValue": null,
+        "Doc": "Maximum amount of bytes to fetch per request",
+        "ExampleLS": "",
+        "Name": "RequestBytesMax",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "keepalive",
+        "DefaultValue": null,
+        "Doc": "Keep Alive ( in seconds )",
+        "ExampleLS": "",
+        "Name": "KeepAlive",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "max_wait",
+        "DefaultValue": null,
+        "Doc": "Max time to wait for new data when fetching batches ( in seconds )",
+        "ExampleLS": "",
+        "Name": "MaxWait",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      },
+      {
+        "Alias": "read_lag_interval",
+        "DefaultValue": null,
+        "Doc": "Frequency at which the reader lag is updated. Negative value disables lag reporting.",
+        "ExampleLS": "",
+        "Name": "ReadLagInterval",
+        "PossibleValues": null,
+        "Required": false,
+        "Type": "int"
+      }
+    ]
+  },
+  "Ports": []
+}
