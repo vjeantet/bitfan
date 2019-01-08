@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"strings"
 
-	"bitfan/processors"
 	"github.com/ChimeraCoder/anaconda"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

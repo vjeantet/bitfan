@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"bitfan/api/models"
-	"bitfan/core"
-	"bitfan/entrypoint/parser/logstash"
+	"github.com/awillis/bitfan/api/models"
+	"github.com/awillis/bitfan/core"
+	"github.com/awillis/bitfan/entrypoint/parser/logstash"
 	"github.com/gin-gonic/gin"
 	gouuid "github.com/nu7hatch/gouuid"
 )

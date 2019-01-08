@@ -2,7 +2,7 @@
   "Behavior": "",
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-kafka",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-kafka",
   "Name": "kafkaoutput",
   "Options": {
     "Doc": "",

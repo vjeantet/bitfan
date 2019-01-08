@@ -26,10 +26,10 @@ import (
 	"net/http/httputil"
 	"sync"
 
-	"bitfan/codecs"
-	"bitfan/core"
-	"bitfan/entrypoint"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/core"
+	"github.com/awillis/bitfan/entrypoint"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

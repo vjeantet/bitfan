@@ -6,7 +6,7 @@ package whitelist
 import (
 	"fmt"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"bitfan/codecs"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

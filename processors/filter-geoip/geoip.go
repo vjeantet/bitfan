@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/hraban/lrucache"
 	"github.com/oschwald/geoip2-golang"
 )

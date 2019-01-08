@@ -2,7 +2,7 @@
   "Behavior": "",
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-tcp",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-tcp",
   "Name": "tcpinput",
   "Options": {
     "Doc": "",

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"bitfan/api/models"
+	"github.com/awillis/bitfan/api/models"
 	"github.com/timshannon/bolthold"
 )
 

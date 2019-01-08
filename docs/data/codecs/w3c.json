@@ -60,7 +60,7 @@
   "Doc": "Parses comma-separated value data into individual fields",
   "DocShort": "",
   "Encoder": null,
-  "ImportPath": "bitfan/codecs/w3c",
+  "ImportPath": "github.com/awillis/bitfan/codecs/w3c",
   "Name": "w3c",
   "PkgName": "w3ccodec"
 }

@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-udp",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-udp",
   "Name": "udpinput",
   "Options": {
     "Doc": "",

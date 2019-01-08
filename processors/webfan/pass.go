@@ -3,7 +3,7 @@ package webfan
 import (
 	"fmt"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 func NewPass() processors.Processor {

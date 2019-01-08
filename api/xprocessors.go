@@ -3,8 +3,8 @@ package api
 import (
 	"fmt"
 
-	"bitfan/api/models"
-	"bitfan/core"
+	"github.com/awillis/bitfan/api/models"
+	"github.com/awillis/bitfan/core"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"

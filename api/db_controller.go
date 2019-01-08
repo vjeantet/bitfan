@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"bitfan/core"
+	"github.com/awillis/bitfan/core"
 	"github.com/gin-gonic/gin"
 	"github.com/vjeantet/jodaTime"
 )

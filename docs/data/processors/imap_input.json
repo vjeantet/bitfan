@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-imap",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-imap",
   "Name": "imap_input",
   "Options": null,
   "Ports": []

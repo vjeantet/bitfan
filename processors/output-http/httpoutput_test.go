@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"bitfan/codecs"
-	"bitfan/processors/doc"
-	"bitfan/processors/testutils"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors/doc"
+	"github.com/awillis/bitfan/processors/testutils"
 	"github.com/stretchr/testify/assert"
 )
 

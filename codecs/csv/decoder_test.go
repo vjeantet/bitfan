@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"bitfan/commons"
+	"github.com/awillis/bitfan/commons"
 	"github.com/stretchr/testify/assert"
 )
 

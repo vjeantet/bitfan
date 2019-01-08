@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/template",
+  "ImportPath": "github.com/awillis/bitfan/processors/template",
   "Name": "templateprocessor",
   "Options": {
     "Doc": "",

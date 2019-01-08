@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"bitfan/core/webhook"
 	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/awillis/bitfan/core/webhook"
 	uuid "github.com/nu7hatch/gouuid"
 )
 

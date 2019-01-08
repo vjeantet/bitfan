@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"bitfan/commons"
 	"github.com/ShowMax/go-fqdn"
+	"github.com/awillis/bitfan/commons"
 	"github.com/gosimple/slug"
 	"github.com/justinas/alice"
 )

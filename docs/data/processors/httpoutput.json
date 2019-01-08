@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-http",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-http",
   "Name": "httpoutput",
   "Options": {
     "Doc": "",

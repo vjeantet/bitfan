@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"bitfan/commons"
+	"github.com/awillis/bitfan/commons"
 	"github.com/mitchellh/mapstructure"
 )
 

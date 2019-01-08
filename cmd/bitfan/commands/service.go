@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"bitfan/core"
+	"github.com/awillis/bitfan/core"
 	"github.com/kardianos/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

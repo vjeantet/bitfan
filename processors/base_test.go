@@ -3,8 +3,8 @@ package processors
 import (
 	"testing"
 
-	"bitfan/codecs"
-	"bitfan/processors/doc"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors/doc"
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"

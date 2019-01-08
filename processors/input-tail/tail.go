@@ -12,8 +12,8 @@ import (
 	"github.com/ShowMax/go-fqdn"
 	zglob "github.com/mattn/go-zglob"
 
-	"bitfan/codecs"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
 
 	"github.com/hpcloud/tail"
 	"github.com/hpcloud/tail/watch"

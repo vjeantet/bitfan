@@ -1,7 +1,7 @@
 {
   "Doc": "Read file on\n\n* received event\n* when new file discovered\n\nthis processor remember last files used, it stores references in sincedb, set it to \"/dev/null\" to not remember used files",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-file",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-file",
   "Name": "file",
   "Options": {
     "Doc": "",

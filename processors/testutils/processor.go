@@ -3,7 +3,7 @@ package testutils
 import (
 	"testing"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

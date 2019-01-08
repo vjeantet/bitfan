@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/filter-html",
+  "ImportPath": "github.com/awillis/bitfan/processors/filter-html",
   "Name": "html",
   "Options": {
     "Doc": "",

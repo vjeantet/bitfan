@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	ldap "gopkg.in/ldap.v2"
 )
 

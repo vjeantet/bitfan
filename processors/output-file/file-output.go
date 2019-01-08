@@ -7,7 +7,7 @@ import (
 	"path"
 	"time"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/jehiah/go-strftime"
 )
 

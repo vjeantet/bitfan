@@ -3,7 +3,7 @@ package client
 import (
 	"fmt"
 
-	"bitfan/api/models"
+	"github.com/awillis/bitfan/api/models"
 	"github.com/dghubble/sling"
 )
 

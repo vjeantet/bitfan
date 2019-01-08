@@ -1,7 +1,7 @@
 {
   "Doc": "Drops everything received",
   "DocShort": "Drops everything received",
-  "ImportPath": "bitfan/processors/output-null",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-null",
   "Name": "null",
   "Options": null,
   "Ports": []

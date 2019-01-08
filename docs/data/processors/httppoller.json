@@ -1,7 +1,7 @@
 {
   "Doc": "HTTPPoller allows you to intermittently poll remote HTTP URL, decode the output into an event",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/httppoller",
+  "ImportPath": "github.com/awillis/bitfan/processors/httppoller",
   "Name": "httppoller",
   "Options": {
     "Doc": "",

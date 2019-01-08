@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"bitfan/core"
-	"bitfan/entrypoint/parser/logstash"
+	"github.com/awillis/bitfan/core"
+	"github.com/awillis/bitfan/entrypoint/parser/logstash"
 )
 
 var entryPointContent func(string, string, map[string]interface{}) ([]byte, string, error)

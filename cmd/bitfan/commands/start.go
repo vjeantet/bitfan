@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"bitfan/api/client"
+	"github.com/awillis/bitfan/api/client"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

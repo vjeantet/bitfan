@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "Parses JSON events",
-  "ImportPath": "bitfan/processors/filter-json",
+  "ImportPath": "github.com/awillis/bitfan/processors/filter-json",
   "Name": "json",
   "Options": {
     "Doc": "",

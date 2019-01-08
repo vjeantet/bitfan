@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"bitfan/processors/doc"
-	"bitfan/processors/testutils"
+	"github.com/awillis/bitfan/processors/doc"
+	"github.com/awillis/bitfan/processors/testutils"
 	"github.com/clbanning/mxj"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"

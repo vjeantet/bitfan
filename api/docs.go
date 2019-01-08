@@ -1,7 +1,7 @@
 package api
 
 import (
-	"bitfan/core"
+	"github.com/awillis/bitfan/core"
 	"github.com/gin-gonic/gin"
 )
 

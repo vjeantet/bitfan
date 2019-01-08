@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-file",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-file",
   "Name": "fileoutput",
   "Options": {
     "Doc": "",

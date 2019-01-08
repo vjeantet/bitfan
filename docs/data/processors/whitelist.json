@@ -1,7 +1,7 @@
 {
   "Doc": "Similar to blacklist, this processor will compare a certain field to a whitelist, and match\nif the list does not contain the term",
   "DocShort": "drop event when term is in a given list",
-  "ImportPath": "bitfan/processors/filter-whitelist",
+  "ImportPath": "github.com/awillis/bitfan/processors/filter-whitelist",
   "Name": "whitelist",
   "Options": {
     "Doc": "",

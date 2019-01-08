@@ -27,8 +27,8 @@ package stdout
 import (
 	"os"
 
-	"bitfan/codecs"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
 )
 
 const timeFormat = "2006-01-02T15:04:05.999Z07:00"

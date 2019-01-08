@@ -1,7 +1,7 @@
 {
   "Doc": "A simple output which prints to the STDOUT of the shell running BitFan. This output can be quite convenient when debugging plugin configurations, by allowing instant access to the event data after it has passed through the inputs and filters.\n\nFor example, the following output configuration, in conjunction with the BitFan -e command-line flag, will allow you to see the results of your event pipeline for quick iteration.\n```\noutput {\n  stdout {}\n}\n```\nUseful codecs include:\n\npp: outputs event data using the go \"k0kubun/pp\" package\nif codec is rubydebug, it will treated as \"pp\"\n```\noutput {\n  stdout { codec =\u003e pp }\n}\n```\njson: outputs event data in structured JSON format\n```\noutput {\n  stdout { codec =\u003e json }\n}\n```",
   "DocShort": "Prints events to the standard output",
-  "ImportPath": "bitfan/processors/stdout",
+  "ImportPath": "github.com/awillis/bitfan/processors/stdout",
   "Name": "stdout",
   "Options": {
     "Doc": "",

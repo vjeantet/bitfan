@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"time"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/elastic/go-lumber/server"
 )
 

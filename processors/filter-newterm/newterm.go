@@ -5,7 +5,7 @@ package newterm
 import (
 	"sync"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

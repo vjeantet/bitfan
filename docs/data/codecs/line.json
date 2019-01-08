@@ -57,7 +57,7 @@
       ]
     }
   },
-  "ImportPath": "bitfan/codecs/line",
+  "ImportPath": "github.com/awillis/bitfan/codecs/line",
   "Name": "line",
   "PkgName": "linecodec"
 }

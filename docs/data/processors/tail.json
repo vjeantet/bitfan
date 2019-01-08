@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-tail",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-tail",
   "Name": "tail",
   "Options": {
     "Doc": "",

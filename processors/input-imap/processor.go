@@ -2,7 +2,7 @@
 package imap_input
 
 import (
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/etrepat/postman/watch"
 )
 

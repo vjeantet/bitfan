@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"bitfan/cmd/bitfanUI/commands"
+	"github.com/awillis/bitfan/cmd/bitfanUI/commands"
 	"github.com/kardianos/service"
 )
 

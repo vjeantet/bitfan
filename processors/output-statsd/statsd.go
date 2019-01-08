@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"bitfan/processors"
 	"github.com/ShowMax/go-fqdn"
+	"github.com/awillis/bitfan/processors"
 	"gopkg.in/alexcesaro/statsd.v2"
 )
 

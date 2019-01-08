@@ -7,7 +7,7 @@ import (
 	"net"
 	"time"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/streadway/amqp"
 )
 

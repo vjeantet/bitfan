@@ -3,7 +3,7 @@ package server
 import (
 	"log"
 
-	"bitfan/api/models"
+	"github.com/awillis/bitfan/api/models"
 	"github.com/gin-gonic/gin"
 )
 

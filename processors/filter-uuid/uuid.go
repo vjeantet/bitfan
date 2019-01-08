@@ -7,7 +7,7 @@
 package uuid
 
 import (
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/nu7hatch/gouuid"
 )
 

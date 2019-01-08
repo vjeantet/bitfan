@@ -6,12 +6,12 @@ import (
 	"os"
 	"sync"
 
-	"bitfan/core/memory"
-	"bitfan/core/metrics"
-	"bitfan/core/webhook"
-	"bitfan/processors/doc"
-	"bitfan/processors/xprocessor"
-	"bitfan/store"
+	"github.com/awillis/bitfan/core/memory"
+	"github.com/awillis/bitfan/core/metrics"
+	"github.com/awillis/bitfan/core/webhook"
+	"github.com/awillis/bitfan/processors/doc"
+	"github.com/awillis/bitfan/processors/xprocessor"
+	"github.com/awillis/bitfan/store"
 )
 
 var (

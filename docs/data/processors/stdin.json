@@ -1,7 +1,7 @@
 {
   "Doc": "Read events from standard input.\nBy default, each event is assumed to be one line. If you want to join lines, you’ll want to use the multiline filter.",
   "DocShort": "Reads events from standard input",
-  "ImportPath": "bitfan/processors/input-stdin",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-stdin",
   "Name": "stdin",
   "Options": {
     "Doc": "",

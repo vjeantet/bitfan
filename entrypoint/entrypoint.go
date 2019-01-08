@@ -11,8 +11,8 @@ import (
 	"regexp"
 	"strings"
 
-	"bitfan/core"
-	"bitfan/entrypoint/parser"
+	"github.com/awillis/bitfan/core"
+	"github.com/awillis/bitfan/entrypoint/parser"
 )
 
 const (

@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 const (

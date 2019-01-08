@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/filter-grok",
+  "ImportPath": "github.com/awillis/bitfan/processors/filter-grok",
   "Name": "grok",
   "Options": {
     "Doc": "",

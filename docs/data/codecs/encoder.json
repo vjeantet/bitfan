@@ -36,7 +36,7 @@
       ]
     }
   },
-  "ImportPath": "bitfan/codecs/plain",
+  "ImportPath": "github.com/awillis/bitfan/codecs/plain",
   "Name": "encoder",
   "PkgName": "plaincodec"
 }

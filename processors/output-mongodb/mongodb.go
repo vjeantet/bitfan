@@ -6,7 +6,7 @@ package mongodb
 // https://www.elastic.co/guide/en/logstash/current/plugins-outputs-mongodb.html
 
 import (
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"gopkg.in/mgo.v2"
 )
 

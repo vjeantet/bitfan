@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/when",
+  "ImportPath": "github.com/awillis/bitfan/processors/when",
   "Name": "when",
   "Options": {
     "Doc": "",

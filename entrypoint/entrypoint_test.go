@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"bitfan/core"
+	"github.com/awillis/bitfan/core"
 	"github.com/stretchr/testify/assert"
 )
 

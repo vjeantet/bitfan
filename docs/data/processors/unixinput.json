@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-unix",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-unix",
   "Name": "unixinput",
   "Options": {
     "Doc": "",

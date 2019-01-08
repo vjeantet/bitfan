@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "Prints events to the standard output",
-  "ImportPath": "bitfan/processors/input-stdout",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-stdout",
   "Name": "inputstdout",
   "Options": {
     "Doc": "",

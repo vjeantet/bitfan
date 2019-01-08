@@ -6,7 +6,7 @@ package glusterfsoutput
 import (
 	"fmt"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

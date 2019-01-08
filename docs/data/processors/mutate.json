@@ -1,7 +1,7 @@
 {
   "Doc": "mutate filter allows to perform general mutations on fields. You can rename, remove, replace, and modify fields in your event.",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/filter-mutate",
+  "ImportPath": "github.com/awillis/bitfan/processors/filter-mutate",
   "Name": "mutate",
   "Options": {
     "Doc": "",

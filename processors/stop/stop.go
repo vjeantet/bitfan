@@ -8,7 +8,7 @@ package stopprocessor
 import (
 	"os"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

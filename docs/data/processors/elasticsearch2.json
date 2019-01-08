@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-elasticsearch2",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-elasticsearch2",
   "Name": "elasticsearch2",
   "Options": {
     "Doc": "",

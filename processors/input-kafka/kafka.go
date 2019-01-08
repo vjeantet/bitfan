@@ -2,6 +2,8 @@
 package kafkainput
 
 import (
+	"context"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -9,7 +11,7 @@ import (
 
 	"github.com/segmentio/kafka-go"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {
@@ -29,15 +31,9 @@ type options struct {
 	// Kafka topic
 	TopicID string `mapstructure:"topic_id" validate:"required"`
 	// Kafka group id
-	GroupID string `mapstructure:"group_id"`
+	GroupID string `mapstructure:"group_id" validate:"required"`
 	// Kafka client id
 	ClientID string `mapstructure:"client_id"`
-	// Balancer ( roundrobin, hash or leastbytes )
-	Balancer string `mapstructure:"balancer"`
-	// Compression algorithm ( 'gzip', 'snappy', or 'lz4' )
-	Compression string `mapstructure:"compression"`
-	// Max Attempts
-	MaxAttempts int `mapstructure:"max_attempts"`
 	// Queue Size
 	QueueSize int `mapstructure:"queue_size"`
 	// Minimum amount of bytes to fetch per request
@@ -66,10 +62,10 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	defaults := options{
 		Brokers:         []string{"localhost:9092"},
 		ClientID:        "bitfan",
-		MaxAttempts:     10,
+		GroupID:         "bitfan",
 		QueueSize:       1024,
-		RequestBytesMin: 256,
-		RequestBytesMax: 4096,
+		RequestBytesMin: 10e3,
+		RequestBytesMax: 10e6,
 		KeepAlive:       180,
 		MaxWait:         30,
 		ReadLagInterval: 20,
@@ -91,6 +87,8 @@ func (p *processor) Start(e processors.IPacket) error {
 			p.opt.Brokers = brokers
 		}
 	}
+
+	p.Logger.Infof("using kafka brokers %v", p.opt.Brokers)
 
 	p.reader = kafka.NewReader(kafka.ReaderConfig{
 		Brokers: p.opt.Brokers,
@@ -115,14 +113,39 @@ func (p *processor) Start(e processors.IPacket) error {
 		//RetentionTime:     0,
 	})
 
+	go func(p *processor) {
+
+		for {
+			msg, err := p.reader.ReadMessage(context.Background())
+			if err == io.EOF {
+				break
+			} else if err != nil {
+				p.Logger.Errorf("error reading from kafka: %s", err)
+				continue
+			}
+
+			var key string
+
+			if len(msg.Key) > 0 {
+				key = string(msg.Key)
+			} else {
+				key = "message"
+			}
+
+			ne := p.NewPacket(map[string]interface{}{
+				key: msg.Value,
+			})
+
+			p.opt.ProcessCommonOptions(ne.Fields())
+			p.Send(ne)
+		}
+	}(p)
+
 	return err
 }
 
 func (p *processor) Stop(e processors.IPacket) error {
-
-	var err error
-
-	return err
+	return p.reader.Close()
 }
 
 func bootstrapLookup(endpoint string) ([]string, error) {

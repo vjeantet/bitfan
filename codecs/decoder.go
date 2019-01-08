@@ -1,6 +1,6 @@
 package codecs
 
-import "bitfan/commons"
+import "github.com/awillis/bitfan/commons"
 
 type Decoder interface {
 	Decode(*interface{}) error

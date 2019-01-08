@@ -1,8 +1,8 @@
 package processors
 
 import (
-	"bitfan/codecs"
-	"bitfan/processors/doc"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors/doc"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/go-playground/validator.v8"
 )

@@ -3,7 +3,7 @@ package elasticsearch2
 import (
 	"testing"
 
-	"bitfan/processors/doc"
+	"github.com/awillis/bitfan/processors/doc"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/mitchellh/mapstructure"
 	"github.com/vjeantet/grok"
 )

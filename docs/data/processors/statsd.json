@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-statsd",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-statsd",
   "Name": "statsd",
   "Options": {
     "Doc": "",

@@ -1,7 +1,7 @@
 {
   "Doc": "This processor matches when a new value appears in a field that has never been seen before.",
   "DocShort": "drop event when term was already seen before",
-  "ImportPath": "bitfan/processors/filter-newterm",
+  "ImportPath": "github.com/awillis/bitfan/processors/filter-newterm",
   "Name": "newterm",
   "Options": {
     "Doc": "",

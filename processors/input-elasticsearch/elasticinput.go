@@ -8,7 +8,7 @@ import (
 
 	elastic "gopkg.in/olivere/elastic.v3"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/clbanning/mxj"
 )
 

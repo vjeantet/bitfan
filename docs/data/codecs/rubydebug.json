@@ -9,7 +9,7 @@
       "Options": []
     }
   },
-  "ImportPath": "bitfan/codecs/rubydebug",
+  "ImportPath": "github.com/awillis/bitfan/codecs/rubydebug",
   "Name": "rubydebug",
   "PkgName": "rubydebugcodec"
 }

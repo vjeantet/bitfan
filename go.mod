@@ -1,4 +1,4 @@
-module bitfan
+module github.com/awillis/bitfan
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect

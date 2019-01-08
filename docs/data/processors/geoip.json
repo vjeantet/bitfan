@@ -1,7 +1,7 @@
 {
   "Doc": "The GeoIP filter adds information about the geographical location of IP addresses,\nbased on data from the Maxmind GeoLite2 databases\n\nThis processor use a GeoLite2 City database. From Maxmind’s description — \"GeoLite2 databases are free IP geolocation databases comparable to, but less accurate than, MaxMind’s GeoIP2 databases\". Please see GeoIP Lite2 license for more details.\nDatabae is not bundled in the processor,  you can download directly from Maxmind’s website and use the\ndatabase option to specify their location. The GeoLite2 databases can be downloaded from https://dev.maxmind.com/geoip/geoip2/geolite2.",
   "DocShort": "Adds geographical information about an IP address",
-  "ImportPath": "bitfan/processors/filter-geoip",
+  "ImportPath": "github.com/awillis/bitfan/processors/filter-geoip",
   "Name": "geoip",
   "Options": {
     "Doc": "",

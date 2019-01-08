@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"bitfan/processors/testutils"
+	"github.com/awillis/bitfan/processors/testutils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

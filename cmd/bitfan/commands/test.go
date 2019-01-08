@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"bitfan/entrypoint"
+	"github.com/awillis/bitfan/entrypoint"
 )
 
 func init() {

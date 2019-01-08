@@ -6,7 +6,7 @@
 // The end result of each split is a complete copy of the event with only the current split section of the given field changed.
 package split
 
-import "bitfan/processors"
+import "github.com/awillis/bitfan/processors"
 
 const (
 	PORT_SUCCESS = 0

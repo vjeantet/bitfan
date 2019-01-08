@@ -1,7 +1,7 @@
 {
   "Doc": "Performs a search for a specified filter on the directory and fire events with results",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/ldap",
+  "ImportPath": "github.com/awillis/bitfan/processors/ldap",
   "Name": "ldapprocessor",
   "Options": {
     "Doc": "",

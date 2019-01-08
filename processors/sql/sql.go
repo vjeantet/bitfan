@@ -8,9 +8,9 @@ import (
 	"strings"
 	"text/template"
 
-	"bitfan/commons"
-	"bitfan/processors"
 	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/awillis/bitfan/commons"
+	"github.com/awillis/bitfan/processors"
 	_ "github.com/go-sql-driver/mysql"
 )
 

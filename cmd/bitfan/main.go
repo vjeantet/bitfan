@@ -22,7 +22,7 @@ import (
 	"os"
 	"runtime"
 
-	"bitfan/cmd/bitfan/commands"
+	"github.com/awillis/bitfan/cmd/bitfan/commands"
 	"github.com/kardianos/service"
 )
 

@@ -7,9 +7,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"bitfan/codecs"
-	"bitfan/processors"
 	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
 )
 
 func New() processors.Processor {

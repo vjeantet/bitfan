@@ -3,7 +3,7 @@ package core
 import (
 	"time"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/clbanning/mxj"
 )
 

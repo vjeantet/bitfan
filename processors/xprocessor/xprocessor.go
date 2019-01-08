@@ -14,10 +14,10 @@ import (
 	"strings"
 	"sync"
 
-	"bitfan/api/models"
-	"bitfan/codecs"
-	"bitfan/processors"
-	"bitfan/processors/doc"
+	"github.com/awillis/bitfan/api/models"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
+	"github.com/awillis/bitfan/processors/doc"
 	"github.com/mitchellh/mapstructure"
 )
 

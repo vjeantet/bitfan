@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-beats",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-beats",
   "Name": "beatsinput",
   "Options": {
     "Doc": "",

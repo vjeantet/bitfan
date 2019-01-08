@@ -47,7 +47,7 @@
       ]
     }
   },
-  "ImportPath": "bitfan/codecs/json",
+  "ImportPath": "github.com/awillis/bitfan/codecs/json",
   "Name": "json",
   "PkgName": "jsoncodec"
 }

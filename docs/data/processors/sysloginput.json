@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/input-syslog",
+  "ImportPath": "github.com/awillis/bitfan/processors/input-syslog",
   "Name": "sysloginput",
   "Options": {
     "Doc": "",

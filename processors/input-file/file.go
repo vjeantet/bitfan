@@ -14,9 +14,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"bitfan/codecs"
-	"bitfan/processors"
 	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
 	zglob "github.com/mattn/go-zglob"
 )
 

@@ -1,6 +1,6 @@
 package processors
 
-import "bitfan/processors/doc"
+import "github.com/awillis/bitfan/processors/doc"
 
 type Processor interface {
 	B() *Base

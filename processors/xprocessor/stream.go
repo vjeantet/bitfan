@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"bitfan/codecs"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
 )
 
 // Reads events from standard input

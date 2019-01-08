@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/sql",
+  "ImportPath": "github.com/awillis/bitfan/processors/sql",
   "Name": "sqlprocessor",
   "Options": {
     "Doc": "",

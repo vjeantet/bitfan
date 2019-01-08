@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-rabbitmq",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-rabbitmq",
   "Name": "rabbitmqoutput",
   "Options": {
     "Doc": "",

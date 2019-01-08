@@ -1,7 +1,7 @@
 {
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-mongodb",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-mongodb",
   "Name": "mongodb",
   "Options": {
     "Doc": "",

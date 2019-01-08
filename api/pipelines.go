@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"bitfan/api/models"
-	"bitfan/core"
-	"bitfan/entrypoint"
+	"github.com/awillis/bitfan/api/models"
+	"github.com/awillis/bitfan/core"
+	"github.com/awillis/bitfan/entrypoint"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	uuid "github.com/nu7hatch/gouuid"

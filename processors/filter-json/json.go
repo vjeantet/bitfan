@@ -4,7 +4,7 @@ package json
 import (
 	"encoding/json"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 // Parses JSON events

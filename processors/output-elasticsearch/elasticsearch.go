@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"github.com/jehiah/go-strftime"
 	els5 "gopkg.in/olivere/elastic.v5"
 	els6 "gopkg.in/olivere/elastic.v6"

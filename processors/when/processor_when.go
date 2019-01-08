@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"sync"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 	"gopkg.in/Knetic/govaluate.v3"
 )
 

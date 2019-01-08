@@ -60,7 +60,7 @@
   "Doc": "Parses comma-separated value data into individual fields",
   "DocShort": "",
   "Encoder": null,
-  "ImportPath": "bitfan/codecs/csv",
+  "ImportPath": "github.com/awillis/bitfan/codecs/csv",
   "Name": "csv",
   "PkgName": "csvcodec"
 }

@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"bitfan/api/models"
-	"bitfan/commons"
+	"github.com/awillis/bitfan/api/models"
+	"github.com/awillis/bitfan/commons"
 	"github.com/timshannon/bolthold"
 	"go.etcd.io/bbolt"
 )

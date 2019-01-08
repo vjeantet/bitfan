@@ -3,7 +3,7 @@ package imap_input
 import (
 	"encoding/json"
 
-	"bitfan/processors"
+	"github.com/awillis/bitfan/processors"
 )
 
 type toJsonHandler struct {

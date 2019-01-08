@@ -22,8 +22,8 @@ import (
 	"os"
 	"strconv"
 
-	"bitfan/codecs"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors"
 	uuid "github.com/nu7hatch/gouuid"
 )
 

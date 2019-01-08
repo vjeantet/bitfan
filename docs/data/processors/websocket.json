@@ -1,7 +1,7 @@
 {
   "Doc": "Send event received over a ws connection to connected clients",
   "DocShort": "Reads events from standard input",
-  "ImportPath": "bitfan/processors/websocket",
+  "ImportPath": "github.com/awillis/bitfan/processors/websocket",
   "Name": "websocket",
   "Options": {
     "Doc": "",

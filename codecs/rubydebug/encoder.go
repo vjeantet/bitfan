@@ -5,7 +5,7 @@ package rubydebugcodec
 import (
 	"io"
 
-	"bitfan/commons"
+	"github.com/awillis/bitfan/commons"
 	"github.com/k0kubun/pp"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/go-playground/validator.v8"

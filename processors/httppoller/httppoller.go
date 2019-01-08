@@ -7,9 +7,9 @@ import (
 	"html/template"
 	"io"
 
-	"bitfan/codecs"
-	"bitfan/commons"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/commons"
+	"github.com/awillis/bitfan/processors"
 	"github.com/parnurzeal/gorequest"
 )
 

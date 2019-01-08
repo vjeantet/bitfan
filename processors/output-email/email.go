@@ -12,8 +12,8 @@ import (
 	"regexp"
 	"strings"
 
-	"bitfan/commons"
-	"bitfan/processors"
+	"github.com/awillis/bitfan/commons"
+	"github.com/awillis/bitfan/processors"
 	uuid "github.com/nu7hatch/gouuid"
 	gomail "gopkg.in/gomail.v2"
 )

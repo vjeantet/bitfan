@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"bitfan/api/models"
-	"bitfan/core"
+	"github.com/awillis/bitfan/api/models"
+	"github.com/awillis/bitfan/core"
 	"github.com/gin-gonic/gin"
 	gouuid "github.com/nu7hatch/gouuid"
 )

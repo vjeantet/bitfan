@@ -2,7 +2,7 @@
   "Behavior": "",
   "Doc": "",
   "DocShort": "",
-  "ImportPath": "bitfan/processors/output-tcp",
+  "ImportPath": "github.com/awillis/bitfan/processors/output-tcp",
   "Name": "tcpoutput",
   "Options": {
     "Doc": "",

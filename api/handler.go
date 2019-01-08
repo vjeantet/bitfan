@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"bitfan/core"
+	"github.com/awillis/bitfan/core"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
