@@ -23,7 +23,7 @@ func TestBaseNew(t *testing.T) {
 
 func TestBaseMaxConcurentIsZero(t *testing.T) {
 	p := &Base{}
-	assert.Equal(t, 0, p.MaxConcurent())
+	assert.Equal(t, 0, p.MaxConcurrent())
 }
 
 func TestBaseMethods(t *testing.T) {

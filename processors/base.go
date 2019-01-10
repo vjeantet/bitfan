@@ -49,7 +49,7 @@ func (b *Base) Start(e IPacket) error { return nil }
 
 func (b *Base) Stop(e IPacket) error { return nil }
 
-func (b *Base) MaxConcurent() int {
+func (b *Base) MaxConcurrent() int {
 	return 0
 }
 
