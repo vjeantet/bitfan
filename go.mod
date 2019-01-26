@@ -37,6 +37,7 @@ require (
 	github.com/gorilla/sessions v1.1.3 // indirect
 	github.com/gorilla/websocket v1.4.0
 	github.com/gosimple/slug v1.4.2
+	github.com/hashicorp/hcl v1.0.0
 	github.com/hpcloud/tail v1.0.0
 	github.com/hraban/lrucache v0.0.0-20150309112052-a1cd14943f73
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect

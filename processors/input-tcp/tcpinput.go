@@ -128,19 +128,22 @@ func (p *processor) Start(e processors.IPacket) error {
 							p.Logger.Errorf("error getting remote host address")
 						}
 
-						for scanner.Scan() {
-							ne := p.NewPacket(map[string]interface{}{
-								"message":  scanner.Text(),
-								"hostname": hostname,
-								"port":     port,
-							})
-							p.opt.ProcessCommonOptions(ne.Fields())
-							p.Send(ne)
+						for {
+							if scanner.Scan() {
+								ne := p.NewPacket(map[string]interface{}{
+									"message":  scanner.Text(),
+									"hostname": hostname,
+									"port":     port,
+								})
+								p.opt.ProcessCommonOptions(ne.Fields())
+								p.Send(ne)
+							} else {
+								if err := scanner.Err(); err != nil {
+									p.Logger.Errorf("error while reading from client: %v", err)
+								}
+								break
+							}
 						}
-						if err := scanner.Err(); err != nil {
-							p.Logger.Errorf("error while reading from client: %v", err)
-						}
-
 						p.end <- conn
 					}(p)
 				} else {
